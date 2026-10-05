@@ -1,0 +1,1607 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Фобия №3 — анимация</title>
+<style>
+  @font-face { font-family: 'RubikC'; font-weight: 900; src: url('node_modules/@fontsource/rubik/files/rubik-cyrillic-900-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'RubikL'; font-weight: 900; src: url('node_modules/@fontsource/rubik/files/rubik-latin-900-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'RubikC'; font-weight: 700; src: url('node_modules/@fontsource/rubik/files/rubik-cyrillic-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'RubikL'; font-weight: 700; src: url('node_modules/@fontsource/rubik/files/rubik-latin-700-normal.woff2') format('woff2'); }
+  html, body { margin: 0; background: #000; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+'use strict';
+// Мультик «Фобия №3 из 100: акрофобия». Рисовка — как в выпуске №1, сцены свои:
+// Тёма, который боится высоты, его подруга Лиза и их далёкие предки Ух и Ах.
+// Всё рисуется детерминированно от времени t: renderFrame(t) → кадр.
+const W = 1080, H = 1920, TAU = Math.PI * 2, GROUND = 1220;
+const FONT = 'RubikC, RubikL, sans-serif';
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+
+const C = {
+  ink: '#2A1E2E', white: '#FFFFFF', yellow: '#FFE14D', red: '#FF4D6D', green: '#22B8A7',
+  chunk: ['#8E6CDF', '#22B8A7', '#FF9F1C', '#E63946'],
+};
+const LOOK = {
+  tema: { body: '#5CD69B', light: '#A8F0C8', belly: '#D4F7E3', shoe: '#E63946', hair: 'tuft', scarf: '#FF9F1C' },
+  liza: { body: '#FF8FB1', light: '#FFC3D6', belly: '#FFE3EC', shoe: '#8E6CDF', hair: 'tails', bow: '#FFE14D' },
+  uh: { body: '#D9A066', light: '#F2C894', belly: '#F7DDB8', shoe: null, hair: 'shaggy', fur: true },
+  ah: { body: '#5CB98A', light: '#9EE0BC', belly: '#CFF2DE', shoe: null, hair: 'shaggy', fur: true },
+  mom: { body: '#8E6CDF', light: '#B9A0F0', belly: '#DCD0FA', shoe: '#FF4D6D', hair: 'bun' },
+};
+
+// ---------- утилиты ----------
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const inv = (a, b, x) => clamp((x - a) / (b - a));
+const easeOut = k => 1 - Math.pow(1 - k, 3);
+const easeIn = k => k * k * k;
+const easeInOut = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const easeOutBack = (k, s = 1.9) => k <= 0 ? 0 : 1 + (s + 1) * Math.pow(k - 1, 3) + s * Math.pow(k - 1, 2);
+const pop = (t, t0, d = 0.32) => easeOutBack(inv(t0, t0 + d, t));
+const hash = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const noise1 = x => { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); return lerp(hash(i), hash(i + 1), u) * 2 - 1; };
+const frac = x => x - Math.floor(x);
+function hex2rgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function mix(a, b, k) { const A = hex2rgb(a), B = hex2rgb(b); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], k))).join(',')})`; }
+
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function setFont(size, weight = 900) { ctx.font = `${weight} ${size}px ${FONT}`; }
+function text(str, x, y, size, o = {}) {
+  const { fill = '#fff', stroke = C.ink, sw = 0, weight = 900, align = 'center', maxW = 0 } = o;
+  setFont(size, weight);
+  if (maxW) { const w = ctx.measureText(str).width; if (w > maxW) { size *= maxW / w; setFont(size, weight); } }
+  ctx.textAlign = align; ctx.textBaseline = 'middle';
+  if (sw) { ctx.lineJoin = 'round'; ctx.miterLimit = 2; ctx.lineWidth = sw; ctx.strokeStyle = stroke; ctx.strokeText(str, x, y); }
+  ctx.fillStyle = fill; ctx.fillText(str, x, y);
+}
+function withT(x, y, rot, sc, fn, alpha = 1) {
+  if (sc <= 0.001 || alpha <= 0.001) return;
+  ctx.save(); ctx.globalAlpha *= clamp(alpha); ctx.translate(x, y); if (rot) ctx.rotate(rot); if (sc !== 1) ctx.scale(sc, sc); fn(); ctx.restore();
+}
+function stroke(w = 5) { ctx.lineWidth = w; ctx.strokeStyle = C.ink; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); }
+function tile(ch, size, color, glow = 0) {
+  const h = size / 2, r = size * 0.2;
+  ctx.fillStyle = 'rgba(30,10,40,0.22)'; rr(-h + size * 0.05, -h + size * 0.09, size, size, r); ctx.fill();
+  ctx.fillStyle = color; rr(-h, -h, size, size, r); ctx.fill();
+  ctx.lineWidth = Math.max(3, size * 0.055); ctx.strokeStyle = C.ink; ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.25)'; rr(-h + size * 0.12, -h + size * 0.09, size * 0.76, size * 0.2, size * 0.1); ctx.fill();
+  if (glow > 0) { ctx.fillStyle = `rgba(255,255,255,${0.55 * glow})`; rr(-h, -h, size, size, r); ctx.fill(); }
+  text(ch, 0, size * 0.05, size * 0.6, { sw: size * 0.1 });
+}
+function star(x, y, r, rot, fill) {
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) { const a = rot + i * Math.PI / 5 - Math.PI / 2, rad = i % 2 ? r * 0.45 : r; ctx.lineTo(x + Math.cos(a) * rad, y + Math.sin(a) * rad); }
+  ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = C.ink; ctx.lineJoin = 'round'; ctx.stroke();
+}
+function heart(x, y, s, fill = '#FF4D6D') {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s / 30, s / 30);
+  ctx.beginPath(); ctx.moveTo(0, 12);
+  ctx.bezierCurveTo(-30, -8, -16, -32, 0, -16); ctx.bezierCurveTo(16, -32, 30, -8, 0, 12);
+  ctx.fillStyle = fill; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = C.ink; ctx.stroke(); ctx.restore();
+}
+// табличка-«пилюля» с текстом
+function pill(str, size, fill, color, o = {}) {
+  setFont(size); const w = ctx.measureText(str).width + size * 1.4, h = size * 1.9;
+  if (o.shadow !== false) { ctx.fillStyle = 'rgba(30,10,40,0.22)'; rr(-w / 2 + 6, -h / 2 + 8, w, h, h / 2); ctx.fill(); }
+  ctx.fillStyle = fill; rr(-w / 2, -h / 2, w, h, h / 2); ctx.fill(); stroke(o.sw || 8);
+  text(str, 0, size * 0.06, size, { fill: color, sw: o.tsw || 0 });
+}
+// штамп
+function stamp(str, size, color, w) {
+  ctx.fillStyle = 'rgba(255,255,255,0.93)'; rr(-w / 2, -size * 0.95, w, size * 1.9, size * 0.35); ctx.fill();
+  ctx.lineWidth = size * 0.13; ctx.strokeStyle = color; ctx.stroke();
+  text(str, 0, size * 0.07, size, { fill: color, maxW: w - size * 0.6 });
+}
+// строка-карточка: иконка слева, заголовок и подпись
+function rowCard(w, title, sub, color, icon, t) {
+  const h = 136;
+  ctx.fillStyle = 'rgba(30,10,40,0.2)'; rr(-w / 2 + 4, -h / 2 + 6, w, h, 34); ctx.fill();
+  ctx.fillStyle = '#fff'; rr(-w / 2, -h / 2, w, h, 34); ctx.fill(); stroke(7);
+  const ix = -w / 2 + 78;
+  ctx.fillStyle = color; ctx.beginPath(); ctx.arc(ix, 0, 52, 0, TAU); ctx.globalAlpha *= 0.25; ctx.fill(); ctx.globalAlpha /= 0.25;
+  withT(ix, 4, 0, 0.8, () => icon(t));
+  const tx = ix + 76, mw = w / 2 - tx - 30;
+  if (sub) {
+    text(title, tx, -20, 54, { fill: color, sw: 10, align: 'left', maxW: mw });
+    text(sub, tx, 36, 34, { fill: C.ink, weight: 700, align: 'left', maxW: mw });
+  } else text(title, tx, 4, 54, { fill: color, sw: 10, align: 'left', maxW: mw });
+}
+// квадратная карточка: иконка сверху, подпись снизу
+function boxCard(w, h, title, color, icon, t) {
+  ctx.fillStyle = 'rgba(30,10,40,0.2)'; rr(-w / 2 + 5, -h / 2 + 7, w, h, 36); ctx.fill();
+  ctx.fillStyle = '#fff'; rr(-w / 2, -h / 2, w, h, 36); ctx.fill(); stroke(8);
+  ctx.fillStyle = color; ctx.globalAlpha *= 0.22; rr(-w / 2 + 16, -h / 2 + 16, w - 32, h - 96, 26); ctx.fill(); ctx.globalAlpha /= 0.22;
+  withT(0, -h / 2 + 16 + (h - 96) / 2, 0, 1, () => icon(t));
+  const lines = title.split('\n');
+  lines.forEach((ln, i) => text(ln, 0, h / 2 - 42 - (lines.length - 1 - i) * 40, lines.length > 1 ? 36 : 44, { fill: C.ink, maxW: w - 40 }));
+}
+function cross(r, w = 16) {   // красный крест «нельзя»
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = w + 10; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(-r, -r); ctx.lineTo(r, r); ctx.moveTo(r, -r); ctx.lineTo(-r, r); ctx.stroke();
+  ctx.strokeStyle = '#E63946'; ctx.lineWidth = w;
+  ctx.beginPath(); ctx.moveTo(-r, -r); ctx.lineTo(r, r); ctx.moveTo(r, -r); ctx.lineTo(-r, r); ctx.stroke();
+}
+function checkMark(r) {
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.fillStyle = C.green; ctx.fill(); stroke(6);
+  ctx.beginPath(); ctx.moveTo(-r * 0.45, 0); ctx.lineTo(-r * 0.1, r * 0.35); ctx.lineTo(r * 0.5, -r * 0.35);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = r * 0.22; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke();
+}
+
+// ---------- тайминги ----------
+let TL, L = {}, S = {}, SCENES = [], CUES = [], PAGES = [], T = 0, impulses = [];
+
+function findWord(id, re) {
+  const w = L[id].words.find(x => re.test(x.w.toLowerCase()));
+  if (!w) throw new Error(`нет слова ${re} в ${id}`);
+  return w;
+}
+const ws = (id, re) => findWord(id, re).s;
+const b = id => L[id].start - 0.25;
+
+function setup(tl) {
+  TL = tl; L = {}; tl.lines.forEach(l => L[l.id] = l);
+  S = {
+    hook: [0, b('l2')], park: [b('l2'), b('l4')], ride: [b('l4'), L.l9.start - 0.5], word: [L.l9.start - 0.5, b('l11')],
+    peaks: [b('l11'), b('l14')], cave: [b('l14'), b('l19')], lab: [b('l19'), b('l22')], deck: [b('l22'), b('l24')],
+    danger: [b('l24'), b('l26')], vr: [b('l26'), b('l27')], final: [b('l27'), tl.total], end: [b('l28'), tl.total],
+  };
+  SCENES = [
+    { name: 'hook', t: 0, draw: sceneHook },
+    { name: 'park', t: S.park[0], draw: scenePark, tr: 'iris' },
+    { name: 'ride', t: S.ride[0], draw: sceneRide, tr: 'iris' },
+    { name: 'word', t: S.word[0], draw: sceneWord, tr: 'flash' },
+    { name: 'peaks', t: S.peaks[0], draw: scenePeaks, tr: 'iris' },
+    { name: 'cave', t: S.cave[0], draw: sceneCave, tr: 'swirl' },
+    { name: 'lab', t: S.lab[0], draw: sceneLab, tr: 'iris' },
+    { name: 'deck', t: S.deck[0], draw: sceneDeck, tr: 'iris' },
+    { name: 'danger', t: S.danger[0], draw: sceneDanger, tr: 'iris' },
+    { name: 'vr', t: S.vr[0], draw: sceneVR, tr: 'iris' },
+    { name: 'final', t: S.final[0], draw: sceneFinal, tr: 'iris' },
+  ];
+  impulses = [
+    { t: ws('l1', /^предк/) - 0.02, a: 14, d: 0.4 }, { t: S.word[0], a: 26, d: 0.6 },
+    { t: ws('l16', /^осыпа/), a: 20, d: 0.6 }, { t: ws('l16', /^плюх/), a: 16, d: 0.4 },
+    { t: L.l24.start + 0.1, a: 12, d: 0.35 },
+  ];
+  buildCaptions(); buildCues();
+  return { cues: CUES, scenes: S };
+}
+
+// ---------- субтитры (как в выпуске №1) ----------
+const CAP_SIZE = 74, CAP_MAXW = 880, CAP_Y = 1405;
+function buildCaptions() {
+  PAGES = []; setFont(CAP_SIZE);
+  for (const l of TL.lines) {
+    if (l.hide_caption) continue;
+    let cur = [];
+    const flush = () => { if (cur.length) PAGES.push({ words: cur }); cur = []; };
+    for (const w of l.words) {
+      const width = ctx.measureText([...cur, w].map(x => x.w.toUpperCase()).join('  ')).width;
+      if (cur.length && (width > CAP_MAXW || cur.length >= 3)) flush();
+      cur.push(w);
+      if (/[.!?…:]»?$/.test(w.w)) flush();
+    }
+    flush();
+  }
+  PAGES.forEach(p => p.s = p.words[0].s - 0.06);
+  PAGES.forEach((p, i) => {
+    const last = p.words[p.words.length - 1].e, next = PAGES[i + 1];
+    p.e = next ? Math.min(next.s, last + 0.55) : last + 0.8;
+  });
+}
+function drawCaptions(t) {
+  const p = PAGES.find(p => t >= p.s && t < p.e);
+  if (!p) return;
+  const sc = lerp(0.82, 1, easeOutBack(inv(p.s, p.s + 0.16, t)));
+  setFont(CAP_SIZE);
+  const words = p.words.map(w => w.w.toUpperCase());
+  const space = CAP_SIZE * 0.36;
+  let cur = -1; p.words.forEach((w, i) => { if (t >= w.s - 0.03) cur = i; });
+  const grow = words.map((w, i) => i === cur ? 1 + 0.1 * easeOutBack(inv(p.words[i].s - 0.03, p.words[i].s + 0.1, t)) : 1);
+  const widths = words.map((w, i) => (ctx.measureText(w).width + 16) * grow[i]);
+  const total = widths.reduce((a, b) => a + b, 0) + space * (words.length - 1);
+  const fit = Math.min(1, CAP_MAXW / total);
+  withT(540, CAP_Y, 0, sc * fit, () => {
+    let x = -total / 2;
+    words.forEach((w, i) => {
+      withT(x + widths[i] / 2, 0, 0, grow[i], () => text(w, 0, 0, CAP_SIZE, { fill: i === cur ? C.yellow : '#fff', sw: 16 }));
+      x += widths[i] + space;
+    });
+  });
+}
+
+// ---------- камера ----------
+function shakeAt(t) {
+  let x = 0, y = 0;
+  for (const im of impulses) {
+    if (t < im.t || t > im.t + im.d) continue;
+    const k = Math.pow(1 - (t - im.t) / im.d, 2) * im.a;
+    x += noise1((t - im.t) * 40 + im.t) * k; y += noise1((t - im.t) * 40 + im.t + 50) * k;
+  }
+  return [x, y];
+}
+
+// ---------- дети (та же конструкция, что Петя в выпуске №1) ----------
+function blinkAt(t, seed = 0) {
+  let b = 0;
+  const n0 = Math.floor((t - 0.8 - seed) / 3.1);
+  for (let n = n0 - 1; n <= n0 + 1; n++) {
+    const tn = 0.8 + seed + n * 3.1 + hash(n + seed * 7) * 1.3, d = Math.abs(t - tn);
+    if (d < 0.09) b = Math.max(b, 1 - d / 0.09);
+  }
+  return b;
+}
+function kid(t, o, seed = 0) {
+  const br = Math.sin(t * 2.6 + seed) * 0.018;
+  return Object.assign({ x: 540, y: GROUND, s: 1, rot: 0, sx: 1 + br, sy: 1 - br, lookX: 0, lookY: 0, eye: 1, pupil: 1,
+    blink: blinkAt(t, seed), happy: 0, brow: 0, mouth: 'smile', mo: 0, blush: 0, sweat: 0, shake: 0,
+    hair: 0, armsUp: 0, wave: 0, hold: 0, point: 0, walk: 0, hearts: 0, flip: 1, goggles: 0, stars: 0 }, o);
+}
+// прыжок/приземление: смещение вверх и сплющивание
+function hop(P, t, t0, d = 0.4, hgt = 160) {
+  const e = inv(t0, t0 + d, t);
+  if (e > 0 && e < 1) { const arc = Math.sin(e * Math.PI); P.y -= arc * hgt; P.sy += 0.1 * arc; P.sx -= 0.07 * arc; }
+  const l = inv(t0 + d, t0 + d + 0.28, t);
+  if (l > 0 && l < 1) { const q = Math.sin(l * Math.PI) * (1 - l) * 0.22; P.sx += q; P.sy -= q; }
+}
+function kidPoint(P, lx, ly) {
+  const c = Math.cos(P.rot), s = Math.sin(P.rot);
+  const x = lx * P.s * P.sx * P.flip, y = ly * P.s * P.sy;
+  return [P.x + x * c - y * s, P.y + x * s + y * c];
+}
+function armAngle(P, d, t) {
+  let a = lerp(Math.PI * 0.36, -Math.PI * 0.4, P.armsUp);
+  if (d === 1 && P.hold) a = lerp(a, -0.12, P.hold);
+  if (d === -1 && P.point) a = lerp(a, -Math.PI * 0.3, P.point);
+  if (d === 1 && P.wave) a = lerp(a, -Math.PI * 0.32 + Math.sin(t * 13) * 0.42, P.wave);
+  if (P.armsUp > 0.5) a += Math.sin(t * 23 + d) * 0.08 * P.armsUp;
+  return a;
+}
+function kidHand(P, d, t) {   // мировые координаты кисти (d = 1 — правая рука)
+  const a = d === 1 && P.hold ? lerp(Math.PI * 0.36, -0.12, P.hold) : armAngle(P, d, t);
+  return kidPoint(P, d * 108 + d * Math.cos(a) * 84, -165 + Math.sin(a) * 84);
+}
+
+function drawKid(P, t, look, shadow = true) {
+  const s = P.s;
+  if (shadow) {
+    const air = clamp((GROUND - P.y) / 400);
+    ctx.fillStyle = `rgba(20,30,10,${0.22 * (1 - air)})`;
+    ctx.beginPath(); ctx.ellipse(P.x, GROUND + 6, 105 * s * (1 - air * 0.5), 16 * s, 0, 0, TAU); ctx.fill();
+  }
+  const jx = P.shake ? noise1(t * 31) * P.shake : 0, jy = P.shake ? noise1(t * 29 + 9) * P.shake * 0.6 : 0;
+  ctx.save();
+  ctx.translate(P.x + jx, P.y + jy); ctx.rotate(P.rot); ctx.scale(s * P.sx * P.flip, s * P.sy);
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  // ноги
+  for (const d of [-1, 1]) {
+    const step = P.walk ? Math.sin(t * 14 + (d > 0 ? Math.PI : 0)) : 0;
+    const lift = P.walk ? Math.max(0, step) * 16 : 0, fx = step * 10 * P.walk;
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 13;
+    ctx.beginPath(); ctx.moveTo(d * 36, -45); ctx.lineTo(d * 44 + fx, -10 - lift); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(d * 56 + fx, -7 - lift, 30, 15, 0, 0, TAU);
+    ctx.fillStyle = look.shoe || look.body; ctx.fill(); ctx.lineWidth = 6; ctx.stroke();
+  }
+  // руки
+  for (const d of [-1, 1]) {
+    const a = armAngle(P, d, t), sx = d * 108, sy = -165;
+    const ex = sx + d * Math.cos(a) * 84, ey = sy + Math.sin(a) * 84;
+    const mx = sx + d * Math.cos(a - 0.35) * 46, my = sy + Math.sin(a) * 46 + 10;
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 13;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(mx, my, ex, ey); ctx.stroke();
+    ctx.beginPath(); ctx.arc(ex, ey, 17, 0, TAU); ctx.fillStyle = look.body; ctx.fill(); ctx.lineWidth = 6; ctx.stroke();
+    if (d === -1 && P.point > 0.5) {   // указательный палец
+      ctx.beginPath(); ctx.moveTo(ex - 8, ey - 10); ctx.lineTo(ex - 22, ey - 32); ctx.lineWidth = 9; ctx.stroke();
+    }
+  }
+  // косички Лизы и пучок мамы — за телом
+  if (look.hair === 'tails') {
+    for (const d of [-1, 1]) {
+      const sw = Math.sin(t * 3 + d) * 0.08 + P.hair * Math.sin(t * 30 + d) * 0.1, up = P.hair * 0.5;
+      ctx.save(); ctx.translate(d * 100, -270); ctx.rotate(d * (0.5 + up) + sw);
+      ctx.beginPath(); ctx.ellipse(d * 40, 26, 34, 52, d * -0.3, 0, TAU); ctx.fillStyle = '#6B3A2A'; ctx.fill(); stroke(7);
+      ctx.beginPath(); ctx.ellipse(d * 54, 58, 9, 16, 0, 0, TAU); ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 5; ctx.stroke();
+      ctx.restore();
+    }
+  }
+  if (look.hair === 'bun') {
+    ctx.beginPath(); ctx.arc(0, -318, 46, 0, TAU); ctx.fillStyle = '#4A2C24'; ctx.fill(); stroke(7);
+  }
+  // тело
+  ctx.beginPath(); ctx.ellipse(0, -165, 118, 138, 0, 0, TAU);
+  const g = ctx.createRadialGradient(-40, -230, 20, 0, -165, 160);
+  g.addColorStop(0, look.light); g.addColorStop(1, look.body);
+  ctx.fillStyle = g; ctx.fill(); ctx.lineWidth = 8; ctx.strokeStyle = C.ink; ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(0, -76, 64, 42, 0, 0, TAU); ctx.fillStyle = look.belly; ctx.fill();
+  // шкура у предков
+  if (look.fur) {
+    ctx.save(); ctx.beginPath(); ctx.ellipse(0, -165, 114, 134, 0, 0, TAU); ctx.clip();
+    ctx.beginPath(); ctx.moveTo(-130, -40); ctx.lineTo(70, -200); ctx.lineTo(150, -150); ctx.lineTo(150, 0); ctx.lineTo(-130, 0); ctx.closePath();
+    ctx.fillStyle = '#F2A93B'; ctx.fill(); stroke(7);
+    ctx.fillStyle = '#8A4B1E';
+    for (const [x, y, r] of [[-60, -40, 11], [-10, -80, 9], [40, -110, 10], [60, -50, 12], [10, -30, 8], [95, -90, 8], [-90, -10, 7]]) { ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.75, 0.4, 0, TAU); ctx.fill(); }
+    ctx.beginPath(); ctx.moveTo(-130, 0); for (let x = -130; x <= 150; x += 28) ctx.lineTo(x + 14, 12); ctx.lineTo(150, 0); ctx.fill();
+    ctx.restore();
+  }
+  // шарф Тёмы
+  if (look.scarf) {
+    ctx.beginPath(); ctx.moveTo(-92, -112); ctx.quadraticCurveTo(0, -78, 92, -112); ctx.lineTo(96, -88); ctx.quadraticCurveTo(0, -48, -96, -88); ctx.closePath();
+    ctx.fillStyle = look.scarf; ctx.fill(); stroke(6);
+    const fl = Math.sin(t * 6) * 6 + P.hair * Math.sin(t * 28) * 8;
+    ctx.beginPath(); ctx.moveTo(40, -80); ctx.lineTo(70 + fl, -10); ctx.lineTo(42 + fl, -4); ctx.lineTo(20, -74); ctx.closePath(); ctx.fill(); stroke(6);
+  }
+  // хохолок Тёмы
+  if (look.hair === 'tuft') {
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 9;
+    for (const [d, l] of [[-1, 40], [0, 62], [1, 44]]) {
+      const len = l + 30 * P.hair, ang = -Math.PI / 2 + d * lerp(0.5, 0.25, P.hair) + 0.25 + (P.hair ? Math.sin(t * 30 + d) * 0.06 * P.hair : 0);
+      const bx = d * 18, by = -298, ex = bx + Math.cos(ang) * len, ey = by + Math.sin(ang) * len;
+      ctx.beginPath(); ctx.moveTo(bx, by + 8); ctx.quadraticCurveTo(bx + Math.cos(ang - 0.6) * len * 0.6, by + Math.sin(ang - 0.6) * len * 0.6, ex, ey); ctx.stroke();
+    }
+  }
+  // бантики Лизы
+  if (look.hair === 'tails') for (const d of [-1, 1]) withT(d * 98, -282, d * 0.3, 1, () => {
+    ctx.fillStyle = look.bow;
+    for (const s of [-1, 1]) { ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 30, -18); ctx.lineTo(s * 30, 18); ctx.closePath(); ctx.fill(); stroke(5); }
+    ctx.beginPath(); ctx.arc(0, 0, 9, 0, TAU); ctx.fill(); stroke(5);
+  });
+  // лохматые волосы предков
+  if (look.hair === 'shaggy') {
+    ctx.beginPath(); ctx.moveTo(-104, -230);
+    for (let i = 0; i <= 8; i++) { const a = Math.PI * (1.08 + i * 0.105), r = 132 + (i % 2 ? 22 : -4) + P.hair * 18; ctx.lineTo(Math.cos(a) * r, -165 + Math.sin(a) * r * 1.08); }
+    ctx.lineTo(104, -230); ctx.quadraticCurveTo(0, -268, -104, -230); ctx.closePath();
+    ctx.fillStyle = '#4A2C24'; ctx.fill(); stroke(7);
+    ctx.beginPath(); ctx.ellipse(70, -296, 20, 9, 0.5, 0, TAU); ctx.fillStyle = '#F4F1E8'; ctx.fill(); stroke(5);   // косточка
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.arc(70 + d * 20 * Math.cos(0.5), -296 + d * 20 * Math.sin(0.5), 8, 0, TAU); ctx.fill(); stroke(4); }
+  }
+  // румянец
+  if (P.blush > 0) {
+    ctx.fillStyle = `rgba(255,110,130,${0.6 * P.blush})`;
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.ellipse(d * 80, -152, 19, 11, 0, 0, TAU); ctx.fill(); }
+  }
+  // глаза
+  const ey = -205, er = P.eye;
+  for (const d of [-1, 1]) {
+    const ex = d * 44;
+    if (P.happy) {
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 10;
+      ctx.beginPath(); ctx.arc(ex, ey + 12, 22, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+      continue;
+    }
+    const open = 1 - P.blink;
+    if (open < 0.15) {
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 8;
+      ctx.beginPath(); ctx.moveTo(ex - 26, ey + 4); ctx.quadraticCurveTo(ex, ey + 14, ex + 26, ey + 4); ctx.stroke();
+      continue;
+    }
+    ctx.save();
+    ctx.beginPath(); ctx.ellipse(ex, ey, 34 * er, 42 * er * open, 0, 0, TAU);
+    ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = C.ink; ctx.stroke(); ctx.clip();
+    const pr = 15 * P.pupil * Math.min(er, 1.2), px = ex + P.lookX * 13 * er * P.flip, py = ey + P.lookY * 16 * er;
+    ctx.beginPath(); ctx.arc(px, py, pr, 0, TAU); ctx.fillStyle = C.ink; ctx.fill();
+    ctx.beginPath(); ctx.arc(px - pr * 0.35, py - pr * 0.4, Math.max(2.5, pr * 0.32), 0, TAU); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.restore();
+  }
+  // очки Гоши
+  if (look.glasses) {
+    const gr = 36 * er + 8;
+    ctx.lineWidth = 7; ctx.strokeStyle = C.ink;
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.arc(d * 47, ey, gr, 0, TAU); ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fill(); ctx.stroke(); }
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.moveTo(d * (47 + gr), ey - 6); ctx.lineTo(d * 112, ey - 22); ctx.stroke(); }
+  }
+  // VR-очки
+  if (P.goggles > 0) withT(0, ey - (1 - P.goggles) * 160, 0, 1, () => {
+    ctx.fillStyle = '#3B3355'; rr(-112, -46, 224, 92, 30); ctx.fill(); stroke(8);
+    ctx.fillStyle = '#7CD3FF'; rr(-96, -32, 192, 52, 18); ctx.fill(); stroke(5);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; rr(-80, -26, 60, 12, 6); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-112, -10); ctx.lineTo(-122, -10); ctx.moveTo(112, -10); ctx.lineTo(122, -10); stroke(12);
+  }, P.goggles);
+  // брови
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 9;
+  const by = -262 - (er - 1) * 52 - (look.glasses ? 8 : 0);
+  for (const d of [-1, 1]) {
+    ctx.beginPath(); ctx.moveTo(d * 72, by + P.brow * 7); ctx.lineTo(d * 20, by - P.brow * 13); ctx.stroke();
+  }
+  // рот
+  const my = -140;
+  ctx.lineWidth = 8; ctx.strokeStyle = C.ink;
+  if (P.mouth === 'smile') {
+    if (P.mo < 0.15) { ctx.beginPath(); ctx.arc(0, my - 18, 32, Math.PI * 0.18, Math.PI * 0.82); ctx.stroke(); }
+    else {
+      const dd = 16 + 34 * P.mo;
+      ctx.beginPath(); ctx.moveTo(-36, my - 6); ctx.quadraticCurveTo(0, my - 2 + dd * 1.6, 36, my - 6); ctx.closePath();
+      ctx.fillStyle = '#7A2236'; ctx.fill(); ctx.save(); ctx.clip();
+      ctx.beginPath(); ctx.ellipse(0, my + dd * 0.9, 20, 12, 0, 0, TAU); ctx.fillStyle = '#FF7B8F'; ctx.fill(); ctx.restore();
+      ctx.beginPath(); ctx.moveTo(-36, my - 6); ctx.quadraticCurveTo(0, my - 2 + dd * 1.6, 36, my - 6); ctx.closePath(); ctx.stroke();
+    }
+  } else if (P.mouth === 'o') {
+    const rx = 17 + 9 * P.mo, ry = 20 + 22 * P.mo, wob = Math.sin(t * 40) * 2 * P.mo;
+    ctx.beginPath(); ctx.ellipse(0, my + ry * 0.6, rx + wob, ry - wob, 0, 0, TAU);
+    ctx.fillStyle = '#7A2236'; ctx.fill(); ctx.save(); ctx.clip();
+    ctx.beginPath(); ctx.ellipse(0, my + ry * 1.4, rx * 0.8, ry * 0.5, 0, 0, TAU); ctx.fillStyle = '#FF7B8F'; ctx.fill(); ctx.restore();
+    ctx.beginPath(); ctx.ellipse(0, my + ry * 0.6, rx + wob, ry - wob, 0, 0, TAU); ctx.stroke();
+  } else if (P.mouth === 'wavy') {
+    ctx.beginPath();
+    for (let i = 0; i <= 6; i++) { const x = -32 + i * 64 / 6, y = my + (i % 2 ? -7 : 7); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.stroke();
+  } else if (P.mouth === 'puff') {   // надул щёки, не дышит
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.arc(d * 58, my - 14, 30, 0, TAU); ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fill(); ctx.lineWidth = 5; ctx.stroke(); }
+    ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(-14, my - 10); ctx.lineTo(14, my - 10); ctx.stroke();
+  } else if (P.mouth === 'grin') {   // натянутая улыбка: страшно, но держится
+    rr(-40, my - 18, 80, 34, 14); ctx.fillStyle = '#fff'; ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-40, my - 1); ctx.lineTo(40, my - 1); for (const x of [-20, 0, 20]) { ctx.moveTo(x, my - 18); ctx.lineTo(x, my + 16); } ctx.lineWidth = 4; ctx.stroke();
+  } else {
+    ctx.beginPath(); ctx.moveTo(-26, my); ctx.lineTo(26, my); ctx.stroke();
+  }
+  // капли пота
+  if (P.sweat > 0) {
+    for (let i = 0; i < 2; i++) {
+      const ph = frac(t * 0.9 + i * 0.5), d = i ? -1 : 1;
+      const x = d * (122 + ph * 10), y = -262 + ph * 90;
+      ctx.save(); ctx.globalAlpha = P.sweat * Math.sin(ph * Math.PI); ctx.translate(x, y);
+      ctx.beginPath(); ctx.moveTo(0, -20); ctx.quadraticCurveTo(14, 2, 0, 10); ctx.quadraticCurveTo(-14, 2, 0, -20);
+      ctx.fillStyle = '#7CD3FF'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = C.ink; ctx.stroke(); ctx.restore();
+    }
+  }
+  ctx.restore();
+  // сердечки над головой
+  if (P.hearts > 0) {
+    const [hx, hy] = kidPoint(P, 0, -200);
+    for (let i = 0; i < 3; i++) {
+      const ph = frac(t * 0.6 + i / 3);
+      ctx.save(); ctx.globalAlpha = Math.sin(ph * Math.PI) * P.hearts;
+      heart(hx + (i - 1) * 100 + Math.sin(t * 2 + i * 2) * 16, hy - 140 - ph * 200, 26 + 8 * Math.sin(ph * Math.PI));
+      ctx.restore();
+    }
+  }
+}
+
+
+// ---------- мелочи для героев ----------
+// головокружение: звёздочки и спираль над головой
+function dizzy(P, t, k) {
+  if (k <= 0) return;
+  const [hx, hy] = kidPoint(P, 0, -330);
+  ctx.save(); ctx.globalAlpha *= k;
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+  ctx.beginPath();
+  for (let i = 0; i < 60; i++) { const a = i * 0.25 + t * 6, r = 6 + i * 1.3 * P.s; const x = hx + Math.cos(a) * r * 1.6, y = hy - 30 * P.s + Math.sin(a) * r * 0.5; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+  ctx.stroke(); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.stroke();
+  for (let i = 0; i < 3; i++) {
+    const a = t * 4 + i * TAU / 3;
+    star(hx + Math.cos(a) * 120 * P.s, hy - 30 * P.s + Math.sin(a) * 34 * P.s, 20 * P.s + 4, t * 3 + i, C.yellow);
+  }
+  ctx.restore();
+}
+// маленькая голова-портрет (для толпы и родословной)
+function miniHead(look, r, mood = 'smile', t = 0) {
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.fillStyle = look.body; ctx.fill(); stroke(Math.max(4, r * 0.09));
+  const e = r * 0.34;
+  if (mood === 'scared') {
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.ellipse(d * e, -r * 0.18, r * 0.24, r * 0.3, 0, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); stroke(3); ctx.beginPath(); ctx.arc(d * e, -r * 0.14, r * 0.08, 0, TAU); ctx.fillStyle = C.ink; ctx.fill(); }
+    ctx.beginPath(); ctx.ellipse(0, r * 0.45, r * 0.18, r * 0.24 + Math.sin(t * 30) * 1.5, 0, 0, TAU); ctx.fillStyle = '#7A2236'; ctx.fill(); stroke(3);
+  } else if (mood === 'uneasy') {
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.arc(d * e, -r * 0.12, r * 0.1, 0, TAU); ctx.fillStyle = C.ink; ctx.fill(); }
+    ctx.beginPath(); for (let i = 0; i <= 4; i++) { const x = -r * 0.36 + i * r * 0.18, y = r * 0.36 + (i % 2 ? -r * 0.07 : r * 0.07); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } stroke(3);
+  } else {
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.arc(d * e, -r * 0.12, r * 0.1, 0, TAU); ctx.fillStyle = C.ink; ctx.fill(); }
+    ctx.beginPath(); ctx.arc(0, r * 0.12, r * 0.3, Math.PI * 0.2, Math.PI * 0.8); stroke(3);
+  }
+}
+// глаз, которым «цепляются» за предметы
+function bigEye(t, wob = 0) {
+  ctx.beginPath(); ctx.ellipse(0, 0, 70, 46, 0, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); stroke(7);
+  ctx.save(); ctx.clip();
+  const px = 12 + Math.sin(t * 9) * 10 * wob, py = Math.cos(t * 7) * 6 * wob;
+  ctx.beginPath(); ctx.arc(px, py, 26, 0, TAU); ctx.fillStyle = '#3FA7F5'; ctx.fill(); stroke(5);
+  ctx.beginPath(); ctx.arc(px, py, 12, 0, TAU); ctx.fillStyle = C.ink; ctx.fill();
+  ctx.beginPath(); ctx.arc(px - 8, py - 9, 6, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.restore();
+}
+function house(w, h, c, roof = '#E63946') {   // домик: точка (0,0) — середина основания
+  ctx.fillStyle = c; ctx.fillRect(-w / 2, -h, w, h);
+  ctx.fillStyle = roof; ctx.beginPath(); ctx.moveTo(-w * 0.6, -h); ctx.lineTo(0, -h - w * 0.45); ctx.lineTo(w * 0.6, -h); ctx.closePath(); ctx.fill();
+  if (w > 26) { ctx.fillStyle = 'rgba(255,240,180,0.9)'; ctx.fillRect(-w * 0.22, -h * 0.62, w * 0.18, h * 0.22); ctx.fillRect(w * 0.06, -h * 0.62, w * 0.18, h * 0.22); }
+}
+
+// ---------- фоны ----------
+function cloud(x, y, s) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  ctx.beginPath(); ctx.arc(-50, 10, 40, 0, TAU); ctx.arc(0, -10, 55, 0, TAU); ctx.arc(55, 8, 42, 0, TAU); ctx.rect(-50, 10, 105, 40); ctx.fill();
+  ctx.restore();
+}
+function sun(x, y, t, c1 = '#FFE45C') {
+  const sunR = 78 + Math.sin(t * 2) * 3;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(t * 0.3); ctx.fillStyle = c1;
+  for (let i = 0; i < 12; i++) { ctx.rotate(TAU / 12); ctx.beginPath(); ctx.moveTo(sunR + 12, -10); ctx.lineTo(sunR + 42, 0); ctx.lineTo(sunR + 12, 10); ctx.closePath(); ctx.fill(); }
+  ctx.beginPath(); ctx.arc(0, 0, sunR, 0, TAU); ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(42,30,46,0.25)'; ctx.stroke();
+  ctx.restore();
+}
+function skyFill(c1, c2, y1 = GROUND) {
+  const g = ctx.createLinearGradient(0, 0, 0, y1);
+  g.addColorStop(0, c1); g.addColorStop(1, c2);
+  ctx.fillStyle = g; ctx.fillRect(-300, -300, W + 600, H + 600);
+}
+function floorFill(c1, c2, y = GROUND) {
+  const fg = ctx.createLinearGradient(0, y, 0, H); fg.addColorStop(0, c1); fg.addColorStop(1, c2);
+  ctx.fillStyle = fg; ctx.fillRect(-300, y, W + 600, H + 300 - y);
+  ctx.beginPath(); ctx.moveTo(-300, y); ctx.lineTo(W + 300, y); stroke(8);
+}
+function grassFill(t, y = GROUND, c1 = '#7AD65C', c2 = '#3F9A3A', edge = '#3E8F33') {
+  ctx.beginPath(); ctx.moveTo(-300, y + 10); ctx.quadraticCurveTo(540, y - 30, 1380, y + 10);
+  ctx.lineTo(1380, H + 400); ctx.lineTo(-300, H + 400); ctx.closePath();
+  const gg = ctx.createLinearGradient(0, y - 30, 0, H); gg.addColorStop(0, c1); gg.addColorStop(1, c2);
+  ctx.fillStyle = gg; ctx.fill(); ctx.lineWidth = 8; ctx.strokeStyle = edge; ctx.stroke();
+  for (let i = 0; i < 9; i++) {
+    const x = 60 + i * 120 + hash(i) * 40, yy = y + 70 + hash(i + 9) * 120;
+    ctx.strokeStyle = edge; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x - 10, yy - 14); ctx.lineTo(x - 4, yy); ctx.lineTo(x, yy - 18); ctx.lineTo(x + 4, yy); ctx.lineTo(x + 10, yy - 14); ctx.stroke();
+  }
+}
+function tree(x, y, s, c = '#4FB548') {
+  withT(x, y, 0, s, () => {
+    ctx.fillStyle = '#8D5A3B'; rr(-14, -120, 28, 120, 8); ctx.fill(); stroke(6);
+    ctx.fillStyle = c; ctx.beginPath(); ctx.arc(-40, -150, 56, 0, TAU); ctx.arc(40, -150, 56, 0, TAU); ctx.arc(0, -200, 66, 0, TAU); ctx.fill(); stroke(7);
+    ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.beginPath(); ctx.ellipse(-20, -228, 24, 12, -0.4, 0, TAU); ctx.fill();
+  });
+}
+
+// ---------- сцена 0: хук — ноги над пропастью ----------
+const TOWERS = [[-260, -300, 150, 150, 2.2, '#8E6CDF'], [130, -360, 190, 140, 1.8, '#5EC2F2'], [-80, 40, 160, 180, 2.5, '#FF9F1C'],
+  [260, 120, 170, 160, 2.0, '#22B8A7'], [-330, 230, 160, 140, 1.7, '#E63946'], [40, 380, 150, 130, 1.6, '#FFB547'], [-170, -620, 140, 150, 1.5, '#5CD69B']];
+function sceneHook(t) {
+  ctx.fillStyle = '#2C2A4A'; ctx.fillRect(0, 0, W, H);
+  const vp = [540, 900], zoom = 1 + t * 0.06;
+  ctx.save(); ctx.translate(vp[0], vp[1]); ctx.rotate(t * 0.12 + Math.sin(t * 1.3) * 0.03); ctx.scale(zoom, zoom);
+  // улицы далеко внизу
+  ctx.fillStyle = '#3B385E'; ctx.fillRect(-1400, -1400, 2800, 2800);
+  ctx.strokeStyle = '#55507E'; ctx.lineWidth = 46;
+  for (let i = -6; i <= 6; i++) { ctx.beginPath(); ctx.moveTo(i * 260 - 40, -1400); ctx.lineTo(i * 260 - 40, 1400); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-1400, i * 260 + 60); ctx.lineTo(1400, i * 260 + 60); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(255,225,77,0.5)'; ctx.lineWidth = 4; ctx.setLineDash([16, 16]);
+  for (let i = -6; i <= 6; i++) { ctx.beginPath(); ctx.moveTo(i * 260 - 40, -1400); ctx.lineTo(i * 260 - 40, 1400); ctx.stroke(); }
+  ctx.setLineDash([]);
+  for (let i = 0; i < 14; i++) {   // машинки
+    const lane = (i % 7) - 3, y = ((t * (120 + hash(i) * 80) + hash(i + 3) * 2400) % 2800) - 1400;
+    ctx.fillStyle = ['#FF4D6D', '#FFE14D', '#7CD3FF', '#fff'][i % 4];
+    rr(lane * 260 - 52 + (i % 2) * 22, i % 2 ? y : -y, 18, 30, 5); ctx.fill();
+  }
+  // дома в перспективе: крыша дальше от центра, чем основание
+  for (const [x, y, w, h, k, c] of TOWERS) {
+    const P = [[x, y], [x + w, y], [x + w, y + h], [x, y + h]], R = P.map(([a, b]) => [a * k, b * k]);
+    for (let i = 0; i < 4; i++) {
+      const j = (i + 1) % 4;
+      ctx.beginPath(); ctx.moveTo(...P[i]); ctx.lineTo(...P[j]); ctx.lineTo(...R[j]); ctx.lineTo(...R[i]); ctx.closePath();
+      ctx.fillStyle = mix(c, '#1A1530', 0.25 + i * 0.1); ctx.fill(); stroke(5);
+      // окна-полоски
+      ctx.strokeStyle = 'rgba(255,240,170,0.55)'; ctx.lineWidth = 6;
+      for (let f = 1; f < 6; f++) { const q = f / 6; ctx.beginPath(); ctx.moveTo(lerp(P[i][0], R[i][0], q), lerp(P[i][1], R[i][1], q)); ctx.lineTo(lerp(P[j][0], R[j][0], q), lerp(P[j][1], R[j][1], q)); ctx.stroke(); }
+    }
+    ctx.beginPath(); R.forEach((p, i) => i ? ctx.lineTo(...p) : ctx.moveTo(...p)); ctx.closePath();
+    ctx.fillStyle = mix(c, '#FFFFFF', 0.2); ctx.fill(); stroke(7);
+  }
+  ctx.restore();
+  // виньетка-воронка
+  const g = ctx.createRadialGradient(540, 900, 200, 540, 900, 1250);
+  g.addColorStop(0, 'rgba(20,10,40,0)'); g.addColorStop(1, 'rgba(20,10,40,0.85)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // ноги Тёмы свисают над пропастью (вид сверху, от первого лица)
+  for (const d of [-1, 1]) {
+    const sw = Math.sin(t * 2.4 + d) * 26 + noise1(t * 22 + d * 5) * 6, x = 540 + d * 165 + sw;
+    ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(540 + d * 150, H + 80); ctx.quadraticCurveTo(540 + d * 160, 1800, x, 1620);
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 120; ctx.stroke(); ctx.strokeStyle = '#3F6FB5'; ctx.lineWidth = 104; ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 20; ctx.beginPath(); ctx.moveTo(540 + d * 150 - 26, H + 80); ctx.quadraticCurveTo(540 + d * 160 - 26, 1800, x - 26, 1640); ctx.stroke();
+    withT(x, 1540, d * 0.1 + sw * 0.004, 1, () => {   // кроссовок сверху: носок смотрит в пропасть
+      ctx.beginPath(); ctx.moveTo(-62, 90); ctx.bezierCurveTo(-74, -20, -60, -120, 0, -126); ctx.bezierCurveTo(60, -120, 74, -20, 62, 90); ctx.closePath();
+      ctx.fillStyle = LOOK.tema.shoe; ctx.fill(); stroke(9);
+      ctx.beginPath(); ctx.moveTo(-48, -60); ctx.bezierCurveTo(-46, -100, -30, -114, 0, -116); ctx.bezierCurveTo(30, -114, 46, -100, 48, -60); ctx.quadraticCurveTo(0, -76, -48, -60); ctx.closePath();
+      ctx.fillStyle = '#F4F1E8'; ctx.fill(); stroke(6);
+      ctx.fillStyle = '#F4F1E8'; rr(-26, -50, 52, 120, 18); ctx.fill(); stroke(5);
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 6;
+      for (let i = 0; i < 4; i++) { const y = -36 + i * 26; ctx.beginPath(); ctx.moveTo(-22, y); ctx.lineTo(22, y + 14); ctx.moveTo(22, y); ctx.lineTo(-22, y + 14); ctx.stroke(); }
+    });
+  }
+  // заголовок по словам
+  const w = L.l1.words, up = i => w[i].w.toUpperCase().replace(/[!?.,]/g, '');
+  const rows = [[[0, 1], 270, 120, '#fff'], [[2, 3], 410, 120, '#fff'], [[4], 1040, 104, '#fff'], [[5], 1200, 170, C.yellow]];
+  for (const [ids, y, size, color] of rows) {
+    setFont(size);
+    const last = i => i === w.length - 1;
+    const widths = ids.map(i => ctx.measureText(up(i) + (last(i) ? '!' : '')).width), gap = size * 0.28;
+    const tot = widths.reduce((a, b) => a + b, 0) + gap * (ids.length - 1), fit = Math.min(1, 980 / tot);
+    let x = 540 - tot * fit / 2;
+    ids.forEach((i, n) => {
+      const k = pop(t, w[i].s - 0.06, 0.3), sh = last(i) ? noise1(t * 25) * 5 * k : 0;
+      withT(x + widths[n] * fit / 2 + sh, y, last(i) ? -0.05 : 0, k * fit, () => text(up(i) + (last(i) ? '!' : ''), 0, 0, size, { fill: color, sw: size * 0.16 }));
+      x += (widths[n] + gap) * fit;
+    });
+  }
+}
+
+// ---------- сцена 1: парк, знакомство ----------
+function drawWheelStatic(cx, cy, R, t, nCab = 10) {
+  // опоры
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 34;
+  for (const d of [-1, 1]) { ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + d * R * 0.62, GROUND + 10); ctx.stroke(); }
+  ctx.strokeStyle = '#E8E3F0'; ctx.lineWidth = 20;
+  for (const d of [-1, 1]) { ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + d * R * 0.62, GROUND + 10); ctx.stroke(); }
+  const rot = t * 0.08;
+  ctx.strokeStyle = 'rgba(42,30,46,0.7)'; ctx.lineWidth = 6;
+  for (let i = 0; i < 20; i++) { const a = rot + i * TAU / 20; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); ctx.stroke(); }
+  for (const [r, w, c] of [[R, 30, '#fff'], [R * 0.88, 12, '#fff']]) { ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.lineWidth = w + 12; ctx.strokeStyle = C.ink; ctx.stroke(); ctx.lineWidth = w; ctx.strokeStyle = c; ctx.stroke(); }
+  for (let i = 0; i < 20; i++) { const a = rot * 0 + i * TAU / 20 + t * 0.08; ctx.beginPath(); ctx.arc(cx + Math.cos(a) * R, cy + Math.sin(a) * R, 7, 0, TAU); ctx.fillStyle = i % 2 ? C.yellow : '#FF4D6D'; ctx.fill(); }
+  ctx.beginPath(); ctx.arc(cx, cy, 56, 0, TAU); ctx.fillStyle = C.yellow; ctx.fill(); stroke(8);
+  for (let i = 0; i < nCab; i++) {
+    const a = rot + i * TAU / nCab, x = cx + Math.cos(a) * R, y = cy + Math.sin(a) * R;
+    withT(x, y + 60, Math.sin(t * 1.5 + i) * 0.04, 0.32, () => cabinShape(C.chunk[i % 4], false));
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + 60 - 330 * 0.32); stroke(5);
+  }
+}
+// кабинка: (0,0) — центр, пол на y=190. back=true рисует только заднюю часть, false — целиком
+function cabinShape(c, back = true, glass = 'rgba(205,240,255,0.65)') {
+  if (back !== 'front') {
+    ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(-330, -230); ctx.quadraticCurveTo(0, -400, 330, -230); ctx.closePath(); ctx.fill(); stroke(9);
+    ctx.fillStyle = mix(c, '#FFFFFF', 0.25); rr(-360, -240, 720, 430, 50); ctx.fill(); stroke(9);
+    ctx.fillStyle = glass; rr(-320, -205, 640, 230, 30); ctx.fill(); stroke(6);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.moveTo(-280, -190); ctx.lineTo(-200, -190); ctx.lineTo(-290, 10); ctx.lineTo(-310, 10); ctx.closePath(); ctx.fill();
+  }
+  if (back !== true) {
+    ctx.fillStyle = c; rr(-370, 30, 740, 170, [16, 16, 50, 50]); ctx.fill(); stroke(9);
+    ctx.fillStyle = 'rgba(255,255,255,0.25)'; rr(-330, 60, 660, 18, 9); ctx.fill();
+    ctx.fillStyle = C.yellow; rr(-386, 12, 772, 34, 17); ctx.fill(); stroke(7);
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.arc(d * 250, 120, 26, 0, TAU); ctx.fillStyle = mix(c, '#000000', 0.2); ctx.fill(); stroke(5); }
+  }
+}
+function scenePark(t) {
+  skyFill('#62C2FF', '#D2F0FF');
+  sun(900, 260, t);
+  [[300, 0.9, 12], [620, 0.6, 18]].forEach(([y, s, sp], i) => cloud(((i * 600 + t * sp) % 1500) - 200, y, s));
+  tree(90, GROUND - 10, 1.1); tree(1010, GROUND - 20, 1.25, '#5CC45A');
+  drawWheelStatic(540, 640, 470, t);
+  grassFill(t);
+  // дорожка
+  ctx.fillStyle = '#F6E7CB'; ctx.beginPath(); ctx.moveTo(360, GROUND - 6); ctx.lineTo(720, GROUND - 6); ctx.lineTo(1000, H + 50); ctx.lineTo(80, H + 50); ctx.closePath(); ctx.fill(); stroke(6);
+  const t0 = S.park[0], tT = ws('l2', /^тёма/), tL = ws('l2', /^лиза/), tw = ws('l3', /^колес/);
+  // Тёма и Лиза
+  const T1 = kid(t, { x: 320, s: 0.95, mouth: 'smile', mo: 0.4, lookX: 0.5 });
+  const wT = inv(t0, t0 + 0.7, t); T1.x = lerp(-150, 320, easeOut(wT)); T1.walk = wT < 1 ? 1 : 0;
+  if (t > tT - 0.1 && t < tL) Object.assign(T1, { wave: inv(tT - 0.1, tT + 0.1, t), mo: 0.6, blush: 0.5 });
+  if (t > tw) Object.assign(T1, { lookX: 0.4, lookY: -1, mouth: 'smile', mo: 0.1, sweat: inv(tw + 0.6, tw + 1, t) * 0.6, brow: 0.3 });
+  const L1 = kid(t, { x: 760, s: 0.95, flip: -1, mouth: 'smile', mo: 0.5, lookX: 0.5 }, 1.3);
+  const wL = inv(t0 + 0.3, t0 + 1.1, t); L1.x = lerp(1230, 760, easeOut(wL)); L1.walk = wL < 1 ? 1 : 0;
+  if (t > tL - 0.1) Object.assign(L1, { wave: inv(tL - 0.1, tL + 0.1, t) * (1 - inv(tw - 0.3, tw - 0.1, t)), mo: 0.7, blush: 0.6 });
+  if (t > tw - 0.2) { Object.assign(L1, { point: 1, lookX: 0.3, lookY: -1, mouth: 'smile', mo: 0.8 }); hop(L1, t, tw - 0.1, 0.4, 90); hop(L1, t, tw + 0.6, 0.4, 90); }
+  drawKid(T1, t, LOOK.tema); drawKid(L1, t, LOOK.liza);
+  const nameTag = (str, x, y, t0, t1, color) => {
+    const k = pop(t, t0) * (1 - inv(t1, t1 + 0.25, t));
+    withT(x, y + Math.sin(t * 3) * 6, -0.05, k, () => pill(str, 64, '#fff', color));
+  };
+  nameTag('ТЁМА', 320, 790, tT - 0.05, tw - 0.3, '#1E9E6A');
+  nameTag('ЛИЗА', 760, 790, tL - 0.05, tw - 0.3, '#D0457B');
+  withT(540, 1080 - 900 + 140, 0.03, pop(t, tw - 0.08, 0.35), () => pill('КОЛЕСО ОБОЗРЕНИЯ', 56, C.yellow, C.ink));
+}
+
+// ---------- сцена 2: подъём на колесе ----------
+// мир снизу рисуется в честной перспективе: чем выше кабинка, тем дальше вниз «уезжает» земля
+const HY = 1000;   // линия горизонта (уровень глаз)
+const GROUND_ITEMS = (() => {
+  const a = [];
+  for (let i = 0; i < 26; i++) {
+    const d = 1.2 * Math.pow(1.16, i);
+    const n = 3 + Math.floor(i / 3);
+    for (let j = 0; j < n; j++) {
+      const X = (j - (n - 1) / 2) * (1400 / n) * d / 1.2 + (hash(i * 13 + j) - 0.5) * 260 * d / 1.2;
+      a.push({ d, X, kind: hash(i * 7 + j * 3) < 0.4 ? 'tree' : 'house', c: ['#FF9F1C', '#5EC2F2', '#FFE14D', '#B48CF2', '#F6E7CB'][(i + j) % 5], r: ['#E63946', '#8E6CDF', '#22B8A7'][(i * 2 + j) % 3], s: 0.7 + hash(i + j * 5) * 0.6 });
+    }
+  }
+  return a.sort((p, q) => q.d - p.d);
+})();
+function drawLand(Hc, t, pal) {
+  // земля под горизонтом
+  const g = ctx.createLinearGradient(0, HY, 0, H);
+  g.addColorStop(0, pal.far); g.addColorStop(1, pal.near);
+  ctx.fillStyle = g; ctx.fillRect(-300, HY, W + 600, H + 300 - HY);
+  // дальние холмы на горизонте
+  ctx.fillStyle = pal.hill; ctx.beginPath(); ctx.moveTo(-300, HY + 2);
+  for (let x = -300; x <= W + 300; x += 60) ctx.lineTo(x, HY - 30 - Math.abs(Math.sin(x * 0.006)) * 50);
+  ctx.lineTo(W + 300, HY + 2); ctx.closePath(); ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(42,30,46,0.5)'; ctx.stroke();
+  // дороги: линии на постоянной глубине и лучи к горизонту
+  ctx.strokeStyle = pal.road; ctx.lineCap = 'round';
+  for (const d of [2.2, 5, 11]) { const y = HY + Hc / d; if (y < H + 50) { ctx.lineWidth = 120 / d; ctx.beginPath(); ctx.moveTo(-300, y); ctx.lineTo(W + 300, y); ctx.stroke(); } }
+  for (const X of [-900, 300]) { ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(540 + X / 40, HY + Hc / 40); ctx.lineTo(540 + X / 1.1, HY + Hc / 1.1); ctx.lineWidth = 14; ctx.stroke(); }
+  // домики и деревья
+  for (const it of GROUND_ITEMS) {
+    const y = HY + Hc / it.d; if (y > H + 300 || y < HY) continue;
+    const x = 540 + it.X / it.d, s = it.s * 2.2 / it.d;
+    if (x < -200 || x > W + 200) continue;
+    withT(x, y, 0, s, () => {
+      if (it.kind === 'tree') { ctx.fillStyle = pal.tree; ctx.beginPath(); ctx.arc(0, -60, 50, 0, TAU); ctx.fill(); if (s > 0.3) stroke(5); }
+      else { house(110, 90, it.c, it.r); if (s > 0.3) { ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.strokeRect(-55, -90, 110, 90); } }
+    });
+  }
+}
+function drawRideWorld(t, k, pal) {
+  // k: 0 — кабинка внизу, 1 — на самом верху
+  const a = Math.PI / 2 - Math.PI * k, R = 1500, Hc = 230 + R * (1 - Math.sin(a)) * 1.4;
+  skyFill(pal.sky1, pal.sky2, HY);
+  if (pal.sun) sun(pal.sun[0], pal.sun[1], t, pal.sunC);
+  // облака на разной высоте: при подъёме уезжают вниз
+  for (let i = 0; i < 7; i++) {
+    const Yc = 600 + i * 520, y = HY - (Yc - Hc) / 2.6, x = ((hash(i + 2) * 1400 + t * (10 + i * 3)) % 1500) - 200;
+    if (y > -150 && y < H + 100) cloud(x, y, 0.7 + hash(i) * 0.6);
+  }
+  drawLand(Hc, t, pal);
+  // само колесо: точка подвеса кабинки неподвижна на экране
+  const hx = 540, hy = 440, cx = hx - Math.cos(a) * R, cy = hy - Math.sin(a) * R;
+  const groundY = HY + Hc / 1.15;
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 50;
+  for (const d of [-1, 1]) { ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + d * 950, groundY); ctx.stroke(); }
+  ctx.strokeStyle = '#E8E3F0'; ctx.lineWidth = 32;
+  for (const d of [-1, 1]) { ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + d * 950, groundY); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(42,30,46,0.75)'; ctx.lineWidth = 10;
+  for (let i = 0; i < 24; i++) { const b = a + i * TAU / 24; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(b) * R, cy + Math.sin(b) * R); ctx.stroke(); }
+  for (const [r, w] of [[R, 44], [R * 0.9, 18]]) { ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.lineWidth = w + 14; ctx.strokeStyle = C.ink; ctx.stroke(); ctx.lineWidth = w; ctx.strokeStyle = '#fff'; ctx.stroke(); }
+  for (let i = 0; i < 48; i++) { const b = a + i * TAU / 48; ctx.beginPath(); ctx.arc(cx + Math.cos(b) * R, cy + Math.sin(b) * R, 9, 0, TAU); ctx.fillStyle = i % 2 ? C.yellow : '#FF4D6D'; ctx.fill(); }
+  ctx.beginPath(); ctx.arc(cx, cy, 120, 0, TAU); ctx.fillStyle = C.yellow; ctx.fill(); stroke(10);
+  // соседние кабинки
+  for (let i = 1; i < 12; i++) {
+    const b = a + i * TAU / 12, x = cx + Math.cos(b) * R, y = cy + Math.sin(b) * R;
+    if (x < -500 || x > W + 500 || y < -500 || y > H + 600) continue;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + 100); stroke(10);
+    withT(x, y + 100 + 330, Math.sin(t * 1.4 + i) * 0.03, 1, () => cabinShape(C.chunk[i % 4], false));
+  }
+  ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(hx, 1000 - 360); stroke(14);
+  ctx.beginPath(); ctx.arc(hx, hy, 18, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); stroke(7);
+  return Hc;
+}
+// Тёма и Лиза в кабинке; poseT/poseL дописывают позы
+function drawCabinKids(t, sway, poseT, poseL) {
+  withT(540, 1000, sway, 1, () => {
+    cabinShape('#E63946', true);
+    const T1 = kid(t, { x: -175, y: 110, s: 1, mouth: 'smile', mo: 0.3 });
+    const L1 = kid(t, { x: 175, y: 110, s: 1, flip: -1, mouth: 'smile', mo: 0.5 }, 1.3);
+    poseT(T1); poseL(L1);
+    drawKid(L1, t, LOOK.liza, false); drawKid(T1, t, LOOK.tema, false);
+    cabinShape('#E63946', 'front');
+    // кисти поверх поручня, когда держатся
+    for (const [P, look] of [[T1, LOOK.tema], [L1, LOOK.liza]]) if (P.grip) for (const d of [-1, 1]) {
+      const [x, y] = kidHand(P, d, t);
+      ctx.beginPath(); ctx.arc(x, 30, 22, 0, TAU); ctx.fillStyle = look.body; ctx.fill(); stroke(6);
+    }
+    dizzy(T1, t, T1.dizzy || 0);
+  });
+}
+const rideK = t => easeInOut(inv(L.l5.start - 0.15, L.l6.end + 0.5, t));
+function sceneRide(t) {
+  const k = rideK(t);
+  const pal = { sky1: mix('#62C2FF', '#2F7FE0', k), sky2: '#D2F0FF', far: '#A9D99A', near: '#5DB04F', hill: '#8FC9A0', road: 'rgba(246,231,203,0.9)', tree: '#3F9A3A', sun: [880, 300 + k * 260], sunC: '#FFE45C' };
+  drawRideWorld(t, k, pal);
+  const t4L = L.l4.start, t4T = ws('l4', /^тёма/), t4p = ws('l4', /^пока/), t7 = L.l7.start - 0.1, tB = ws('l7', /^вздохн/);
+  const sway = Math.sin(t * 1.3) * 0.025 + (k > 0 && k < 1 ? Math.sin(t * 3) * 0.015 : 0);
+  drawCabinKids(t, sway, P => {
+    if (t < t4p - 0.1) { Object.assign(P, { mouth: 'smile', mo: t > t4T - 0.1 ? 0.6 : 0.3, wave: inv(t4T - 0.1, t4T + 0.1, t) * (1 - inv(t4p - 0.2, t4p, t)), lookX: -0.4 }); }
+    else if (t < L.l5.start) Object.assign(P, { lookY: 1, lookX: -0.3, mouth: 'smile', mo: 0.1, sweat: 0.3 });
+    else if (t < t7) { const q = inv(L.l5.start, t7, t); Object.assign(P, { mouth: 'wavy', eye: 1 + 0.25 * q, pupil: 1 - 0.3 * q, lookY: 1, sweat: 0.6 + 0.4 * q, brow: q, grip: 1, shake: 2 * q, hair: q * 0.5 }); }
+    else {
+      const q = inv(t7, t7 + 0.25, t);
+      Object.assign(P, { mouth: t > tB - 0.2 ? 'puff' : 'wavy', eye: 1.35, pupil: 0.55, lookY: 1, sweat: 1, brow: 1, grip: 1, shake: 4 * q, hair: 1, blink: 0, dizzy: q, blush: t > tB - 0.2 ? 0.4 : 0 });
+    }
+  }, P => {
+    if (t < t4T) Object.assign(P, { mouth: 'smile', mo: 0.9, blush: 0.8, hearts: inv(t4L, t4L + 0.3, t), wave: inv(t4L, t4L + 0.2, t) });
+    else Object.assign(P, { mouth: 'smile', mo: 0.6, blush: 0.5, lookX: t > t7 ? 1 : 0.3, lookY: -0.2, wave: t > L.l5.start && t < t7 ? 1 : 0, hearts: t > L.l5.start && t < t7 ? 1 : 0 });
+    if (t < t4T) hop(P, t, t4L - 0.05, 0.35, 50);
+    if (t > t7) Object.assign(P, { mouth: 'o', mo: 0.3, brow: 0.3 });
+  });
+  // высотомер
+  const hm = Math.round(lerp(2, 65, k));
+  withT(880, 300, 0.04, pop(t, L.l5.start - 0.1, 0.35) * (1 - inv(L.l8.start - 0.3, L.l8.start, t)), () => pill(`${hm} м`, 64, '#fff', C.ink));
+  withT(540, 300, -0.03, pop(t, t4L - 0.05, 0.35) * (1 - inv(t4T - 0.2, t4T, t)), () => pill('УРА!', 64, C.yellow, C.ink));
+  withT(540, 300, 0.03, pop(t, t4T - 0.05, 0.35) * (1 - inv(t4p + 0.6, t4p + 0.8, t)), () => pill('ТЁМА ТОЖЕ…', 56, '#fff', '#1E9E6A'));
+  // «не дыши»
+  const kd = pop(t, tB - 0.1, 0.35) * (1 - inv(L.l8.start - 0.3, L.l8.start, t));
+  withT(540, 280, Math.sin(t * 9) * 0.03, kd, () => { ctx.fillStyle = '#E63946'; rr(-360, -80, 720, 160, 80); ctx.fill(); stroke(9); text('НЕ ДЫШИТ!', 0, 4, 96, { fill: '#fff', sw: 14 }); });
+  // затемнение и вопросы
+  const dk = inv(L.l8.start - 0.3, L.l8.start + 0.1, t);
+  if (dk > 0) {
+    ctx.save(); ctx.globalAlpha = dk;
+    const g = ctx.createRadialGradient(540, 900, 140, 540, 900, 600);
+    g.addColorStop(0, 'rgba(10,4,22,0)'); g.addColorStop(0.5, 'rgba(10,4,22,0.2)'); g.addColorStop(1, 'rgba(10,4,22,0.93)');
+    ctx.fillStyle = g; ctx.fillRect(-300, -300, W + 600, H + 600);
+    ctx.restore();
+    [[300, 520, 0.25], [540, 440, 0.55], [780, 520, 0.85]].forEach(([x, y, d], i) => {
+      const kq = pop(t, L.l8.start + d, 0.3);
+      withT(x, y + Math.sin(t * 4 + i) * 10, Math.sin(t * 3 + i * 2) * 0.15, kq, () => text('?', 0, 0, 130, { fill: C.yellow, sw: 18 }));
+    });
+  }
+}
+
+// ---------- сцена 3: название ----------
+const WORD_TILES = ['АКРО', 'ФОБИЯ'];
+const tileT = i => L.l9.start + (i / 9) * Math.max(0.5, L.l9.end - L.l9.start - 0.15);
+function peak(x, y, w, h, c, snow = true) {
+  ctx.beginPath(); ctx.moveTo(x - w / 2, y); ctx.lineTo(x - w * 0.06, y - h); ctx.quadraticCurveTo(x, y - h - 14, x + w * 0.06, y - h); ctx.lineTo(x + w / 2, y); ctx.closePath();
+  ctx.fillStyle = c; ctx.fill(); stroke(8);
+  if (snow) {
+    ctx.beginPath(); ctx.moveTo(x - w * 0.06, y - h); ctx.quadraticCurveTo(x, y - h - 14, x + w * 0.06, y - h);
+    const k = 0.28; ctx.lineTo(x + w * 0.5 * k + 6, y - h * (1 - k)); ctx.lineTo(x + w * 0.08, y - h * (1 - k) + 20); ctx.lineTo(x - w * 0.05, y - h * (1 - k) - 6); ctx.lineTo(x - w * 0.18, y - h * (1 - k) + 18); ctx.lineTo(x - w * 0.5 * k - 6, y - h * (1 - k));
+    ctx.closePath(); ctx.fillStyle = '#fff'; ctx.fill(); stroke(6);
+  }
+}
+function sceneWord(t) {
+  const g = ctx.createRadialGradient(540, 700, 80, 540, 900, 1400);
+  g.addColorStop(0, '#2E6FD0'); g.addColorStop(1, '#0E1B4A');
+  ctx.fillStyle = g; ctx.fillRect(-300, -300, W + 600, H + 600);
+  ctx.save(); ctx.globalAlpha = 0.35; ctx.translate(540, 620); ctx.rotate(t * 0.2);
+  for (let i = 0; i < 16; i++) { ctx.rotate(TAU / 16); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(1800, -150); ctx.lineTo(1800, 150); ctx.closePath(); ctx.fillStyle = i % 2 ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.08)'; ctx.fill(); }
+  ctx.restore();
+  // горы и Тёма, вцепившийся в вершину
+  peak(140, 1500, 700, 520, '#4A5BA8'); peak(960, 1500, 640, 460, '#4A5BA8');
+  peak(540, 1520, 820, 560, '#6C7FD0');
+  let n = 0;
+  WORD_TILES.forEach((row, r) => {
+    const size = 136, pitch = 146, x0 = 540 - (row.length * pitch - (pitch - size)) / 2 + size / 2;
+    [...row].forEach((ch, i) => {
+      const k = pop(t, tileT(n), 0.26), sh = noise1(t * 8 + n * 3) * 3;
+      withT(x0 + i * pitch + sh, 400 + r * 170 + Math.sin(t * 3 + n * 0.6) * 5, (hash(n + 5) - 0.5) * 0.12, k, () => tile(ch, size, r ? C.chunk[3] : C.chunk[0]));
+      n++;
+    });
+  });
+  withT(540, 790, -0.03, pop(t, L.l10.start - 0.08, 0.35), () => pill('СТРАХ ВЫСОТЫ', 62, '#fff', C.ink));
+  const P = kid(t, { x: 540, y: 1150, s: 0.85, mouth: 'o', mo: 0.7, eye: 1.35, pupil: 0.5, hair: 1, shake: 5, sweat: 1, brow: 1, armsUp: 0.15, blink: 0, lookY: 1 });
+  drawKid(P, t, LOOK.tema, false);
+  // руки обнимают вершину
+  ctx.fillStyle = '#6C7FD0'; ctx.beginPath(); ctx.moveTo(540 - 60, 1110); ctx.lineTo(540, 960); ctx.lineTo(540 + 60, 1110); ctx.closePath();
+  withT(0, 0, 0, 1, () => {
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.arc(540 + d * 34, 1100, 22, 0, TAU); ctx.fillStyle = LOOK.tema.body; ctx.fill(); stroke(6); }
+  });
+  dizzy(P, t, 1);
+}
+
+// ---------- сцена 4: горы — откуда слово, сколько людей боится, «не поломка» ----------
+function iconPeak(t) {
+  ctx.save(); ctx.scale(0.42, 0.42); peak(0, 90, 260, 200, '#6C7FD0'); ctx.restore();
+  ctx.beginPath(); ctx.moveTo(0, -48); ctx.lineTo(0, -88); stroke(5);
+  ctx.beginPath(); ctx.moveTo(0, -88); ctx.lineTo(34 + Math.sin(t * 8) * 4, -78); ctx.lineTo(0, -68); ctx.closePath(); ctx.fillStyle = '#E63946'; ctx.fill(); stroke(4);
+}
+function iconScared(t) { withT(0, 0, 0, 1, () => miniHead(LOOK.tema, 48, 'scared', t)); }
+const crowdT = i => L.l12.start + 0.1 + i * Math.min(0.018, (ws('l12', /^каждый/) - L.l12.start - 0.2) / 100);
+const SCARED5 = [12, 37, 54, 68, 91];
+function scenePeaks(t) {
+  skyFill('#7FC8FF', '#E3F4FF');
+  sun(170, 330, t);
+  [[520, 0.8, 10], [760, 0.55, 16]].forEach(([y, s, sp], i) => cloud(((i * 520 + 300 + t * sp) % 1500) - 200, y, s));
+  peak(200, GROUND + 30, 900, 680, '#8FA3E8'); peak(880, GROUND + 30, 820, 760, '#7A8FDA');
+  withT(880, GROUND + 30 - 760, 0, 1, () => { ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(0, -90); stroke(6); ctx.beginPath(); ctx.moveTo(0, -90); ctx.lineTo(56 + Math.sin(t * 8) * 6, -74); ctx.lineTo(0, -58); ctx.closePath(); ctx.fillStyle = '#E63946'; ctx.fill(); stroke(5); });
+  grassFill(t);
+  // Тёма и Лиза на лугу
+  const T1 = kid(t, { x: 230, s: 0.85, mouth: 'smile', mo: 0.3, lookX: 0.6, lookY: -0.7 });
+  const L1 = kid(t, { x: 860, s: 0.85, flip: -1, mouth: 'smile', mo: 0.4, lookX: 0.6, lookY: -0.7, point: t > L.l12.start ? 1 : 0 }, 1.3);
+  if (t > ws('l12', /^пяти/) - 0.1 && t < L.l13.start) Object.assign(T1, { blush: 0.8, mouth: 'grin', sweat: 0.5 });
+  if (t > ws('l13', /^предк/)) Object.assign(T1, { mouth: 'smile', mo: 0.7, happy: 1 });
+  drawKid(T1, t, LOOK.tema); drawKid(L1, t, LOOK.liza);
+  const t12 = L.l12.start - 0.1, t13 = L.l13.start - 0.1;
+  // l11: акрон + фобос
+  if (t < t12 + 0.6) {
+    const out = i => easeIn(inv(t12 + i * 0.07, t12 + 0.45 + i * 0.07, t));
+    withT(540, 300, 0, pop(t, S.peaks[0] + 0.15, 0.35) * (1 - out(0)), () => pill('ОТКУДА НАЗВАНИЕ?', 52, '#fff', C.ink));
+    [[L.l11.start - 0.05, 'АКРОН', '= «вершина» по-гречески', C.chunk[0], iconPeak],
+     [ws('l11', /^фобос/) - 0.05, 'ФОБОС', '= «страх»', C.chunk[3], iconScared]].forEach(([t0, a, s, c, ic], i) => {
+      const k = easeOutBack(inv(t0 - 0.05, t0 + 0.3, t));
+      if (k > 0) withT(540 + (1 - k) * 700 - out(i) * 1400, 480 + i * 170, 0, 1, () => rowCard(880, a, s, c, ic, t), Math.min(1, k * 2));
+    });
+  }
+  // l12: сто человечков
+  if (t > t12 && t < t13 + 0.5) {
+    const out = easeIn(inv(t13, t13 + 0.45, t)), te = ws('l12', /^каждый/), t5 = ws('l12', /^пяти/);
+    ctx.save(); ctx.translate(0, -out * 1200);
+    ctx.fillStyle = 'rgba(30,10,40,0.2)'; rr(76, 236, 940, 760, 44); ctx.fill();
+    ctx.fillStyle = '#fff'; rr(70, 230, 940, 760, 44); ctx.fill(); stroke(8);
+    for (let i = 0; i < 100; i++) {
+      const c = i % 10, r = Math.floor(i / 10), x = 135 + c * 90, y = 300 + r * 66;
+      const k = pop(t, crowdT(i), 0.25), sc = SCARED5.includes(i) && t > t5 - 0.05;
+      const mood = sc ? 'scared' : (t > te - 0.1 && hash(i + 7) < 0.85 ? 'uneasy' : 'smile');
+      const look = sc ? LOOK.tema : { body: ['#FFB547', '#5EC2F2', '#B48CF2', '#FF8FB1'][i % 4] };
+      withT(x + (sc ? noise1(t * 30 + i) * 3 : 0), y, 0, k * (sc ? 1 + 0.25 * pop(t, t5 - 0.05) - 0.25 : 1), () => miniHead(look, 28, mood, t));
+    }
+    ctx.restore();
+    withT(540, 1060 - out * 1200, -0.02, pop(t, te - 0.1, 0.35) * (1 - inv(t5 - 0.3, t5 - 0.1, t)), () => pill('НЕМНОГО БОЯТСЯ ПОЧТИ ВСЕ', 46, '#fff', C.ink));
+    withT(540, 1060 - out * 1200, 0.02, pop(t, t5 - 0.05, 0.35), () => pill('ФОБИЯ — У 5 ИЗ 100', 56, C.yellow, C.ink));
+  }
+  // l13: не поломка, а подарок предков
+  if (t > t13) {
+    const tb = ws('l13', /^поломк/), tp = ws('l13', /^предк/);
+    withT(540, 470, 0, pop(t, ws('l13', /^страх/) - 0.1, 0.35) * (1 - inv(tp - 0.4, tp - 0.15, t)), () => {
+      ctx.fillStyle = 'rgba(30,10,40,0.2)'; rr(-316, -186, 640, 380, 40); ctx.fill();
+      ctx.fillStyle = '#fff'; rr(-320, -190, 640, 380, 40); ctx.fill(); stroke(8);
+      // гаечный ключ и шестерёнка
+      withT(-110, -20, t * 0.8, 1, () => {
+        ctx.fillStyle = '#A8B3C4'; ctx.beginPath();
+        for (let i = 0; i < 16; i++) { const a = i / 16 * TAU, r = i % 2 ? 64 : 84; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+        ctx.closePath(); ctx.fill(); stroke(6); ctx.beginPath(); ctx.arc(0, 0, 26, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); stroke(5);
+      });
+      withT(120, -20, -0.7 + Math.sin(t * 5) * 0.1, 1, () => { ctx.fillStyle = '#A8B3C4'; rr(-14, -80, 28, 150, 10); ctx.fill(); stroke(6); ctx.beginPath(); ctx.arc(0, -86, 34, 0, TAU); ctx.fill(); stroke(6); ctx.fillStyle = '#fff'; rr(-10, -126, 20, 40, 4); ctx.fill(); });
+      text('ПОЛОМКА?', 0, 140, 56, { fill: C.ink });
+      const kc = easeOutBack(inv(tb - 0.05, tb + 0.2, t));
+      if (kc > 0) withT(0, -20, 0, kc, () => cross(170, 26));
+    });
+    const kp = pop(t, tp - 0.1, 0.4);
+    withT(540, 480, Math.sin(t * 2) * 0.03, kp, () => {
+      ctx.fillStyle = 'rgba(30,10,40,0.25)'; rr(-214, -224, 440, 460, 30); ctx.fill();
+      ctx.fillStyle = '#C77D4A'; rr(-220, -230, 440, 460, 30); ctx.fill(); stroke(9);
+      ctx.fillStyle = '#F4E3C3'; rr(-180, -190, 360, 380, 16); ctx.fill(); stroke(6);
+      // портрет предка
+      const A = kid(t, { x: 0, y: 190, s: 0.95, mouth: 'smile', mo: 0.3, lookX: 0.3 }, 2.2);
+      ctx.save(); rr(-180, -190, 360, 380, 16); ctx.clip(); drawKid(A, t, LOOK.ah, false); ctx.restore();
+      rr(-180, -190, 360, 380, 16); stroke(6);
+    });
+    withT(540, 790, -0.03, pop(t, tp, 0.35), () => pill('ПОДАРОК ОТ ПРЕДКОВ', 52, C.yellow, C.ink));
+  }
+}
+
+// ---------- сцена 5: древние люди у обрыва ----------
+const EDGE = 760, PLAT = GROUND - 80, RIVER = 1800;
+function caveBg(t, crumble) {
+  skyFill('#FF9F7A', '#FFE0A8', PLAT);
+  sun(820, 330, t, '#FFF0A0');
+  // вулкан с дымком
+  ctx.fillStyle = '#A0584A'; ctx.beginPath(); ctx.moveTo(-60, PLAT - 40); ctx.lineTo(180, PLAT - 470); ctx.lineTo(300, PLAT - 470); ctx.lineTo(560, PLAT - 40); ctx.closePath(); ctx.fill(); stroke(7);
+  ctx.fillStyle = '#FF7A3D'; ctx.beginPath(); ctx.moveTo(180, PLAT - 470); ctx.lineTo(300, PLAT - 470); ctx.lineTo(280, PLAT - 420); ctx.lineTo(240, PLAT - 440); ctx.lineTo(200, PLAT - 410); ctx.closePath(); ctx.fill(); stroke(5);
+  for (let i = 0; i < 4; i++) { const ph = frac(t * 0.25 + i / 4); ctx.fillStyle = `rgba(120,100,110,${0.5 * (1 - ph)})`; ctx.beginPath(); ctx.arc(240 + ph * 120 + Math.sin(ph * 6 + i) * 20, PLAT - 500 - ph * 300, 30 + ph * 50, 0, TAU); ctx.fill(); }
+  // птеродактиль вдали
+  withT(((t * 60) % 1500) - 200, 520 + Math.sin(t * 2) * 20, 0, 0.8, () => {
+    const f = Math.sin(t * 6) * 26;
+    ctx.beginPath(); ctx.moveTo(-90, -f); ctx.quadraticCurveTo(-40, -10, 0, 0); ctx.quadraticCurveTo(40, -10, 90, -f); ctx.lineWidth = 12; ctx.strokeStyle = '#5A3B5E'; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(36, -8); ctx.lineTo(20, 4); ctx.closePath(); ctx.fillStyle = '#5A3B5E'; ctx.fill();
+  });
+  // пропасть и река
+  ctx.fillStyle = '#7A4A3A'; ctx.fillRect(EDGE - 40, PLAT, W - EDGE + 340, H - PLAT + 300);
+  ctx.fillStyle = '#B5734F'; ctx.beginPath(); ctx.moveTo(W + 300, PLAT + 60); ctx.lineTo(1010, PLAT + 60); ctx.lineTo(980, RIVER); ctx.lineTo(W + 300, RIVER); ctx.closePath(); ctx.fill(); stroke(7);
+  const wg = ctx.createLinearGradient(0, RIVER - 20, 0, H); wg.addColorStop(0, '#5EC2F2'); wg.addColorStop(1, '#2F7FC0');
+  ctx.fillStyle = wg; ctx.fillRect(EDGE - 120, RIVER - 20, W - EDGE + 420, H - RIVER + 300);
+  ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 5;
+  for (let i = 0; i < 5; i++) { const x = EDGE - 60 + ((i * 90 + t * 40) % 360); ctx.beginPath(); ctx.moveTo(x, RIVER + 20 + i * 18); ctx.lineTo(x + 40, RIVER + 20 + i * 18); ctx.stroke(); }
+  // плато с краем (часть края может обвалиться)
+  const cut = crumble ? 150 : 0;
+  ctx.beginPath(); ctx.moveTo(-300, PLAT); ctx.lineTo(EDGE - cut, PLAT); ctx.lineTo(EDGE - cut + 10, PLAT + 120); ctx.lineTo(EDGE - 40, PLAT + 260); ctx.lineTo(EDGE + 10, PLAT + 520); ctx.lineTo(EDGE - 30, H + 300); ctx.lineTo(-300, H + 300); ctx.closePath();
+  const pg = ctx.createLinearGradient(0, PLAT, 0, H); pg.addColorStop(0, '#C98B5A'); pg.addColorStop(1, '#8A5634');
+  ctx.fillStyle = pg; ctx.fill(); stroke(8);
+  ctx.fillStyle = '#7AD65C'; ctx.beginPath(); ctx.moveTo(-300, PLAT - 14); ctx.lineTo(EDGE - cut + 6, PLAT - 14); ctx.lineTo(EDGE - cut, PLAT + 22); ctx.lineTo(-300, PLAT + 22); ctx.closePath(); ctx.fill(); stroke(6);
+  ctx.strokeStyle = 'rgba(70,40,20,0.35)'; ctx.lineWidth = 6;
+  for (const [x, y] of [[120, PLAT + 200], [420, PLAT + 330], [260, PLAT + 520], [560, PLAT + 160]]) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 70, y + 10); ctx.stroke(); }
+  // папоротники
+  for (const [x, s] of [[60, 1.1], [520, 0.8]]) withT(x, PLAT - 6, 0, s, () => {
+    for (const a of [-0.9, -0.45, 0, 0.45, 0.9]) { ctx.save(); ctx.rotate(a + Math.sin(t * 1.6 + a) * 0.04); ctx.beginPath(); ctx.ellipse(0, -90, 22, 90, 0, 0, TAU); ctx.fillStyle = '#3FA35A'; ctx.fill(); stroke(5); ctx.restore(); }
+  });
+}
+function bush(x, y, s, t, berries = 1) {
+  withT(x, y, 0, s, () => {
+    ctx.fillStyle = '#4FB548'; ctx.beginPath(); ctx.arc(-50, -50, 56, 0, TAU); ctx.arc(50, -50, 56, 0, TAU); ctx.arc(0, -96, 64, 0, TAU); ctx.fill(); stroke(7);
+    for (let i = 0; i < 9; i++) {
+      if (i >= berries * 9) continue;
+      const bx = (hash(i + 3) - 0.5) * 150, by = -40 - hash(i + 8) * 100;
+      ctx.beginPath(); ctx.arc(bx, by, 13, 0, TAU); ctx.fillStyle = '#E63946'; ctx.fill(); stroke(4);
+      ctx.beginPath(); ctx.arc(bx - 4, by - 4, 4, 0, TAU); ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fill();
+    }
+  });
+}
+function sceneCave(t) {
+  const tU = ws('l15', /^ух/), tRun = ws('l15', /^бежит/), tC = ws('l16', /^осыпа/), tSp = ws('l16', /^плюх/), tA = ws('l17', /^ах/), t18 = L.l18.start - 0.1;
+  const crumbled = t > tC - 0.05;
+  caveBg(t, crumbled);
+  bush(240, PLAT, 0.9, t, t > tA + 1.2 ? lerp(1, 0.2, inv(tA + 1.2, L.l17.end, t)) : 1);
+  // обвал: кусок края с кустом и Ухом летит в реку
+  const fall = inv(tC - 0.05, tSp - 0.05, t), fk = fall * fall;
+  if (!crumbled || fall < 1) {
+    withT(0, fk * (RIVER - PLAT + 60), fk * 0.6, 1, () => {
+      withT(EDGE - 75, PLAT, 0, 1, () => {
+        if (crumbled) { ctx.beginPath(); ctx.moveTo(-75, -14); ctx.lineTo(75, -14); ctx.lineTo(80, 60); ctx.lineTo(-10, 130); ctx.lineTo(-70, 70); ctx.closePath(); ctx.fillStyle = '#C98B5A'; ctx.fill(); stroke(7); }
+        bush(30, -10, 0.75, t, 1);
+      });
+    });
+  }
+  if (crumbled && fall < 1) for (let i = 0; i < 7; i++) {   // камешки
+    const ph = inv(tC + i * 0.04, tC + 0.9 + i * 0.04, t);
+    if (ph > 0 && ph < 1) withT(EDGE - 120 + hash(i) * 120 + (hash(i + 4) - 0.5) * 80 * ph, PLAT + ph * ph * 700, ph * 6, 1, () => { ctx.beginPath(); ctx.arc(0, 0, 10 + hash(i + 2) * 12, 0, TAU); ctx.fillStyle = '#8A5634'; ctx.fill(); stroke(5); });
+  }
+  // Ух
+  const U = kid(t, { x: 300, y: PLAT, s: 0.75, mouth: 'smile', mo: 0.5, lookX: 0.8 }, 0.7);
+  const wIn = inv(S.cave[0] + 0.3, S.cave[0] + 1.3, t);
+  U.x = lerp(-150, 330, easeOut(wIn)); U.walk = wIn < 1 ? 1 : 0;
+  if (t > ws('l14', /^ягод/) - 0.1) Object.assign(U, { lookX: 1, mouth: 'smile', mo: 0.9, hearts: 0.7 * (1 - inv(tRun - 0.3, tRun, t)) });
+  if (t > tRun - 0.1) { const r = inv(tRun - 0.1, tC - 0.15, t); U.x = lerp(330, EDGE - 70, easeInOut(r)); U.walk = r < 1 ? 1.4 : 0; U.mo = 1; U.armsUp = 0.6; }
+  if (crumbled) {
+    Object.assign(U, { x: EDGE - 70 + fall * 40, mouth: 'o', mo: 1, eye: 1.4, pupil: 0.5, armsUp: 1, hair: 1, brow: 1, blink: 0, hearts: 0, rot: fall * 0.5, lookY: 1 });
+    U.y = PLAT + fk * (RIVER - PLAT + 120) - Math.sin(fall * Math.PI) * 40;
+    if (t < tC + 0.25) { U.y = PLAT - Math.sin(inv(tC - 0.05, tC + 0.25, t) * Math.PI) * 30; }
+  }
+  if (!crumbled || fall < 1) drawKid(U, t, LOOK.uh, !crumbled);
+  // всплеск и мокрый Ух
+  if (t > tSp - 0.05) {
+    const ks = inv(tSp - 0.05, tSp + 0.6, t);
+    for (let i = 0; i < 12; i++) {
+      const a = Math.PI * (1.1 + i / 11 * 0.8), r = 40 + ks * 180;
+      if (ks < 1) withT(EDGE + 40 + Math.cos(a) * r, RIVER + Math.sin(a) * r * 1.3 + ks * ks * 160, 0, 1 - ks * 0.5, () => { ctx.beginPath(); ctx.arc(0, 0, 16, 0, TAU); ctx.fillStyle = '#9BE7FF'; ctx.fill(); stroke(4); });
+    }
+    withT(EDGE + 40, RIVER - 230, -0.08, pop(t, tSp - 0.06, 0.3) * (1 - inv(tA - 0.4, tA - 0.1, t)), () => text('ПЛЮХ!', 0, 0, 120, { fill: '#fff', sw: 20 }));
+    const up = easeOutBack(inv(tSp + 0.5, tSp + 1.0, t));
+    if (up > 0) {
+      const head = kid(t, { x: EDGE + 60, y: RIVER + 230 - up * 150, s: 0.55, mouth: 'flat', brow: -0.8, eye: 0.9, lookX: -1, lookY: -0.5 }, 0.7);
+      ctx.save(); ctx.beginPath(); ctx.rect(EDGE - 200, 0, 800, RIVER + 10); ctx.clip(); drawKid(head, t, LOOK.uh, false); ctx.restore();
+      ctx.beginPath(); ctx.ellipse(EDGE + 60, RIVER + 4, 90, 14, 0, 0, TAU); ctx.strokeStyle = '#fff'; ctx.lineWidth = 6; ctx.stroke();
+      withT(EDGE + 60, RIVER - 190 + Math.sin(t * 5) * 6, 0, up, () => { ctx.beginPath(); ctx.moveTo(-20, 30); ctx.lineTo(0, -10); ctx.lineTo(20, 30); ctx.lineWidth = 8; ctx.strokeStyle = '#7CD3FF'; ctx.stroke(); });
+    }
+  }
+  // Ах: осторожно обходит край и собирает ягоды подальше
+  const A = kid(t, { x: 120, y: PLAT, s: 0.75, flip: 1, mouth: 'smile', mo: 0.2, lookX: 0.6 }, 2.2);
+  const aIn = inv(S.cave[0] + 0.6, S.cave[0] + 1.6, t);
+  A.x = lerp(-250, 130, easeOut(aIn)); A.walk = aIn < 1 ? 1 : 0;
+  if (t > tRun && t < tA) Object.assign(A, { mouth: 'o', mo: 0.5, eye: 1.2, brow: 0.6, lookX: 1 });
+  if (t > tC) Object.assign(A, { mouth: 'o', mo: 0.8, eye: 1.3, armsUp: 0.6, lookX: 1, lookY: 0.6 });
+  if (t > tA - 0.2) {
+    const q = inv(tA - 0.2, tA + 0.9, t);
+    Object.assign(A, { x: lerp(130, 360, easeInOut(q)), flip: -1, walk: q < 1 ? 0.6 : 0, sy: 0.92, armsUp: 0, mouth: 'smile', mo: 0.4, lookX: 1, lookY: 0.2, eye: 1, brow: 0 });
+    if (q >= 1) { A.hold = 1; A.mo = 0.7; A.blush = 0.6; A.hearts = inv(tA + 1.3, tA + 1.6, t); }
+  }
+  drawKid(A, t, LOOK.ah);
+  if (A.hold) { const [hx, hy] = kidHand(A, 1, t); for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(hx - 10 + i * 12, hy - 20 - (i % 2) * 12, 12, 0, TAU); ctx.fillStyle = '#E63946'; ctx.fill(); stroke(4); } }
+  // подписи
+  withT(540, 300, 0, pop(t, S.cave[0] + 0.3, 0.35) * (1 - inv(ws('l14', /^ягод/) - 0.3, ws('l14', /^ягод/) - 0.1, t)), () => pill('ДАЛЁКОЕ ПРОШЛОЕ', 56, '#fff', '#A0584A'));
+  withT(EDGE - 70, 640, 0.04, pop(t, ws('l14', /^ягод/) - 0.05, 0.35) * (1 - inv(tRun - 0.2, tRun, t)), () => pill('ЯГОДЫ!', 54, C.yellow, C.ink));
+  withT(380, 640, -0.04, pop(t, tU - 0.1, 0.35) * (1 - inv(tC - 0.1, tC + 0.1, t)), () => pill('СМЕЛЬЧАК УХ', 54, '#fff', '#C0602A'));
+  withT(400, 640, -0.03, pop(t, tA - 0.1, 0.35) * (1 - inv(t18 - 0.1, t18 + 0.1, t)), () => pill('ОСТОРОЖНЫЙ АХ', 54, '#fff', '#1E9E6A'));
+  // l18: родословная — от Аха до Тёмы
+  if (t > t18) {
+    const kp = easeOut(inv(t18, t18 + 0.35, t));
+    ctx.fillStyle = `rgba(20,10,40,${0.55 * kp})`; ctx.fillRect(-300, -300, W + 600, H + 600);
+    const heads = [LOOK.ah, { body: '#E8C35A' }, { body: '#B48CF2' }, { body: '#5EC2F2' }, LOOK.tema];
+    const xs = [150, 345, 540, 735, 930], ys = [760, 640, 760, 640, 760];
+    const tg = ws('l18', /^поколен/), tp = ws('l18', /^потомк/);
+    heads.forEach((lk, i) => {
+      const k = pop(t, t18 + 0.2 + i * Math.min(0.45, (tg - t18 + 0.6) / 5), 0.35);
+      withT(xs[i], ys[i] + Math.sin(t * 3 + i) * 6, 0, k, () => {
+        ctx.beginPath(); ctx.arc(0, 0, 92, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); stroke(8);
+        miniHead(lk, 70, 'smile', t);
+        // шапки эпох
+        if (i === 0) { ctx.fillStyle = '#4A2C24'; ctx.beginPath(); ctx.ellipse(0, -50, 64, 30, 0, Math.PI, 0); ctx.fill(); stroke(5); }
+        if (i === 1) { ctx.strokeStyle = '#3FA35A'; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(0, -10, 66, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); for (let j = 0; j < 5; j++) { const a = Math.PI * (1.2 + j * 0.15); ctx.beginPath(); ctx.ellipse(Math.cos(a) * 68, -10 + Math.sin(a) * 68, 12, 6, a + 1.2, 0, TAU); ctx.fillStyle = '#5CD69B'; ctx.fill(); stroke(3); } }
+        if (i === 2) { ctx.fillStyle = '#8E6CDF'; ctx.beginPath(); ctx.moveTo(-70, -10); ctx.quadraticCurveTo(0, -130, 70, -10); ctx.lineTo(50, -30); ctx.quadraticCurveTo(0, -90, -50, -30); ctx.closePath(); ctx.fill(); stroke(5); }
+        if (i === 3) { ctx.fillStyle = '#5A3B2E'; rr(-52, -96, 104, 50, 8); ctx.fill(); stroke(5); rr(-74, -52, 148, 14, 7); ctx.fill(); stroke(5); ctx.strokeStyle = C.ink; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-26, 26); ctx.quadraticCurveTo(0, 14, 26, 26); ctx.stroke(); }
+        if (i === 4) { ctx.strokeStyle = C.ink; ctx.lineWidth = 8; for (const d of [-1, 0, 1]) { ctx.beginPath(); ctx.moveTo(d * 12, -66); ctx.quadraticCurveTo(d * 20 - 10, -96, d * 18 + 8, -110); ctx.stroke(); } }
+      });
+      if (i < 4) withT((xs[i] + xs[i + 1]) / 2, (ys[i] + ys[i + 1]) / 2, 0, pop(t, t18 + 0.4 + i * Math.min(0.45, (tg - t18 + 0.6) / 5), 0.3), () => text('→', 0, 0, 64, { fill: '#fff', sw: 10 }));
+    });
+    withT(540, 400, 0.02, pop(t, tg - 0.3, 0.35), () => pill('ТЫСЯЧИ ПОКОЛЕНИЙ', 56, '#fff', C.ink));
+    withT(540, 1000, -0.03, pop(t, tp - 0.1, 0.35), () => pill('МЫ — ПОТОМКИ ОСТОРОЖНЫХ', 50, C.yellow, C.ink));
+  }
+}
+
+function iconBaby(scared, t) {
+  ctx.fillStyle = '#FFD9B8'; ctx.beginPath(); ctx.arc(0, 0, 54, 0, TAU); ctx.fill(); stroke(6);
+  ctx.beginPath(); ctx.moveTo(-4, -54); ctx.quadraticCurveTo(10, -76, 22, -62); stroke(5);
+  if (scared) {
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.ellipse(d * 20, -6, 13, 16, 0, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); stroke(4); ctx.beginPath(); ctx.arc(d * 20, -4, 5, 0, TAU); ctx.fillStyle = C.ink; ctx.fill(); }
+    ctx.beginPath(); ctx.ellipse(0, 28, 9, 12 + Math.sin(t * 30) * 1.5, 0, 0, TAU); ctx.fillStyle = '#7A2236'; ctx.fill(); stroke(4);
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.moveTo(d * 70, -40); ctx.lineTo(d * 84, -52); ctx.moveTo(d * 72, -20); ctx.lineTo(d * 90, -22); stroke(5); }
+  } else {
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.arc(d * 20, -2, 10, Math.PI * 1.1, Math.PI * 1.9); stroke(5); }
+    ctx.beginPath(); ctx.arc(0, 14, 16, Math.PI * 0.15, Math.PI * 0.85); stroke(5);
+    ctx.fillStyle = 'rgba(255,110,130,0.5)'; for (const d of [-1, 1]) { ctx.beginPath(); ctx.ellipse(d * 34, 12, 9, 6, 0, 0, TAU); ctx.fill(); }
+  }
+}
+// ---------- сцена 6: лаборатория — «зрительный обрыв» ----------
+const TB = { x0: 90, x1: 990, mid: 540, top: 860, deep: 1160 };
+function checker(x0, y0, x1, y1, cell, c1, c2) {
+  ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, y1 - y0); ctx.clip();
+  ctx.fillStyle = c1; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); ctx.fillStyle = c2;
+  for (let i = 0; i * cell < x1 - x0; i++) for (let j = 0; j * cell < y1 - y0; j++) if ((i + j) % 2) ctx.fillRect(x0 + i * cell, y0 + j * cell, cell, cell);
+  ctx.restore();
+}
+function drawBaby(x, y, s, t, o = {}) {   // малыш ползёт (вид сбоку)
+  const { crawl = 0, shakeNo = 0, scared = 0, flip = 1 } = o;
+  withT(x, y, 0, s, () => {
+    ctx.scale(flip, 1);
+    const ph = t * 9 * crawl;
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 12; ctx.lineCap = 'round';
+    for (const [px, d] of [[-50, 0], [40, Math.PI]]) for (const k of [0, 1]) {
+      const sw = Math.sin(ph + d + k * Math.PI) * 14 * crawl;
+      ctx.beginPath(); ctx.moveTo(px + k * 10, -40); ctx.lineTo(px + k * 10 + sw, 0); ctx.stroke();
+      ctx.beginPath(); ctx.arc(px + k * 10 + sw, 0, 11, 0, TAU); ctx.fillStyle = '#FFD9B8'; ctx.fill(); ctx.lineWidth = 5; ctx.stroke(); ctx.lineWidth = 12;
+    }
+    ctx.beginPath(); ctx.ellipse(-5, -58, 72, 40, 0, 0, TAU); ctx.fillStyle = '#9BE7FF'; ctx.fill(); stroke(6);
+    ctx.beginPath(); ctx.ellipse(-70, -66, 26, 22, 0, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); stroke(5);   // подгузник
+    withT(82, -86, shakeNo ? Math.sin(t * 16) * 0.25 * shakeNo : 0, 0.82, () => iconBaby(scared > 0.5, t));
+  });
+}
+function kitten(t, sc = 0) {
+  ctx.fillStyle = '#FF9F1C';
+  ctx.beginPath(); ctx.ellipse(-10, -40, 56, 34, 0, 0, TAU); ctx.fill(); stroke(6);
+  ctx.beginPath(); ctx.moveTo(-62, -50); ctx.quadraticCurveTo(-100, -90 + Math.sin(t * 4) * 10, -80, -110); stroke(10); ctx.strokeStyle = '#FF9F1C'; ctx.lineWidth = 5; ctx.stroke();
+  for (const x of [-40, 20]) { ctx.fillStyle = '#FF9F1C'; rr(x - 8, -20, 16, 22, 6); ctx.fill(); stroke(5); }
+  withT(48, -70, sc ? Math.sin(t * 16) * 0.2 : 0, 1, () => {
+    ctx.fillStyle = '#FF9F1C';
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.moveTo(d * 30, -20); ctx.lineTo(d * 36, -58); ctx.lineTo(d * 8, -36); ctx.closePath(); ctx.fill(); stroke(5); }
+    ctx.beginPath(); ctx.arc(0, 0, 38, 0, TAU); ctx.fill(); stroke(6);
+    for (const d of [-1, 1]) { ctx.beginPath(); ctx.ellipse(d * 14, -4, sc ? 9 : 5, sc ? 11 : 7, 0, 0, TAU); ctx.fillStyle = sc ? '#fff' : C.ink; ctx.fill(); if (sc) { stroke(3); ctx.beginPath(); ctx.arc(d * 14, -2, 4, 0, TAU); ctx.fillStyle = C.ink; ctx.fill(); } }
+    ctx.beginPath(); ctx.arc(0, 12, 5, 0, TAU); ctx.fillStyle = '#FF7B8F'; ctx.fill();
+  });
+}
+function lamb(t, sc = 0) {
+  ctx.fillStyle = '#fff';
+  for (const x of [-40, 20]) { ctx.fillStyle = C.ink; rr(x - 7, -24, 14, 26, 5); ctx.fill(); }
+  ctx.fillStyle = '#fff'; ctx.beginPath();
+  for (let i = 0; i < 9; i++) { const a = i / 9 * TAU; ctx.moveTo(-10 + Math.cos(a) * 50 + 22, -48 + Math.sin(a) * 28); ctx.arc(-10 + Math.cos(a) * 50, -48 + Math.sin(a) * 28, 22, 0, TAU); }
+  ctx.fill(); stroke(5); ctx.beginPath(); ctx.ellipse(-10, -48, 56, 32, 0, 0, TAU); ctx.fill();
+  withT(52, -72, sc ? Math.sin(t * 16) * 0.2 : 0, 1, () => {
+    ctx.beginPath(); ctx.ellipse(0, 0, 30, 36, 0.3, 0, TAU); ctx.fillStyle = '#4A4458'; ctx.fill(); stroke(5);
+    ctx.beginPath(); ctx.ellipse(-26, -12, 18, 8, 0.6, 0, TAU); ctx.fill(); stroke(4);
+    ctx.beginPath(); ctx.arc(8, -6, sc ? 8 : 5, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); ctx.beginPath(); ctx.arc(9, -5, 3, 0, TAU); ctx.fillStyle = C.ink; ctx.fill();
+  });
+}
+function sceneLab(t) {
+  ctx.fillStyle = '#D8EEF2'; ctx.fillRect(-300, -300, W + 600, H + 600);
+  ctx.strokeStyle = 'rgba(42,30,46,0.08)'; ctx.lineWidth = 4;
+  for (let x = 0; x < W; x += 90) { ctx.beginPath(); ctx.moveTo(x, -300); ctx.lineTo(x, GROUND); ctx.stroke(); }
+  for (let y = 0; y < GROUND; y += 90) { ctx.beginPath(); ctx.moveTo(-300, y); ctx.lineTo(W + 300, y); ctx.stroke(); }
+  // колбы на полке
+  ctx.fillStyle = '#B9784A'; rr(640, 520, 380, 22, 8); ctx.fill(); stroke(6);
+  [['#FF8FB1', 690], ['#5CD69B', 790], ['#FFE14D', 900]].forEach(([c, x], i) => withT(x, 520, 0, 1, () => {
+    ctx.fillStyle = 'rgba(220,245,255,0.8)'; ctx.beginPath(); ctx.moveTo(-14, -110); ctx.lineTo(14, -110); ctx.lineTo(14, -70); ctx.lineTo(40, 0); ctx.lineTo(-40, 0); ctx.lineTo(-14, -70); ctx.closePath(); ctx.fill(); stroke(5);
+    ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(-28, -30); ctx.lineTo(28, -30); ctx.lineTo(40, 0); ctx.lineTo(-40, 0); ctx.closePath(); ctx.fill(); stroke(4);
+    const ph = frac(t * 0.8 + i / 3); ctx.beginPath(); ctx.arc(Math.sin(ph * 9) * 6, -40 - ph * 90, 7 * (1 - ph) + 2, 0, TAU); ctx.fillStyle = c; ctx.fill();
+  }));
+  floorFill('#EDE5D8', '#CFC2AE');
+  // стол «зрительный обрыв»
+  const { x0, x1, mid, top, deep } = TB;
+  ctx.fillStyle = '#8D5A3B'; for (const x of [x0 + 20, mid - 14, x1 - 48]) { rr(x, top, 28, GROUND - top, 6); ctx.fill(); stroke(6); }
+  checker(x0, top + 6, mid, top + 66, 30, '#E63946', '#FFF4E8');                     // мелкая сторона — узор прямо под стеклом
+  checker(mid, deep - 30, x1, GROUND - 4, 22, '#E63946', '#FFF4E8');                  // глубокая — узор внизу, на полу
+  ctx.fillStyle = 'rgba(30,10,40,0.18)'; ctx.fillRect(mid, top + 6, x1 - mid, deep - 30 - top - 6);
+  ctx.beginPath(); ctx.moveTo(mid, top + 66); ctx.lineTo(mid, GROUND); stroke(6);
+  ctx.strokeRect(x0, top + 6, mid - x0, 60); ctx.strokeRect(mid, deep - 30, x1 - mid, GROUND - deep + 26);
+  // стекло
+  ctx.fillStyle = 'rgba(190,240,255,0.45)'; rr(x0 - 10, top - 14, x1 - x0 + 20, 20, 8); ctx.fill(); stroke(6);
+  ctx.fillStyle = 'rgba(255,255,255,0.7)'; for (const x of [200, 640, 820]) { ctx.beginPath(); ctx.moveTo(x, top - 10); ctx.lineTo(x + 50, top - 10); ctx.lineTo(x + 40, top - 2); ctx.lineTo(x - 10, top - 2); ctx.closePath(); ctx.fill(); }
+  const tO = ws('l19', /^обрыв/), tG = ws('l19', /^стекл/), tP = ws('l19', /^пропаст/), tM = ws('l20', /^мама/), tCr = ws('l20', /^ползл/);
+  withT(540, 300, 0, pop(t, tO - 0.1, 0.35), () => pill('«ЗРИТЕЛЬНЫЙ ОБРЫВ»', 56, C.yellow, C.ink));
+  withT(760, 640, 0.03, pop(t, tG - 0.1, 0.35) * (1 - inv(L.l20.start, L.l20.start + 0.2, t)), () => { pill('ПРОЧНОЕ СТЕКЛО', 40, '#fff', '#2F7FC0'); ctx.beginPath(); ctx.moveTo(0, 40); ctx.lineTo(-20, 190); stroke(6); ctx.beginPath(); ctx.moveTo(-34, 168); ctx.lineTo(-20, 196); ctx.lineTo(-4, 172); stroke(6); });
+  withT(765, 1040, 0, pop(t, tP - 0.1, 0.35) * (1 - inv(L.l20.start, L.l20.start + 0.2, t)), () => text('ПРОПАСТЬ?', 0, 0, 44, { fill: '#fff', sw: 10 }));
+  // мама зовёт с той стороны
+  const M = kid(t, { x: 965, y: GROUND + 40, s: 0.9, flip: -1, mouth: 'smile', mo: 0.6, lookX: 1, lookY: 0.4, blush: 0.5 }, 0.4);
+  if (t > L.l20.start) Object.assign(M, { armsUp: 0.3 + Math.sin(t * 4) * 0.08, mo: 0.9 });
+  drawKid(M, t, LOOK.mom);
+  if (t > tM - 0.1) withT(820, 520, 0.03, pop(t, tM - 0.1, 0.35) * (1 - inv(L.l21.start - 0.1, L.l21.start + 0.1, t)), () => {
+    ctx.fillStyle = '#fff'; rr(-170, -60, 340, 120, 50); ctx.fill(); stroke(7);
+    ctx.beginPath(); ctx.moveTo(60, 56); ctx.lineTo(110, 120); ctx.lineTo(10, 58); ctx.fillStyle = '#fff'; ctx.fill(); stroke(7); ctx.fillRect(14, 50, 90, 12);
+    text('ИДИ СЮДА!', -12, 2, 44, { fill: '#D0457B' }); heart(140, -60, 24);
+  });
+  // малыш ползёт и останавливается у края
+  const tb = L.l20.start - 0.1, stop = ws('l20', /^через/);
+  const kb = inv(tb, stop - 0.1, t), bx = lerp(170, mid - 150, easeOut(kb));
+  const no = t > tCr - 0.1 ? 1 : 0;
+  drawBaby(bx, top - 14, 1.25, t, { crawl: kb > 0 && kb < 1 ? 1 : 0, shakeNo: no, scared: t > stop ? 1 : 0 });
+  withT(bx + 80, 640, -0.05, pop(t, tCr - 0.05, 0.35) * (1 - inv(L.l21.start - 0.1, L.l21.start + 0.1, t)), () => pill('НЕТ!', 64, '#E63946', '#fff'));
+  // котёнок и ягнёнок
+  const tk = ws('l21', /^котят/), tl = ws('l21', /^ягнят/), tz = ws('l21', /^защит/);
+  if (t > L.l21.start - 0.2) {
+    const out = easeIn(inv(L.l21.start - 0.2, L.l21.start + 0.1, t));
+    withT(250, top - 14, 0, pop(t, tk - 0.08, 0.35), () => kitten(t, 1));
+    withT(400, top - 14, 0, pop(t, tl - 0.08, 0.35), () => lamb(t, 1));
+  }
+  withT(540, 520, 0, pop(t, tz - 0.3, 0.4), () => {
+    ctx.beginPath(); ctx.moveTo(0, -150); ctx.quadraticCurveTo(110, -110, 130, -110); ctx.quadraticCurveTo(130, 60, 0, 150); ctx.quadraticCurveTo(-130, 60, -130, -110); ctx.quadraticCurveTo(-110, -110, 0, -150); ctx.closePath();
+    ctx.fillStyle = '#1E9E6A'; ctx.fill(); stroke(10);
+    withT(0, -4, 0, 1, () => checkMark(70));
+  });
+  withT(540, 740, -0.02, pop(t, tz - 0.1, 0.35), () => pill('ВСТРОЕННАЯ ЗАЩИТА', 52, '#fff', '#1E9E6A'));
+}
+
+// ---------- сцена 7: смотровая площадка — почему кружится голова ----------
+function deckBg(t) {
+  skyFill('#4FA8F0', '#CDEBFF', 1300);
+  [[300, 0.9, 10], [700, 0.7, 14], [1040, 0.6, 18]].forEach(([y, s, sp], i) => cloud(((i * 430 + t * sp) % 1500) - 200, y, s));
+  // город далеко внизу
+  for (let i = 0; i < 14; i++) { const x = i * 85 - 20, h = 60 + hash(i + 2) * 120; ctx.fillStyle = ['#8FA3E8', '#A7B6EE', '#7A8FDA'][i % 3]; ctx.fillRect(x, 1210 - h, 70, h + 20); }
+  // площадка
+  floorFill('#B7C3D6', '#8C9AB0', 1240);
+  // перила
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 16; ctx.beginPath(); ctx.moveTo(-50, 1120); ctx.lineTo(W + 50, 1120); ctx.stroke();
+  ctx.strokeStyle = '#E8E3F0'; ctx.lineWidth = 8; ctx.stroke();
+  for (let x = 30; x < W; x += 110) { ctx.fillStyle = '#E8E3F0'; rr(x - 7, 1120, 14, 120, 4); ctx.fill(); stroke(5); }
+}
+function iconNear(t) { withT(-14, 0, 0, 0.55, () => bigEye(t, 0)); ctx.beginPath(); ctx.moveTo(26, 0); ctx.lineTo(44, 0); stroke(5); withT(56, 20, 0, 0.28, () => tree(0, 0, 1)); }
+function iconRail(t) {
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 14; ctx.beginPath(); ctx.moveTo(-60, -6); ctx.lineTo(60, -6); ctx.stroke(); ctx.strokeStyle = '#E8E3F0'; ctx.lineWidth = 6; ctx.stroke();
+  for (const x of [-40, 40]) { ctx.fillStyle = '#E8E3F0'; rr(x - 5, -6, 10, 56, 3); ctx.fill(); stroke(4); }
+  ctx.fillStyle = LOOK.tema.body; ctx.beginPath(); ctx.arc(0, -10, 24, 0, TAU); ctx.fill(); stroke(5);
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 4; for (let i = -1; i <= 1; i++) { ctx.beginPath(); ctx.moveTo(i * 10, -4); ctx.lineTo(i * 10, 12); ctx.stroke(); }
+}
+function iconSit(t) { const P = kid(t, { x: 0, y: 54, s: 0.32, sy: 0.75, mouth: 'smile', mo: 0.3 }, 0.2); drawKid(P, t, LOOK.tema, false); }
+function sceneDeck(t) {
+  deckBg(t);
+  const tq = L.l22.start, tN = ws('l22', /^рядом/), tF = ws('l22', /^далек/), tB = ws('l22', /^равновес/);
+  const t23 = L.l23.start - 0.1, tn = ws('l23', /^близк/), tr = ws('l23', /^перил/), ts = ws('l23', /^присядь/);
+  // l22: почему кружится голова
+  if (t < t23 + 0.5) {
+    const out = easeIn(inv(t23, t23 + 0.4, t));
+    withT(540, 290 - out * 600, 0, pop(t, tq, 0.35), () => pill('ПОЧЕМУ КРУЖИТСЯ ГОЛОВА?', 46, '#fff', C.ink));
+    [[tN, 290, 'РЯДОМ', false], [tF, 790, 'ДАЛЕКО', true]].forEach(([t0, x, lbl, far], i) => {
+      const k = pop(t, t0 - 0.1, 0.35);
+      withT(x, 600 - out * 900, 0, k, () => {
+        ctx.fillStyle = 'rgba(30,10,40,0.2)'; rr(-216, -196, 440, 400, 36); ctx.fill();
+        ctx.fillStyle = '#fff'; rr(-220, -200, 440, 400, 36); ctx.fill(); stroke(8);
+        withT(-110, -40, 0, 0.9, () => bigEye(t, far ? 1 : 0));
+        if (!far) {
+          withT(110, 40, 0, 0.55, () => tree(0, 0, 1));
+          ctx.beginPath(); ctx.moveTo(-40, -40); ctx.lineTo(80, -40); ctx.moveTo(-40, -30); ctx.lineTo(80, 10); stroke(5);
+          withT(150, -140, 0, 1, () => checkMark(30));
+        } else {
+          for (let j = 0; j < 4; j++) withT(80 + j * 34, 60 - (j % 2) * 10, 0, 0.18, () => house(110, 90, ['#FF9F1C', '#5EC2F2', '#FFE14D', '#B48CF2'][j]));
+          ctx.setLineDash([10, 12]); ctx.beginPath(); ctx.moveTo(-40, -40); ctx.lineTo(120, 40 + Math.sin(t * 8) * 10); stroke(4); ctx.setLineDash([]);
+          withT(150, -130, Math.sin(t * 6) * 0.2, 1, () => text('?', 0, 0, 80, { fill: '#E63946', sw: 12 }));
+        }
+        text(lbl, 0, 150, 46, { fill: far ? '#E63946' : '#1E9E6A' });
+      });
+    });
+    // мозг на качелях
+    const kb = pop(t, tB - 0.15, 0.35);
+    withT(540, 930 - out * 900, 0, kb, () => {
+      ctx.fillStyle = '#E8E3F0'; ctx.beginPath(); ctx.moveTo(-30, 40); ctx.lineTo(0, -6); ctx.lineTo(30, 40); ctx.closePath(); ctx.fill(); stroke(6);
+      withT(0, -10, Math.sin(t * 3) * 0.25, 1, () => {
+        ctx.fillStyle = '#8D5A3B'; rr(-200, -10, 400, 20, 8); ctx.fill(); stroke(6);
+        ctx.fillStyle = '#FF8FB1'; ctx.beginPath(); ctx.ellipse(0, -66, 86, 56, 0, 0, TAU); ctx.fill(); stroke(7);
+        ctx.strokeStyle = 'rgba(42,30,46,0.6)'; ctx.lineWidth = 5;
+        for (const [x, y] of [[-40, -90], [10, -60], [40, -96], [-20, -50]]) { ctx.beginPath(); ctx.arc(x, y, 18, 0.3, 2.6); ctx.stroke(); }
+        for (const d of [-1, 1]) { ctx.beginPath(); ctx.arc(d * 26, -70, 8, 0, TAU); ctx.fillStyle = C.ink; ctx.fill(); }
+        ctx.beginPath(); ctx.ellipse(0, -44, 8, 10, 0, 0, TAU); ctx.fillStyle = '#7A2236'; ctx.fill(); stroke(4);
+      });
+    });
+  }
+  // l23: три совета
+  if (t > t23) {
+    withT(540, 290, 0, pop(t, t23 + 0.05, 0.35), () => pill('ЕСЛИ КРУЖИТСЯ ГОЛОВА', 46, C.yellow, C.ink));
+    [[tn, 'СМОТРИ\nНА БЛИЗКОЕ', '#1E9E6A', iconNear], [tr, 'ДЕРЖИСЬ\nЗА ПЕРИЛА', '#2F7FC0', iconRail], [ts, 'ПРИСЯДЬ', '#8E6CDF', iconSit]].forEach(([t0, s, c, ic], i) => {
+      const k = pop(t, t0 - 0.15, 0.35);
+      withT(190 + i * 350, 560 + (i % 2) * 40, (i - 1) * 0.03, k, () => boxCard(320, 300, s, c, ic, t));
+    });
+  }
+  // Тёма и Лиза у перил
+  const T1 = kid(t, { x: 330, y: 1300, s: 0.95, mouth: 'wavy', eye: 1.2, pupil: 0.7, lookY: 1, lookX: 0.3, sweat: 0.7, brow: 0.6 });
+  let dz = t < t23 ? 1 : 0;
+  if (t > tn - 0.1) Object.assign(T1, { lookX: 1, lookY: 0, eye: 1.05, pupil: 1, mouth: 'flat', sweat: 0.3, brow: 0.2 });
+  if (t > tr - 0.1) Object.assign(T1, { armsUp: 0.42, mouth: 'smile', mo: 0.2, sweat: 0 });
+  if (t > ts - 0.1) { const q = easeOut(inv(ts - 0.1, ts + 0.2, t)); T1.y += 40 * q; T1.sy = lerp(T1.sy, 0.82, q); T1.armsUp = 0; T1.mo = 0.5; T1.blush = 0.5; }
+  const L1 = kid(t, { x: 760, y: 1300, s: 0.95, flip: -1, mouth: 'smile', mo: 0.5, lookX: 1, blush: 0.4 }, 1.3);
+  if (t > tn - 0.1 && t < tr) L1.wave = 1;
+  drawKid(L1, t, LOOK.liza); drawKid(T1, t, LOOK.tema);
+  dizzy(T1, t, dz * inv(L.l22.start - 0.2, L.l22.start + 0.3, t) * (1 - inv(t23 - 0.2, t23, t)));
+}
+
+// ---------- сцена 8: реальная опасность ----------
+function dangerBg(t) {
+  skyFill('#3D2C6E', '#FF9A7A', GROUND - 100);
+  for (let i = 0; i < 18; i++) { ctx.fillStyle = `rgba(255,255,255,${0.4 + 0.4 * Math.sin(t * 3 + i)})`; ctx.beginPath(); ctx.arc(hash(i) * W, hash(i + 9) * 600 + 100, 3, 0, TAU); ctx.fill(); }
+  // кран и дома
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 10;
+  ctx.beginPath(); ctx.moveTo(860, GROUND); ctx.lineTo(860, 560); ctx.lineTo(560, 560); ctx.moveTo(860, 560); ctx.lineTo(980, 560); ctx.moveTo(860, 620); ctx.lineTo(560, 560); ctx.stroke();
+  ctx.strokeStyle = '#FFB547'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(860, GROUND); ctx.lineTo(860, 560); ctx.lineTo(560, 560); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(640, 560); ctx.lineTo(640, 700 + Math.sin(t) * 10); ctx.lineWidth = 3; ctx.strokeStyle = C.ink; ctx.stroke();
+  [[-20, 230, 520, '#5B4A8A'], [200, 200, 420, '#6E5AA8'], [380, 260, 600, '#4A3C78'], [620, 220, 360, '#5B4A8A'], [830, 280, 480, '#4A3C78']].forEach(([x, w, h, c], i) => {
+    ctx.fillStyle = c; ctx.fillRect(x, GROUND - h, w, h + 20); ctx.strokeStyle = C.ink; ctx.lineWidth = 7; ctx.strokeRect(x, GROUND - h, w, h + 20);
+    for (let r = 0; r < h / 70 - 1; r++) for (let c2 = 0; c2 < w / 60 - 1; c2++) {
+      const on = hash(i * 100 + r * 10 + c2) > 0.45; ctx.fillStyle = on ? 'rgba(255,225,120,0.9)' : 'rgba(30,20,50,0.5)';
+      ctx.fillRect(x + 22 + c2 * 60, GROUND - h + 30 + r * 70, 30, 36);
+    }
+  });
+  floorFill('#5A5470', '#3A3550');
+}
+function iconNet(t) {
+  ctx.fillStyle = '#fff'; rr(-46, -56, 92, 112, 10); ctx.fill(); stroke(6);
+  ctx.save(); rr(-38, -48, 76, 96, 6); ctx.clip(); ctx.fillStyle = '#9BD4FF'; ctx.fillRect(-40, -50, 80, 100);
+  ctx.strokeStyle = 'rgba(42,30,46,0.45)'; ctx.lineWidth = 2; for (let i = -40; i < 40; i += 8) { ctx.beginPath(); ctx.moveTo(i, -50); ctx.lineTo(i, 50); ctx.moveTo(-40, i); ctx.lineTo(40, i); ctx.stroke(); }
+  const bend = Math.sin(t * 4) * 6 + 10; ctx.beginPath(); ctx.moveTo(-40, -48); ctx.quadraticCurveTo(bend, 0, -40, 48); ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.stroke();
+  ctx.restore();
+  cross(40, 10);
+}
+function iconRoof(t) {
+  ctx.fillStyle = '#A8A29E'; ctx.fillRect(-50, -6, 100, 56); ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.strokeRect(-50, -6, 100, 56);
+  ctx.fillStyle = '#E63946'; ctx.beginPath(); ctx.moveTo(-62, -6); ctx.lineTo(0, -54); ctx.lineTo(62, -6); ctx.closePath(); ctx.fill(); stroke(5);
+  ctx.fillStyle = '#FFB547'; ctx.beginPath(); ctx.moveTo(30, -60); ctx.lineTo(30, 50); stroke(5);
+  cross(40, 10);
+}
+function iconTrain(t) {
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-60, -58); ctx.lineTo(60, -58); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-10, -58); ctx.lineTo(10, -30); ctx.lineTo(-10, -30); stroke(4);
+  ctx.fillStyle = '#22B8A7'; rr(-56, -30, 112, 70, 14); ctx.fill(); stroke(6);
+  ctx.fillStyle = '#CFF2FF'; for (const x of [-40, -6, 28]) { rr(x, -18, 24, 22, 4); ctx.fill(); stroke(3); }
+  for (const x of [-30, 30]) { ctx.beginPath(); ctx.arc(x, 44, 10, 0, TAU); ctx.fillStyle = C.ink; ctx.fill(); }
+  const f = Math.sin(t * 20) > 0;
+  ctx.fillStyle = C.yellow; ctx.beginPath(); ctx.moveTo(34 + (f ? 2 : 0), -76); ctx.lineTo(16, -50); ctx.lineTo(30, -50); ctx.lineTo(18, -26); ctx.lineTo(46, -56); ctx.lineTo(32, -56); ctx.closePath(); ctx.fill(); stroke(4);
+}
+function sceneDanger(t) {
+  dangerBg(t);
+  const t25 = L.l25.start - 0.1;
+  const ko = easeOut(inv(L.l24.start, L.l24.start + 0.2, t)), o24 = easeIn(inv(t25, t25 + 0.4, t));
+  if (t >= L.l24.start && o24 < 1) withT(540, 520 - o24 * 700, -0.08, lerp(2.2, 1, ko), () => stamp('ЭТО ПРАВДА ОПАСНО', 80, '#E63946', 900), ko);
+  if (t > t25) {
+    const tn = ws('l25', /^москит/), tr = ws('l25', /^крыш/), tp = ws('l25', /^поезд/), tw = ws('l25', /^ток/);
+    [[tn, 'НЕ ОПИРАЙСЯ', 'на москитную сетку — не держит', '#E63946', iconNet], [tr, 'НЕ ЛЕЗЬ', 'на крыши и стройки', '#E07A00', iconRoof], [tp, 'НЕ ЗАБИРАЙСЯ', 'на поезда — там ток!', '#8E6CDF', iconTrain]]
+      .forEach(([t0, a, s, c, ic], i) => {
+        const k = easeOutBack(inv(t0 - 0.25, t0 + 0.1, t));
+        if (k > 0) withT(540 + (1 - k) * 700, 380 + i * 170, 0, 1, () => rowCard(920, a, s, c, ic, t), Math.min(1, k * 2));
+      });
+    const kt = easeOut(inv(tw - 0.05, tw + 0.15, t));
+    if (t > tw - 0.05) withT(560, 900, -0.1, lerp(2, 1, kt), () => stamp('ОПАСНО ДЛЯ ЖИЗНИ', 64, '#E63946', 760), kt);
+  }
+  const T1 = kid(t, { x: 280, s: 0.85, mouth: 'flat', lookX: 0.6, lookY: -0.6, brow: 0.3 });
+  const L1 = kid(t, { x: 800, s: 0.85, flip: -1, mouth: 'flat', lookX: 0.6, lookY: -0.6, point: t > L.l25.start ? 1 : 0 }, 1.3);
+  if (t > ws('l25', /^ток/)) { T1.mouth = 'o'; T1.mo = 0.4; T1.eye = 1.15; }
+  // кивают
+  for (const P of [T1, L1]) if (t > L.l25.start) P.lookY = -0.6 + Math.max(0, Math.sin(t * 6)) * 0.5;
+  drawKid(T1, t, LOOK.tema); drawKid(L1, t, LOOK.liza);
+}
+
+// ---------- сцена 9: страх лечится, VR ----------
+function sceneVR(t) {
+  ctx.fillStyle = '#FFE3C2'; ctx.fillRect(-300, -300, W + 600, H + 600);
+  ctx.fillStyle = 'rgba(255,255,255,0.3)'; for (let x = -60; x < W + 60; x += 120) ctx.fillRect(x, -300, 44, GROUND + 300);
+  floorFill('#9FC7E8', '#6E9CC4');
+  const tl = ws('l26', /^лечат/), ts = ws('l26', /^шаг/), tv = ws('l26', /^виртуальн/), te = ws('l26', /^очках/);
+  withT(540, 290, 0, pop(t, tl - 0.1, 0.35), () => pill('СТРАХ ЛЕЧИТСЯ', 56, '#fff', '#1E9E6A'));
+  // шаги: табуретка → стремянка → балкон
+  const steps = [
+    () => { ctx.fillStyle = '#C77D4A'; rr(-60, -20, 120, 20, 6); ctx.fill(); stroke(6); for (const d of [-1, 1]) { rr(d * 44 - 8, 0, 16, 70, 4); ctx.fill(); stroke(5); } },
+    () => { ctx.strokeStyle = C.ink; ctx.lineWidth = 12; ctx.beginPath(); ctx.moveTo(-50, 80); ctx.lineTo(-10, -90); ctx.lineTo(30, 80); ctx.stroke(); ctx.strokeStyle = '#FFB547'; ctx.lineWidth = 6; ctx.stroke(); for (let i = 0; i < 4; i++) { const y = 50 - i * 38; ctx.beginPath(); ctx.moveTo(-44 + i * 9, y); ctx.lineTo(24 - i * 9, y); stroke(6); } },
+    () => { ctx.fillStyle = '#A7B6EE'; ctx.fillRect(-70, -90, 140, 180); ctx.strokeStyle = C.ink; ctx.lineWidth = 6; ctx.strokeRect(-70, -90, 140, 180); ctx.fillStyle = '#E8E3F0'; ctx.fillRect(-80, 10, 160, 14); ctx.strokeRect(-80, 10, 160, 14); for (let x = -70; x <= 70; x += 28) { ctx.beginPath(); ctx.moveTo(x, 24); ctx.lineTo(x, 70); ctx.stroke(); } },
+  ];
+  const xs = [200, 540, 880];
+  steps.forEach((fn, i) => {
+    const k = pop(t, ts - 0.1 + i * 0.22, 0.35);
+    withT(xs[i], 560, 0, k, () => {
+      ctx.fillStyle = 'rgba(30,10,40,0.2)'; ctx.beginPath(); ctx.arc(6, 10, 140, 0, TAU); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 140, 0, TAU); ctx.fill(); stroke(8);
+      fn();
+      ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(-100, -100, 32, 0, TAU); ctx.fill(); text(String(i + 1), -100, -96, 42, { fill: C.yellow });
+    });
+    if (i < 2) withT((xs[i] + xs[i + 1]) / 2, 560, 0, pop(t, ts + 0.12 + i * 0.22, 0.3), () => text('→', 0, 0, 70, { fill: C.ink }));
+  });
+  // Тёма в VR-очках на доске, а в «пузыре» — доска между небоскрёбами
+  const g = easeOut(inv(te - 0.2, te + 0.2, t));
+  const P = kid(t, { x: 360, s: 0.95, mouth: 'wavy', eye: 1.1, lookY: 0.6, sweat: 0.5, armsUp: 0.5 + Math.sin(t * 3) * 0.06, goggles: g, brow: 0.4 });
+  if (t > tv + 0.6) Object.assign(P, { mouth: 'grin', sweat: 0.3 });
+  ctx.fillStyle = '#C77D4A'; rr(150, GROUND - 6, 420, 34, 10); ctx.fill(); stroke(7);
+  P.y = GROUND - 6;
+  drawKid(P, t, LOOK.tema);
+  const kb = pop(t, tv - 0.1, 0.4);
+  withT(800, 960, 0, kb, () => {
+    for (const [x, y, r] of [[-200, 130, 22], [-240, 180, 12]]) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); stroke(6); }
+    ctx.beginPath(); ctx.ellipse(0, 0, 230, 190, 0, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); stroke(8);
+    ctx.save(); ctx.beginPath(); ctx.ellipse(0, 0, 220, 180, 0, 0, TAU); ctx.clip();
+    skyFill('#4FA8F0', '#CDEBFF');
+    for (const [x, w, c] of [[-230, 150, '#7A8FDA'], [100, 160, '#8FA3E8']]) { ctx.fillStyle = c; ctx.fillRect(x, -40, w, 300); ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.strokeRect(x, -40, w, 300); }
+    ctx.fillStyle = '#C77D4A'; rr(-90, -46, 200, 16, 6); ctx.fill(); stroke(5);
+    const m = kid(t, { x: 0, y: -46, s: 0.3, mouth: 'grin', armsUp: 0.5 }, 0.3); drawKid(m, t, LOOK.tema, false);
+    ctx.restore();
+    text('VR', 150, -140, 48, { fill: '#2F7FC0', sw: 10 });
+  });
+}
+
+// ---------- сцена 10: снова на колесе + финал ----------
+function sceneFinal(t) {
+  const pal = { sky1: '#6A4FB0', sky2: '#FFB38A', far: '#C9A0A8', near: '#7A6A98', hill: '#B07FA0', road: 'rgba(255,220,180,0.8)', tree: '#5A6E78', sun: [820, 1010], sunC: '#FFD36E' };
+  drawRideWorld(t, 1, pal);
+  const tH = ws('l27', /^держит/), tS = ws('l27', /^смотрит/), tU = ws('l27', /^улыба/);
+  drawCabinKids(t, Math.sin(t * 1.3) * 0.02, P => {
+    Object.assign(P, { grip: t > tH - 0.1 ? 1 : 0, mouth: 'flat', eye: 1.1, lookY: 0.5, brow: 0.3, sweat: 0.3 });
+    if (t > tS - 0.1) Object.assign(P, { lookX: -1, lookY: -0.2, eye: 1, sweat: 0, brow: 0 });
+    if (t > tU - 0.15) Object.assign(P, { mouth: 'smile', mo: 0.6, blush: 0.8, hearts: inv(tU, tU + 0.3, t) });
+    if (t > S.end[0]) Object.assign(P, { lookX: 0, lookY: -0.4, hearts: 0 });
+  }, P => {
+    Object.assign(P, { mouth: 'smile', mo: 0.6, lookX: 1, blush: 0.5, wave: t > tS - 0.1 && t < tU + 0.6 ? 1 : 0 });
+    if (t > tU) P.happy = 1;
+  });
+  withT(540, 290, 0.03, pop(t, tU - 0.05, 0.35) * (1 - inv(S.end[0], S.end[0] + 0.3, t)), () => pill('А ВИД-ТО КРАСИВЫЙ!', 54, C.yellow, C.ink));
+  drawEnd(t);
+}
+
+// ---------- звук: метки для audio.py ----------
+function buildCues() {
+  CUES = [];
+  const cue = (t, type, o = {}) => CUES.push({ t: +t.toFixed(3), type, ...o });
+  // музыка
+  cue(0, 'music', { gain: 0, fade: 0.01 });
+  cue(S.park[0], 'music', { gain: 1, fade: 0.4 });
+  cue(L.l5.start - 0.2, 'music', { gain: 0.35, fade: 0.6 });
+  cue(L.l7.start - 0.2, 'music', { gain: 0, fade: 0.5 });
+  cue(L.l11.start, 'music', { gain: 1, fade: 1.0 });
+  cue(L.l24.start - 0.3, 'music', { gain: 0.35, fade: 0.8 });
+  cue(L.l26.start, 'music', { gain: 1, fade: 1.0 });
+  cue(TL.total - 1.6, 'music', { gain: 0, fade: 1.5 });
+  // хук: ветер над пропастью
+  cue(0, 'drone', { dur: S.park[0] + 0.2, gain: 0.6 });
+  cue(0.1, 'whistle', { dur: 1.2 });
+  L.l1.words.forEach((w, i) => cue(w.s - 0.04, i === 5 ? 'boom' : 'pop', { pitch: 1 + i * 0.06, gain: i === 5 ? 0.7 : 0.45 }));
+  // парк
+  cue(S.park[0] + 0.05, 'whoosh', { gain: 0.6 });
+  cue(ws('l2', /^тёма/) - 0.05, 'pop', { pitch: 1.1 }); cue(ws('l2', /^лиза/) - 0.05, 'pop', { pitch: 1.3 });
+  cue(ws('l3', /^колес/) - 0.1, 'sparkle', { gain: 0.6 });
+  cue(ws('l3', /^колес/) - 0.1, 'boing', { gain: 0.35 }); cue(ws('l3', /^колес/) + 0.6, 'boing', { gain: 0.35 });
+  // кабинка
+  cue(S.ride[0] + 0.05, 'whoosh', { gain: 0.6 });
+  cue(L.l4.start - 0.05, 'tada', { gain: 0.4 });
+  cue(ws('l4', /^тёма/) - 0.05, 'pop', { pitch: 1 });
+  cue(ws('l4', /^пока/) - 0.05, 'tick', { pitch: 0.8, gain: 0.4 });
+  cue(L.l5.start - 0.15, 'riser', { dur: L.l6.end + 0.5 - L.l5.start });
+  for (let i = 0; i < 12; i++) cue(L.l5.start + i * (L.l6.end + 0.4 - L.l5.start) / 12, 'tick', { pitch: 0.7 + i * 0.05, gain: 0.25 });
+  cue(L.l7.start - 0.05, 'impact', { gain: 0.4 });
+  cue(L.l7.start + 0.1, 'panic', { gain: 0.8 });
+  cue(ws('l7', /^вздохн/) - 0.1, 'stamp', { gain: 0.5 });
+  // название
+  cue(L.l8.start + 0.2, 'drumroll', { dur: S.word[0] - L.l8.start - 0.2 });
+  cue(S.word[0], 'crash', { gain: 0.6 }); cue(S.word[0], 'tada', { gain: 0.8 });
+  for (let i = 0; i < 9; i++) cue(tileT(i), 'click', { pitch: 0.9 + i * 0.05, gain: 0.3 });
+  cue(L.l10.start - 0.05, 'stamp', { gain: 0.5 });
+  // горы
+  cue(S.peaks[0] + 0.05, 'whoosh');
+  cue(L.l11.start - 0.05, 'pop', { pitch: 1 }); cue(ws('l11', /^фобос/) - 0.05, 'pop', { pitch: 1.15 });
+  cue(L.l12.start - 0.1, 'whoosh', { gain: 0.5 });
+  for (let i = 0; i < 100; i += 5) cue(crowdT(i), 'tick', { pitch: 0.9 + i * 0.006, gain: 0.22 });
+  cue(ws('l12', /^каждый/) - 0.05, 'pop', { pitch: 0.9 });
+  cue(ws('l12', /^пяти/) - 0.05, 'ding', { gain: 0.7 });
+  cue(ws('l13', /^страх/) - 0.1, 'pop', { pitch: 0.8 });
+  cue(ws('l13', /^поломк/) - 0.05, 'stamp', { gain: 0.5 });
+  cue(ws('l13', /^предк/) - 0.1, 'sparkle', { gain: 0.7 });
+  // прошлое
+  cue(S.cave[0], 'whoosh', { gain: 0.8 }); cue(S.cave[0] + 0.1, 'sparkle', { gain: 0.5 });
+  cue(ws('l14', /^ягод/) - 0.05, 'ding', { gain: 0.5 });
+  cue(ws('l15', /^ух/) - 0.1, 'pop', { pitch: 0.9 });
+  cue(ws('l15', /^бежит/) - 0.1, 'slide', { dur: 0.6, gain: 0.4 });
+  cue(ws('l16', /^осыпа/) - 0.05, 'impact', { gain: 0.5 });
+  cue(ws('l16', /^осыпа/), 'whistle', { dur: ws('l16', /^плюх/) - ws('l16', /^осыпа/) });
+  cue(ws('l16', /^плюх/) - 0.05, 'boom', { gain: 0.5 });
+  cue(ws('l16', /^плюх/) + 0.5, 'boing', { gain: 0.4 });
+  cue(ws('l17', /^ах/) - 0.1, 'pop', { pitch: 1.2 });
+  cue(ws('l17', /^ах/) + 1.3, 'sparkle', { gain: 0.5 });
+  cue(L.l18.start - 0.1, 'whoosh', { gain: 0.5 });
+  for (let i = 0; i < 5; i++) cue(L.l18.start + 0.1 + i * Math.min(0.45, (ws('l18', /^поколен/) - L.l18.start + 0.7) / 5), 'pop', { pitch: 0.9 + i * 0.1, gain: 0.5 });
+  cue(ws('l18', /^потомк/) - 0.1, 'tada', { gain: 0.5 });
+  // лаборатория
+  cue(S.lab[0] + 0.05, 'whoosh');
+  cue(ws('l19', /^обрыв/) - 0.1, 'ding', { gain: 0.5 });
+  cue(ws('l19', /^стекл/) - 0.1, 'pop', { pitch: 1.3 });
+  cue(L.l20.start, 'slide', { dur: ws('l20', /^через/) - L.l20.start, gain: 0.3 });
+  cue(ws('l20', /^ползл/) - 0.05, 'stamp', { gain: 0.45 });
+  cue(ws('l20', /^мама/) - 0.1, 'sparkle', { gain: 0.5 });
+  cue(ws('l21', /^котят/) - 0.08, 'pop', { pitch: 1.4 }); cue(ws('l21', /^ягнят/) - 0.08, 'pop', { pitch: 1.2 });
+  cue(ws('l21', /^защит/) - 0.3, 'tada', { gain: 0.5 });
+  // смотровая
+  cue(S.deck[0] + 0.05, 'whoosh');
+  cue(L.l22.start - 0.05, 'slide', { dur: 0.8, gain: 0.35 });
+  cue(ws('l22', /^рядом/) - 0.1, 'pop', { pitch: 1.1 }); cue(ws('l22', /^далек/) - 0.1, 'pop', { pitch: 0.9 });
+  cue(ws('l22', /^равновес/) - 0.15, 'boing', { gain: 0.4 });
+  cue(L.l23.start - 0.05, 'whoosh', { gain: 0.5 });
+  ['близк', 'перил', 'присядь'].forEach((w, i) => cue(ws('l23', new RegExp('^' + w)) - 0.15, 'pop', { pitch: 1 + i * 0.12 }));
+  cue(ws('l23', /^присядь/) + 0.2, 'sparkle', { gain: 0.5 });
+  // опасность
+  cue(S.danger[0] + 0.05, 'whoosh');
+  cue(L.l24.start + 0.05, 'stamp', { gain: 0.6 });
+  ['москит', 'крыш', 'поезд'].forEach((w, i) => cue(ws('l25', new RegExp('^' + w)) - 0.25, 'pop', { pitch: 1 + i * 0.12 }));
+  cue(ws('l25', /^ток/) - 0.05, 'impact', { gain: 0.35 });
+  // лечение
+  cue(S.vr[0] + 0.05, 'whoosh');
+  cue(ws('l26', /^лечат/) - 0.1, 'ding', { gain: 0.6 });
+  for (let i = 0; i < 3; i++) cue(ws('l26', /^шаг/) - 0.1 + i * 0.22, 'boing', { gain: 0.3 });
+  cue(ws('l26', /^виртуальн/) - 0.1, 'sparkle', { gain: 0.6 });
+  // финал
+  cue(S.final[0] + 0.05, 'whoosh');
+  cue(ws('l27', /^улыба/) - 0.05, 'sparkle', { gain: 0.7 });
+  cue(ws('l28', /^фобия/) - 0.05, 'tada', { gain: 0.6 });
+  cue(ws('l28', /^какую/) - 0.05, 'pop', { pitch: 1.1 });
+  cue(ws('l28', /^пиши/) - 0.05, 'pop', { pitch: 1.3 });
+  CUES.sort((a, b) => a.t - b.t);
+}
+
+function drawEnd(t) {
+  if (t < S.end[0]) return;
+  for (let i = 0; i < 70; i++) {
+    const st = S.end[0] + 0.2 + hash(i + 50) * 1.2, sp = 260 + hash(i + 90) * 260;
+    if (t < st) continue;
+    const y = ((t - st) * sp) % 2200 - 120, x = hash(i) * W + Math.sin(t * 2 + i) * 30;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(t * (2 + hash(i + 7) * 4) + i); ctx.scale(1, Math.sin(t * 6 + i));
+    ctx.fillStyle = ['#FF4D6D', '#FFE14D', '#22B8A7', '#8E6CDF', '#FF9F1C', '#FFFFFF'][i % 6];
+    ctx.fillRect(-11, -6, 22, 12); ctx.restore();
+  }
+  const kp = pop(t, ws('l28', /^фобия/) - 0.08, 0.4);
+  withT(540, 330, -0.04 + Math.sin(t * 2.2) * 0.02, kp, () => {
+    ctx.fillStyle = 'rgba(30,10,40,0.25)'; rr(-414, -80, 840, 170, 85); ctx.fill();
+    ctx.fillStyle = C.chunk[0]; rr(-420, -86, 840, 170, 85); ctx.fill(); stroke(9);
+    text('ФОБИЯ №3 ИЗ 100', 0, 2, 82, { fill: '#fff', sw: 14 });
+  });
+  const tq = ws('l28', /^какую/);
+  [[-290, 0.0, 0.1], [0, 0.12, -0.06], [290, 0.24, 0.08]].forEach(([dx, d, rot], i) => {
+    const k = pop(t, tq - 0.05 + d, 0.35);
+    withT(540 + dx, 560 + Math.sin(t * 3 + i) * 10, rot + Math.sin(t * 2 + i) * 0.04, k, () => {
+      ctx.fillStyle = '#fff'; rr(-105, -120, 210, 240, 30); ctx.fill(); stroke(8);
+      ctx.fillStyle = [C.chunk[3], C.chunk[1], C.chunk[2]][i]; rr(-80, -95, 160, 190, 20); ctx.fill();
+      text('?', 0, 6, 140, { fill: '#fff', sw: 16 });
+    });
+  });
+  const tc = ws('l28', /^пиши/);
+  const kc = pop(t, tc - 0.05, 0.35), bob = Math.abs(Math.sin((t - tc) * 6)) * 18;
+  withT(540, 790 - bob * 0.3, 0, kc, () => {
+    ctx.beginPath(); ctx.moveTo(-200, 40); ctx.lineTo(-235, 100); ctx.lineTo(-140, 50); ctx.closePath(); ctx.fillStyle = '#fff'; ctx.fill(); stroke(7);
+    ctx.fillStyle = '#fff'; rr(-330, -58, 660, 116, 58); ctx.fill(); stroke(7);
+    ctx.fillRect(-215, 40, 85, 20);
+    text('ПИШИ В КОММЕНТЫ', -36, 4, 50, { fill: C.ink, maxW: 500 });
+    withT(262, 4 + Math.sin(t * 9) * 8, 0, 1, () => {
+      ctx.beginPath(); ctx.moveTo(-13, -34); ctx.lineTo(13, -34); ctx.lineTo(13, 0); ctx.lineTo(30, 0); ctx.lineTo(0, 34); ctx.lineTo(-30, 0); ctx.lineTo(-13, 0); ctx.closePath();
+      ctx.fillStyle = C.red; ctx.fill(); stroke(6);
+    });
+  });
+}
+
+function drawBadge(t) {
+  const k = pop(t, S.park[0] + 0.4, 0.4) * (1 - inv(S.end[0], S.end[0] + 0.25, t));
+  withT(540, 172, 0, k, () => {
+    setFont(40); const w = ctx.measureText('100 ФОБИЙ · №3').width + 70;
+    ctx.fillStyle = 'rgba(25,12,45,0.72)'; rr(-w / 2, -36, w, 72, 36); ctx.fill();
+    ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.stroke();
+    text('100 ФОБИЙ · №3', 0, 2, 40, { fill: '#fff' });
+  });
+}
+
+function drawScene(i, t) {
+  const [sx, sy] = shakeAt(t);
+  ctx.save(); ctx.translate(sx, sy); SCENES[i].draw(t); ctx.restore();
+}
+function renderFrame(t) {
+  T = t;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+  ctx.clearRect(0, 0, W, H);
+  let i = 0; SCENES.forEach((s, n) => { if (t >= s.t) i = n; });
+  const sc = SCENES[i], k = inv(sc.t, sc.t + 0.45, t);
+  if (sc.tr === 'swirl' && k < 1) { /* выше */ } else if (i > 0 && sc.tr === 'iris' && k < 1) {
+    drawScene(i - 1, t);
+    const cx = 540, cy = 1000, r = easeInOut(k) * 2300 + 1;
+    ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.clip(); drawScene(i, t); ctx.restore();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.lineWidth = 24; ctx.strokeStyle = '#fff'; ctx.stroke();
+  } else drawScene(i, t);
+  if (i > 0 && sc.tr === 'swirl' && k < 1) {   // «машина времени»: спираль затягивает старую сцену
+    const kk = easeInOut(k);
+    ctx.save(); ctx.translate(540, 900); ctx.rotate(kk * 3); ctx.scale(1 - kk * 0.9, 1 - kk * 0.9); ctx.translate(-540, -900); drawScene(i - 1, t); ctx.restore();
+    ctx.save(); ctx.beginPath(); ctx.arc(540, 900, kk * 2300 + 1, 0, TAU); ctx.clip(); drawScene(i, t); ctx.restore();
+    ctx.save(); ctx.translate(540, 900); ctx.rotate(-t * 4); ctx.globalAlpha = 1 - kk;
+    for (let j = 0; j < 8; j++) { ctx.rotate(TAU / 8); ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(400, -200, 900, 200); ctx.lineWidth = 30; ctx.strokeStyle = j % 2 ? '#FFE14D' : '#8E6CDF'; ctx.stroke(); }
+    ctx.restore();
+  }
+  if (sc.tr === 'flash') { const f = 1 - inv(sc.t, sc.t + 0.4, t); if (f > 0) { ctx.fillStyle = `rgba(255,255,255,${f})`; ctx.fillRect(0, 0, W, H); } }
+  drawBadge(t);
+  drawCaptions(t);
+}
+
+async function ready() {
+  await Promise.all(['900 40px RubikC', '900 40px RubikL', '700 40px RubikC', '700 40px RubikL'].map(f => document.fonts.load(f)));
+  return document.fonts.check('900 40px RubikC');
+}
+window.setup = setup; window.renderFrame = renderFrame; window.ready = ready;
+
+// предпросмотр в обычном браузере: ?preview
+if (location.search.includes('preview')) {
+  fetch('build/timeline.json').then(r => r.json()).then(async tl => {
+    await ready(); setup(tl);
+    const t0 = performance.now();
+    const loop = () => { renderFrame(((performance.now() - t0) / 1000) % tl.total); requestAnimationFrame(loop); };
+    loop();
+  });
+}
+</script>
+</body>
+</html>
