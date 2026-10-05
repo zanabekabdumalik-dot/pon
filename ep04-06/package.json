@@ -1,0 +1,14 @@
+{
+  "name": "fobiya-04-06",
+  "version": "1.0.0",
+  "description": "Мультик: три фобии в одном ролике — страх фильмов, страх темноты, страх грозы (№4–6 из 100)",
+  "scripts": {
+    "build": "./build.sh",
+    "render": "node render.js"
+  },
+  "dependencies": {
+    "@fontsource/rubik": "^5.3.0",
+    "playwright-core": "^1.63.0"
+  },
+  "private": true
+}
