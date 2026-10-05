@@ -168,7 +168,7 @@ function buildCues() {
   cue(L.l10.start + 0.3, 'music', { gain: 1, fade: 1.2 });
   cue(TL.total - 1.6, 'music', { gain: 0, fade: 1.5 });
   // хук
-  cue(0, 'drone', { dur: S.meet[0] + 0.2 });
+  cue(0, 'drone', { dur: S.meet[0] + 0.2, gain: 0.7 });
   L.l1.words.forEach((w, i) => cue(w.s - 0.04, i === 2 ? 'boom' : 'pop', { pitch: 1 + i * 0.06, gain: i === 2 ? 0.7 : 0.5 }));
   // знакомство
   cue(S.meet[0] + 0.02, 'boing', { gain: 0.6 }); cue(S.meet[0] + 0.55, 'thud', { gain: 0.5 });
@@ -179,7 +179,7 @@ function buildCues() {
   // паника
   cue(L.l5.start, 'riser', { dur: L.l6.start - L.l5.start });
   cue(L.l6.start - 0.5, 'whistle', { dur: 0.45, gain: 0.6 });
-  cue(L.l6.start - 0.04, 'impact', { gain: 0.8 });
+  cue(L.l6.start - 0.04, 'impact', { gain: 0.45 });
   cue(L.l7.start - 0.05, 'panic');
   // барабанная дробь → слово
   cue(L.l8.sentences[1][0] - 0.1, 'drumroll', { dur: S.word[0] - L.l8.sentences[1][0] + 0.1 });
