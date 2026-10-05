@@ -4,11 +4,13 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-VOICE=voices/ru-irinia-medium.onnx
-if [ ! -f "$VOICE" ]; then
+VOICE=$(python3 -c "import json; print(json.load(open('script.json'))['voice'])")
+if [ ! -f "voices/$VOICE.onnx" ]; then
+  # голоса Piper, зеркало на GitHub (sherpa-onnx): ru_RU-irina-medium, ru_RU-dmitri-medium, ...
   mkdir -p voices build
-  curl -sSL -o build/voice.tar.gz https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-ru-irinia-medium.tar.gz
-  tar xzf build/voice.tar.gz -C voices
+  curl -sSL -o build/voice.tar.bz2 "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-$VOICE.tar.bz2"
+  tar xjf build/voice.tar.bz2 -C build
+  mv "build/vits-piper-$VOICE/$VOICE.onnx" "build/vits-piper-$VOICE/$VOICE.onnx.json" voices/
 fi
 [ -d node_modules ] || npm install --silent
 

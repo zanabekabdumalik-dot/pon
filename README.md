@@ -3,7 +3,8 @@
 ## Выпуск №1 — гиппопотомонстросесквиппедалиофобия (боязнь длинных слов)
 
 Готовый ролик: [`ep01/out/fobiya-01-boyazn-dlinnyh-slov.mp4`](ep01/out/fobiya-01-boyazn-dlinnyh-slov.mp4)
-— вертикальное видео 1080×1920, 30 к/с, 57 с, H.264 + AAC, громкость −14 LUFS (стандарт YouTube).
+— вертикальное видео 1080×1920, 30 к/с, 63 с, H.264 + AAC. Озвучка — мягкий спокойный женский голос,
+громкость −16 LUFS (чуть тише стандартных −14, чтобы детям было комфортнее слушать).
 
 Герой — Петя, который боится длинных слов. Сюжет: короткие слова Петя любит → падает
 «ДОСТОПРИМЕЧАТЕЛЬНОСТЬ» → барабанная дробь → название фобии из 35 букв → Петя в обмороке →
@@ -20,8 +21,8 @@
 
 | Файл | Что делает |
 |---|---|
-| `ep01/script.json` | Текст озвучки по репликам и паузы |
-| `ep01/tts.py` | Озвучка голосом [Piper](https://github.com/rhasspy/piper) (ru, irina), тайминги фраз и слов → `build/timeline.json` |
+| `ep01/script.json` | Текст озвучки по репликам, паузы, голос, темп (`length_scale`) и обработка голоса (`voice_fx`) |
+| `ep01/tts.py` | Озвучка голосом [Piper](https://github.com/rhasspy/piper) (`ru_RU-irina-medium`) и смягчение тембра по `voice_fx`, тайминги фраз и слов → `build/timeline.json` |
 | `ep01/anim.html` | Вся анимация на canvas; кадр — функция от времени, сцены привязаны к таймингам реплик |
 | `ep01/render.js` | Покадровый рендер в headless Chromium → `build/video.mp4` и метки звуков `build/cues.json` |
 | `ep01/audio.py` | Музыка и звуковые эффекты, синтезированные кодом, сведение с голосом и приглушение под речью |
@@ -40,5 +41,10 @@ pip install piper-tts numpy scipy
 Нужны ffmpeg и Chromium (путь можно задать через `CHROMIUM=/path/to/chrome`).
 Посмотреть анимацию в браузере без рендера: открыть `anim.html?preview` через локальный сервер
 после `python3 tts.py`.
+
+Голос меняется в `script.json` (`voice`): подходят модели Piper из
+[зеркала sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models) —
+`ru_RU-irina-medium` (женский), `ru_RU-dmitri-medium` и `ru_RU-denis-medium` (мужские, CC0).
+`ru_RU-ruslan-medium` звучит низко и красиво, но его лицензия (CC BY-NC-SA) запрещает монетизацию.
 
 Для следующего выпуска достаточно скопировать `ep01`, переписать `script.json` и сцены в `anim.html`.

@@ -13,6 +13,7 @@ from scipy.signal import butter, sosfilt
 HERE = Path(__file__).parent
 BUILD = HERE / "build"
 SR = 44100
+VOICE_RMS_DB = -19.0   # средняя громкость речи в миксе до финальной нормализации
 rng = np.random.default_rng(7)
 
 
@@ -341,6 +342,9 @@ def main():
     voice = np.zeros(n)
     v = read_wav(BUILD / "voice.wav")[:n]
     voice[: len(v)] = v
+    # единый уровень речи до сведения: баланс с музыкой не зависит от обработки тембра
+    speech = np.concatenate([voice[int(l["start"] * SR):int(l["end"] * SR)] for l in tl["lines"]])
+    voice *= 10 ** (VOICE_RMS_DB / 20) / (np.sqrt(np.mean(speech ** 2)) + 1e-9)
 
     sfx = np.zeros(n + 3 * SR)
     for c in cues:

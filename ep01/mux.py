@@ -1,4 +1,5 @@
-"""Финальная сборка: видео + звук, громкость под YouTube (−14 LUFS, пики не выше −1.5 dBTP)."""
+"""Финальная сборка: видео + звук. Громкость −16 LUFS — чуть тише стандарта YouTube (−14),
+чтобы голос звучал мягче; YouTube тихие ролики не усиливает, только громкие приглушает."""
 import re
 import subprocess
 import sys
@@ -7,7 +8,7 @@ from pathlib import Path
 HERE = Path(__file__).parent
 BUILD = HERE / "build"
 OUT = HERE / "out" / "fobiya-01-boyazn-dlinnyh-slov.mp4"
-TARGET = -14.0
+TARGET = -16.0
 
 
 def loudness(path, af=None):

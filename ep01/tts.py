@@ -71,7 +71,11 @@ def split_sentences(text):
 def main():
     script = json.loads((HERE / "script.json").read_text(encoding="utf-8"))
     voice = PiperVoice.load(str(HERE / "voices" / f"{script['voice']}.onnx"))
-    cfg = SynthesisConfig(length_scale=script.get("length_scale", 1.0))
+    cfg = SynthesisConfig(
+        length_scale=script.get("length_scale", 1.0),
+        noise_scale=script.get("noise_scale"),
+        noise_w_scale=script.get("noise_w"),
+    )
     sr = voice.config.sample_rate
 
     BUILD.mkdir(exist_ok=True)
@@ -133,9 +137,10 @@ def main():
         f.setsampwidth(2)
         f.setframerate(sr)
         f.writeframes((voice_audio * 32767).astype(np.int16).tobytes())
+    # обработка тембра (мягкость, тон) не меняет тайминги: rubberband сдвигает только высоту
     subprocess.run(
         ["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-ar", str(SR_OUT),
-         "-af", "highpass=f=70", str(BUILD / "voice.wav")],
+         "-af", script.get("voice_fx", "highpass=f=70"), str(BUILD / "voice.wav")],
         check=True,
     )
 

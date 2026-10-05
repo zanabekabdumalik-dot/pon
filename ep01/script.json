@@ -1,7 +1,10 @@
 {
   "title": "Фобия №1 из 100 — Гиппопотомонстросесквиппедалиофобия",
-  "voice": "ru-irinia-medium",
-  "length_scale": 0.93,
+  "voice": "ru_RU-irina-medium",
+  "length_scale": 1.08,
+  "noise_scale": 0.55,
+  "noise_w": 0.6,
+  "voice_fx": "volume=-4dB,rubberband=pitch=0.9439:formant=preserved:pitchq=quality:transients=smooth:detector=soft:window=long,highpass=f=80,equalizer=f=230:t=q:w=1.0:g=2,equalizer=f=3500:t=q:w=1.4:g=-3,deesser=i=0.6,treble=g=-2.5:f=7000,acompressor=threshold=-22dB:ratio=2:attack=20:release=250:makeup=1.5",
   "lead_in": 0.35,
   "lines": [
     { "id": "l1", "text": "Эта фобия пугает уже своим названием!", "pause": 0.45, "hide_caption": true },
@@ -18,7 +21,7 @@
     { "id": "l12", "text": "Гиппопото — от гиппопотама, монстро — от монстра.", "pause": 0.25 },
     { "id": "l13", "text": "Сесквипедалис по-латыни — «длиной в полтора фута».", "pause": 0.25 },
     { "id": "l14", "text": "А фобия — это страх.", "pause": 0.45 },
-    { "id": "l15", "text": "Есть и вариант покороче — сесквипедалофобия.", "pause": 0.3 },
+    { "id": "l15", "text": "Есть и вариант покороче — сесквипедалофобия.", "pause": 1.3 },
     { "id": "l16", "text": "Но Пете, кажется, уже всё равно.", "pause": 0.5 },
     { "id": "l17", "text": "Это фобия номер один из ста. Какую разобрать следующей? Пиши в комментариях!", "pause": 1.6 }
   ]
