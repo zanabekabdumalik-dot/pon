@@ -216,6 +216,99 @@ details.howto li::marker{color:var(--gold)}
 
 @media (min-width:600px){ .banner b{font-size:54px} }
 @media (prefers-reduced-motion:reduce){ .banner{animation-duration:2.3s;animation-timing-function:steps(1)} .sheet{animation:none} .stat.bump span{animation:none} .primary::after,#waveBtn:not(:disabled){animation:none} }
+
+/* Main menu: two game modes, settings in the top corner, the hero in the bottom corner */
+.screen.home .screen-inner{padding-bottom:96px}
+.gear{position:absolute;top:14px;right:14px;z-index:1;width:46px;height:46px;border-radius:14px;padding:0;display:grid;place-items:center;
+  border:1px solid #5fb38c;background:linear-gradient(180deg,#36906a,#1c5640);box-shadow:0 3px 0 #0a2a1e,inset 0 1px 0 rgba(255,255,255,.3)}
+.gear svg{width:24px;height:24px;fill:#eaf7ef}
+.modes{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.mode{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;text-align:left;padding:16px 18px;border-radius:20px;
+  border:1.5px solid #ffd166;background:linear-gradient(115deg,#2f8a55 0%,#0f3a26 100%);box-shadow:0 5px 0 rgba(0,0,0,.45),0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.22)}
+.mode::after{content:'';position:absolute;right:-40px;top:-50px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(255,220,120,.32),transparent 70%);pointer-events:none}
+.mode.endless{border-color:#c4a0ff;background:linear-gradient(115deg,#6a3fb0 0%,#1e0f3e 100%)}
+.mode.endless::after{background:radial-gradient(circle,rgba(200,150,255,.35),transparent 70%)}
+.mode:active{transform:translateY(1px)}
+.mode-ic{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:rgba(0,0,0,.28);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.18)}
+.mode-ic svg{width:32px;height:32px;fill:#ffe08a;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+.mode.endless .mode-ic svg{fill:#e2ccff}
+.mode-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.mode-txt b{font-family:var(--font-display);font-size:27px;line-height:1;font-weight:700;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.45)}
+.mode-txt span{font-size:14px;color:#e6f3ec;font-weight:700}
+.chev{flex:none;font-size:34px;line-height:1;color:rgba(255,255,255,.7);font-weight:700}
+.hero-corner{position:absolute;right:16px;bottom:16px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0;border:0;background:none}
+.hero-corner canvas{width:82px;height:82px;border-radius:50%;border:2.5px solid #ffd166;box-shadow:0 0 0 3px rgba(0,0,0,.35),0 0 22px rgba(255,200,90,.55),0 6px 14px rgba(0,0,0,.5)}
+.hc-lbl{margin-top:-14px;padding:3px 14px;border-radius:999px;background:linear-gradient(180deg,#ffe68f,#f28a1c);color:var(--ink);font-family:var(--font-display);font-weight:700;font-size:17px;
+  box-shadow:0 2px 0 #9a4f06,0 4px 10px rgba(0,0,0,.4)}
+.hero-corner:active{transform:translateY(1px)}
+.scr-head{display:flex;align-items:center;gap:12px}
+.scr-head h2{font-size:34px;font-size:clamp(30px,8.5vw,42px)}
+.back-btn{flex:none;width:44px;height:44px;border-radius:14px;padding:0 0 3px;font-size:30px;line-height:1;font-weight:800;
+  border:1px solid #5fb38c;background:linear-gradient(180deg,#36906a,#1c5640);box-shadow:0 3px 0 #0a2a1e,inset 0 1px 0 rgba(255,255,255,.3)}
+.note{margin:0;color:#b9d8c8;font-size:14px}
+.lvl .rec{grid-column:1;font-size:13px;font-weight:800;color:#e2ccff}
+.lvl .best{position:relative;z-index:1;grid-row:1/4;grid-column:2;text-align:center;font-weight:800;font-size:12px;color:#e2ccff;line-height:1.1}
+.lvl .best b{display:block;font-family:var(--font-display);font-size:30px;color:#fff;text-shadow:0 0 12px rgba(200,150,255,.8)}
+
+/* Hero cards */
+.hero-list{display:flex;flex-direction:column;gap:12px}
+.hero-card{position:relative;overflow:hidden;display:grid;grid-template-columns:92px 1fr;gap:4px 14px;text-align:left;padding:13px 14px;border-radius:20px;
+  border:1.5px solid rgba(255,255,255,.25);background:linear-gradient(120deg,var(--h1) 0%,var(--h2) 85%);box-shadow:0 4px 0 rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.18)}
+.hero-card.sel{border:2.5px solid #ffd166;box-shadow:0 0 0 2px rgba(255,209,102,.25),0 0 24px rgba(255,200,90,.45),0 4px 0 rgba(0,0,0,.4)}
+.hero-card .pic{grid-row:1/5;width:92px;height:92px;border-radius:18px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.25),0 3px 8px rgba(0,0,0,.4)}
+.hero-card .nm{font-family:var(--font-display);font-size:24px;line-height:1;font-weight:700;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.45)}
+.hero-card .tt{font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#ffe3a6}
+.hero-card .ds{font-size:13.5px;color:#f0f6f2;line-height:1.3}
+.hero-card .bars{grid-column:1/3;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px;margin-top:6px}
+.bar-row{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:12.5px;font-weight:800;color:#e8f2ec}
+.pips{display:flex;gap:3px}
+.pips i{width:10px;height:10px;border-radius:3px;background:rgba(0,0,0,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.pips i.on{background:linear-gradient(180deg,#fff0b0,#ffb63c);box-shadow:0 0 6px rgba(255,190,70,.6)}
+.hero-card .sk{grid-column:1/3;display:flex;align-items:center;gap:10px;margin-top:6px;padding:8px 10px;border-radius:14px;background:rgba(0,0,0,.25);font-size:13.5px;color:#f2f7f4}
+.hero-card .sk canvas{flex:none;width:38px;height:38px;border-radius:12px;background:rgba(0,0,0,.35)}
+.hero-card .sk b{color:#ffe08a}
+.hero-card .pick{position:absolute;top:12px;right:12px;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:800;background:rgba(0,0,0,.35);color:#fff}
+.hero-card.sel .pick{background:linear-gradient(180deg,#ffe68f,#f28a1c);color:var(--ink)}
+
+/* Hero dock in battle */
+.hero-dock{position:absolute;left:8px;bottom:8px;z-index:3;display:flex;align-items:flex-end;gap:8px}
+.hd-face,.hd-skill{position:relative;padding:0;border-radius:50%;background:#0b1a14}
+.hd-face{width:56px;height:56px;border:2.5px solid #ffd166;box-shadow:0 0 0 2px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.5)}
+.hd-face.on{box-shadow:0 0 0 3px #fff4c4,0 0 18px rgba(255,210,100,.9)}
+.hd-face canvas{width:100%;height:100%;border-radius:50%;display:block}
+.hd-hp{position:absolute;left:4px;right:4px;bottom:-7px;height:7px;border-radius:4px;background:#2a0a0e;box-shadow:0 0 0 1.5px rgba(0,0,0,.6);overflow:hidden}
+.hd-hp i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#7fd48f,#c8f0a0)}
+.hd-lvl{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 5px;border-radius:999px;font-size:13px;line-height:22px;font-weight:800;text-align:center;
+  background:linear-gradient(180deg,#fff0b0,#ffb63c);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.6)}
+.hd-dead{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:50%;display:grid;place-items:center;background:rgba(10,6,8,.72);font-weight:800;font-size:18px;color:#ffb0a0}
+.hd-skill{width:46px;height:46px;border:2px solid #9ad8ff;box-shadow:0 0 0 2px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.5);overflow:hidden}
+.hd-skill canvas{width:100%;height:100%;display:block}
+.hd-skill.ready{border-color:#fff4c4;animation:skillReady 1.6s ease-in-out infinite}
+.hd-skill.on{box-shadow:0 0 0 3px #fff4c4,0 0 18px rgba(150,220,255,.9)}
+@keyframes skillReady{50%{box-shadow:0 0 0 2px rgba(0,0,0,.45),0 0 16px rgba(160,220,255,.95)}}
+.hd-cd{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(6,10,20,.72);display:grid;place-items:center;font-weight:800;font-size:15px;color:#cfe8ff}
+.hd-cd:empty{display:none}
+.pill{bottom:76px}
+@media (prefers-reduced-motion:reduce){ .hd-skill.ready{animation:none} }
+.home .eyebrow{padding-right:58px}
+.hero-card .nm,.hero-card .tt{padding-right:62px}
+@media (max-width:359px){
+  .hero-card{grid-template-columns:72px 1fr;gap:4px 11px;padding:12px}
+  .hero-card .pic{width:72px;height:72px}
+  .hero-card .nm{font-size:21px}
+  .hero-card .nm,.hero-card .tt{padding-right:52px}
+  .hero-card .pick{top:9px;right:9px;font-size:11px;padding:2px 8px}
+  .hero-card .bars{gap:4px 10px}
+}
+@media (max-height:640px){
+  .screen.home .screen-inner{padding-bottom:84px;gap:11px}
+  .home .lead{font-size:14.5px}
+  .mode{padding:12px 14px}
+  .mode-txt b{font-size:24px}
+  .hero-corner{right:12px;bottom:10px}
+  .hero-corner canvas{width:64px;height:64px}
+  .hc-lbl{font-size:15px;padding:2px 11px}
+}
 </style>
 </head>
 <body>
@@ -240,6 +333,10 @@ details.howto li::marker{color:var(--gold)}
     <div id="banner" class="banner" hidden><b></b><span></span></div>
     <div id="bossBar" class="boss-bar" hidden><div class="boss-name" id="bossName"></div><div class="boss-track"><div class="boss-fill" id="bossFill"></div></div></div>
     <button id="rallyCancel" class="pill" hidden>Отмена</button>
+    <div id="heroDock" class="hero-dock" hidden>
+      <button id="heroFace" class="hd-face" aria-label="Герой"><canvas id="heroFaceCv"></canvas><span class="hd-hp"><i id="heroHp"></i></span><b class="hd-lvl" id="heroLvl">1</b><span class="hd-dead" id="heroDead" hidden></span></button>
+      <button id="heroSkill" class="hd-skill" aria-label="Умение героя"><canvas id="heroSkillCv"></canvas><span class="hd-cd" id="heroCd"></span></button>
+    </div>
 
     <section id="buildSheet" class="sheet" hidden aria-label="Постройка">
       <div class="sheet-head">
@@ -273,25 +370,74 @@ details.howto li::marker{color:var(--gold)}
     <button id="waveBtn" class="primary">В бой!</button>
   </footer>
 
-  <section id="menu" class="screen">
+  <section id="menu" class="screen home">
+    <button class="gear" id="settingsBtn" aria-label="Настройки"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3.5h-4l-.4 2.5a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7.4 7.4 0 0 0 1.7-1l2.4 1 2-3.4zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button>
     <div class="screen-inner">
       <p class="eyebrow">Пепельный разлом открылся</p>
       <h1>Оборона Сильвенора</h1>
-      <p class="lead">Демоны идут захватывать города эльфов. Ставьте защитников на каменные площадки у дороги и отбивайте волну за волной, через десять городов — от пограничной заставы до Престола Бездны.</p>
+      <p class="lead">Демоны идут захватывать города эльфов. Ставьте защитников у дороги, ведите в бой героя и отбивайте волну за волной.</p>
+      <div class="modes">
+        <button class="mode story" id="storyBtn">
+          <span class="mode-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21V9l2-1V5h2v2l2-1V4h2v2h2V4h2v2l2 1V5h2v3l2 1v12h-7v-5a2 2 0 0 0-4 0v5z"/></svg></span>
+          <span class="mode-txt"><b>Сюжет</b><span id="storySub">Десять городов эльфов</span></span>
+          <span class="chev" aria-hidden="true">›</span>
+        </button>
+        <button class="mode endless" id="endlessBtn">
+          <span class="mode-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.6 8.2c-2.1 0-3.8 1.7-3.8 3.8s1.7 3.8 3.8 3.8c3 0 4.8-3.8 5.4-3.8s2.4 3.8 5.4 3.8c2.1 0 3.8-1.7 3.8-3.8s-1.7-3.8-3.8-3.8c-3 0-4.8 3.8-5.4 3.8S9.6 8.2 6.6 8.2zm0 2.2c1.5 0 2.8 1.6 3.7 1.6-.9 0-2.2 1.6-3.7 1.6a1.6 1.6 0 0 1 0-3.2zm10.8 0a1.6 1.6 0 0 1 0 3.2c-1.5 0-2.8-1.6-3.7-1.6.9 0 2.2-1.6 3.7-1.6z"/></svg></span>
+          <span class="mode-txt"><b>Бесконечный режим</b><span id="endlessSub">Волны без конца</span></span>
+          <span class="chev" aria-hidden="true">›</span>
+        </button>
+      </div>
+    </div>
+    <button class="hero-corner" id="heroBtn" aria-label="Герои"><canvas id="heroBtnCv"></canvas><span class="hc-lbl">Герои</span></button>
+  </section>
+
+  <section id="story" class="screen" hidden>
+    <div class="screen-inner">
+      <div class="scr-head"><button class="back-btn" data-back aria-label="Назад">‹</button><h2>Сюжет</h2></div>
+      <p class="lead">Десять городов — от пограничной заставы до Престола Бездны. В конце каждого приходит босс.</p>
       <div class="levels" id="levels"></div>
       <details class="howto">
         <summary>Как играть</summary>
         <ul>
           <li>Нажмите на каменную площадку и выберите защитника. Второе нажатие на ту же карточку сразу строит.</li>
           <li>Охотники выходят на дорогу и держат демонов, пока их не убьют. Через несколько секунд из дома выходят новые. Точку сбора можно перенести.</li>
+          <li>Герой стоит у ворот. Нажмите на его портрет внизу слева, а потом на карту — он пойдёт туда. Кнопка рядом — его умение.</li>
           <li>За каждую отбитую волну город платит монеты. Тратьте их на новых защитников или улучшения до 3 уровня.</li>
           <li>В новых городах появляются новые защитники: следопыт, грифоны, древень и лунная арфистка. Арфистка сама не бьёт, но усиливает соседей.</li>
           <li>Демоны бывают огненными, ледяными, теневыми и кровавыми: у каждой версии свои сильные и слабые стороны. Нажмите на значок демона внизу, чтобы узнать подробности.</li>
           <li>Дальше по пути встретятся нетопыри, бесы-подрывники, призраки, которых не удержать охотникам, некроманты с армией скелетов, барабанщики войны и осадные бегемоты.</li>
           <li>Демон, дошедший до ворот, бьёт по стенам столько, сколько у него осталось здоровья: недобитый великан опаснее десятка бесов. Осадный бегемот бьёт вдвое сильнее.</li>
-          <li>В конце каждого города приходит босс, и каждый следующий сильнее предыдущего. Если босс дойдёт до ворот, город падёт сразу.</li>
+          <li>В конце каждого города приходит босс, и каждый следующий сильнее предыдущего. Боссов не удержать даже героям. Если босс дойдёт до ворот, город падёт сразу.</li>
         </ul>
       </details>
+    </div>
+  </section>
+
+  <section id="endless" class="screen" hidden>
+    <div class="screen-inner">
+      <div class="scr-head"><button class="back-btn" data-back aria-label="Назад">‹</button><h2>Бесконечный режим</h2></div>
+      <p class="lead">Волны идут без конца и с каждым разом сильнее, каждая десятая — с боссом. Доступны все защитники. Сколько волн вы продержитесь?</p>
+      <div class="levels" id="endlessMaps"></div>
+    </div>
+  </section>
+
+  <section id="heroes" class="screen" hidden>
+    <div class="screen-inner">
+      <div class="scr-head"><button class="back-btn" data-back aria-label="Назад">‹</button><h2>Герои</h2></div>
+      <p class="lead">Выберите, кто поведёт эльфов в бой. Герой выходит в каждой битве: в сюжете и в бесконечном режиме.</p>
+      <div class="hero-list" id="heroList"></div>
+    </div>
+  </section>
+
+  <section id="settings" class="screen" hidden>
+    <div class="screen-inner">
+      <div class="scr-head"><button class="back-btn" data-back aria-label="Назад">‹</button><h2>Настройки</h2></div>
+      <div class="col">
+        <button class="ghost sky" id="setSoundBtn">Звук: вкл</button>
+        <button class="ghost sky" id="setGfxBtn">Графика: авто</button>
+      </div>
+      <p class="note">В режиме «авто» игра сама снижает качество, если телефон не успевает рисовать бой плавно.</p>
     </div>
   </section>
 
@@ -768,6 +914,50 @@ function prepLevel(L, li) {
   return { paths, grid };
 }
 const PREP = LEVELS.map(prepLevel);
+
+/* ---------- endless mode ---------- */
+// Any city map the player has reached, waves without end. Each wave is generated from its number (the same wave
+// on the same map is always the same), grows in size and in demon health, and every tenth wave brings a boss.
+// All defenders are available. The record is the number of waves held.
+const ENDLESS = { gold: 500, lives: 3000 };
+// [demon, first wave, cost in the wave budget, seconds between spawns]
+const ENDLESS_POOL = [
+  ['imp', 0, 8, 0.55], ['hound', 0, 7, 0.35], ['bat', 1, 4, 0.4], ['brute', 2, 30, 1.5], ['skeleton', 3, 5, 0.45],
+  ['gargoyle', 3, 12, 0.7], ['bomber', 4, 7, 0.9], ['shield', 5, 24, 1.7], ['warlock', 6, 20, 2.4], ['wraith', 7, 14, 1.0],
+  ['necro', 8, 18, 2.5], ['drummer', 9, 18, 2.4], ['golem', 10, 38, 2.2], ['wyvern', 12, 40, 2.2], ['ram', 14, 55, 3.2],
+];
+const ENDLESS_BOSSES = ['rogach', 'queen', 'boss', 'tyrant', 'skjolda', 'lord', 'lich', 'colossus', 'batlord', 'king'];
+const VARIANT_KEYS = ['fire', 'ice', 'shadow', 'blood'];
+function endlessWave(li, n) {
+  const r = mulberry32(li * 7919 + n * 104729 + 17), pick = a => a[Math.floor(r() * a.length)];
+  const pool = ENDLESS_POOL.filter(p => p[1] <= n), groups = [], gv = [];
+  const boss = n % 10 === 9;
+  let budget = 150 + 32 * n;
+  if (boss) { groups.push([ENDLESS_BOSSES[Math.floor(n / 10) % ENDLESS_BOSSES.length], 1, 1, 0, 0]); gv.push(null); budget *= 0.6; }
+  const ng = n < 3 ? 1 : n < 8 ? 2 : n < 20 ? 3 : 4, vc = n < 2 ? 0 : Math.min(0.55, 0.08 + n * 0.02);
+  for (let gi = 0; gi < ng; gi++) {
+    // half of the groups lean to the newest, toughest demons unlocked so far
+    const p = r() < 0.5 ? pool[Math.max(0, pool.length - 1 - Math.floor(r() * 5))] : pick(pool);
+    groups.push([p[0], clamp(Math.round(budget / ng / p[2]), 1, 30), p[3], (boss ? 4 : 0) + gi * 2.5, -1]);
+    gv.push(r() < vc ? pick(VARIANT_KEYS) : null);
+  }
+  return { groups, gv };
+}
+function ensureEndless(L, n) {
+  while (L.waves.length <= n) { const w = endlessWave(L.li, L.waves.length); L.waves.push(w.groups); L.gv.push(w.gv); }
+}
+function endlessLevel(li) {
+  const L = Object.assign({}, LEVELS[li], { li, endless: true, gold: ENDLESS.gold, lives: ENDLESS.lives, hpMul: 1, waves: [], gv: [] });
+  ensureEndless(L, 1);
+  return L;
+}
+// health growth per wave: story waves +6% each; endless also compounds 2.5% per wave, and bosses scale on their own
+function waveHpMul(D) {
+  const n = S.wave;
+  if (S.L.endless) return D.boss ? 0.55 + 0.05 * n : (1 + 0.06 * n) * Math.pow(1.025, n);
+  return D.boss ? 1 : 1 + 0.06 * n;
+}
+const endlessBest = li => (progress.endless && progress.endless[li]) || 0;
 
 /* ================= drawing primitives ================= */
 function ell(g, x, y, rx, ry, fill) { g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, TAU); g.fillStyle = fill; g.fill(); }
@@ -2001,6 +2191,217 @@ function hpBar(g, x, y, w, frac, col) {
   g.fillStyle = col; g.fillRect(x - w / 2, y, w * clamp(frac, 0, 1), 0.04);
 }
 
+/* ---------- heroes: drawing ---------- */
+// Feet at (x, y), facing f (1 = right). h carries the animation state: moving, swing, shot, cast, aim, flash.
+function heroCol(h, col) { return h.flash > 0 ? '#fff6ee' : col; }
+function drawHeroElf(g, h, x, y, f, t) {
+  const c = col => heroCol(h, col), mv = h.moving, b = mv ? Math.abs(Math.sin(t * 10)) * 0.03 : Math.sin(t * 2) * 0.006, l = mv ? Math.sin(t * 10) * 0.05 : 0;
+  const hy = y - 0.15 - b, hx = x + f * 0.01, hd = hy - 0.29;
+  shadow(g, x, y + 0.02, 0.15, 0.05);
+  line(g, x - 0.035, hy, x - 0.04 + l, y, 0.036, '#3b2a1c'); line(g, x + 0.035, hy, x + 0.04 - l, y, 0.036, '#3b2a1c');
+  ell(g, x - 0.04 + l + f * 0.015, y - 0.005, 0.03, 0.016, '#5a3a22'); ell(g, x + 0.04 - l + f * 0.015, y - 0.005, 0.03, 0.016, '#5a3a22');
+  const sway = Math.sin(t * 3) * 0.015;
+  poly(g, [x - f * 0.02 - 0.085, hy - 0.2, x - f * 0.02 + 0.085, hy - 0.2, x - f * 0.13 + 0.07 + sway, hy + 0.07, x - f * 0.13 - 0.11 + sway, hy + 0.09], c('#1d5537'));
+  line(g, x - f * 0.12, hy - 0.04, x - f * 0.04, hy - 0.27, 0.05, '#7a4e2c');
+  for (let i = 0; i < 3; i++) poly(g, [x - f * (0.06 - i * 0.018), hy - 0.27, x - f * (0.045 - i * 0.018), hy - 0.35, x - f * (0.03 - i * 0.018), hy - 0.27], i === 1 ? '#f2f2e6' : '#e85a4a');
+  poly(g, [x - 0.085, hy + 0.03, x + 0.085, hy + 0.03, x + 0.065, hy - 0.2, x - 0.065, hy - 0.2], c('#2f8a55'));
+  poly(g, [x - 0.085, hy + 0.03, x - 0.02, hy + 0.03, x - 0.03, hy - 0.2, x - 0.065, hy - 0.2], c('#3aa067'));
+  line(g, x - 0.08, hy - 0.04, x + 0.08, hy - 0.04, 0.02, '#d8b45a'); circ(g, x + f * 0.02, hy - 0.04, 0.016, '#66e895');
+  line(g, x - 0.06, hy - 0.19, x + 0.06, hy - 0.19, 0.016, '#e9c46a');
+  poly(g, [hx - f * 0.05, hd - 0.05, hx - f * 0.13, hd + 0.17, hx - f * 0.03, hd + 0.13, hx + f * 0.05, hd - 0.02], '#f0d070');
+  circ(g, hx, hd, 0.064, c('#f2dcbc'));
+  poly(g, [hx - f * 0.035, hd, hx - f * 0.11, hd - 0.06, hx - f * 0.045, hd + 0.03], c('#f2dcbc'));
+  g.beginPath(); g.arc(hx, hd - 0.012, 0.07, Math.PI * 1.02, Math.PI * 1.98); g.fillStyle = '#f6dc80'; g.fill();
+  poly(g, [hx + f * 0.06, hd - 0.03, hx + f * 0.075, hd + 0.05, hx + f * 0.04, hd - 0.01], '#f0d070');
+  line(g, hx - 0.064, hd - 0.035, hx + 0.064, hd - 0.035, 0.012, '#e9c46a'); circ(g, hx + f * 0.01, hd - 0.04, 0.014, '#66e895');
+  circ(g, hx + f * 0.032, hd + 0.005, 0.011, '#2a6a4a');
+  const aim = h.aim != null ? h.aim : (f > 0 ? -0.15 : Math.PI + 0.15), bx = x + Math.cos(aim) * 0.11, by = hy - 0.12 + Math.sin(aim) * 0.11;
+  line(g, x + f * 0.03, hy - 0.16, bx, by, 0.028, c('#2f8a55'));
+  g.save(); g.translate(bx, by); g.rotate(aim);
+  g.beginPath(); g.arc(-0.02, 0, 0.17, -1.25, 1.25); g.lineWidth = 0.03; g.strokeStyle = '#e9d39a'; g.stroke();
+  for (const s of [-1, 1]) circ(g, Math.cos(1.25) * 0.17 - 0.02, s * Math.sin(1.25) * 0.17, 0.016, '#e9c46a');
+  const pull = h.shot > 0 ? 0 : 0.07, ex = Math.cos(1.25) * 0.17 - 0.02, ey = Math.sin(1.25) * 0.17;
+  g.beginPath(); g.moveTo(ex, -ey); g.lineTo(-pull - 0.02, 0); g.lineTo(ex, ey); g.lineWidth = 0.01; g.strokeStyle = '#f2f6ea'; g.stroke();
+  if (h.shot <= 0) { line(g, -pull - 0.02, 0, 0.21, 0, 0.016, '#d8c49a'); poly(g, [0.26, 0, 0.2, -0.026, 0.2, 0.026], '#e8f4ff'); }
+  g.restore();
+}
+function drawHeroDwarf(g, h, x, y, f, t) {
+  const c = col => heroCol(h, col), mv = h.moving, b = mv ? Math.abs(Math.sin(t * 8)) * 0.025 : Math.sin(t * 2) * 0.005, l = mv ? Math.sin(t * 8) * 0.04 : 0;
+  const by = y - 0.21 - b, hx = x + f * 0.02, hd = by - 0.18;
+  shadow(g, x, y + 0.02, 0.2, 0.06);
+  line(g, x - 0.055, by + 0.08, x - 0.06 + l, y - 0.01, 0.06, '#3a2e26'); line(g, x + 0.055, by + 0.08, x + 0.06 - l, y - 0.01, 0.06, '#3a2e26');
+  ell(g, x - 0.06 + l + f * 0.02, y - 0.005, 0.045, 0.022, '#2a1e16'); ell(g, x + 0.06 - l + f * 0.02, y - 0.005, 0.045, 0.022, '#2a1e16');
+  const sx = x - f * 0.13, sy = by + 0.01;
+  ell(g, x, by, 0.135, 0.125, c('#6f7a86'));
+  ell(g, x + f * 0.02, by - 0.02, 0.08, 0.075, c('#8e99a6'));
+  for (const yy of [-0.06, 0.0]) line(g, x - 0.1, by + yy, x + 0.1, by + yy, 0.008, 'rgba(30,36,44,.5)');
+  line(g, x - 0.125, by + 0.065, x + 0.125, by + 0.065, 0.03, '#5a3a20');
+  poly(g, [x + f * 0.0 - 0.025, by + 0.045, x + 0.025, by + 0.045, x + 0.025, by + 0.085, x - 0.025, by + 0.085], '#e9c46a');
+  // beard, head, horned helmet
+  poly(g, [hx - 0.075, hd + 0.03, hx + 0.075, hd + 0.03, hx + 0.06, hd + 0.17, hx + f * 0.01, hd + 0.24, hx - 0.06, hd + 0.17], c('#d8763a'));
+  for (const s of [-1, 1]) line(g, hx + s * 0.035, hd + 0.08, hx + s * 0.03, hd + 0.2, 0.012, '#a8522a');
+  circ(g, hx, hd, 0.068, c('#e8c09a'));
+  poly(g, [hx - 0.06, hd + 0.035, hx + f * 0.01, hd + 0.015, hx + 0.06, hd + 0.035, hx + f * 0.01, hd + 0.06], '#c4602a');
+  circ(g, hx + f * 0.045, hd + 0.012, 0.024, '#d89a7a');
+  circ(g, hx + f * 0.02, hd - 0.012, 0.01, '#2a1a10'); circ(g, hx + f * 0.055, hd - 0.012, 0.009, '#2a1a10');
+  g.beginPath(); g.arc(hx, hd - 0.01, 0.078, Math.PI, 0); g.fillStyle = c('#8a95a2'); g.fill();
+  line(g, hx - 0.085, hd - 0.01, hx + 0.085, hd - 0.01, 0.02, '#c9a24f');
+  line(g, hx, hd - 0.085, hx, hd - 0.015, 0.016, '#c9a24f');
+  for (const s of [-1, 1]) poly(g, [hx + s * 0.065, hd - 0.035, hx + s * 0.16, hd - 0.15, hx + s * 0.13, hd - 0.17, hx + s * 0.055, hd - 0.07], '#efe3c8');
+  // round shield on the far arm
+  circ(g, sx, sy, 0.09, c('#8a5a2a')); g.beginPath(); g.arc(sx, sy, 0.09, 0, TAU); g.lineWidth = 0.016; g.strokeStyle = '#aeb6c0'; g.stroke();
+  for (let i = 0; i < 6; i++) { const a = i * TAU / 6; circ(g, sx + Math.cos(a) * 0.07, sy + Math.sin(a) * 0.07, 0.009, '#d0d6dc'); }
+  circ(g, sx, sy, 0.028, '#c9ced4');
+  // war hammer
+  const sw = h.swing > 0 ? Math.sin((h.swing / 0.3) * Math.PI) : 0, ang = -1.25 + sw * 1.9;
+  const px = x + f * 0.13, py = by - 0.02, ex = px + f * Math.cos(ang) * 0.3, ey = py + Math.sin(ang) * 0.3;
+  line(g, px, py, ex, ey, 0.026, '#6a4a2a');
+  g.save(); g.translate(ex, ey); g.rotate(f > 0 ? ang : Math.PI - ang);
+  poly(g, [-0.03, -0.075, 0.035, -0.075, 0.035, 0.075, -0.03, 0.075], '#7d8894'); poly(g, [-0.03, -0.075, 0.0, -0.075, 0.0, 0.075, -0.03, 0.075], '#a5afba');
+  line(g, -0.03, -0.03, 0.035, -0.03, 0.01, '#e9c46a'); line(g, -0.03, 0.03, 0.035, 0.03, 0.01, '#e9c46a');
+  g.restore();
+  circ(g, px, py, 0.035, c('#e8c09a'));
+}
+function drawHeroMage(g, h, x, y, f, t) {
+  const c = col => heroCol(h, col), mv = h.moving, b = mv ? Math.abs(Math.sin(t * 9)) * 0.025 : Math.sin(t * 2) * 0.008;
+  const top = y - 0.31 - b, hx = x + f * 0.01, hd = top - 0.08;
+  shadow(g, x, y + 0.02, 0.16, 0.05);
+  const sway = mv ? Math.sin(t * 9) * 0.02 : Math.sin(t * 2.4) * 0.012;
+  poly(g, [hx - f * 0.05, hd - 0.04, hx - f * 0.13, hd + 0.24, hx - f * 0.03, hd + 0.2, hx + f * 0.05, hd - 0.02], '#e6ecf8');
+  poly(g, [x - 0.14 + sway, y, x + 0.14 + sway, y, x + 0.065, top + 0.02, x - 0.065, top + 0.02], c('#2b3f9a'));
+  poly(g, [x - 0.05 + sway, y, x + 0.05 + sway, y, x + 0.025, top + 0.06, x - 0.025, top + 0.06], c('#4a5fd0'));
+  line(g, x - 0.135 + sway, y - 0.012, x + 0.135 + sway, y - 0.012, 0.018, '#e9c46a');
+  for (const [dx, dy] of [[-0.08, -0.06], [0.07, -0.1], [-0.04, -0.17], [0.09, -0.03], [0.0, -0.24]]) circ(g, x + dx + sway * (1 + dy * 3), y + dy, 0.01, '#ffe9a0');
+  line(g, x - 0.06, top + 0.11, x + 0.06, top + 0.11, 0.02, '#b98cff');
+  circ(g, hx, hd, 0.062, c('#f2dcbc'));
+  g.beginPath(); g.arc(hx, hd - 0.01, 0.068, Math.PI * 1.02, Math.PI * 1.98); g.fillStyle = '#f2f6ff'; g.fill();
+  poly(g, [hx + f * 0.055, hd - 0.03, hx + f * 0.07, hd + 0.07, hx + f * 0.035, hd - 0.0], '#e6ecf8');
+  line(g, hx - 0.062, hd - 0.033, hx + 0.062, hd - 0.033, 0.011, '#9ad8ff');
+  poly(g, [hx + f * 0.005, hd - 0.075, hx + f * 0.02, hd - 0.04, hx + f * 0.005, hd - 0.025, hx - f * 0.01, hd - 0.04], '#cfeeff');
+  circ(g, hx + f * 0.03, hd + 0.005, 0.01, '#3a4aa0');
+  // star staff
+  const cast = h.shot > 0 ? h.shot / 0.25 : 0, sxp = x + f * (0.16 + cast * 0.04), syt = y - 0.6 - cast * 0.04;
+  line(g, x + f * 0.03, top + 0.12, x + f * 0.15, top + 0.16, 0.03, c('#2b3f9a'));
+  line(g, sxp - f * 0.01, y - 0.02, sxp, syt, 0.024, '#8a6a44');
+  glow(g, sxp, syt - 0.04, 0.17 + cast * 0.12, `rgba(150,200,255,${0.5 + cast * 0.4})`);
+  const st = [];
+  for (let i = 0; i < 8; i++) { const a = -Math.PI / 2 + i * Math.PI / 4 + t * 0.8, r = i % 2 ? 0.022 : 0.055; st.push(sxp + Math.cos(a) * r, syt - 0.04 + Math.sin(a) * r); }
+  poly(g, st, '#e8f6ff');
+  circ(g, sxp, syt - 0.04, 0.016, '#9ad8ff');
+  for (let i = 0; i < 3; i++) { const a = t * 1.6 + i * TAU / 3; circ(g, x + Math.cos(a) * 0.17, top + 0.12 + Math.sin(a) * 0.06, 0.012, 'rgba(210,235,255,.85)'); }
+}
+function drawHeroShadow(g, h, x, y, f, t) {
+  const c = col => heroCol(h, col), mv = h.moving, b = mv ? Math.abs(Math.sin(t * 12)) * 0.03 : Math.sin(t * 2.5) * 0.007, l = mv ? Math.sin(t * 12) * 0.06 : 0;
+  const hy = y - 0.17 - b, hx = x + f * 0.03, hd = hy - 0.24;
+  shadow(g, x, y + 0.02, 0.15, 0.05);
+  g.lineCap = 'round';
+  line(g, x - 0.03, hy, x - 0.07 + l, y - 0.08, 0.034, c('#2a1f36')); line(g, x - 0.07 + l, y - 0.08, x - 0.05 + l, y, 0.03, c('#2a1f36'));
+  line(g, x + 0.03, hy, x + 0.07 - l, y - 0.08, 0.034, c('#2a1f36')); line(g, x + 0.07 - l, y - 0.08, x + 0.06 - l, y, 0.03, c('#2a1f36'));
+  g.lineCap = 'butt';
+  const wv = Math.sin(t * 6) * 0.03;
+  poly(g, [hx - f * 0.03, hd + 0.06, hx - f * 0.24, hd + 0.1 + wv, hx - f * 0.3, hd + 0.16 - wv, hx - f * 0.2, hd + 0.13, hx - f * 0.02, hd + 0.1], '#c43a8a');
+  poly(g, [x - 0.07, hy + 0.02, x + 0.07, hy + 0.02, x + f * 0.05 + 0.04, hy - 0.2, x + f * 0.05 - 0.06, hy - 0.2], c('#3a2a5a'));
+  line(g, x - 0.065, hy - 0.03, x + 0.065, hy - 0.03, 0.016, '#b8b2c4');
+  line(g, x - 0.05, hy - 0.16, x + 0.07, hy - 0.06, 0.012, '#5a3a7a');
+  circ(g, hx, hd, 0.066, c('#2a1f40'));
+  poly(g, [hx - f * 0.05, hd - 0.045, hx - f * 0.1, hd - 0.12, hx + f * 0.02, hd - 0.06], c('#2a1f40'));
+  ell(g, hx + f * 0.025, hd + 0.01, 0.042, 0.035, '#0c0812');
+  glow(g, hx + f * 0.035, hd + 0.005, 0.07, 'rgba(200,120,255,.6)');
+  circ(g, hx + f * 0.018, hd + 0.005, 0.011, '#e8b4ff'); circ(g, hx + f * 0.048, hd + 0.005, 0.01, '#e8b4ff');
+  poly(g, [hx - 0.04, hd + 0.03, hx + 0.06, hd + 0.03, hx + f * 0.02 + 0.03, hd + 0.075, hx - 0.03, hd + 0.075], '#c43a8a');
+  // twin daggers
+  const sw = h.swing > 0 ? Math.sin((h.swing / 0.18) * Math.PI) : 0;
+  const blade = (bx, by, ang, len) => {
+    g.save(); g.translate(bx, by); g.rotate(ang);
+    poly(g, [0, -0.012, len, 0, 0, 0.012], '#e6ecf4'); line(g, 0.01, 0.006, len * 0.9, 0.002, 0.006, '#c46bff');
+    line(g, -0.015, -0.025, -0.015, 0.025, 0.014, '#7a5a9a'); line(g, -0.05, 0, -0.015, 0, 0.016, '#2a1f36');
+    g.restore();
+  };
+  const a1 = f > 0 ? -0.5 + sw * 1.1 : Math.PI + 0.5 - sw * 1.1;
+  blade(x + f * 0.1, hy - 0.12, a1, 0.15);
+  blade(x - f * 0.06, hy - 0.08, f > 0 ? Math.PI - 0.4 : 0.4, 0.12);
+}
+function drawHeroPaladin(g, h, x, y, f, t) {
+  const c = col => heroCol(h, col), mv = h.moving, b = mv ? Math.abs(Math.sin(t * 9)) * 0.025 : Math.sin(t * 2) * 0.005, l = mv ? Math.sin(t * 9) * 0.045 : 0;
+  const hy = y - 0.17 - b, hx = x + f * 0.01, hd = hy - 0.29;
+  glow(g, x, y - 0.25, 0.42, `rgba(255,220,130,${0.16 + 0.06 * Math.sin(t * 2)})`);
+  shadow(g, x, y + 0.02, 0.17, 0.055);
+  const sway = Math.sin(t * 2.5) * 0.015;
+  poly(g, [x - f * 0.02 - 0.09, hy - 0.22, x - f * 0.02 + 0.09, hy - 0.22, x - f * 0.12 + 0.08 + sway, y - 0.02, x - f * 0.12 - 0.13 + sway, y], c('#a82a3a'));
+  line(g, x - 0.04, hy, x - 0.045 + l, y, 0.045, c('#9aa3ad')); line(g, x + 0.04, hy, x + 0.045 - l, y, 0.045, c('#9aa3ad'));
+  ell(g, x - 0.045 + l + f * 0.015, y - 0.005, 0.035, 0.018, '#5a6470'); ell(g, x + 0.045 - l + f * 0.015, y - 0.005, 0.035, 0.018, '#5a6470');
+  poly(g, [x - 0.095, hy + 0.03, x + 0.095, hy + 0.03, x + 0.085, hy - 0.22, x - 0.085, hy - 0.22], c('#c8ced6'));
+  poly(g, [x - 0.04, hy + 0.06, x + 0.04, hy + 0.06, x + 0.035, hy - 0.2, x - 0.035, hy - 0.2], c('#eef2f6'));
+  circ(g, x, hy - 0.1, 0.028, '#e9c46a');
+  for (let i = 0; i < 8; i++) { const a = i * TAU / 8; line(g, x + Math.cos(a) * 0.032, hy - 0.1 + Math.sin(a) * 0.032, x + Math.cos(a) * 0.045, hy - 0.1 + Math.sin(a) * 0.045, 0.008, '#e9c46a'); }
+  line(g, x - 0.09, hy - 0.01, x + 0.09, hy - 0.01, 0.016, '#c9a24f');
+  for (const s of [-1, 1]) { ell(g, x + s * 0.095, hy - 0.2, 0.055, 0.04, c('#b4bcc6')); g.beginPath(); g.ellipse(x + s * 0.095, hy - 0.2, 0.055, 0.04, 0, Math.PI, TAU); g.lineWidth = 0.01; g.strokeStyle = '#e9c46a'; g.stroke(); }
+  circ(g, hx, hd, 0.07, c('#c8ced6'));
+  g.beginPath(); g.arc(hx, hd, 0.07, Math.PI * 0.95, Math.PI * 2.05); g.fillStyle = c('#dfe4ea'); g.fill();
+  line(g, hx + f * 0.0 - 0.045, hd + 0.005, hx + 0.055, hd + 0.005, 0.014, '#1a2028');
+  line(g, hx + f * 0.02, hd + 0.005, hx + f * 0.02, hd + 0.05, 0.01, '#1a2028');
+  const pw = Math.sin(t * 4) * 0.01;
+  poly(g, [hx - 0.015, hd - 0.065, hx - f * 0.09, hd - 0.13 + pw, hx - f * 0.13, hd - 0.05 + pw, hx + 0.015, hd - 0.06], '#ffd166');
+  // kite shield on the far side
+  const sx = x - f * 0.12, sy = hy - 0.08;
+  poly(g, [sx - 0.07, sy - 0.09, sx + 0.07, sy - 0.09, sx + 0.065, sy + 0.04, sx, sy + 0.13, sx - 0.065, sy + 0.04], c('#2a4a8a'));
+  g.beginPath(); g.moveTo(sx - 0.07, sy - 0.09); g.lineTo(sx + 0.07, sy - 0.09); g.lineTo(sx + 0.065, sy + 0.04); g.lineTo(sx, sy + 0.13); g.lineTo(sx - 0.065, sy + 0.04); g.closePath(); g.lineWidth = 0.014; g.strokeStyle = '#e9c46a'; g.stroke();
+  circ(g, sx, sy - 0.01, 0.026, '#ffd166');
+  // sword
+  const sw = h.swing > 0 ? Math.sin((h.swing / 0.25) * Math.PI) : 0, ang = -1.05 + sw * 1.6;
+  const px = x + f * 0.11, py = hy - 0.1, ca = Math.cos(ang), sa = Math.sin(ang);
+  line(g, px, py, px + f * ca * 0.36, py + sa * 0.36, 0.03, '#e8eef4');
+  line(g, px + f * ca * 0.05, py + sa * 0.05, px + f * ca * 0.33, py + sa * 0.33, 0.008, '#aeb8c4');
+  line(g, px - f * sa * 0.05, py + ca * 0.05 * 1, px + f * sa * 0.05, py - ca * 0.05, 0.022, '#e9c46a');
+  circ(g, px - f * ca * 0.04, py - sa * 0.04, 0.018, '#e9c46a');
+  circ(g, px, py, 0.03, c('#c8ced6'));
+}
+const HERO_DRAW = { elf: drawHeroElf, dwarf: drawHeroDwarf, mage: drawHeroMage, shadow: drawHeroShadow, paladin: drawHeroPaladin };
+function drawHero(g, h, time) { HERO_DRAW[h.key](g, h, h.x, h.y, h.face || 1, time); }
+// a standing pose for menus and the battle dock
+function heroPose(key) { return { key, x: 0, y: 0, face: 1, moving: false, swing: 0, shot: 0, flash: 0, aim: null }; }
+function heroPortrait(canvas, key, px, bust) {
+  const r = Math.min(window.devicePixelRatio || 1, 3), H = HEROES[key];
+  canvas.width = canvas.height = Math.round(px * r);
+  const g = canvas.getContext('2d'), s = px * r;
+  const bg = g.createRadialGradient(s * 0.5, s * 0.42, s * 0.05, s * 0.5, s * 0.5, s * 0.72);
+  bg.addColorStop(0, H.c1); bg.addColorStop(1, H.c2);
+  g.fillStyle = bg; g.fillRect(0, 0, s, s);
+  const k = bust ? s * 1.55 : s * 1.12;
+  g.setTransform(k, 0, 0, k, s * 0.5, bust ? s * 1.02 : s * 0.9);
+  drawHero(g, heroPose(key), 1.2);
+  g.setTransform(1, 0, 0, 1, 0, 0);
+}
+// skill pictograms
+function skillIcon(canvas, key, px) {
+  const r = Math.min(window.devicePixelRatio || 1, 3);
+  canvas.width = canvas.height = Math.round(px * r);
+  const g = canvas.getContext('2d'), s = px * r;
+  g.setTransform(s, 0, 0, s, 0, 0);
+  const sk = HEROES[key].skill.key;
+  g.lineCap = 'round';
+  if (sk === 'rain') {
+    for (const [x, y] of [[0.3, 0.2], [0.55, 0.15], [0.45, 0.45], [0.72, 0.4]]) { line(g, x, y, x + 0.12, y + 0.3, 0.05, '#f5e6c8'); poly(g, [x + 0.15, y + 0.38, x + 0.08, y + 0.3, x + 0.17, y + 0.27], '#e8f4ff'); }
+    ell(g, 0.5, 0.86, 0.3, 0.06, 'rgba(255,255,255,.25)');
+  } else if (sk === 'quake') {
+    ell(g, 0.5, 0.78, 0.38, 0.12, '#6a4a2a');
+    line(g, 0.3, 0.78, 0.42, 0.7, 0.04, '#2a1a0a'); line(g, 0.42, 0.7, 0.5, 0.82, 0.04, '#2a1a0a'); line(g, 0.5, 0.82, 0.66, 0.72, 0.04, '#2a1a0a');
+    line(g, 0.62, 0.18, 0.5, 0.6, 0.07, '#8a6a44');
+    poly(g, [0.42, 0.12, 0.8, 0.22, 0.74, 0.38, 0.36, 0.28], '#aeb8c4');
+  } else if (sk === 'meteor') {
+    for (let i = 0; i < 3; i++) line(g, 0.2 + i * 0.06, 0.12 + i * 0.03, 0.55 + i * 0.03, 0.55, 0.06 - i * 0.012, ['rgba(255,170,60,.6)', 'rgba(255,220,120,.7)', 'rgba(255,255,220,.8)'][i]);
+    glow(g, 0.62, 0.62, 0.3, 'rgba(255,170,60,.8)');
+    circ(g, 0.62, 0.62, 0.13, '#ffcf6a'); circ(g, 0.6, 0.6, 0.07, '#fff6c8');
+  } else if (sk === 'blades') {
+    for (const s of [-1, 1]) { g.save(); g.translate(0.5, 0.5); g.rotate(s * 0.8); poly(g, [-0.03, 0.08, 0.03, 0.08, 0.0, -0.4], '#e6ecf4'); line(g, -0.1, 0.1, 0.1, 0.1, 0.05, '#c46bff'); line(g, 0, 0.12, 0, 0.3, 0.06, '#3a2a5a'); g.restore(); }
+  } else {
+    glow(g, 0.5, 0.5, 0.45, 'rgba(255,220,120,.7)');
+    for (let i = 0; i < 12; i++) { const a = i * TAU / 12; line(g, 0.5 + Math.cos(a) * 0.2, 0.5 + Math.sin(a) * 0.2, 0.5 + Math.cos(a) * 0.36, 0.5 + Math.sin(a) * 0.36, 0.04, '#ffe08a'); }
+    circ(g, 0.5, 0.5, 0.17, '#fff1b8');
+  }
+  g.lineCap = 'butt';
+}
+
 /* ---------- map background ---------- */
 const hash = n => { const v = Math.sin(n * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
 const FRUIT = [['#8ff0ff', 'rgba(143,240,255,.5)'], ['#ffe08a', 'rgba(255,224,138,.5)'], ['#ffb0de', 'rgba(255,176,222,.5)']];
@@ -2540,6 +2941,7 @@ const Snd = {
         case 'freeze': this.tone(1760, 0.5, 'sine', 0.03, 880); this.noise(0.3, 0.04, 6000); break;
         case 'roar': this.tone(90, 0.6, 'sawtooth', 0.06, 60); this.noise(0.4, 0.06, 300); break;
         case 'leak': this.tone(110, 0.45, 'square', 0.06, 55); break;
+        case 'chime': [784, 988, 1175, 1568].forEach((f, i) => this.tone(f, 0.5, 'sine', 0.05, 0, i * 0.06)); break;
         case 'win': [523, 659, 784, 1046, 1318].forEach((f, i) => this.tone(f, 0.3, 'triangle', 0.06, 0, i * 0.12)); break;
         case 'lose': [392, 330, 262, 196].forEach((f, i) => this.tone(f, 0.45, 'sawtooth', 0.035, 0, i * 0.2)); break;
       }
@@ -2551,17 +2953,17 @@ document.addEventListener('pointerdown', () => Snd.init(), { capture: true });
 /* ================= state ================= */
 let S = null;
 let menuLi = 0;
-const UI = { sel: null, buildType: null, rally: null, speed: 1, paused: false, sellArm: 0 };
+const UI = { sel: null, buildType: null, rally: null, heroCmd: null, screen: 'menu', speed: 1, paused: false, sellArm: 0 };
 let progress = store.get('silvenor.progress', { unlocked: 1, stars: [] });
 if (!progress || typeof progress !== 'object') progress = { unlocked: 1, stars: [] };
 if (!Array.isArray(progress.stars)) progress.stars = [];
 progress.unlocked = clamp(progress.unlocked | 0 || 1, 1, LEVELS.length);
 const amb = [];
 
-function newState(li) {
-  const L = LEVELS[li];
+function newState(li, mode = 'story') {
+  const L = mode === 'endless' ? endlessLevel(li) : LEVELS[li];
   return {
-    li, L, paths: PREP[li].paths, gold: L.gold, lives: L.lives, maxLives: L.lives,
+    li, mode, L, hero: null, strikes: [], paths: PREP[li].paths, gold: L.gold, lives: L.lives, maxLives: L.lives,
     wave: 0, waveActive: false, spawners: [], spawnCount: 0,
     enemies: [], towers: L.slots.map(() => null), projectiles: [], fx: [], texts: [],
     time: 0, kills: 0, over: false, shake: 0, hurt: 0, portalPulse: PREP[li].paths.map(() => 0),
@@ -2569,7 +2971,7 @@ function newState(li) {
 }
 const stats = t => TOWERS[t.type].levels[t.lvl];
 const sellValue = t => Math.floor(t.spent * 0.6);
-const available = (type, li) => TOWERS[type].from <= li;
+const available = (type, li) => !!(S && S.L.endless) || TOWERS[type].from <= li;
 
 /* ---------- towers ---------- */
 function defaultRally(t) {
@@ -2804,6 +3206,7 @@ function updateEnt(u, t, st, rx, ry, dt) {
   Snd.play('slam');
 }
 function hitUnit(u, dmg, e) {
+  if (u.hero) { hitHero(u, dmg, e); return; }
   const st = stats(u.t);
   u.hp -= dmg * (1 - (st.armor || 0)); u.flash = 0.1;
   burst(u.x, u.y - (u.held ? 0.35 : 0.12), 4, u.held ? '#c9a27a' : '#ffd2a0', 1, 0.25, 0.035);
@@ -2825,7 +3228,7 @@ function placeEnemy(e, dt) {
   else if (Math.abs(p.dx) > 0.3) e.face = p.dx > 0 ? 1 : -1;
 }
 function spawnEnemy(type, pi, d, v) {
-  const D = DEMONS[type], V = v ? VARIANTS[v] : {}, hp = Math.round(D.hp * S.L.hpMul * (D.boss ? 1 : 1 + 0.06 * S.wave) * (V.hp || 1));
+  const D = DEMONS[type], V = v ? VARIANTS[v] : {}, hp = Math.round(D.hp * S.L.hpMul * waveHpMul(D) * (V.hp || 1));
   const e = {
     type, D, pi, d: d || 0, hp, maxHp: hp, alive: true, x: 0, y: 0, ox: 0, oy: 0, dirx: 0, diry: 1, face: 1,
     off: D.boss ? 0 : rand(-0.18, 0.18), speed: D.speed * rand(0.94, 1.06) * (V.speed || 1), slowF: 1, slowT: 0, stunT: 0,
@@ -2950,7 +3353,212 @@ function explode(e) {
   S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.1, r1: 0.95, t: 0, life: 0.4, color: '255,150,50', ground: true });
   burst(e.x, e.y - 0.15, 18, '#ffb347', 2, 0.5, 0.06);
   for (const t of S.towers) if (t && t.units) for (const u of t.units) if (u.alive && dist(u.x, u.y, e.x, e.y) < 0.95) hitUnit(u, 70, null);
+  if (S.hero && S.hero.alive && dist(S.hero.x, S.hero.y, e.x, e.y) < 0.95) hitHero(S.hero, 70, null);
   Snd.play('boom');
+}
+
+/* ---------- heroes ---------- */
+// One hero joins every battle. It starts near the gate, walks wherever the player sends it, holds demons on the road
+// (never bosses: they walk through), and has a skill on a cooldown. A fallen hero returns after a while;
+// every third wave it gains a level (+12% health and damage, up to level 5).
+const HEROES = {
+  elf: {
+    name: 'Лириэль', title: 'Эльфийская лучница', c1: '#3fae6a', c2: '#0d2c1c',
+    hp: 320, armor: 0, speed: 1.6, hold: 1, regen: 0.035,
+    ranged: { dmg: [17, 23], range: 3.3, cd: 0.55, kind: 'bolt' },
+    skill: { key: 'rain', name: 'Град стрел', cd: 16, aim: true, hint: 'Нажмите, куда обрушить град стрел', desc: 'восемь залпов по площади, достают и летающих' },
+    bars: [3, 1, 5, 4], desc: 'Стреляет дальше всех защитников и бьёт летающих демонов. Держит на дороге одного демона.',
+  },
+  dwarf: {
+    name: 'Бранн Железнобород', title: 'Гном-страж', c1: '#b8743a', c2: '#2c1808',
+    hp: 820, armor: 0.45, speed: 1.15, hold: 3, regen: 0.04,
+    melee: { dmg: [24, 32], cd: 1.1 },
+    skill: { key: 'quake', name: 'Землетрясение', cd: 18, aim: false, desc: 'удар молотом о землю: ранит и оглушает всех наземных демонов вокруг' },
+    bars: [3, 5, 1, 2], desc: 'Закован в броню и держит на дороге сразу трёх демонов. Медленный, но его почти не пробить.',
+  },
+  mage: {
+    name: 'Мирэль', title: 'Звёздная чародейка', c1: '#4a62d8', c2: '#0e1440',
+    hp: 260, armor: 0, speed: 1.4, hold: 1, regen: 0.035,
+    ranged: { dmg: [30, 40], range: 2.8, cd: 1.4, kind: 'orb', splash: 0.7 },
+    skill: { key: 'meteor', name: 'Звездопад', cd: 20, aim: true, hint: 'Нажмите, куда призвать звездопад', desc: 'шесть падающих звёзд выжигают всё вокруг, магия не замечает брони' },
+    bars: [5, 1, 3, 3], desc: 'Звёздная магия бьёт по площади и проходит сквозь броню. Хрупкая: держите её за спинами.',
+  },
+  shadow: {
+    name: 'Кайра', title: 'Клинок теней', c1: '#8a3aa8', c2: '#1c0a28',
+    hp: 420, armor: 0.1, dodge: 0.3, speed: 2.0, hold: 2, regen: 0.04,
+    melee: { dmg: [15, 21], cd: 0.45, crit: 0.25 },
+    skill: { key: 'blades', name: 'Танец клинков', cd: 15, aim: true, hint: 'Нажмите, куда перенестись Кайре', desc: 'мгновенно переносится в любое место и рассекает до семи демонов' },
+    bars: [4, 2, 1, 5], desc: 'Тёмная эльфийка: самая быстрая, бьёт двумя клинками, уворачивается от каждого третьего удара.',
+  },
+  paladin: {
+    name: 'Сэр Айден', title: 'Паладин Рассвета', c1: '#d8a838', c2: '#3a2408',
+    hp: 680, armor: 0.35, speed: 1.3, hold: 2, regen: 0.04, aura: 2.2,
+    melee: { dmg: [18, 26], cd: 1.0 },
+    skill: { key: 'dawn', name: 'Свет Рассвета', cd: 20, aim: false, desc: 'лечит его и всех охотников рядом, обжигает демонов, нежить — вдвое' },
+    bars: [3, 4, 1, 3], desc: 'Рыцарь в сияющих латах: держит двух демонов, а его свет постоянно лечит охотников и древня рядом.',
+  },
+};
+const HERO_KEYS = Object.keys(HEROES);
+const HERO_SC = 1.2, HERO_RESPAWN = 16;
+let heroKey = store.get('silvenor.hero', 'elf');
+if (!HEROES[heroKey]) heroKey = 'elf';
+const heroMul = h => 1 + 0.12 * (h.lvl - 1);
+function heroHome() {
+  const p = S.paths[0], q = posAt(p, Math.max(0, p.len - 1.5));
+  return { x: q.x, y: q.y };
+}
+function makeHero(key) {
+  const H = HEROES[key], home = heroHome();
+  return {
+    hero: true, key, H, x: home.x, y: home.y, post: { x: home.x, y: home.y }, walk: false,
+    hp: H.hp, maxHp: H.hp, alive: true, respawn: 0, lvl: 1, held: [], target: null, reach: 0.6,
+    cd: 0, rcd: 0, skillCd: 4, face: 1, moving: false, swing: 0, shot: 0, flash: 0, aim: null,
+  };
+}
+function heroLevelUp(h) {
+  const lvl = Math.min(5, 1 + Math.floor(S.wave / 3));
+  if (lvl <= h.lvl) return;
+  h.lvl = lvl; h.maxHp = Math.round(h.H.hp * heroMul(h));
+  if (h.alive) h.hp = h.maxHp;
+  addText(`${h.H.name}: уровень ${lvl}`, h.x, h.y - 1.0, '#ffe08a', 16);
+}
+function heroGround(e) { return e.alive && !e.flying && !e.D.ghost && !e.D.boss && e.phased <= 0; }
+function updateHero(h, dt) {
+  const H = h.H, m = heroMul(h);
+  if (h.skillCd > 0) h.skillCd = Math.max(0, h.skillCd - dt);
+  if (!h.alive) {
+    if ((h.respawn -= dt) <= 0) {
+      const home = heroHome();
+      Object.assign(h, { alive: true, hp: h.maxHp, x: home.x, y: home.y, post: home, walk: false, target: null });
+      h.held.length = 0;
+      burst(h.x, h.y - 0.3, 14, '#ffe08a', 0.9, 0.7, 0.05, 0.6);
+    }
+    return;
+  }
+  if (h.flash > 0) h.flash -= dt;
+  if (h.swing > 0) h.swing -= dt;
+  if (h.shot > 0) h.shot -= dt;
+  h.cd -= dt; h.rcd -= dt;
+  if (H.aura) for (const t of S.towers) if (t && t.units) for (const u of t.units) if (u.alive && u.hp < u.maxHp && dist(u.x, u.y, h.x, h.y) < H.aura) u.hp = Math.min(u.maxHp, u.hp + u.maxHp * 0.04 * dt);
+  if (h.walk) {
+    if (moveToward(h, h.post.x, h.post.y, H.speed * dt)) h.walk = false;
+    if (h.hp < h.maxHp) h.hp = Math.min(h.maxHp, h.hp + h.maxHp * H.regen * dt);
+    return;
+  }
+  // hold demons near the post
+  if (h.held.length) h.held = h.held.filter(e => heroGround(e) && e.blocker === h && dist(e.x, e.y, h.post.x, h.post.y) < 2.0);
+  if (h.held.length < H.hold) for (const e of S.enemies) {
+    if (h.held.length >= H.hold) break;
+    if (!heroGround(e) || e.blocker || dist(e.x, e.y, h.post.x, h.post.y) > 1.3) continue;
+    e.blocker = h; h.held.push(e);
+  }
+  // melee heroes also help against demons held by someone else, and swing at passing bosses
+  let foe = h.held[0] || null;
+  if (!foe && H.melee) {
+    let bd = 1.3;
+    for (const e of S.enemies) if (e.alive && !e.flying && e.phased <= 0 && !e.D.ghost) { const d = dist(e.x, e.y, h.post.x, h.post.y); if (d < bd) { bd = d; foe = e; } }
+  }
+  if (foe) {
+    const own = foe.blocker === h;
+    moveToward(h, foe.x + (own ? foe.dirx * 0.32 : -foe.diry * 0.3), foe.y + (own ? foe.diry * 0.32 : foe.dirx * 0.3), H.speed * 1.4 * dt);
+    if (dist(h.x, h.y, foe.x, foe.y) < 0.55) {
+      h.face = foe.x >= h.x ? 1 : -1;
+      if (H.melee && h.cd <= 0) {
+        h.cd = H.melee.cd; h.swing = h.key === 'shadow' ? 0.18 : h.key === 'dwarf' ? 0.3 : 0.25;
+        const crit = H.melee.crit && Math.random() < H.melee.crit;
+        damage(foe, rint(H.melee.dmg) * m * (crit ? 2 : 1), h.key === 'shadow' ? 'pierce' : 'phys');
+        if (crit) addText('×2', foe.x, foe.y - 0.6, '#e8b4ff', 14);
+        Snd.play(h.key === 'shadow' ? 'arrow' : 'slam');
+      }
+    }
+  } else {
+    moveToward(h, h.post.x, h.post.y, H.speed * dt);
+    if (h.hp < h.maxHp) h.hp = Math.min(h.maxHp, h.hp + h.maxHp * H.regen * dt);
+  }
+  if (H.ranged && h.rcd <= 0) {
+    const R = H.ranged, e = h.held[0] && h.held[0].alive ? h.held[0] : findTarget(h.x, h.y, R.range, false);
+    if (e) {
+      h.rcd = R.cd; h.shot = 0.25;
+      const sy = h.y - 0.38 * HERO_SC, ty = e.y - e.D.hit * DEMON_SC;
+      h.aim = Math.atan2(ty - sy, e.x - h.x); h.face = e.x >= h.x ? 1 : -1;
+      const dmg = rint(R.dmg) * m;
+      if (R.kind === 'orb') S.projectiles.push({ kind: 'orb', x: h.x + h.face * 0.2, y: h.y - 0.72, tgt: e, tx: e.x, ty, gx: e.x, gy: e.y, speed: 7, dmg, splash: R.splash, ang: 0 });
+      else { S.projectiles.push({ kind: 'bolt', x: h.x + Math.cos(h.aim) * 0.2, y: sy, tgt: e, tx: e.x, ty, gx: e.x, gy: e.y, speed: 16, dmg, ang: h.aim }); Snd.play('arrow'); }
+    }
+  }
+}
+function hitHero(h, dmg, e) {
+  if (!h.alive) return;
+  if (h.H.dodge && Math.random() < h.H.dodge) { addText('Мимо', h.x, h.y - 0.75, '#e8b4ff', 13); return; }
+  h.hp -= dmg * (1 - h.H.armor) * (e && e.D.boss ? 2 : 1); h.flash = 0.1;
+  burst(h.x, h.y - 0.3, 4, '#ffd2a0', 1, 0.25, 0.035);
+  if (h.hp <= 0) {
+    h.alive = false; h.respawn = HERO_RESPAWN; h.walk = false;
+    dropHold(h);
+    burst(h.x, h.y - 0.3, 22, '#ffe08a', 1.0, 1.0, 0.05, 0.8);
+    addText(`${h.H.name} ${h.key === 'elf' || h.key === 'mage' || h.key === 'shadow' ? 'пала' : 'пал'}`, h.x, h.y - 0.9, '#ff9a8a', 16);
+    Snd.play('fall');
+  }
+}
+// pending strikes from skills: { t: delay, x, y, r, dmg, type, air, fx }
+function updateStrikes(dt) {
+  if (!S.strikes.length) return;
+  for (const s of S.strikes) {
+    if ((s.t -= dt) > 0) continue;
+    s.done = true;
+    for (const e of S.enemies) if (e.alive && (s.air || !e.flying) && dist(e.x, e.y, s.x, s.y) <= s.r) damage(e, s.dmg, s.type);
+    if (s.fx === 'meteor') { S.fx.push({ k: 'ring', x: s.x, y: s.y, r0: 0.1, r1: s.r, t: 0, life: 0.45, color: '255,170,60', ground: true }); burst(s.x, s.y - 0.1, 14, '#ffcf6a', 1.8, 0.5, 0.055); S.shake = reduceMotion ? 0 : Math.max(S.shake, 0.15); Snd.play('boom'); }
+    else burst(s.x, s.y - 0.05, 3, '#f5e6c8', 0.7, 0.25, 0.03);
+  }
+  S.strikes = S.strikes.filter(s => !s.done);
+}
+function heroSkillReady(h) { return h && h.alive && h.skillCd <= 0; }
+function castSkill(h, tx, ty) {
+  const H = h.H, sk = H.skill, m = heroMul(h);
+  h.skillCd = sk.cd;
+  if (sk.key === 'rain') {
+    for (let i = 0; i < 8; i++) S.strikes.push({ t: 0.25 + i * 0.18, x: tx + rand(-0.5, 0.5), y: ty + rand(-0.3, 0.3), r: 0.85, dmg: 26 * m, type: 'pierce', air: true });
+    S.fx.push({ k: 'rain', x: tx, y: ty, r: 1.25, t: 0, life: 1.8, seed: Math.random() * 10 });
+    h.aim = Math.atan2(ty - 2 - h.y, tx - h.x); h.shot = 0.3; h.face = tx >= h.x ? 1 : -1;
+    Snd.play('arrow');
+  } else if (sk.key === 'quake') {
+    h.swing = 0.3;
+    for (const e of S.enemies) if (e.alive && !e.flying && e.phased <= 0 && dist(e.x, e.y, h.x, h.y) <= 1.7) {
+      damage(e, 90 * m, 'phys');
+      if (e.alive) e.stunT = Math.max(e.stunT, e.D.boss ? 0.7 : 2.2);
+    }
+    S.fx.push({ k: 'ring', x: h.x, y: h.y, r0: 0.2, r1: 1.7, t: 0, life: 0.6, color: '200,150,90', ground: true });
+    S.fx.push({ k: 'ring', x: h.x, y: h.y, r0: 0.1, r1: 1.1, t: 0, life: 0.45, color: '255,220,160', ground: true });
+    burst(h.x, h.y - 0.05, 26, '#8a6a44', 2.2, 0.7, 0.06, 0.5);
+    S.shake = reduceMotion ? 0 : 0.45; Snd.play('slam'); Snd.play('boom');
+  } else if (sk.key === 'meteor') {
+    for (let i = 0; i < 6; i++) {
+      const a = rand(0, TAU), r = Math.sqrt(Math.random()) * 0.9, x = tx + Math.cos(a) * r, y = ty + Math.sin(a) * r * 0.6, t = 0.35 + i * 0.28;
+      S.strikes.push({ t, x, y, r: 0.75, dmg: 70 * m, type: 'magic', air: true, fx: 'meteor' });
+      S.fx.push({ k: 'meteor', x, y, t: -t + 0.55, life: 0.55 });
+    }
+    h.shot = 0.4; h.face = tx >= h.x ? 1 : -1;
+  } else if (sk.key === 'blades') {
+    burst(h.x, h.y - 0.3, 16, '#3a2a5a', 1.2, 0.6, 0.06, 0.3);
+    h.x = tx; h.y = ty; h.post = { x: tx, y: ty }; h.walk = false; dropHold(h);
+    const near = S.enemies.filter(e => e.alive && e.phased <= 0 && dist(e.x, e.y, tx, ty) <= 1.6).sort((a, b) => dist(a.x, a.y, tx, ty) - dist(b.x, b.y, tx, ty)).slice(0, 7);
+    for (const e of near) { damage(e, 110 * m, 'pierce'); S.fx.push({ k: 'slash', x: e.x, y: e.y - 0.3, a: rand(-0.8, 0.8), t: 0, life: 0.35 }); }
+    burst(tx, ty - 0.3, 18, '#c46bff', 1.4, 0.6, 0.05, 0.4);
+    h.swing = 0.18; Snd.play('bolt');
+  } else {
+    const heal = u => { u.hp = Math.min(u.maxHp, u.hp + u.maxHp * 0.5); };
+    heal(h);
+    for (const t of S.towers) if (t && t.units) for (const u of t.units) if (u.alive && dist(u.x, u.y, h.x, h.y) <= 2.6) heal(u);
+    for (const e of S.enemies) if (e.alive && e.phased <= 0 && dist(e.x, e.y, h.x, h.y) <= 2.2) {
+      const undead = e.v === 'shadow' || e.D.ghost || e.type === 'skeleton' || e.D.raise;
+      damage(e, 100 * m * (undead ? 2 : 1), 'magic');
+    }
+    S.fx.push({ k: 'ring', x: h.x, y: h.y, r0: 0.2, r1: 2.4, t: 0, life: 0.8, color: '255,220,120', ground: true });
+    S.fx.push({ k: 'dawn', x: h.x, y: h.y, t: 0, life: 0.9 });
+    burst(h.x, h.y - 0.4, 24, '#ffe9a0', 1.6, 0.9, 0.05, 0.9);
+    Snd.play('chime');
+  }
+  addText(sk.name, h.x, h.y - 0.95, '#ffe08a', 16);
 }
 
 /* ---------- projectiles & effects ---------- */
@@ -2997,6 +3605,7 @@ function updateFx(dt) {
   if (S.texts.length) S.texts = S.texts.filter(t => t.t < t.life);
 }
 function drawFx(g, f) {
+  if (f.t < 0) return;
   const k = f.t / f.life, a = 1 - k;
   if (f.k === 'p') { g.globalAlpha = a; circ(g, f.x, f.y, f.size, f.color); g.globalAlpha = 1; }
   else if (f.k === 'ring') { g.beginPath(); g.ellipse(f.x, f.y, lerp(f.r0, f.r1, k), lerp(f.r0, f.r1, k) * 0.55, 0, 0, TAU); g.lineWidth = 0.05; g.strokeStyle = `rgba(${f.color},${a * 0.8})`; g.stroke(); g.fillStyle = `rgba(${f.color},${a * 0.12})`; g.fill(); }
@@ -3004,6 +3613,31 @@ function drawFx(g, f) {
   else if (f.k === 'curse') {
     const mx = (f.x + f.x2) / 2 + Math.sin(f.t * 30) * 0.15, my = (f.y + f.y2) / 2 - 0.4;
     for (const [w, col] of f.ice ? [[0.08, `rgba(150,215,255,${a * 0.8})`], [0.025, `rgba(240,250,255,${a})`]] : [[0.07, `rgba(200,120,255,${a * 0.8})`], [0.022, `rgba(255,230,255,${a})`]]) { g.beginPath(); g.moveTo(f.x, f.y); g.quadraticCurveTo(mx, my, f.x2, f.y2); g.lineWidth = w; g.strokeStyle = col; g.stroke(); }
+  }
+  else if (f.k === 'rain') {
+    const fade = f.t > f.life - 0.3 ? (f.life - f.t) / 0.3 : 1;
+    g.beginPath(); g.ellipse(f.x, f.y, f.r, f.r * 0.5, 0, 0, TAU); g.lineWidth = 0.025; g.strokeStyle = `rgba(245,230,200,${0.4 * fade})`; g.stroke();
+    for (let i = 0; i < 12; i++) {
+      const ph = (f.t * 2.4 + i * 0.37 + f.seed) % 1, ax = f.x + ((i * 53 + Math.floor(f.seed * 7)) % 10 / 10 - 0.5) * f.r * 1.6, ay = f.y + ((i * 31) % 10 / 10 - 0.5) * f.r * 0.8, yy = ay - (1 - ph) * 2.4;
+      g.globalAlpha = fade * Math.min(1, ph * 3);
+      line(g, ax - 0.07, yy - 0.32, ax, yy, 0.022, '#f5e6c8'); poly(g, [ax + 0.014, yy + 0.05, ax - 0.016, yy - 0.012, ax + 0.03, yy - 0.004], '#e8f4ff');
+      g.globalAlpha = 1;
+    }
+  }
+  else if (f.k === 'meteor') {
+    const sx = f.x + 1.6 * (1 - k), sy = f.y - 3.2 * (1 - k);
+    line(g, sx + 0.55, sy - 1.1, sx, sy, 0.12, 'rgba(255,170,60,.3)'); line(g, sx + 0.32, sy - 0.64, sx, sy, 0.07, 'rgba(255,230,150,.6)');
+    glow(g, sx, sy, 0.4, 'rgba(255,170,60,.85)'); circ(g, sx, sy, 0.11, '#ffcf6a'); circ(g, sx - 0.025, sy - 0.025, 0.055, '#fff6c8');
+  }
+  else if (f.k === 'slash') {
+    g.save(); g.translate(f.x, f.y); g.rotate(f.a);
+    g.beginPath(); g.arc(0, 0.25, 0.34, -2.4, -0.75); g.lineWidth = 0.06 * a + 0.01; g.strokeStyle = `rgba(232,180,255,${a})`; g.stroke();
+    g.beginPath(); g.arc(0, 0.25, 0.34, -2.2, -0.95); g.lineWidth = 0.02; g.strokeStyle = `rgba(255,255,255,${a})`; g.stroke();
+    g.restore();
+  }
+  else if (f.k === 'dawn') {
+    glow(g, f.x, f.y - 0.4, 0.9, `rgba(255,230,150,${a * 0.7})`);
+    for (let i = 0; i < 12; i++) { const ang = i * TAU / 12 + f.t * 0.8, r0 = 0.3, r1 = 0.6 + k * 1.8; line(g, f.x + Math.cos(ang) * r0, f.y - 0.4 + Math.sin(ang) * r0 * 0.6, f.x + Math.cos(ang) * r1, f.y - 0.4 + Math.sin(ang) * r1 * 0.6, 0.05, `rgba(255,225,140,${a * 0.8})`); }
   }
   else if (f.k === 'roots') {
     const grow = Math.min(1, f.t / 0.2), fade = f.t > f.life - 0.3 ? (f.life - f.t) / 0.3 : 1;
@@ -3032,7 +3666,7 @@ function startWave() {
   S.wSnap = snapshot();
   S.waveActive = true;
   Snd.play('horn');
-  banner(`Волна ${S.wave + 1}`, S.wave === S.L.waves.length - 1 ? 'Последняя волна' : '');
+  banner(`Волна ${S.wave + 1}`, S.L.endless ? (S.wave % 10 === 9 ? 'Волна с боссом' : '') : S.wave === S.L.waves.length - 1 ? 'Последняя волна' : '');
   setFooter();
 }
 function updateWave(dt) {
@@ -3050,7 +3684,9 @@ function endWave() {
   S.waveActive = false;
   const reward = 50 + 8 * (S.wave + 1);
   S.wave++;
-  if (S.wave >= S.L.waves.length) { finish(true); return; }
+  if (!S.L.endless && S.wave >= S.L.waves.length) { finish(true); return; }
+  if (S.L.endless) ensureEndless(S.L, S.wave + 1);
+  if (S.hero) heroLevelUp(S.hero);
   S.gold += reward;
   banner('Волна отбита', `+${reward} монет за волну`);
   Snd.play('coin');
@@ -3064,6 +3700,8 @@ function update(dt) {
   computeAuras();
   for (const e of S.enemies) if (e.alive) updateEnemy(e, dt);
   for (const t of S.towers) if (t) updateTower(t, dt);
+  if (S.hero) updateHero(S.hero, dt);
+  updateStrikes(dt);
   for (const p of S.projectiles) updateProj(p, dt);
   if (S.projectiles.some(p => p.dead)) S.projectiles = S.projectiles.filter(p => !p.dead);
   S.enemies = S.enemies.filter(e => e.alive);
@@ -3119,6 +3757,12 @@ function drawWorld(g, time) {
   for (const t of S.towers) if (t && t.buff > 1) { g.beginPath(); g.ellipse(t.x, t.y + 0.18, 0.44, 0.2, 0, 0, TAU); g.lineWidth = 0.03; g.strokeStyle = `rgba(200,170,255,${0.45 + 0.2 * Math.sin(time * 3 + t.si)})`; g.stroke(); }
   for (const e of S.enemies) if (e.D.aura) { g.beginPath(); g.ellipse(e.x, e.y, 1.3, 0.72, 0, 0, TAU); g.lineWidth = 0.025; g.setLineDash([0.1, 0.08]); g.strokeStyle = 'rgba(255,120,80,.4)'; g.stroke(); g.setLineDash([]); }
   for (const f of S.fx) if (f.ground) drawFx(g, f);
+  const hr = S.hero;
+  if (hr && hr.alive) {
+    if (hr.walk) { g.beginPath(); g.ellipse(hr.post.x, hr.post.y, 0.3, 0.15, 0, 0, TAU); g.lineWidth = 0.03; g.setLineDash([0.08, 0.06]); g.strokeStyle = 'rgba(255,214,120,.85)'; g.stroke(); g.setLineDash([]); }
+    if (UI.heroCmd === 'move') rangeCircle(g, hr.x, hr.y, hr.H.ranged ? hr.H.ranged.range : 1.3, '255,214,120');
+    g.beginPath(); g.ellipse(hr.x, hr.y + 0.02, 0.27, 0.12, 0, 0, TAU); g.lineWidth = UI.heroCmd ? 0.045 : 0.025; g.strokeStyle = `rgba(255,214,120,${UI.heroCmd ? 0.95 : 0.6})`; g.stroke();
+  }
   // depth-sorted ground objects
   const list = [];
   for (const t of S.towers) if (t) {
@@ -3126,10 +3770,12 @@ function drawWorld(g, time) {
     if (t.units) for (const u of t.units) if (u.alive) list.push([u.y, 1, u]);
   }
   for (const e of S.enemies) if (!e.flying) list.push([e.y, 2, e]);
+  if (hr && hr.alive) list.push([hr.y, 3, hr]);
   list.sort((a, b) => a[0] - b[0]);
   for (const [, k, o] of list) {
     if (k === 0) drawTowerObj(g, o, time);
     else if (k === 1) scaled(g, o, HUNTER_SC, () => drawSquadUnit(g, o, time));
+    else if (k === 3) scaled(g, o, HERO_SC, () => drawHero(g, o, time));
     else scaled(g, o, DEMON_SC * (o.D.scale || 1), () => drawDemon(g, o, time));
   }
   for (const p of S.projectiles) {
@@ -3151,6 +3797,7 @@ function drawWorld(g, time) {
   for (const f of S.fx) if (!f.ground) drawFx(g, f);
   // health bars
   for (const e of S.enemies) if (e.hp < e.maxHp) hpBar(g, e.x, e.y - e.D.bar * DEMON_SC, e.D.barW || 0.4, e.hp / e.maxHp, e.D.boss ? '#ff7a2f' : '#e0475e');
+  if (hr && hr.alive && hr.hp < hr.maxHp) hpBar(g, hr.x, hr.y - 0.86 * HERO_SC, 0.46, hr.hp / hr.maxHp, '#ffd166');
   for (const t of S.towers) if (t && t.units) {
     let dead = 0, next = Infinity;
     for (const u of t.units) {
@@ -3478,8 +4125,8 @@ function startRally() {
   toast('Нажмите на дорогу внутри круга', 0);
 }
 function cancelRally() {
-  if (UI.rally == null) return;
-  UI.rally = null; el.rallyCancel.hidden = true; el.toast.hidden = true;
+  if (UI.rally == null && !UI.heroCmd) return;
+  UI.rally = null; UI.heroCmd = null; el.rallyCancel.hidden = true; el.toast.hidden = true;
 }
 function setRally(wx, wy) {
   const t = S.towers[UI.rally]; if (!t) { cancelRally(); return; }
@@ -3517,7 +4164,7 @@ function setFooter() {
     if (boss) msg = `В этой волне придёт босс — ${DEMONS[boss[0]].name}: ${DEMONS[boss[0]].info}`;
     else if (S.wave > 0 && newT.length) msg = `Новый враг — ${DEMONS[newT[0]].name}: ${DEMONS[newT[0]].info}`;
     else if (newV.length) msg = `Новые демоны — ${VARIANTS[newV[0]].many}: ${VARIANTS[newV[0]].info}`;
-    if (msg) setTimeout(() => { if (S && !S.waveActive) toast(msg, 5200); }, S.wave === 0 ? 7000 : 1400);
+    if (msg) setTimeout(() => { if (S && !S.waveActive && !S.over) toast(msg, 5200); }, S.wave === 0 ? 7000 : 1400);
   }
 }
 const hud = {};
@@ -3537,14 +4184,15 @@ function updateHUD() {
     if (!el.buildSheet.hidden) refreshBuild();
     if (!el.towerSheet.hidden) refreshTower();
   }
-  const n = S.L.waves.length;
-  setText(el.waveNum, 'w', `${Math.min(S.wave + (S.waveActive ? 1 : 0), n)}/${n}`);
+  const n = S.L.waves.length, inf = S.L.endless;
+  setText(el.waveNum, 'w', inf ? `${S.wave + (S.waveActive ? 1 : 0)}/∞` : `${Math.min(S.wave + (S.waveActive ? 1 : 0), n)}/${n}`);
   let lbl;
   if (S.waveActive) {
     const left = S.enemies.length + S.spawners.reduce((a, s) => a + s.left, 0);
     lbl = `Волна ${S.wave + 1} · демонов: ${left}`;
-  } else lbl = S.over ? 'Битва окончена' : `Следующая волна: ${S.wave + 1} из ${n}`;
+  } else lbl = S.over ? 'Битва окончена' : inf ? `Следующая волна: ${S.wave + 1} · рекорд ${endlessBest(S.li)}` : `Следующая волна: ${S.wave + 1} из ${n}`;
   setText(el.nextLbl, 'nl', lbl);
+  updateHeroDock();
 }
 
 /* ---------- screens ---------- */
@@ -3568,44 +4216,65 @@ function renderLevels() {
   }).join('');
   el.levels.querySelectorAll('.lvl').forEach(b => b.addEventListener('click', () => startLevel(+b.dataset.li)));
 }
-function showMenu() {
+function showMenu(screen = 'menu') {
   S = null; UI.paused = false; closeSheets(); cancelRally(); clearResume();
   menuLi = Math.max(0, Math.min(progress.unlocked - 1, LEVELS.length - 1));
-  el.menu.hidden = false; el.pause.hidden = true; el.end.hidden = true;
+  el.pause.hidden = true; el.end.hidden = true; heroDock.hidden = true;
+  showScreen(screen);
   el.banner.hidden = true; el.toast.hidden = true;
   $('app').classList.add('in-menu');
   el.bossBar.hidden = true; stage.classList.remove('boss-on');
-  renderLevels();
 }
-function startLevel(li) {
-  S = newState(li); amb.length = 0;
+function startLevel(li, mode = 'story') {
+  S = newState(li, mode); amb.length = 0;
+  S.hero = makeHero(heroKey);
   for (const k in hud) delete hud[k];
   UI.paused = false; closeSheets(); cancelRally();
-  el.menu.hidden = true; el.pause.hidden = true; el.end.hidden = true;
+  hideScreens(); el.pause.hidden = true; el.end.hidden = true;
   $('app').classList.remove('in-menu');
   el.bossBar.hidden = true; stage.classList.remove('boss-on');
-  setFooter();
-  banner(S.L.name, S.L.sub);
-  const fresh = li > 0 ? ORDER.filter(k => TOWERS[k].from === li) : [];
+  setFooter(); setupHeroDock();
+  banner(S.L.name, mode === 'endless' ? 'Бесконечный режим' : S.L.sub);
+  const fresh = mode === 'story' && li > 0 ? ORDER.filter(k => TOWERS[k].from === li) : [];
   if (fresh.length) setTimeout(() => { if (S && S.li === li && !S.waveActive) { const T = TOWERS[fresh[0]]; toast(`Новый защитник — ${T.name}. ${T.desc}`, 6500); } }, 1800);
   setTimeout(() => { if (S && S.li === li && S.wave === 0 && !S.waveActive && S.towers.every(t => !t)) toast('Нажмите на каменную площадку у дороги, чтобы поставить защитника', 5000); }, 1500);
+  if (!store.get('silvenor.heroHint', false)) setTimeout(() => {
+    if (!S || S.li !== li || S.over || UI.paused || UI.sel || UI.rally != null || UI.heroCmd) return;
+    store.set('silvenor.heroHint', true);
+    toast(`${S.hero.H.name} ждёт у ворот. Нажмите на портрет внизу слева, а потом на карту — герой пойдёт туда. Кнопка рядом — умение.`, 6500);
+  }, 7000);
 }
 function finish(win) {
   S.over = true; S.waveActive = false; clearResume();
   closeSheets(); cancelRally(); setFooter();
   const li = S.li;
-  let stars = 0;
-  if (win) {
+  let stars = 0, best = 0, record = false;
+  if (S.L.endless) {
+    progress.endless = progress.endless || {};
+    best = progress.endless[li] || 0;
+    if (S.wave > best) { record = true; best = progress.endless[li] = S.wave; store.set('silvenor.progress', progress); }
+  } else if (win) {
     stars = S.lives >= S.maxLives * 0.9 ? 3 : S.lives >= S.maxLives * 0.5 ? 2 : 1;
     progress.stars[li] = Math.max(progress.stars[li] || 0, stars);
     progress.unlocked = Math.max(progress.unlocked, Math.min(LEVELS.length, li + 2));
     store.set('silvenor.progress', progress);
   }
-  const snap = { win, li, stars, kills: S.kills, lives: S.lives, max: S.maxLives, wave: S.wave, total: S.L.waves.length, name: S.L.name, bossIn: S.bossIn };
+  const snap = { win, li, stars, kills: S.kills, lives: S.lives, max: S.maxLives, wave: S.wave, total: S.L.waves.length, name: S.L.name, bossIn: S.bossIn, endless: !!S.L.endless, best, record };
   setTimeout(() => showEnd(snap), 1100);
 }
 function showEnd(r) {
   if (!S || S.li !== r.li) return;
+  $('endStars').hidden = r.endless;
+  $('endMenuBtn').textContent = r.endless ? 'К выбору карты' : 'К выбору города';
+  if (r.endless) {
+    $('endEyebrow').textContent = 'Бесконечный режим';
+    $('endTitle').textContent = r.record ? 'Новый рекорд!' : `${r.name}: город пал`;
+    $('endText').textContent = `${r.bossIn ? r.bossIn + ' ' : ''}Вы продержались ${r.wave} ${plural(r.wave, 'волну', 'волны', 'волн')} и одолели ${r.kills} ${plural(r.kills, 'демона', 'демонов', 'демонов')}. Рекорд на этой карте: ${r.best} ${plural(r.best, 'волна', 'волны', 'волн')}.`;
+    $('nextBtn').hidden = true;
+    el.end.hidden = false;
+    Snd.play(r.record ? 'win' : 'lose');
+    return;
+  }
   $('endEyebrow').textContent = r.win ? 'Демоны отброшены' : 'Ворота пробиты';
   $('endTitle').textContent = r.win ? `${r.name}: город выстоял` : `${r.name}: город пал`;
   $('endStars').innerHTML = `<span>${'★'.repeat(r.stars)}</span><span class="off">${'★'.repeat(3 - r.stars)}</span>`;
@@ -3618,6 +4287,130 @@ function showEnd(r) {
   el.end.hidden = false;
   Snd.play(r.win ? 'win' : 'lose');
 }
+
+/* ---------- menu screens ---------- */
+const MENU_SCREENS = ['menu', 'story', 'endless', 'heroes', 'settings'];
+function showScreen(id) {
+  for (const s of MENU_SCREENS) $(s).hidden = s !== id;
+  UI.screen = id;
+  if (id === 'menu') renderHome();
+  else if (id === 'story') renderLevels();
+  else if (id === 'endless') renderEndless();
+  else if (id === 'heroes') renderHeroes();
+  else refreshSettings();
+  const sc = $(id); if (sc) sc.scrollTop = 0;
+}
+function hideScreens() { for (const s of MENU_SCREENS) $(s).hidden = true; UI.screen = null; }
+function renderHome() {
+  const stars = progress.stars.reduce((a, b) => a + (b || 0), 0);
+  $('storySub').textContent = `Десять городов · ★ ${stars} из ${LEVELS.length * 3}`;
+  const best = Math.max(0, ...LEVELS.map((_, i) => endlessBest(i)));
+  $('endlessSub').textContent = best ? `Рекорд: ${best} ${plural(best, 'волна', 'волны', 'волн')}` : 'Волны без конца';
+  heroPortrait($('heroBtnCv'), heroKey, 82, true);
+}
+function renderEndless() {
+  const box = $('endlessMaps');
+  box.innerHTML = LEVELS.map((L, i) => {
+    const locked = i >= progress.unlocked, best = endlessBest(i);
+    const sub = locked ? `Карта откроется, когда вы дойдёте до этого города в сюжете` : `${L.sub}`;
+    const rec = locked ? '' : best ? `Рекорд: ${best} ${plural(best, 'волна', 'волны', 'волн')}` : 'Ещё не сыграно';
+    return `<button class="lvl" data-li="${i}" style="${CITY_UI[L.theme]}" ${locked ? 'disabled' : ''}><span class="nm">${L.name}</span><span class="sub">${sub}</span><span class="rec">${rec}</span>${locked || !best ? '' : `<span class="best"><b>${best}</b>${plural(best, 'волна', 'волны', 'волн')}</span>`}</button>`;
+  }).join('');
+  box.querySelectorAll('.lvl').forEach(b => b.addEventListener('click', () => startLevel(+b.dataset.li, 'endless')));
+}
+const BAR_NAMES = ['Атака', 'Защита', 'Дальность', 'Скорость'];
+function renderHeroes() {
+  const box = $('heroList');
+  box.innerHTML = HERO_KEYS.map(k => {
+    const H = HEROES[k], sel = k === heroKey;
+    const bars = H.bars.map((v, i) => `<span class="bar-row">${BAR_NAMES[i]}<span class="pips">${'<i class="on"></i>'.repeat(v)}${'<i></i>'.repeat(5 - v)}</span></span>`).join('');
+    return `<button class="hero-card${sel ? ' sel' : ''}" data-k="${k}" style="--h1:${H.c1};--h2:${H.c2}" aria-pressed="${sel}">
+      <canvas class="pic"></canvas><span class="nm">${H.name}</span><span class="tt">${H.title}</span><span class="ds">${H.desc}</span>
+      <span class="bars">${bars}</span>
+      <span class="sk"><canvas></canvas><span><b>${H.skill.name}</b> — ${H.skill.desc}. Перезарядка ${H.skill.cd} с.</span></span>
+      <span class="pick">${sel ? 'Выбран' : 'Выбрать'}</span></button>`;
+  }).join('');
+  box.querySelectorAll('.hero-card').forEach(b => {
+    heroPortrait(b.querySelector('.pic'), b.dataset.k, 92, false);
+    skillIcon(b.querySelector('.sk canvas'), b.dataset.k, 38);
+    b.addEventListener('click', () => {
+      if (heroKey === b.dataset.k) return;
+      heroKey = b.dataset.k; store.set('silvenor.hero', heroKey); Snd.play('upgrade');
+      box.querySelectorAll('.hero-card').forEach(o => { const on = o.dataset.k === heroKey; o.classList.toggle('sel', on); o.setAttribute('aria-pressed', on); o.querySelector('.pick').textContent = on ? 'Выбран' : 'Выбрать'; });
+    });
+  });
+}
+function soundLabel() { return 'Звук: ' + (Snd.on ? 'вкл' : 'выкл'); }
+function gfxLabel() { return 'Графика: ' + (GFX.mode === 'auto' ? `авто (${GFX_NAMES[QL]})` : GFX_NAMES[QL]); }
+function refreshSettings() { $('setSoundBtn').textContent = soundLabel(); $('setGfxBtn').textContent = gfxLabel(); el.soundBtn.textContent = soundLabel(); el.gfxBtn.textContent = gfxLabel(); }
+function toggleSound() { Snd.on = !Snd.on; store.set('silvenor.sound', Snd.on); refreshSettings(); Snd.play('tap'); }
+// auto → high → medium → economy → auto (choosing auto again retries high quality)
+function cycleGfx() {
+  GFX.mode = GFX.mode === 'auto' ? 2 : GFX.mode === 0 ? 'auto' : GFX.mode - 1;
+  if (GFX.mode === 'auto') GFX.auto = 2;
+  applyGfx(); refreshSettings(); Snd.play('tap');
+}
+
+/* ---------- hero controls in battle ---------- */
+const heroDock = $('heroDock'), heroFace = $('heroFace'), heroSkillBtn = $('heroSkill');
+function setupHeroDock() {
+  heroDock.hidden = !S.hero;
+  if (!S.hero) return;
+  heroPortrait($('heroFaceCv'), S.hero.key, 56, true);
+  skillIcon($('heroSkillCv'), S.hero.key, 46);
+  heroFace.setAttribute('aria-label', `${S.hero.H.name}: отправить в другое место`);
+  heroSkillBtn.setAttribute('aria-label', `Умение: ${S.hero.H.skill.name}`);
+}
+function updateHeroDock() {
+  const h = S.hero;
+  if (!h) return;
+  const hp = h.alive ? Math.round(h.hp / h.maxHp * 100) : 0;
+  if (hud.hhp !== hp) { hud.hhp = hp; $('heroHp').style.width = hp + '%'; }
+  setText($('heroLvl'), 'hlv', String(h.lvl));
+  const dead = h.alive ? '' : String(Math.ceil(h.respawn));
+  if (setText($('heroDead'), 'hdd', dead)) $('heroDead').hidden = !dead;
+  setText($('heroCd'), 'hcd', h.skillCd > 0 ? String(Math.ceil(h.skillCd)) : '');
+  const ready = heroSkillReady(h) && !S.over;
+  if (hud.hrd !== ready) { hud.hrd = ready; heroSkillBtn.classList.toggle('ready', ready); }
+  const mv = UI.heroCmd === 'move', sk = UI.heroCmd === 'skill';
+  if (hud.hmv !== mv) { hud.hmv = mv; heroFace.classList.toggle('on', mv); }
+  if (hud.hsk !== sk) { hud.hsk = sk; heroSkillBtn.classList.toggle('on', sk); }
+}
+function heroCommand(cmd, msg) {
+  closeSheets(); cancelRally();
+  UI.heroCmd = cmd; el.rallyCancel.hidden = false;
+  toast(msg, 0);
+  Snd.play('tap');
+}
+function startHeroMove() {
+  const h = S && S.hero;
+  if (!h || S.over || UI.paused) return;
+  if (UI.heroCmd === 'move') { cancelRally(); return; }
+  if (!h.alive) { toast(`${h.H.name} вернётся через ${Math.ceil(h.respawn)} с`, 1800); return; }
+  heroCommand('move', `Нажмите на карту — ${h.H.name} пойдёт туда`);
+}
+function useHeroSkill() {
+  const h = S && S.hero;
+  if (!h || S.over || UI.paused) return;
+  if (UI.heroCmd === 'skill') { cancelRally(); return; }
+  if (!h.alive) { toast(`${h.H.name} вернётся через ${Math.ceil(h.respawn)} с`, 1800); return; }
+  if (h.skillCd > 0) { toast(`${h.H.skill.name}: будет готово через ${Math.ceil(h.skillCd)} с`, 1800); return; }
+  if (h.H.skill.aim) heroCommand('skill', h.H.skill.hint);
+  else { castSkill(h, h.x, h.y); }
+}
+function heroOrder(wx, wy) {
+  const h = S.hero, cmd = UI.heroCmd;
+  cancelRally();
+  if (!h || !h.alive) return;
+  const x = clamp(wx, 0.3, COLS - 0.3), y = clamp(wy, 0.4, ROWS - 0.7);
+  if (cmd === 'move') {
+    dropHold(h); h.post = { x, y }; h.walk = true;
+    S.fx.push({ k: 'ring', x, y, r0: 0.1, r1: 0.55, t: 0, life: 0.5, color: '255,214,120', ground: true });
+    Snd.play('tap');
+  } else if (cmd === 'skill' && heroSkillReady(h)) castSkill(h, x, y);
+}
+heroFace.addEventListener('click', startHeroMove);
+heroSkillBtn.addEventListener('click', useHeroSkill);
 
 /* ---------- input ---------- */
 let down = null;
@@ -3634,6 +4427,9 @@ function tap(px, py) {
   const r = cv.getBoundingClientRect();
   const wx = (px - r.left - offX) / ts, wy = (py - r.top - offY) / ts;
   if (UI.rally != null) { setRally(wx, wy); return; }
+  if (UI.heroCmd) { heroOrder(wx, wy); return; }
+  const hr = S.hero;
+  if (hr && hr.alive && Math.abs(wx - hr.x) < 0.32 && wy > hr.y - 0.85 && wy < hr.y + 0.12) { startHeroMove(); return; }
   let best = -1, bd = 0.62;
   S.L.slots.forEach(([c, rr], i) => { const d = dist(wx, wy, c + 0.5, rr + 0.45); if (d < bd) { bd = d; best = i; } });
   if (best < 0) S.towers.forEach((t, i) => { if (t && Math.abs(wx - t.x) < 0.36 && wy > t.y - 0.95 && wy < t.y + 0.35) best = i; });
@@ -3652,23 +4448,28 @@ el.waveBtn.addEventListener('click', startWave);
 el.speedBtn.addEventListener('click', () => { UI.speed = UI.speed >= 3 ? 1 : UI.speed + 1; el.speedBtn.textContent = '×' + UI.speed; Snd.play('tap'); });
 function setPaused(p) {
   if (!S || S.over) return;
+  if (p) cancelRally();
   UI.paused = p; el.pause.hidden = !p;
-  el.soundBtn.textContent = 'Звук: ' + (Snd.on ? 'вкл' : 'выкл');
+  refreshSettings();
+  $('restartBtn').textContent = S.L.endless ? 'Начать заново' : 'Начать город заново';
+  $('menuBtn').textContent = S.L.endless ? 'К выбору карты' : 'К выбору города';
 }
 el.pauseBtn.addEventListener('click', () => setPaused(!UI.paused));
 $('resumeBtn').addEventListener('click', () => setPaused(false));
-$('restartBtn').addEventListener('click', () => { if (S) startLevel(S.li); });
-$('menuBtn').addEventListener('click', showMenu);
-// auto → high → medium → economy → auto (choosing auto again retries high quality)
-el.gfxBtn.addEventListener('click', () => {
-  GFX.mode = GFX.mode === 'auto' ? 2 : GFX.mode === 0 ? 'auto' : GFX.mode - 1;
-  if (GFX.mode === 'auto') GFX.auto = 2;
-  applyGfx(); Snd.play('tap');
-});
-el.soundBtn.addEventListener('click', () => { Snd.on = !Snd.on; store.set('silvenor.sound', Snd.on); el.soundBtn.textContent = 'Звук: ' + (Snd.on ? 'вкл' : 'выкл'); });
+$('restartBtn').addEventListener('click', () => { if (S) startLevel(S.li, S.mode); });
+$('menuBtn').addEventListener('click', () => showMenu(S && S.L.endless ? 'endless' : 'story'));
+el.gfxBtn.addEventListener('click', cycleGfx);
+el.soundBtn.addEventListener('click', toggleSound);
+$('setGfxBtn').addEventListener('click', cycleGfx);
+$('setSoundBtn').addEventListener('click', toggleSound);
+$('settingsBtn').addEventListener('click', () => { showScreen('settings'); Snd.play('tap'); });
+$('storyBtn').addEventListener('click', () => { showScreen('story'); Snd.play('tap'); });
+$('endlessBtn').addEventListener('click', () => { showScreen('endless'); Snd.play('tap'); });
+$('heroBtn').addEventListener('click', () => { showScreen('heroes'); Snd.play('tap'); });
+document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => { showScreen('menu'); Snd.play('tap'); }));
 $('nextBtn').addEventListener('click', () => { if (S) startLevel(Math.min(S.li + 1, LEVELS.length - 1)); });
-$('retryBtn').addEventListener('click', () => { if (S) startLevel(S.li); });
-$('endMenuBtn').addEventListener('click', showMenu);
+$('retryBtn').addEventListener('click', () => { if (S) startLevel(S.li, S.mode); });
+$('endMenuBtn').addEventListener('click', () => showMenu(S && S.L.endless ? 'endless' : 'story'));
 // Phones with little memory often close a game in the background (or the WebView renderer is killed):
 // the city in progress is saved as it was when the current wave began and reopens paused.
 function saveResume() { if (S && !S.over) store.set('silvenor.resume', snapshot()); else clearResume(); }
@@ -3688,7 +4489,7 @@ function syncAwake() {
   try { window.SilvenorAndroid.keepAwake(want); } catch (e) { /* bridge unavailable */ }
 }
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { if (UI.rally != null) cancelRally(); else if (UI.sel) closeSheets(); else if (S && !S.over) setPaused(!UI.paused); }
+  if (e.key === 'Escape') { if (UI.rally != null || UI.heroCmd) cancelRally(); else if (UI.sel) closeSheets(); else if (S && !S.over) setPaused(!UI.paused); else if (!S && UI.screen && UI.screen !== 'menu') showScreen('menu'); }
   if ((e.key === ' ' || e.key === 'Enter') && e.target === document.body && S && !S.waveActive && !UI.paused) { e.preventDefault(); startWave(); }
 });
 
@@ -3720,14 +4521,16 @@ function frame(now) {
 function snapshot() {
   if (!S || S.over) return { screen: 'menu' };
   if (S.waveActive && S.wSnap) return S.wSnap;
-  return { li: S.li, wave: S.wave, gold: S.gold, lives: S.lives, speed: UI.speed, towers: S.towers.map(t => t && { type: t.type, lvl: t.lvl, spent: t.spent, rally: t.rally || null }) };
+  return { li: S.li, mode: S.mode, wave: S.wave, gold: S.gold, lives: S.lives, speed: UI.speed, towers: S.towers.map(t => t && { type: t.type, lvl: t.lvl, spent: t.spent, rally: t.rally || null }) };
 }
 function start(data) {
   applyGfx();
   showMenu();
   if (data && data.li != null && LEVELS[data.li] && Array.isArray(data.towers)) {
-    startLevel(data.li);
+    startLevel(data.li, data.mode === 'endless' ? 'endless' : 'story');
+    if (S.L.endless) ensureEndless(S.L, (data.wave | 0) + 1);
     S.wave = clamp(data.wave | 0, 0, S.L.waves.length - 1);
+    if (S.hero) heroLevelUp(S.hero);
     S.gold = data.gold | 0; S.lives = data.lives | 0 || S.maxLives;
     data.towers.forEach((d, i) => {
       if (!d || !TOWERS[d.type] || i >= S.towers.length || !available(d.type, S.li)) return;
@@ -3743,17 +4546,20 @@ function start(data) {
   requestAnimationFrame(t => { lastT = t; frame(t); });
 }
 window.__silvenor = {
-  get S() { return S; }, startLevel, startWave, update, drawTower, drawDemon, render, DEMONS,
+  get S() { return S; }, startLevel, startWave, update, drawTower, drawDemon, drawHero, render, DEMONS, HEROES, showScreen, castSkill, heroOrder, useHeroSkill, startHeroMove,
+  setHero(k) { if (HEROES[k]) { heroKey = k; store.set('silvenor.hero', k); } },
+  heroCmd(cmd, x, y) { UI.heroCmd = cmd; heroOrder(x, y); },
   build(si, type) { UI.sel = { si }; UI.buildType = type; doBuild(); return !!S.towers[si]; },
   upgrade(si) { UI.sel = { si }; upgrade(); closeSheets(); },
   upCost(t) { const nx = TOWERS[t.type].levels[t.lvl + 1]; return nx ? nx.up : 0; },
   // Android back button: returns false only on the city list, so the app can close
   back() {
-    if (UI.rally != null) { cancelRally(); return true; }
+    if (UI.rally != null || UI.heroCmd) { cancelRally(); return true; }
     if (UI.sel) { closeSheets(); return true; }
-    if (!el.end.hidden || (S && S.over)) { showMenu(); return true; }
+    if (!el.end.hidden || (S && S.over)) { showMenu(S && S.L.endless ? 'endless' : 'story'); return true; }
     if (S && UI.paused) { setPaused(false); return true; }
     if (S) { setPaused(true); return true; }
+    if (UI.screen && UI.screen !== 'menu') { showScreen('menu'); return true; }
     return false;
   },
   pause() { if (S && !S.over && !UI.paused) setPaused(true); },
