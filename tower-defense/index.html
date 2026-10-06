@@ -4920,6 +4920,7 @@ function start(data) {
 window.__silvenor = {
   get S() { return S; }, startLevel, startWave, update, drawTower, drawDemon, drawHero, render, DEMONS, HEROES, showScreen, castSkill, heroOrder, useHeroSkill, startHeroMove,
   setHero(k) { if (HEROES[k]) { heroKey = k; store.set('silvenor.hero', k); } }, openSaga, closeSaga, SAGA,
+  heroPic(k, px, bust) { const c = document.createElement('canvas'); heroPortrait(c, k, px, bust); return c.toDataURL('image/png'); },
   heroCmd(cmd, x, y) { UI.heroCmd = cmd; heroOrder(x, y); },
   build(si, type) { UI.sel = { si }; UI.buildType = type; doBuild(); return !!S.towers[si]; },
   upgrade(si) { UI.sel = { si }; upgrade(); closeSheets(); },

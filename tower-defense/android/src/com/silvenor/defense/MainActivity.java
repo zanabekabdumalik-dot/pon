@@ -20,6 +20,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 /**
  * Full-screen WebView that runs the game from the bundled assets.
@@ -61,6 +63,16 @@ public class MainActivity extends Activity {
         }
         createWebView();
         hideSystemBars();
+        // Android 16 (target API 36) no longer calls onBackPressed: back gestures arrive through this callback.
+        if (Build.VERSION.SDK_INT >= 33) {
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                    new OnBackInvokedCallback() {
+                        @Override
+                        public void onBackInvoked() {
+                            handleBack();
+                        }
+                    });
+        }
     }
 
     private void createWebView() {
@@ -196,6 +208,10 @@ public class MainActivity extends Activity {
     /** The game decides what Back means (close a panel, pause, leave a city); on the city list it closes the app. */
     @Override
     public void onBackPressed() {
+        handleBack();
+    }
+
+    private void handleBack() {
         if (web == null) { finish(); return; }
         web.evaluateJavascript("(window.__silvenor && window.__silvenor.back) ? window.__silvenor.back() : false",
                 new ValueCallback<String>() {
