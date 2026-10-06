@@ -6,7 +6,7 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const FPS = 30;
+const FPS = 60;
 const BUILD = path.join(__dirname, 'build');
 const argv = process.argv.slice(2);
 const stillsArg = argv.includes('--stills') ? argv[argv.indexOf('--stills') + 1] : null;
