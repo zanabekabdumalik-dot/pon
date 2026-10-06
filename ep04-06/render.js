@@ -19,7 +19,7 @@ async function main() {
   page.on('pageerror', e => { pageError = e; });
   page.on('console', m => { if (m.type() === 'error') console.error('[page]', m.text()); });
   await page.goto('file://' + path.join(__dirname, 'anim.html'));
-  if (!await page.evaluate(() => window.ready())) throw new Error('шрифт Rubik не загрузился');
+  if (!await page.evaluate(() => window.ready())) throw new Error('шрифт не загрузился');
   const info = await page.evaluate(tl => window.setup(tl), tl);
   fs.writeFileSync(path.join(BUILD, 'cues.json'), JSON.stringify(info.cues, null, 1));
 

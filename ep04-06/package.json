@@ -7,7 +7,7 @@
     "render": "node render.js"
   },
   "dependencies": {
-    "@fontsource/rubik": "^5.3.0",
+    "@fontsource/balsamiq-sans": "^5.3.0",
     "playwright-core": "^1.63.0"
   },
   "private": true
