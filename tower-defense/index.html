@@ -335,6 +335,37 @@ details.howto li::marker{color:var(--gold)}
   .hero-corner canvas{width:64px;height:64px}
   .hc-lbl{font-size:15px;padding:2px 11px}
 }
+/* Title screen: the war scene drawn live behind the name, shown once at every start until tapped */
+.intro{position:fixed;top:0;right:0;bottom:0;left:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;overflow:hidden;cursor:pointer;
+  padding:calc(env(safe-area-inset-top,0px) + 5vh) 16px calc(env(safe-area-inset-bottom,0px) + 4vh);
+  padding:calc(var(--inset-top,env(safe-area-inset-top,0px)) + 5vh) 16px calc(var(--inset-bottom,env(safe-area-inset-bottom,0px)) + 4vh);
+  background:#0e0208;transition:opacity .7s ease,transform .7s ease}
+.intro.out{opacity:0;transform:scale(1.06);pointer-events:none}
+.intro canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+.intro-top,.intro-go{position:relative;z-index:1}
+.intro-top{display:flex;flex-direction:column;align-items:center;gap:6px;animation:introIn 1.1s cubic-bezier(.2,.8,.2,1) both}
+.intro-eyebrow{margin:0;font-size:13px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#ffb38a;text-shadow:0 0 14px rgba(255,90,40,.9),0 2px 2px rgba(0,0,0,.8)}
+.intro-title{margin:0;font-family:var(--font-display);font-weight:700;line-height:.86;
+  background:linear-gradient(180deg,#fffbe6 6%,#ffd166 50%,#ff8a1c 96%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 4px 0 rgba(40,6,0,.9)) drop-shadow(0 0 26px rgba(255,140,40,.55))}
+.intro-title small{display:block;font-size:30px;font-size:clamp(28px,8.5vw,46px);letter-spacing:.14em;line-height:1}
+.intro-title b{display:block;font-weight:700;font-size:54px;font-size:clamp(50px,15vw,92px)}
+.intro-vs{margin:4px 0 0;display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:23px;line-height:1;color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.9);
+  animation:introIn 1.1s .35s cubic-bezier(.2,.8,.2,1) both}
+.intro-vs .d{color:#ff8a5c;text-shadow:0 0 14px rgba(255,70,30,.9),0 2px 3px rgba(0,0,0,.9)}
+.intro-vs .e{color:#7dffb0;text-shadow:0 0 14px rgba(60,255,140,.8),0 2px 3px rgba(0,0,0,.9)}
+.intro-vs i{font-style:normal;font-size:15px;letter-spacing:.2em;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,209,102,.7);background:rgba(0,0,0,.45);color:var(--gold);text-shadow:none}
+.intro-go{border:1.5px solid #ffd166;border-radius:999px;padding:12px 26px;background:linear-gradient(180deg,rgba(60,22,8,.82),rgba(20,8,4,.82));
+  color:#fff3d0;font-family:var(--font-display);font-weight:700;font-size:22px;line-height:1;letter-spacing:.04em;box-shadow:0 0 24px rgba(255,170,60,.45),0 4px 0 rgba(0,0,0,.5);
+  animation:introIn .9s .9s both,introPulse 1.8s 1.8s ease-in-out infinite}
+@keyframes introIn{from{opacity:0;transform:translateY(-14px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes introPulse{0%,100%{opacity:1;box-shadow:0 0 24px rgba(255,170,60,.45),0 4px 0 rgba(0,0,0,.5)}50%{opacity:.72;box-shadow:0 0 8px rgba(255,170,60,.2),0 4px 0 rgba(0,0,0,.5)}}
+@media (orientation:landscape){ .intro-top{padding:6px 28px 12px;border-radius:50%;background:radial-gradient(closest-side,rgba(12,3,6,.6),rgba(12,3,6,0))} }
+@media (orientation:landscape) and (max-height:520px){
+  .intro{padding-top:calc(env(safe-area-inset-top,0px) + 3vh);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 3vh)}
+  .intro-title small{font-size:26px} .intro-title b{font-size:58px} .intro-go{font-size:19px;padding:10px 22px}
+}
+@media (prefers-reduced-motion:reduce){ .intro-top,.intro-vs,.intro-go{animation:none} .intro{transition:opacity .3s} .intro.out{transform:none} }
 </style>
 </head>
 <body>
@@ -506,6 +537,15 @@ details.howto li::marker{color:var(--gold)}
   </section>
 </div>
 
+<section id="intro" class="intro" aria-label="Оборона Сильвенора">
+  <canvas id="introCv" aria-hidden="true"></canvas>
+  <div class="intro-top">
+    <p class="intro-eyebrow">Пепельный разлом открылся</p>
+    <h1 class="intro-title"><small>Оборона</small><b>Сильвенора</b></h1>
+    <p class="intro-vs"><span class="d">Демоны</span><i>против</i><span class="e">эльфов</span></p>
+  </div>
+  <button class="intro-go" id="introGo">Нажмите, чтобы начать</button>
+</section>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="coinSym" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="#e9c46a"/><circle cx="12" cy="12" r="6.6" fill="none" stroke="#9a7a2a" stroke-width="1.6"/><path d="M12 7.8l1.3 2.9 2.9 1.3-2.9 1.3L12 16.2l-1.3-2.9L7.8 12l2.9-1.3z" fill="#9a7a2a"/></symbol>
 </svg>
@@ -2624,6 +2664,299 @@ function drawScene(canvas, heroKey, ci, cssW, locked) {
     circ(g, 0.8, 0.455, 0.018, '#1a1208');
   }
   g.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+/* ---------- "demons against elves": app icon, title screen and store banner ---------- */
+function drawDemonAt(g, type, x, y, s, face, ph, t) {
+  const D = DEMONS[type];
+  g.save(); g.translate(x, y); const k = s * (D.scale || 1); g.scale(k, k);
+  drawDemon(g, { type, D, v: null, tint: D.tint || null, x: 0, y: 0, face, phase: ph, flash: 0, slowT: 0, stunT: 0, atk: 0, phased: 0, skin: 0, flying: !!D.flying }, t);
+  g.restore();
+}
+function drawHeroAt(g, key, x, y, s, face, t, pose) {
+  g.save(); g.translate(x, y); g.scale(s, s);
+  drawHero(g, Object.assign(heroPose(key), { face }, pose || {}), t);
+  g.restore();
+}
+// a glowing jagged crack between the two worlds
+function riftCrack(g, pts, w, t) {
+  const fl = 0.85 + 0.15 * Math.sin(t * 7) * Math.sin(t * 3.1);
+  const path = () => { g.beginPath(); g.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) g.lineTo(pts[i], pts[i + 1]); };
+  g.lineJoin = 'round'; g.lineCap = 'round';
+  for (const [k, col] of [[6, `rgba(255,80,20,${0.18 * fl})`], [3, `rgba(255,120,40,${0.45 * fl})`], [1.4, `rgba(255,190,90,${0.9 * fl})`], [0.5, 'rgba(255,250,220,1)']]) { path(); g.lineWidth = w * k; g.strokeStyle = col; g.stroke(); }
+  g.lineJoin = 'miter'; g.lineCap = 'butt';
+}
+function jagged(x0, y0, x1, y1, n, amp, seed) {
+  const r = mulberry32(seed), pts = [];
+  for (let i = 0; i <= n; i++) { const k = i / n, o = i === 0 || i === n ? 0 : (r() - 0.5) * 2 * amp; pts.push(x0 + (x1 - x0) * k + o * (y1 - y0 ? 1 : 0), y0 + (y1 - y0) * k + o * (x1 - x0 ? 1 : 0)); }
+  return pts;
+}
+function swirl(g, x, y, rx, ry, t, c1, c2) {
+  glow(g, x, y, rx * 1.8, `rgba(${c1},.5)`);
+  for (let i = 0; i < 8; i++) { g.beginPath(); g.ellipse(x, y, rx * (1 - i * 0.11), ry * (1 - i * 0.11), 0, t * (0.8 + i * 0.15) + i, t * (0.8 + i * 0.15) + i + 4.4); g.lineWidth = rx * 0.07; g.strokeStyle = `rgba(${i % 2 ? c1 : c2},.9)`; g.stroke(); }
+  circ(g, x, y, rx * 0.16, `rgba(${c1},1)`); circ(g, x, y, rx * 0.08, '#fff0d0');
+}
+// a big horned demon face for the icon
+function demonHead(g, x, y, r, t) {
+  g.lineCap = 'round';
+  for (const s of [-1, 1]) {
+    g.beginPath(); g.moveTo(x + s * r * 0.5, y - r * 0.55); g.quadraticCurveTo(x + s * r * 1.55, y - r * 0.85, x + s * r * 1.05, y - r * 1.95);
+    g.lineWidth = r * 0.46; g.strokeStyle = '#c9b089'; g.stroke();
+    g.lineWidth = r * 0.22; g.strokeStyle = '#efe2c2'; g.stroke();
+  }
+  g.lineCap = 'butt';
+  for (const s of [-1, 1]) for (let i = 1; i <= 4; i++) {
+    const k = i / 5, u = 1 - k, p0x = x + s * r * 0.5, p0y = y - r * 0.55, p1x = x + s * r * 1.55, p1y = y - r * 0.85, p2x = x + s * r * 1.05, p2y = y - r * 1.95;
+    const px = u * u * p0x + 2 * u * k * p1x + k * k * p2x, py = u * u * p0y + 2 * u * k * p1y + k * k * p2y;
+    let dx = 2 * u * (p1x - p0x) + 2 * k * (p2x - p1x), dy = 2 * u * (p1y - p0y) + 2 * k * (p2y - p1y);
+    const l = Math.hypot(dx, dy) || 1, hw = r * 0.22; dx /= l; dy /= l;
+    line(g, px - dy * hw, py + dx * hw, px + dy * hw, py - dx * hw, r * 0.05, 'rgba(110,84,50,.85)');
+  }
+  for (const s of [-1, 1]) poly(g, [x + s * r * 0.82, y - r * 0.2, x + s * r * 1.38, y - r * 0.52, x + s * r * 0.92, y + r * 0.18], '#8a1a18');
+  const hg = g.createRadialGradient(x - r * 0.3, y - r * 0.45, r * 0.1, x, y, r * 1.15);
+  hg.addColorStop(0, '#f05a40'); hg.addColorStop(0.55, '#b5242a'); hg.addColorStop(1, '#4a060c');
+  g.fillStyle = hg; g.beginPath();
+  g.moveTo(x - r * 0.9, y - r * 0.35); g.quadraticCurveTo(x - r * 0.95, y - r * 1.05, x, y - r * 1.02); g.quadraticCurveTo(x + r * 0.95, y - r * 1.05, x + r * 0.9, y - r * 0.35);
+  g.quadraticCurveTo(x + r * 0.98, y + r * 0.45, x + r * 0.5, y + r * 0.85); g.quadraticCurveTo(x, y + r * 1.1, x - r * 0.5, y + r * 0.85); g.quadraticCurveTo(x - r * 0.98, y + r * 0.45, x - r * 0.9, y - r * 0.35);
+  g.fill();
+  // brow, glowing eyes
+  poly(g, [x - r * 0.78, y - r * 0.38, x - r * 0.08, y - r * 0.08, x - r * 0.08, y - r * 0.24, x - r * 0.7, y - r * 0.55], '#3a0408');
+  poly(g, [x + r * 0.78, y - r * 0.38, x + r * 0.08, y - r * 0.08, x + r * 0.08, y - r * 0.24, x + r * 0.7, y - r * 0.55], '#3a0408');
+  const ep = 0.85 + 0.15 * Math.sin(t * 3);
+  for (const s of [-1, 1]) {
+    glow(g, x + s * r * 0.4, y - r * 0.08, r * 0.55, `rgba(255,190,40,${0.55 * ep})`);
+    poly(g, [x + s * r * 0.68, y - r * 0.22, x + s * r * 0.14, y - r * 0.02, x + s * r * 0.3, y + r * 0.08, x + s * r * 0.62, y - r * 0.02], '#ffd84a');
+    circ(g, x + s * r * 0.38, y - r * 0.05, r * 0.06, '#7a1a00');
+  }
+  // snout and roaring mouth with fangs
+  poly(g, [x - r * 0.1, y + r * 0.12, x + r * 0.1, y + r * 0.12, x, y + r * 0.26], '#5a0810');
+  g.fillStyle = '#2a0204'; g.beginPath(); g.ellipse(x, y + r * 0.56, r * 0.42, r * 0.24, 0, 0, TAU); g.fill();
+  glow(g, x, y + r * 0.6, r * 0.3, 'rgba(255,90,20,.6)');
+  for (const s of [-1, 1]) {
+    poly(g, [x + s * r * 0.36, y + r * 0.38, x + s * r * 0.2, y + r * 0.38, x + s * r * 0.28, y + r * 0.64], '#fff4e0');
+    poly(g, [x + s * r * 0.1, y + r * 0.42, x + s * r * 0.02, y + r * 0.42, x + s * r * 0.06, y + r * 0.56], '#fff4e0');
+    poly(g, [x + s * r * 0.3, y + r * 0.78, x + s * r * 0.16, y + r * 0.78, x + s * r * 0.23, y + r * 0.58], '#fff4e0');
+  }
+  // horn-ridge crown of flames
+  for (let i = 0; i < 5; i++) { const fx = x + (i - 2) * r * 0.22, h = r * (0.3 + (i % 2 ? 0.12 : 0.24)) * (0.85 + 0.15 * Math.sin(t * 9 + i)); poly(g, [fx - r * 0.1, y - r * 0.92, fx, y - r * 0.92 - h, fx + r * 0.1, y - r * 0.92], i % 2 ? '#ffd24a' : '#ff6a2a'); }
+}
+// background of the icon: elven forest on the left, hellfire on the right, the rift between them
+function iconBg(g, t) {
+  const L = g.createLinearGradient(0, 0, 0.6, 1); L.addColorStop(0, '#2c8a5a'); L.addColorStop(1, '#06281a');
+  g.fillStyle = L; g.fillRect(0, 0, 1, 1);
+  glow(g, 0.12, 0.12, 0.45, 'rgba(210,255,220,.35)');
+  const R = g.createLinearGradient(1, 0, 0.4, 1); R.addColorStop(0, '#2a0306'); R.addColorStop(0.55, '#7a1210'); R.addColorStop(1, '#e05a1a');
+  g.fillStyle = R; g.beginPath(); g.moveTo(0.44, -0.02); g.lineTo(1.02, -0.02); g.lineTo(1.02, 1.02); g.lineTo(0.62, 1.02); g.closePath(); g.fill();
+  for (let i = 0; i < 7; i++) { const x = 0.0 + i * 0.07; line(g, x, 1, x, 0.86 - (i % 3) * 0.03, 0.012, '#04140d'); circ(g, x, 0.82 - (i % 3) * 0.03, 0.06, '#04140d'); }
+  for (let i = 0; i < 6; i++) { const x = 0.68 + i * 0.07, h = 0.08 + (i % 2) * 0.06; poly(g, [x - 0.04, 1.02, x, 1 - h, x + 0.04, 1.02], i % 2 ? 'rgba(255,200,80,.7)' : 'rgba(255,110,40,.7)'); }
+  const r = mulberry32(9);
+  for (let i = 0; i < 14; i++) circ(g, 0.55 + r() * 0.45, 0.15 + r() * 0.8, 0.006 + r() * 0.006, `rgba(255,${160 + r() * 80 | 0},80,.9)`);
+  riftCrack(g, jagged(0.44, -0.02, 0.62, 1.02, 9, 0.035, 4), 0.012, t);
+}
+// An elf archer's portrait for the icon: long ears, golden hair and circlet, green eyes turned to the demon.
+function elfHead(g, x, y, r, t) {
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  // quiver over the left shoulder
+  for (let i = 0; i < 3; i++) {
+    const bx = x - r * (0.95 + i * 0.16), by = y + r * (1.5 - i * 0.04), tx = x - r * (1.45 + i * 0.2), ty = y + r * (0.1 - i * 0.12);
+    line(g, bx, by, tx, ty, r * 0.06, '#8a5a2a');
+    poly(g, [tx, ty, tx - r * 0.2, ty - r * 0.12, tx - r * 0.08, ty + r * 0.22], i === 1 ? '#f4f0e0' : '#5fd08a');
+    poly(g, [tx, ty, tx + r * 0.16, ty - r * 0.2, tx + r * 0.06, ty + r * 0.2], i === 1 ? '#d8d0b8' : '#3a9a62');
+  }
+  line(g, x - r * 0.75, y + r * 2.1, x - r * 1.3, y + r * 0.85, r * 0.42, '#6a3e1c');
+  line(g, x - r * 0.75, y + r * 2.1, x - r * 1.3, y + r * 0.85, r * 0.26, '#8f5a2a');
+  // hair falling behind the shoulders
+  const hair = g.createLinearGradient(x, y - r, x, y + r * 2);
+  hair.addColorStop(0, '#fff0a8'); hair.addColorStop(0.45, '#f2c654'); hair.addColorStop(1, '#b77a22');
+  g.fillStyle = hair; g.beginPath();
+  g.moveTo(x - r * 0.95, y - r * 0.2); g.quadraticCurveTo(x - r * 1.05, y - r * 1.3, x, y - r * 1.2); g.quadraticCurveTo(x + r * 1.05, y - r * 1.3, x + r * 0.95, y - r * 0.2);
+  g.quadraticCurveTo(x + r * 1.15, y + r * 1.0, x + r * 0.95, y + r * 1.75); g.lineTo(x - r * 1.05, y + r * 1.85); g.quadraticCurveTo(x - r * 1.2, y + r * 0.9, x - r * 0.95, y - r * 0.2);
+  g.fill();
+  // neck and cloak with a leaf clasp
+  g.fillStyle = '#d9a47c'; g.fillRect(x - r * 0.3, y + r * 0.55, r * 0.6, r * 0.75);
+  const cl = g.createLinearGradient(x, y + r, x, y + r * 2.6);
+  cl.addColorStop(0, '#3fae6c'); cl.addColorStop(1, '#0f4428');
+  g.fillStyle = cl; g.beginPath();
+  g.moveTo(x - r * 0.32, y + r * 1.12); g.quadraticCurveTo(x - r * 1.35, y + r * 1.2, x - r * 1.6, y + r * 2.7); g.lineTo(x + r * 1.6, y + r * 2.7);
+  g.quadraticCurveTo(x + r * 1.35, y + r * 1.2, x + r * 0.32, y + r * 1.12); g.lineTo(x, y + r * 1.55); g.closePath(); g.fill();
+  poly(g, [x - r * 0.32, y + r * 1.12, x, y + r * 1.55, x - r * 0.12, y + r * 1.62, x - r * 0.5, y + r * 1.2], '#2a8a54');
+  poly(g, [x + r * 0.32, y + r * 1.12, x, y + r * 1.55, x + r * 0.12, y + r * 1.62, x + r * 0.5, y + r * 1.2], '#2a8a54');
+  line(g, x - r * 1.0, y + r * 1.7, x - r * 1.25, y + r * 2.7, r * 0.05, 'rgba(10,50,30,.6)');
+  line(g, x + r * 1.0, y + r * 1.7, x + r * 1.25, y + r * 2.7, r * 0.05, 'rgba(10,50,30,.6)');
+  circ(g, x, y + r * 1.6, r * 0.16, '#e8b030');
+  poly(g, [x, y + r * 1.46, x + r * 0.1, y + r * 1.6, x, y + r * 1.74, x - r * 0.1, y + r * 1.6], '#4ee08a');
+  // long pointed ears
+  for (const s of [-1, 1]) {
+    g.fillStyle = '#e8b892'; g.beginPath();
+    g.moveTo(x + s * r * 0.74, y - r * 0.22); g.quadraticCurveTo(x + s * r * 1.05, y - r * 0.5, x + s * r * 1.48, y - r * 0.82);
+    g.quadraticCurveTo(x + s * r * 1.22, y - r * 0.15, x + s * r * 0.8, y + r * 0.32); g.closePath(); g.fill();
+    g.fillStyle = '#c98a6a'; g.beginPath();
+    g.moveTo(x + s * r * 0.84, y - r * 0.12); g.quadraticCurveTo(x + s * r * 1.08, y - r * 0.36, x + s * r * 1.32, y - r * 0.62);
+    g.quadraticCurveTo(x + s * r * 1.08, y - r * 0.1, x + s * r * 0.86, y + r * 0.16); g.closePath(); g.fill();
+  }
+  // face
+  const sk = g.createRadialGradient(x - r * 0.25, y - r * 0.35, r * 0.1, x, y, r * 1.05);
+  sk.addColorStop(0, '#ffe6cc'); sk.addColorStop(0.7, '#f2c39c'); sk.addColorStop(1, '#d69a74');
+  g.fillStyle = sk; g.beginPath();
+  g.moveTo(x, y - r * 0.98); g.quadraticCurveTo(x + r * 0.9, y - r * 0.95, x + r * 0.82, y - r * 0.1); g.quadraticCurveTo(x + r * 0.72, y + r * 0.62, x, y + r * 0.98);
+  g.quadraticCurveTo(x - r * 0.72, y + r * 0.62, x - r * 0.82, y - r * 0.1); g.quadraticCurveTo(x - r * 0.9, y - r * 0.95, x, y - r * 0.98); g.fill();
+  glow(g, x - r * 0.48, y + r * 0.3, r * 0.22, 'rgba(255,130,120,.18)');
+  glow(g, x + r * 0.48, y + r * 0.3, r * 0.22, 'rgba(255,130,120,.18)');
+  // determined brows and green eyes watching the demon
+  poly(g, [x - r * 0.66, y - r * 0.36, x - r * 0.14, y - r * 0.2, x - r * 0.16, y - r * 0.3, x - r * 0.62, y - r * 0.46], '#a86e1e');
+  poly(g, [x + r * 0.66, y - r * 0.36, x + r * 0.14, y - r * 0.2, x + r * 0.16, y - r * 0.3, x + r * 0.62, y - r * 0.46], '#a86e1e');
+  const ep = 0.8 + 0.2 * Math.sin(t * 2.5);
+  for (const s of [-1, 1]) {
+    const ex = x + s * r * 0.37, ey = y - r * 0.04;
+    g.fillStyle = '#fbfbf4'; g.beginPath();
+    g.moveTo(ex - s * r * 0.22, ey + r * 0.02); g.quadraticCurveTo(ex, ey - r * 0.17, ex + s * r * 0.25, ey - r * 0.08);
+    g.quadraticCurveTo(ex + s * r * 0.02, ey + r * 0.16, ex - s * r * 0.22, ey + r * 0.02); g.fill();
+    glow(g, ex + r * 0.07, ey, r * 0.2, `rgba(90,255,150,${0.45 * ep})`);
+    circ(g, ex + r * 0.07, ey, r * 0.1, '#2fbf6a');
+    circ(g, ex + r * 0.08, ey, r * 0.05, '#0c2a18');
+    circ(g, ex + r * 0.04, ey - r * 0.04, r * 0.025, '#ffffff');
+    g.beginPath(); g.moveTo(ex - s * r * 0.24, ey + r * 0.01); g.quadraticCurveTo(ex, ey - r * 0.2, ex + s * r * 0.28, ey - r * 0.1);
+    g.lineWidth = r * 0.05; g.strokeStyle = '#5a3418'; g.stroke();
+  }
+  // nose and a set mouth
+  g.beginPath(); g.moveTo(x + r * 0.02, y + r * 0.06); g.lineTo(x + r * 0.09, y + r * 0.32); g.lineTo(x - r * 0.03, y + r * 0.35);
+  g.lineWidth = r * 0.03; g.strokeStyle = 'rgba(160,90,60,.5)'; g.stroke();
+  g.beginPath(); g.moveTo(x - r * 0.18, y + r * 0.56); g.quadraticCurveTo(x, y + r * 0.52, x + r * 0.2, y + r * 0.55);
+  g.lineWidth = r * 0.05; g.strokeStyle = '#b25a4e'; g.stroke();
+  // fringe swept to one side, golden circlet with a glowing leaf
+  g.fillStyle = hair; g.beginPath();
+  g.moveTo(x - r * 0.92, y - r * 0.05); g.quadraticCurveTo(x - r * 1.0, y - r * 1.2, x, y - r * 1.16); g.quadraticCurveTo(x + r * 1.0, y - r * 1.2, x + r * 0.92, y - r * 0.05);
+  g.quadraticCurveTo(x + r * 0.7, y - r * 0.5, x + r * 0.1, y - r * 0.62); g.quadraticCurveTo(x - r * 0.3, y - r * 0.5, x - r * 0.58, y - r * 0.6);
+  g.quadraticCurveTo(x - r * 0.8, y - r * 0.4, x - r * 0.92, y - r * 0.05); g.fill();
+  g.beginPath(); g.moveTo(x - r * 0.9, y - r * 0.55); g.quadraticCurveTo(x, y - r * 0.98, x + r * 0.9, y - r * 0.55);
+  g.lineWidth = r * 0.07; g.strokeStyle = '#ffd34a'; g.stroke();
+  glow(g, x, y - r * 0.78, r * 0.35, `rgba(120,255,170,${0.7 * ep})`);
+  poly(g, [x, y - r * 0.98, x + r * 0.12, y - r * 0.78, x, y - r * 0.6, x - r * 0.12, y - r * 0.78], '#5cffa0');
+  poly(g, [x, y - r * 0.92, x + r * 0.05, y - r * 0.78, x, y - r * 0.68], '#e0fff0');
+  g.lineCap = 'butt'; g.lineJoin = 'miter';
+}
+function iconFg(g, t) {
+  demonHead(g, 0.7, 0.4, 0.19, t);
+  elfHead(g, 0.29, 0.56, 0.19, t);
+  // the elf's arrow streaking across the rift
+  g.lineCap = 'round';
+  for (let i = 0; i < 3; i++) line(g, 0.38 - i * 0.03, 0.95 - i * 0.01, 0.5 - i * 0.03, 0.83 - i * 0.01, 0.005, 'rgba(220,255,230,.5)');
+  glow(g, 0.61, 0.73, 0.08, 'rgba(160,255,190,.85)');
+  line(g, 0.47, 0.87, 0.62, 0.72, 0.013, '#f5e6c8');
+  poly(g, [0.665, 0.675, 0.6, 0.72, 0.62, 0.74], '#e8fff0');
+  poly(g, [0.47, 0.87, 0.43, 0.87, 0.455, 0.845], '#5fd08a');
+  poly(g, [0.47, 0.87, 0.47, 0.91, 0.495, 0.885], '#5fd08a');
+  g.lineCap = 'butt';
+}
+// part: 'full' (store and old launchers), 'bg' / 'fg' (Android adaptive icon layers, 108dp with a 66dp safe zone)
+function drawIconArt(g, s, part) {
+  g.setTransform(s, 0, 0, s, 0, 0);
+  if (part !== 'fg') iconBg(g, 1.3);
+  if (part === 'bg') return;
+  if (part === 'fg') g.setTransform(s * 0.66, 0, 0, s * 0.66, s * 0.17, s * 0.17);
+  else g.setTransform(s * 0.94, 0, 0, s * 0.94, s * 0.03, s * 0.04);
+  iconFg(g, 1.3);
+}
+// The title scene: demons pouring from the rift above, the elven city and its heroes below (portrait),
+// or elves on the left and demons on the right (landscape banner). t animates it.
+// top: the share of the height taken by the title over a portrait scene; the portal and flyers keep below it.
+// cache: an object kept between frames; the still layer (sky, city, vignette) is then drawn once per size.
+function versusGeom(W, H, top) {
+  const P = H >= W, u = Math.min(W, H), tp = top == null ? 0.2 : Math.min(0.3, top);
+  const ry = P ? Math.max(0.035, (0.37 - tp) * 0.45) * H : 0;
+  return {
+    P, u, ry,
+    px: P ? W * 0.5 : W * 0.8, py: P ? (tp + 0.375) / 2 * H : H * 0.36, pr: P ? Math.min(W * 0.3, ry / 0.55) : H * 0.3,
+    crack: P ? jagged(-W * 0.05, H * 0.5, W * 1.05, H * 0.5, 14, H * 0.018, 21) : jagged(W * 0.5, -H * 0.05, W * 0.5, H * 1.05, 10, W * 0.018, 21),
+    gy: P ? H * 0.85 : H * 0.84, wy: P ? H * 0.68 : H * 0.64, ts: P ? 0.75 : 0.8, cityR: P ? W : W * 0.47,
+    towers: P ? [W * 0.08, W * 0.92] : [W * 0.06, W * 0.4],
+    hs: P ? H * 0.15 : H * 0.34, hy: P ? H * 0.87 : H * 0.86,
+    heroes: P ? [[W * 0.13, 'elf', 1], [W * 0.31, 'dwarf', 1], [W * 0.5, 'paladin', 1], [W * 0.69, 'mage', -1], [W * 0.87, 'shadow', -1]]
+      : [[W * 0.08, 'mage', 1], [W * 0.18, 'dwarf', 1], [W * 0.28, 'paladin', 1], [W * 0.37, 'shadow', 1], [W * 0.45, 'elf', 1]],
+  };
+}
+function versusStill(g, W, H, V) {
+  const { P, u, crack, gy, wy, cityR } = V;
+  // demon realm
+  const dg = P ? g.createLinearGradient(0, 0, 0, H * 0.52) : g.createLinearGradient(W, 0, W * 0.48, 0);
+  dg.addColorStop(0, '#0e0208'); dg.addColorStop(0.6, '#4a0812'); dg.addColorStop(1, '#c8401a');
+  g.fillStyle = dg; g.fillRect(0, 0, W, H);
+  // elf realm
+  const eg = P ? g.createLinearGradient(0, H * 0.5, 0, H) : g.createLinearGradient(W * 0.5, 0, 0, 0);
+  eg.addColorStop(0, '#3a5a2e'); eg.addColorStop(0.35, '#16402c'); eg.addColorStop(1, '#061a12');
+  g.fillStyle = eg;
+  g.beginPath();
+  if (P) { g.moveTo(-W * 0.05, H * 1.05); for (let i = 0; i < crack.length; i += 2) g.lineTo(crack[i], crack[i + 1]); g.lineTo(W * 1.05, H * 1.05); }
+  else { g.moveTo(-W * 0.05, -H * 0.05); for (let i = 0; i < crack.length; i += 2) g.lineTo(crack[i], crack[i + 1]); g.lineTo(-W * 0.05, H * 1.05); }
+  g.closePath(); g.fill();
+  // stars over the elven side
+  const r = mulberry32(3);
+  for (let i = 0; i < 50; i++) { const x = r(), y = r(); if (P ? y > 0.53 && y < 0.64 : x < 0.45 && y < 0.5) circ(g, x * W, y * H, u * (0.002 + r() * 0.003), `rgba(255,255,255,${0.3 + r() * 0.5})`); }
+  // elven city: forest and walls with towers
+  for (let x = 0; x < cityR; x += u * 0.07) circ(g, x, (P ? H * 0.64 : H * 0.6) + Math.sin(x * 0.07) * u * 0.02, u * 0.06, '#0a2a1c');
+  g.fillStyle = '#20382c'; g.fillRect(0, wy, cityR, gy - wy);
+  for (let x = 0; x < cityR; x += u * 0.05) g.fillRect(x, wy - u * 0.025, u * 0.03, u * 0.03);
+  for (const tx of V.towers) {
+    const v = u * V.ts;
+    g.fillStyle = '#2a4638'; g.fillRect(tx - v * 0.045, wy - v * 0.16, v * 0.09, gy - wy + v * 0.16);
+    poly(g, [tx - v * 0.06, wy - v * 0.16, tx, wy - v * 0.27, tx + v * 0.06, wy - v * 0.16], '#2f8a62');
+    line(g, tx, wy - v * 0.27, tx, wy - v * 0.34, v * 0.006, '#c9a24f');
+    g.fillStyle = 'rgba(255,214,120,.85)'; g.fillRect(tx - v * 0.01, wy - v * 0.1, v * 0.02, v * 0.03);
+  }
+  g.fillStyle = 'rgba(255,214,120,.7)';
+  for (let x = u * 0.12; x < cityR - u * 0.1; x += u * 0.13) g.fillRect(x, wy + u * 0.03, u * 0.018, u * 0.025);
+  const gg = g.createLinearGradient(0, gy, 0, H); gg.addColorStop(0, '#12301f'); gg.addColorStop(1, '#030c08');
+  g.fillStyle = gg; g.fillRect(0, gy, P ? W : W * 0.5, H - gy);
+  for (const [x] of V.heroes) glow(g, x, V.hy - V.hs * 0.3, V.hs * 0.55, 'rgba(170,255,200,.16)');
+  const vg = g.createRadialGradient(W / 2, H / 2, u * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)');
+  g.fillStyle = vg; g.fillRect(0, 0, W, H);
+}
+function drawVersus(g, W, H, t, shots, top, cache) {
+  const V = versusGeom(W, H, top), { P, u, px, py, pr, ry } = V;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  if (cache) {
+    if (cache.w !== W || cache.h !== H) {
+      cache.cv = cache.cv || document.createElement('canvas');
+      cache.cv.width = cache.w = W; cache.cv.height = cache.h = H;
+      versusStill(cache.cv.getContext('2d'), W, H, V);
+    }
+    g.drawImage(cache.cv, 0, 0);
+  } else versusStill(g, W, H, V);
+  // the portal over the demons, banners on the towers
+  swirl(g, px, py, pr, pr * 0.55, t * 1.4, '255,120,40', '190,30,20');
+  for (const tx of V.towers) { const v = u * V.ts; poly(g, [tx, V.wy - v * 0.34, tx + v * 0.05 + Math.sin(t * 3) * v * 0.01, V.wy - v * 0.32, tx, V.wy - v * 0.3], '#3f9a63'); }
+  // demons: flyers around the portal, the horde in front of it
+  const D = P ? { y: H * 0.47, s: H * 0.095, fly: [[W * 0.12, py + ry * 0.3, 'gargoyle', 0.55], [W * 0.88, py - ry * 0.1, 'gargoyle', 0.5], [W * 0.9, py - ry * 1.1, 'bat', 0.55], [W * 0.1, py - ry * 0.9, 'bat', 0.5]],
+      walk: [[W * 0.5, 'boss', 1.0, 1], [W * 0.2, 'brute', 0.95, 1], [W * 0.8, 'brute', 0.95, -1], [W * 0.06, 'imp', 0.9, 1], [W * 0.34, 'hound', 0.9, 1], [W * 0.66, 'warlock', 1, -1], [W * 0.94, 'imp', 0.9, -1]] }
+    : { y: H * 0.84, s: H * 0.19, fly: [[W * 0.62, H * 0.18, 'gargoyle', 0.55], [W * 0.95, H * 0.12, 'bat', 0.6], [W * 0.7, H * 0.06, 'bat', 0.5]],
+      walk: [[W * 0.78, 'boss', 1.0, -1], [W * 0.6, 'brute', 0.95, -1], [W * 0.95, 'brute', 0.9, -1], [W * 0.54, 'imp', 0.9, -1], [W * 0.68, 'hound', 0.9, -1], [W * 0.88, 'warlock', 1, -1]] };
+  for (const [x, y, type, k] of D.fly) { const ox = Math.sin(t * 0.9 + x) * u * 0.03, oy = Math.cos(t * 1.3 + y) * u * 0.015; drawDemonAt(g, type, x + ox, y + oy + D.s * 0.5, D.s * k, Math.cos(t * 0.9 + x) > 0 ? 1 : -1, t * 3 + x, t); }
+  const order = D.walk.slice().sort((a, b) => (a[1] === 'boss') - (b[1] === 'boss'));
+  for (const [x, type, k, face] of order) { const big = type === 'boss' ? 0.78 : type === 'brute' ? 0.95 : 1.3; drawDemonAt(g, type, x, D.y - (type === 'boss' ? 0 : u * 0.005), D.s * k * big * 0.9, face, t * 2.2 + x * 0.01, t); }
+  // the crack itself, with embers rising from it
+  riftCrack(g, V.crack, u * 0.008, t);
+  const r = mulberry32(5);
+  for (let i = 0; i < 26; i++) {
+    const ph = (t * 0.25 + i * 0.137) % 1, base = r(), side = r();
+    const x = P ? base * W : W * 0.5 + (side - 0.5) * W * 0.12, y = P ? H * 0.5 - ph * H * 0.25 : H * (1 - ph);
+    circ(g, x + Math.sin(t * 2 + i) * u * 0.01, y, u * (0.003 + (i % 3) * 0.002), `rgba(255,${150 + (i * 37) % 90},60,${0.9 * (1 - ph)})`);
+  }
+  // heroes in front of the walls
+  for (const [x, key, face] of V.heroes) {
+    const pose = key === 'elf' ? { aim: P ? -1.1 : -0.35, shot: (t % 1.6) < 0.25 ? 0.2 : 0 } : key === 'mage' ? { shot: (t % 2.2) < 0.3 ? 0.25 : 0 } : key === 'shadow' || key === 'paladin' || key === 'dwarf' ? { swing: 0 } : {};
+    if (key === 'elf' && face < 0) pose.aim = Math.PI - pose.aim;
+    drawHeroAt(g, key, x, V.hy, V.hs * (key === 'dwarf' ? 1.05 : 1), face, t + x * 0.01, pose);
+  }
+  // arrows and starlight flying at the demons
+  if (shots) for (let i = 0; i < 4; i++) {
+    const ph = (t * 0.7 + i * 0.25) % 1, ex = P ? W * 0.13 : W * 0.45, ey = P ? H * 0.8 : H * 0.72, tx = P ? W * (0.25 + i * 0.17) : W * (0.58 + i * 0.1), ty = P ? H * 0.4 : H * 0.66;
+    const x = ex + (tx - ex) * ph, y = ey + (ty - ey) * ph - Math.sin(ph * Math.PI) * u * 0.08, a = Math.atan2(ty - ey, tx - ex);
+    g.globalAlpha = Math.min(1, (1 - ph) * 3);
+    glow(g, x, y, u * 0.03, 'rgba(200,255,210,.7)');
+    line(g, x - Math.cos(a) * u * 0.05, y - Math.sin(a) * u * 0.05, x, y, u * 0.006, '#f5e6c8');
+    g.globalAlpha = 1;
+  }
 }
 
 /* ---------- map background ---------- */
@@ -4861,9 +5194,41 @@ function syncAwake() {
   try { window.SilvenorAndroid.keepAwake(want); } catch (e) { /* bridge unavailable */ }
 }
 document.addEventListener('keydown', e => {
+  if (UI.intro) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeIntro(); } return; }
   if (e.key === 'Escape') { if (UI.saga) closeSaga(); else if (UI.rally != null || UI.heroCmd) cancelRally(); else if (UI.sel) closeSheets(); else if (S && !S.over) setPaused(!UI.paused); else if (!S && UI.screen && UI.screen !== 'menu') showScreen('menu'); }
   if ((e.key === ' ' || e.key === 'Enter') && e.target === document.body && S && !S.waveActive && !UI.paused) { e.preventDefault(); startWave(); }
 });
+
+/* ---------- title screen ---------- */
+// Shown at every start: the war at the rift is drawn live (~30 fps) behind the game's name until the
+// player taps; the game's own frame loop sleeps meanwhile. Tests open the page with ?nointro.
+const introEl = $('intro'), introCv = $('introCv'), introHead = introEl.querySelector('.intro-top');
+UI.intro = !/[?&]nointro\b/.test(location.search);
+if (!UI.intro) introEl.hidden = true;
+let introLast = 0, introTop = 0.2;
+const introBg = {};
+function drawIntro(now) {
+  if (!UI.intro) return;
+  requestAnimationFrame(drawIntro);
+  if (now - introLast < 32) return;
+  introLast = now;
+  const k = Math.min(window.devicePixelRatio || 1, DPR_CAP[QL], 1.75), w = Math.round(introEl.clientWidth * k), h = Math.round(introEl.clientHeight * k);
+  if (!w || !h) return;
+  if (introCv.width !== w || introCv.height !== h) { introCv.width = w; introCv.height = h; introTop = (introHead.offsetTop + introHead.offsetHeight) / introEl.clientHeight; }
+  drawVersus(introCv.getContext('2d'), w, h, now / 1000, true, introTop, introBg);
+}
+function closeIntro() {
+  if (!UI.intro) return;
+  UI.intro = false;
+  introEl.classList.add('out');
+  const ac = Snd.ac;
+  if (ac && ac.state !== 'running') ac.resume().then(() => Snd.play('horn'), () => {}); else Snd.play('horn');
+  setTimeout(() => { introEl.hidden = true; introCv.width = introCv.height = 0; introBg.cv = null; introBg.w = 0; }, 700);
+}
+introEl.addEventListener('click', closeIntro);
+// the title's height is measured again once the bundled fonts are in
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { introCv.width = 0; });
+if (UI.intro) requestAnimationFrame(drawIntro);
 
 /* ---------- loop ---------- */
 // Frame pacing: battles run at the display rate, but 120 Hz and faster screens are held to ~60 fps;
@@ -4871,6 +5236,7 @@ document.addEventListener('keydown', e => {
 let lastT = 0, lastDraw = 0, rafPrev = 0, rafAvg = 16.7;
 function frame(now) {
   requestAnimationFrame(frame);
+  if (UI.intro) { lastT = now; return; }
   rafAvg += (Math.min(50, Math.max(1, now - (rafPrev || now - 16.7))) - rafAvg) * 0.05; rafPrev = now;
   const minGap = !S || S.over ? 30 : UI.paused ? 64 : rafAvg < 10 ? 14 : 0;
   const gap = now - lastDraw;
@@ -4918,15 +5284,16 @@ function start(data) {
   requestAnimationFrame(t => { lastT = t; frame(t); });
 }
 window.__silvenor = {
-  get S() { return S; }, startLevel, startWave, update, drawTower, drawDemon, drawHero, render, DEMONS, HEROES, showScreen, castSkill, heroOrder, useHeroSkill, startHeroMove,
+  get S() { return S; }, startLevel, startWave, update, drawTower, drawDemon, drawHero, drawVersus, render, DEMONS, HEROES, showScreen, castSkill, heroOrder, useHeroSkill, startHeroMove,
   setHero(k) { if (HEROES[k]) { heroKey = k; store.set('silvenor.hero', k); } }, openSaga, closeSaga, SAGA,
   heroPic(k, px, bust) { const c = document.createElement('canvas'); heroPortrait(c, k, px, bust); return c.toDataURL('image/png'); },
   heroCmd(cmd, x, y) { UI.heroCmd = cmd; heroOrder(x, y); },
   build(si, type) { UI.sel = { si }; UI.buildType = type; doBuild(); return !!S.towers[si]; },
   upgrade(si) { UI.sel = { si }; upgrade(); closeSheets(); },
   upCost(t) { const nx = TOWERS[t.type].levels[t.lvl + 1]; return nx ? nx.up : 0; },
-  // Android back button: returns false only on the city list, so the app can close
+  // Android back button: returns false only on the title screen and the main menu, so the app can close
   back() {
+    if (UI.intro) return false;
     if (UI.saga) { closeSaga(); return true; }
     if (UI.rally != null || UI.heroCmd) { cancelRally(); return true; }
     if (UI.sel) { closeSheets(); return true; }
@@ -4938,21 +5305,12 @@ window.__silvenor = {
   },
   pause() { if (S && !S.over && !UI.paused) setPaused(true); },
   icon(size, part) {
-    const c = document.createElement('canvas'), g = c.getContext('2d'), s = size;
-    c.width = c.height = s;
-    if (part !== 'fg') {
-      const bgr = g.createRadialGradient(s * 0.5, s * 0.38, s * 0.05, s * 0.5, s * 0.5, s * 0.75);
-      bgr.addColorStop(0, '#24503a'); bgr.addColorStop(1, '#0b1412');
-      g.fillStyle = bgr; g.fillRect(0, 0, s, s);
-      g.setTransform(s, 0, 0, s, 0, 0);
-      glow(g, 0.5, 0.95, 0.5, 'rgba(255,90,40,.35)');
-    }
-    if (part === 'bg') return c.toDataURL('image/png');
-    const k = part === 'fg' ? s * 0.4 : s * 0.58;
-    g.setTransform(k, 0, 0, k, s * 0.5, s * (part === 'fg' ? 0.66 : 0.72));
-    drawMage(g, 2, 0, 0, 0.6, 0.12);
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    drawIconArt(c.getContext('2d'), size, part || 'full');
     return c.toDataURL('image/png');
   },
+  versus(w, h, t, top) { const c = document.createElement('canvas'); c.width = w; c.height = h; drawVersus(c.getContext('2d'), w, h, t, true, top); return c.toDataURL('image/png'); },
 };
 const hot = window.claude && window.claude.hot;
 if (hot && typeof hot.snapshot === 'function') hot.snapshot(snapshot);
