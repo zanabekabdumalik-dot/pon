@@ -119,6 +119,13 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--leaf);outline
 .banner b{display:block;font-family:var(--font-display);font-size:42px;line-height:1;font-weight:700;color:var(--silver);text-shadow:0 2px 0 #000,0 0 24px rgba(0,0,0,.85);text-wrap:balance}
 .banner span{display:block;margin-top:6px;font-weight:800;font-size:18px;color:var(--gold);text-shadow:0 2px 6px #000}
 @keyframes bannerIn{0%{opacity:0;transform:translateY(10px) scale(.96)}12%{opacity:1;transform:none}78%{opacity:1}100%{opacity:0}}
+.boss-bar{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:5;width:min(340px,calc(100% - 32px));padding:7px 12px 9px;border-radius:12px;background:rgba(20,8,10,.88);border:1px solid #6a2a2a;pointer-events:none}
+.boss-name{font-family:var(--font-display);font-weight:700;font-size:16px;line-height:1.1;color:#ffd2c4;text-align:center;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.boss-track{height:8px;border-radius:5px;background:#3a1416;overflow:hidden}
+.boss-fill{height:100%;width:100%;background:linear-gradient(90deg,#c0283a,#ff7a2f);transition:width .2s linear}
+#stage.boss-on .toast{top:66px}
+.foe.boss img{filter:drop-shadow(0 0 4px rgba(255,90,60,.8))}
+.lvl .boss{grid-column:1;font-size:12.5px;font-weight:700;color:#ff9a7a}
 .pill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;border-radius:999px;padding:10px 22px;border:1px solid var(--line);background:rgba(13,23,20,.94);font-weight:800}
 
 /* Full screens */
@@ -134,7 +141,7 @@ h2{font-size:clamp(36px,10vw,48px);line-height:.95}
 .lvl{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;text-align:left;padding:11px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(27,43,39,.92)}
 .lvl .nm{font-family:var(--font-display);font-size:22px;font-weight:700;line-height:1.05}
 .lvl .sub{font-size:13.5px;color:var(--muted);grid-column:1}
-.lvl .stars{grid-row:1/3;grid-column:2;font-size:20px;color:var(--gold);letter-spacing:2px}
+.lvl .stars{grid-row:1/4;grid-column:2;font-size:20px;color:var(--gold);letter-spacing:2px}
 .lvl .stars .off{color:#46564f}
 .lvl:disabled{opacity:.55;cursor:default}
 details.howto{border:1px solid var(--line);border-radius:14px;background:rgba(19,32,29,.9);padding:0 14px}
@@ -172,6 +179,7 @@ details.howto ul{margin:0 0 14px;padding-left:18px;display:flex;flex-direction:c
     <canvas id="cv"></canvas>
     <div id="toast" class="toast" hidden></div>
     <div id="banner" class="banner" hidden><b></b><span></span></div>
+    <div id="bossBar" class="boss-bar" hidden><div class="boss-name" id="bossName"></div><div class="boss-track"><div class="boss-fill" id="bossFill"></div></div></div>
     <button id="rallyCancel" class="pill" hidden>Отмена</button>
 
     <section id="buildSheet" class="sheet" hidden aria-label="Постройка">
@@ -219,7 +227,8 @@ details.howto ul{margin:0 0 14px;padding-left:18px;display:flex;flex-direction:c
           <li>Охотники выходят на дорогу и держат демонов, пока их не убьют. Через несколько секунд из дома выходят новые. Точку сбора можно перенести.</li>
           <li>За каждую отбитую волну город платит монеты. Тратьте их на новых защитников или улучшения до 3 уровня.</li>
           <li>В новых городах появляются новые защитники: следопыт, грифоны, древень и лунная арфистка. Арфистка сама не бьёт, но усиливает соседей.</li>
-          <li>Демон, дошедший до ворот, отнимает жизни города. Крупные забирают 2, повелители демонов — все.</li>
+          <li>Демоны бывают огненными, ледяными, теневыми и кровавыми: у каждой версии свои сильные и слабые стороны. Нажмите на значок демона внизу, чтобы узнать подробности.</li>
+          <li>В конце каждого города приходит босс, и каждый следующий сильнее предыдущего. Демон, дошедший до ворот, отнимает жизни города, а босс — все сразу.</li>
         </ul>
       </details>
     </div>
@@ -362,22 +371,43 @@ const CHEAPEST = Math.min(...ORDER.map(k => TOWERS[k].cost));
 // bar/hit: heights of the health bar and of the body centre; barW, ring, icon: sizes for bars, status rings and icons
 const DEMONS = {
   imp:      { name: 'Бес', hp: 45, speed: 1.15, bounty: 3, dmg: 8, cd: 0.9, lives: 1, bar: 0.5, hit: 0.14, info: 'мелкий и шустрый' },
-  hound:    { name: 'Адская гончая', hp: 32, speed: 1.85, bounty: 4, dmg: 6, cd: 0.6, lives: 1, bar: 0.4, hit: 0.13, info: 'очень быстрая, проскакивает мимо медленных башен' },
+  hound:    { name: 'Адская гончая', fem: true, hp: 32, speed: 1.85, bounty: 4, dmg: 6, cd: 0.6, lives: 1, bar: 0.4, hit: 0.13, info: 'очень быстрая, проскакивает мимо медленных башен' },
   brute:    { name: 'Рогатый громила', hp: 230, speed: 0.6, armor: 0.35, bounty: 14, dmg: 28, cd: 1.3, lives: 2, bar: 0.98, hit: 0.3, barW: 0.55, ring: 0.34, info: 'броня гасит стрелы, охотника убивает за 2–3 удара' },
-  gargoyle: { name: 'Горгулья', hp: 80, speed: 1.0, flying: true, bounty: 7, lives: 1, bar: 0.84, hit: 0.45, info: 'летает: охотники и корни её не остановят' },
+  gargoyle: { name: 'Горгулья', fem: true, hp: 80, speed: 1.0, flying: true, bounty: 7, lives: 1, bar: 0.84, hit: 0.45, info: 'летает: охотники и корни её не остановят' },
   warlock:  { name: 'Колдун бездны', hp: 110, speed: 0.75, mres: 0.5, heal: true, bounty: 10, dmg: 10, cd: 1.2, lives: 1, bar: 0.74, hit: 0.25, info: 'лечит демонов рядом, магия бьёт его вполсилы' },
   shield:   { name: 'Щитоносец', hp: 170, speed: 0.7, armor: 0.4, aura: true, bounty: 12, dmg: 14, cd: 1.1, lives: 2, bar: 0.9, hit: 0.26, barW: 0.5, ring: 0.3, info: 'держит щит над соседями: урон по демонам рядом с ним на пятую часть меньше' },
   golem:    { name: 'Магмовый голем', hp: 340, speed: 0.5, mres: 0.3, split: 3, bounty: 14, dmg: 30, cd: 1.4, lives: 2, bar: 1.0, hit: 0.3, barW: 0.6, ring: 0.36, icon: 1.3, info: 'медленный и крепкий; разбившись, выпускает три быстрые искры' },
-  spark:    { name: 'Искра', hp: 24, speed: 2.2, bounty: 1, dmg: 4, cd: 0.6, lives: 1, bar: 0.42, hit: 0.15, info: 'крошечный и очень быстрый огонёк' },
-  wyvern:   { name: 'Виверна бездны', hp: 330, speed: 0.8, armor: 0.2, flying: true, bounty: 18, lives: 2, bar: 1.08, hit: 0.52, barW: 0.6, icon: 1.7, info: 'тяжёлый летающий демон: охотники, древень и корни её не держат' },
-  boss:     { name: 'Архидемон Мал’Гарот', hp: 3600, speed: 0.36, armor: 0.25, mres: 0.25, boss: true, summon: true, bounty: 150, dmg: 70, cd: 1.5, lives: 20, bar: 1.6, hit: 0.55, barW: 1.1, ring: 0.55, icon: 2.3, title: 'Архидемон повержен', info: 'призывает бесов; если дойдёт до ворот, город падёт' },
-  lord:     { name: 'Азгорот, Владыка Разлома', hp: 7000, speed: 0.3, armor: 0.3, mres: 0.3, boss: true, curse: true, bounty: 300, dmg: 90, cd: 1.6, lives: 20, bar: 1.85, hit: 0.6, barW: 1.2, ring: 0.6, icon: 2.7, title: 'Владыка Разлома повержен', info: 'проклятием сковывает ближайшую башню; если дойдёт до ворот, крепость падёт' },
+  spark:    { name: 'Искра', fem: true, hp: 24, speed: 2.2, bounty: 1, dmg: 4, cd: 0.6, lives: 1, bar: 0.42, hit: 0.15, info: 'крошечный и очень быстрый огонёк' },
+  wyvern:   { name: 'Виверна бездны', fem: true, hp: 330, speed: 0.8, armor: 0.2, flying: true, bounty: 18, lives: 2, bar: 1.08, hit: 0.52, barW: 0.6, icon: 1.7, info: 'тяжёлый летающий демон: охотники, древень и корни её не держат' },
+  boss:     { name: 'Архидемон Мал’Гарот', hp: 2600, speed: 0.36, armor: 0.25, mres: 0.25, boss: true, summon: 'imp', summonN: 2, summonEvery: 7, bounty: 150, dmg: 70, cd: 1.5, lives: 20, bar: 1.6, hit: 0.55, barW: 1.1, ring: 0.55, icon: 2.3, title: 'Архидемон повержен', info: 'призывает бесов; если дойдёт до ворот, город падёт' },
+  lord:     { name: 'Азгорот, Владыка Разлома', hp: 6200, speed: 0.3, armor: 0.3, mres: 0.3, boss: true, curse: 'curse', summon: 'imp', summonN: 3, summonEvery: 9, bounty: 300, dmg: 90, cd: 1.6, lives: 20, bar: 1.85, hit: 0.6, barW: 1.2, ring: 0.6, icon: 2.7, title: 'Владыка Разлома повержен', info: 'проклятием сковывает ближайшую башню и призывает бесов; если дойдёт до ворот, крепость падёт' },
+  // city bosses drawn as a crowned, recoloured, scaled-up version of a base demon
+  rogach:   { name: 'Кровавый Рогач', base: 'brute', scale: 1.7, tint: 'blood', hp: 1100, speed: 0.42, armor: 0.3, boss: true, roar: true, bounty: 80, dmg: 45, cd: 1.4, lives: 20, barW: 0.9, title: 'Кровавый Рогач повержен', info: 'вожак громил: рёвом подгоняет демонов рядом; если дойдёт до ворот, город падёт' },
+  queen:    { name: 'Скайра, королева гончих', fem: true, base: 'hound', scale: 2.1, tint: 'fire', hp: 1400, speed: 0.6, armor: 0.15, boss: true, summon: 'hound', summonN: 2, summonEvery: 8, bounty: 110, dmg: 40, cd: 1.0, lives: 20, barW: 0.95, title: 'Королева гончих повержена', info: 'созывает адских гончих; если дойдёт до ворот, город падёт' },
+  tyrant:   { name: 'Мор’Гул, тиран топей', base: 'golem', scale: 1.7, tint: 'swamp', hp: 3200, speed: 0.32, armor: 0.15, mres: 0.3, boss: true, mend: true, bounty: 180, dmg: 60, cd: 1.5, lives: 20, barW: 1.1, title: 'Тиран топей повержен', info: 'залечивает себя и демонов вокруг; если дойдёт до ворот, город падёт' },
+  skjolda:  { name: 'Скьольда, ледяная виверна', fem: true, base: 'wyvern', scale: 1.6, tint: 'ice', flying: true, hp: 3600, speed: 0.38, armor: 0.3, boss: true, curse: 'freeze', bounty: 220, lives: 20, barW: 1.1, title: 'Ледяная виверна повержена', info: 'летает и ледяным дыханием замораживает башни; если долетит до ворот, крепость падёт' },
 };
+// crown position over the head of each base body: [x offset toward the facing side, height]
+const CROWN = { brute: [0.05, 0.9], hound: [0.22, 0.33], golem: [0.04, 0.72], wyvern: [0.24, 0.78] };
+for (const D of Object.values(DEMONS)) if (D.base) {
+  const B = DEMONS[D.base];
+  D.bar = B.bar * D.scale; D.hit = B.hit * D.scale; D.ring = B.ring || 0.22; D.icon = (B.icon || 1.1) * D.scale; D.crown = true;
+}
+// demon variants: multipliers on top of the base demon
+const VARIANTS = {
+  fire:   { adj: ['Огненный', 'Огненная'], many: 'огненные', speed: 1.15, dmgMul: 1.4, info: 'быстрее и сильнее бьют защитников' },
+  ice:    { adj: ['Ледяной', 'Ледяная'], many: 'ледяные', hp: 1.15, speed: 0.85, armor: 0.2, magicMul: 1.3, info: 'покрыты льдом: броня крепче, но лунная магия раскалывает лёд' },
+  shadow: { adj: ['Теневой', 'Теневая'], many: 'теневые', speed: 1.05, phase: true, info: 'время от времени уходят в тень: тогда их нельзя ранить и задержать' },
+  blood:  { adj: ['Кровавый', 'Кровавая'], many: 'кровавые', hp: 1.25, regen: 0.012, info: 'живучие и постоянно залечивают раны' },
+};
+// recolouring for variants and bosses: [r, g, b, strength]
+const TINTS = { fire: [255, 120, 30, 0.42], ice: [160, 215, 255, 0.55], shadow: [60, 35, 100, 0.55], blood: [150, 0, 25, 0.45], swamp: [70, 120, 60, 0.5] };
+const demonName = (type, v) => { const D = DEMONS[type]; return v ? `${VARIANTS[v].adj[D.fem ? 1 : 0]} ${D.name[0].toLowerCase()}${D.name.slice(1)}` : D.name; };
 
 // Wave group: [demon, count, seconds between, start delay, path (-1 = alternate)]
 const LEVELS = [
   {
-    name: 'Ивовый Брод', sub: 'Пограничная застава у реки', theme: 'forest', gold: 240, lives: 20, hpMul: 0.9,
+    name: 'Ивовый Брод', sub: 'Пограничная застава у реки', theme: 'forest', gold: 240, lives: 20, hpMul: 0.9, variants: ['fire'], vChance: 0.15,
     paths: [[[1, -1], [1, 3], [7, 3], [7, 7], [2, 7], [2, 11], [6, 11], [6, 14]]],
     slots: [[2, 1], [4, 2], [6, 2], [3, 5], [5, 5], [8, 5], [0, 9], [4, 9], [6, 9], [1, 12], [4, 13], [7, 13]],
     waves: [
@@ -388,11 +418,11 @@ const LEVELS = [
       [['hound', 12, 0.55, 0], ['imp', 4, 1, 3]],
       [['gargoyle', 5, 1.6, 0], ['imp', 10, 0.7, 3]],
       [['brute', 4, 2.6, 0], ['hound', 8, 0.6, 5]],
-      [['brute', 4, 2.4, 0], ['imp', 12, 0.55, 1], ['gargoyle', 5, 1.4, 8]],
+      [['brute', 3, 2.6, 0], ['imp', 12, 0.55, 1], ['gargoyle', 4, 1.5, 8], ['rogach', 1, 1, 12]],
     ],
   },
   {
-    name: 'Аэлин', sub: 'Лунный город, прорыв с двух сторон', theme: 'forest', gold: 300, lives: 20, hpMul: 0.95,
+    name: 'Аэлин', sub: 'Лунный город, прорыв с двух сторон', theme: 'forest', gold: 300, lives: 20, hpMul: 0.95, variants: ['fire', 'ice'], vChance: 0.2,
     paths: [
       [[1, -1], [1, 4], [4, 4], [4, 7], [7, 7], [7, 11], [3, 11], [3, 14]],
       [[7, -1], [7, 4], [4, 4], [4, 7], [7, 7], [7, 11], [3, 11], [3, 14]],
@@ -408,11 +438,11 @@ const LEVELS = [
       [['hound', 20, 0.35, 0, -1]],
       [['gargoyle', 8, 1.0, 0, 0], ['brute', 5, 2.2, 1, 1]],
       [['warlock', 5, 2.2, 0, -1], ['brute', 6, 1.8, 2, -1], ['imp', 16, 0.45, 4, -1]],
-      [['brute', 8, 1.6, 0, -1], ['gargoyle', 10, 0.9, 3, -1], ['hound', 16, 0.4, 6, -1]],
+      [['brute', 6, 1.8, 0, -1], ['gargoyle', 8, 1.0, 3, -1], ['hound', 12, 0.45, 6, -1], ['queen', 1, 1, 10, 0]],
     ],
   },
   {
-    name: 'Сильвенор', sub: 'Столица у Древа Жизни', theme: 'forest', gold: 340, lives: 20, hpMul: 1.18,
+    name: 'Сильвенор', sub: 'Столица у Древа Жизни', theme: 'forest', gold: 340, lives: 20, hpMul: 1.18, variants: ['fire', 'ice', 'blood'], vChance: 0.25,
     paths: [
       [[4, -1], [4, 2], [1, 2], [1, 6], [6, 6], [6, 9], [2, 9], [2, 12], [5, 12], [5, 14]],
       [[9, 3], [7, 3], [7, 6], [6, 6], [6, 9], [2, 9], [2, 12], [5, 12], [5, 14]],
@@ -428,13 +458,13 @@ const LEVELS = [
       [['hound', 24, 0.3, 0, -1], ['gargoyle', 8, 1, 4, -1]],
       [['brute', 8, 1.6, 0, -1], ['warlock', 4, 2.5, 2, -1], ['imp', 16, 0.4, 5, -1]],
       [['gargoyle', 14, 0.7, 0, -1], ['brute', 6, 2, 3, -1]],
-      [['brute', 10, 1.4, 0, -1], ['hound', 20, 0.35, 2, -1], ['warlock', 6, 2, 4, -1]],
+      [['brute', 8, 1.6, 0, -1], ['hound', 18, 0.38, 2, -1], ['warlock', 5, 2.2, 4, -1]],
       [['brute', 12, 1.2, 0, -1], ['gargoyle', 12, 0.8, 2, -1], ['imp', 24, 0.3, 4, -1]],
       [['boss', 1, 1, 0, 0], ['imp', 16, 0.6, 4, -1], ['brute', 6, 2.5, 8, 1]],
     ],
   },
   {
-    name: 'Ивенмир', sub: 'Город на сваях среди серебряных топей', theme: 'swamp', gold: 420, lives: 20, hpMul: 1.0,
+    name: 'Ивенмир', sub: 'Город на сваях среди серебряных топей', theme: 'swamp', gold: 420, lives: 20, hpMul: 1.0, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.3,
     paths: [
       [[-1, 2], [3, 2], [3, 6], [1, 6], [1, 10], [4, 10], [4, 14]],
       [[9, 4], [6, 4], [6, 8], [1, 8], [1, 10], [4, 10], [4, 14]],
@@ -452,11 +482,11 @@ const LEVELS = [
       [['golem', 4, 3, 0, -1], ['imp', 18, 0.4, 2, -1]],
       [['brute', 6, 1.7, 0, -1], ['shield', 3, 2.2, 2, -1], ['warlock', 3, 2.6, 4, -1]],
       [['hound', 24, 0.3, 0, -1], ['gargoyle', 12, 0.7, 3, -1], ['golem', 3, 3, 6, -1]],
-      [['golem', 4, 2.6, 0, -1], ['shield', 4, 2, 1, -1], ['brute', 6, 1.6, 3, -1], ['warlock', 3, 2.6, 5, -1]],
+      [['golem', 2, 3, 0, -1], ['shield', 2, 2.4, 1, -1], ['brute', 4, 2, 3, -1], ['warlock', 2, 2.8, 5, -1], ['tyrant', 1, 1, 9, 0]],
     ],
   },
   {
-    name: 'Звездопад', sub: 'Горная крепость на снежном перевале', theme: 'snow', gold: 440, lives: 20, hpMul: 1.05,
+    name: 'Звездопад', sub: 'Горная крепость на снежном перевале', theme: 'snow', gold: 440, lives: 20, hpMul: 1.05, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.3,
     paths: [
       [[1, -1], [1, 2], [4, 2], [4, 5], [7, 5], [7, 8], [1, 8], [1, 11], [6, 11], [6, 14]],
       [[7, -1], [7, 2], [4, 2], [4, 5], [7, 5], [7, 8], [1, 8], [1, 11], [6, 11], [6, 14]],
@@ -475,11 +505,11 @@ const LEVELS = [
       [['golem', 6, 2.2, 0, -1], ['warlock', 5, 2.2, 2, -1], ['hound', 16, 0.35, 4, -1]],
       [['brute', 8, 1.3, 0, -1], ['shield', 4, 2, 2, -1], ['wyvern', 3, 3, 5, -1]],
       [['hound', 30, 0.25, 0, -1], ['gargoyle', 14, 0.6, 3, -1], ['imp', 20, 0.3, 6, -1]],
-      [['wyvern', 6, 2.2, 0, -1], ['golem', 6, 2, 2, -1], ['shield', 6, 1.8, 4, -1], ['brute', 8, 1.4, 6, -1]],
+      [['wyvern', 3, 2.6, 0, -1], ['golem', 3, 2.4, 2, -1], ['shield', 3, 2.2, 4, -1], ['brute', 5, 1.8, 6, -1], ['skjolda', 1, 1, 10, 0]],
     ],
   },
   {
-    name: 'Последний Рассвет', sub: 'Крепость у самого разлома', theme: 'rift', gold: 560, lives: 20, hpMul: 0.98,
+    name: 'Последний Рассвет', sub: 'Крепость у самого разлома', theme: 'rift', gold: 560, lives: 20, hpMul: 0.98, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.35,
     paths: [
       [[1, -1], [1, 3], [4, 3], [4, 6], [7, 6], [7, 10], [4, 10], [4, 14]],
       [[7, -1], [7, 3], [4, 3], [4, 6], [7, 6], [7, 10], [4, 10], [4, 14]],
@@ -538,7 +568,7 @@ function nearestOnPath(path, x, y) {
   }
   return best;
 }
-function prepLevel(L) {
+function prepLevel(L, li) {
   const paths = L.paths.map(buildPath);
   const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0)); // 0 free, 1 road, 2 slot
   for (const wps of L.paths) for (let i = 0; i < wps.length - 1; i++) {
@@ -546,6 +576,19 @@ function prepLevel(L) {
     for (;;) { if (r >= 0 && r < ROWS && c >= 0 && c < COLS) grid[r][c] = 1; if (c === c2 && r === r2) break; c += sc; r += sr; }
   }
   for (const [c, r] of L.slots) { if (grid[r][c] === 1) console.warn('slot on road', c, r); grid[r][c] = 2; }
+  // each wave group may come as one variant; fixed per city so replays look the same
+  const rng = mulberry32(li * 1013 + 7);
+  L.gv = L.waves.map((w, wi) => w.map(([type]) => {
+    const roll = rng(), pick = rng();
+    if (wi === 0 || DEMONS[type].boss || !L.variants || roll >= L.vChance) return null;
+    return L.variants[Math.floor(pick * L.variants.length)];
+  }));
+  // make sure the newest variant of this city shows up at least once, mid-city
+  const newest = L.variants && L.variants[L.variants.length - 1];
+  if (newest && !L.gv.some(w => w.includes(newest))) {
+    const wi = Math.floor(L.waves.length / 2), gi = L.waves[wi].findIndex(([type]) => !DEMONS[type].boss);
+    L.gv[wi][gi] = newest;
+  }
   return { paths, grid };
 }
 const PREP = LEVELS.map(prepLevel);
@@ -817,14 +860,17 @@ function drawTower(g, type, lvl, x, y, time, aim, fire) {
 
 /* ---------- demons ---------- */
 function drawDemon(g, e, time) {
-  const D = e.D, x = e.x, y = e.y, f = e.face || 1, ph = e.phase, W = e.flash > 0;
-  const c = (col) => W ? '#fff6ee' : col;
+  const D = e.D, x = e.x, y = e.y, f = e.face || 1, ph = e.phase, W = e.flash > 0, tk = e.tint;
+  const c = (col) => W ? '#fff6ee' : tk ? tinted(col, tk) : col;
+  const ghost = e.phased > 0;
+  if (ghost) g.globalAlpha = 0.3;
+  if (tk) variantAura(g, e, time, false);
   if (!e.flying && (e.slowT > 0 || e.stunT > 0)) {
     const rr = D.ring || 0.22;
     g.beginPath(); g.ellipse(x, y + 0.08, rr, rr * 0.35, 0, 0, TAU); g.lineWidth = e.stunT > 0 ? 0.05 : 0.025; g.strokeStyle = e.stunT > 0 ? 'rgba(110,190,90,.95)' : 'rgba(120,220,120,.6)'; g.stroke();
   }
   const atk = e.atk > 0 ? Math.sin((e.atk / 0.22) * Math.PI) * 0.08 : 0;
-  switch (e.type) {
+  switch (D.base || e.type) {
     case 'imp': {
       const b = Math.abs(Math.sin(ph)) * 0.05, cy = y - 0.12 - b, ax = x + f * atk;
       shadow(g, x, y + 0.09, 0.19, 0.06);
@@ -1018,6 +1064,8 @@ function drawDemon(g, e, time) {
       break;
     }
   }
+  if (tk) variantAura(g, e, time, true);
+  if (ghost) g.globalAlpha = 1;
 }
 function drawHunter(g, h, time) {
   const x = h.x, y = h.y, f = h.face || 1, W = h.flash > 0;
@@ -1033,6 +1081,38 @@ function drawHunter(g, h, time) {
   const th = h.swing > 0 ? Math.sin((h.swing / 0.2) * Math.PI) * 0.1 : 0;
   line(g, x - f * 0.06 + f * th, cy + 0.04, x + f * (0.22 + th), cy - 0.1, 0.02, '#a88458');
   poly(g, [x + f * (0.27 + th), cy - 0.13, x + f * (0.2 + th), cy - 0.12, x + f * (0.22 + th), cy - 0.07], '#dfe6e8');
+}
+const tintCache = new Map();
+function tinted(col, key) {
+  const id = key + col;
+  let v = tintCache.get(id);
+  if (v) return v;
+  if (col[0] !== '#' || col.length !== 7) return col;
+  const [tr, tg, tb, m] = TINTS[key], n = parseInt(col.slice(1), 16), r = (n >> 16) & 255, gr = (n >> 8) & 255, b = n & 255;
+  const k = 0.6 + (r * 0.3 + gr * 0.59 + b * 0.11) / 255 * 0.8, mix = (a, t) => Math.min(255, Math.round(lerp(a, t * k, m)));
+  v = `rgb(${mix(r, tr)},${mix(gr, tg)},${mix(b, tb)})`;
+  tintCache.set(id, v);
+  return v;
+}
+// glow behind the body, and flames / ice / wisps in front of it
+function variantAura(g, e, time, front) {
+  const D = e.D, x = e.x, f = e.face || 1, hy = e.y - (D.base ? DEMONS[D.base].hit : D.hit), s = Math.sin(time * 5 + e.phase);
+  if (!front) {
+    if (e.tint === 'fire') glow(g, x, hy, 0.4, `rgba(255,120,30,${0.3 + 0.1 * s})`);
+    else if (e.tint === 'ice') glow(g, x, hy, 0.38, 'rgba(170,220,255,.35)');
+    else if (e.tint === 'shadow') glow(g, x, hy, 0.4, 'rgba(50,15,80,.5)');
+    else if (e.tint === 'swamp') glow(g, x, hy, 0.42, 'rgba(110,190,90,.3)');
+    else if (e.tint === 'blood') { g.beginPath(); g.ellipse(x, e.y + 0.08, 0.3, 0.1, 0, 0, TAU); g.lineWidth = 0.03; g.strokeStyle = `rgba(220,30,50,${0.5 + 0.3 * s})`; g.stroke(); }
+    return;
+  }
+  if (e.tint === 'fire') for (const dx of [-0.07, 0.06]) { const h = 0.1 + Math.abs(Math.sin(time * 14 + dx * 40)) * 0.07; poly(g, [x + dx - 0.035, hy - 0.16, x + dx, hy - 0.16 - h, x + dx + 0.035, hy - 0.16], '#ffb347'); }
+  else if (e.tint === 'ice') for (let i = 0; i < 3; i++) { const a = time * 1.5 + i * 2.1, cx = x + Math.cos(a) * 0.24, cy = hy + Math.sin(a) * 0.1; poly(g, [cx, cy - 0.06, cx + 0.03, cy, cx, cy + 0.06, cx - 0.03, cy], '#dff3ff'); }
+  else if (e.tint === 'shadow') for (let i = 0; i < 2; i++) { const a = time * 2 + i * Math.PI; circ(g, x + Math.cos(a) * 0.22, hy - 0.1 + Math.sin(a * 1.3) * 0.08, 0.035, 'rgba(170,120,230,.75)'); }
+  if (D.crown) {
+    const [cx0, ch] = CROWN[D.base], cx = x + f * cx0, cy = e.y - ch - (e.flying ? Math.sin(e.phase * 0.6) * 0.05 : 0);
+    poly(g, [cx - 0.12, cy, cx - 0.13, cy - 0.12, cx - 0.06, cy - 0.06, cx, cy - 0.15, cx + 0.06, cy - 0.06, cx + 0.13, cy - 0.12, cx + 0.12, cy], '#e9c46a');
+    circ(g, cx, cy - 0.04, 0.025, '#d9435a');
+  }
 }
 function drawEnt(g, u, time) {
   const x = u.x, y = u.y, f = u.face || 1, W = u.flash > 0;
@@ -1294,7 +1374,7 @@ const Snd = {
   },
   play(name) {
     if (!this.on || !this.ac || this.ac.state !== 'running') return;
-    const now = this.ac.currentTime, gap = { arrow: 0.09, bolt: 0.12, swoop: 0.12, slam: 0.15, curse: 0.3, boom: 0.12, roots: 0.15, hit: 0.1, coin: 0.06, fall: 0.15 }[name] || 0.03;
+    const now = this.ac.currentTime, gap = { arrow: 0.09, bolt: 0.12, swoop: 0.12, slam: 0.15, curse: 0.3, freeze: 0.3, roar: 0.5, boom: 0.12, roots: 0.15, hit: 0.1, coin: 0.06, fall: 0.15 }[name] || 0.03;
     if (this.last[name] && now - this.last[name] < gap) return;
     this.last[name] = now;
     try {
@@ -1312,6 +1392,8 @@ const Snd = {
         case 'swoop': this.tone(700, 0.18, 'sine', 0.04, 300); break;
         case 'slam': this.noise(0.2, 0.1, 180); this.tone(90, 0.2, 'sine', 0.07, 50); break;
         case 'curse': this.tone(330, 0.6, 'sawtooth', 0.035, 110); this.tone(311, 0.6, 'sawtooth', 0.025, 104, 0.05); break;
+        case 'freeze': this.tone(1760, 0.5, 'sine', 0.03, 880); this.noise(0.3, 0.04, 6000); break;
+        case 'roar': this.tone(90, 0.6, 'sawtooth', 0.06, 60); this.noise(0.4, 0.06, 300); break;
         case 'leak': this.tone(110, 0.45, 'square', 0.06, 55); break;
         case 'win': [523, 659, 784, 1046, 1318].forEach((f, i) => this.tone(f, 0.3, 'triangle', 0.06, 0, i * 0.12)); break;
         case 'lose': [392, 330, 262, 196].forEach((f, i) => this.tone(f, 0.45, 'sawtooth', 0.035, 0, i * 0.2)); break;
@@ -1383,7 +1465,7 @@ function findTarget(x, y, range, groundOnly, preferFresh) {
   let best = null, br = Infinity, alt = null, ar = Infinity;
   const r2 = range * range;
   for (const e of S.enemies) {
-    if (!e.alive || (groundOnly && e.flying)) continue;
+    if (!e.alive || e.phased > 0 || (groundOnly && e.flying)) continue;
     const dx = e.x - x, dy = e.y - y;
     if (dx * dx + dy * dy > r2) continue;
     const rem = S.paths[e.pi].len - e.d;
@@ -1396,7 +1478,7 @@ function findToughest(x, y, range) {
   let best = null;
   const r2 = range * range;
   for (const e of S.enemies) {
-    if (!e.alive) continue;
+    if (!e.alive || e.phased > 0) continue;
     const dx = e.x - x, dy = e.y - y;
     if (dx * dx + dy * dy <= r2 && (!best || e.hp > best.hp)) best = e;
   }
@@ -1432,7 +1514,7 @@ function updateTower(t, dt) {
     S.fx.push({ k: 'beam', x: t.x + 0.32, y: t.y - 0.18, x2: gx, y2: gy, t: 0, life: 0.3 });
     S.fx.push({ k: 'roots', x: gx, y: gy, r: st.area, t: 0, life: 1.0, seed: Math.random() * 10, ground: true });
     for (const o of S.enemies) {
-      if (!o.alive || o.flying || dist(o.x, o.y, gx, gy) > st.area) continue;
+      if (!o.alive || o.flying || o.phased > 0 || dist(o.x, o.y, gx, gy) > st.area) continue;
       damage(o, dmg, 'magic');
       if (!o.alive) continue;
       const sl = o.D.boss ? st.slow * 0.5 : st.slow;
@@ -1464,7 +1546,7 @@ function griffinTarget(t, st) {
   let air = null, ar = Infinity, ground = null, gr = Infinity;
   const r2 = st.range * st.range;
   for (const e of S.enemies) {
-    if (!e.alive) continue;
+    if (!e.alive || e.phased > 0) continue;
     const dx = e.x - t.x, dy = e.y - t.y;
     if (dx * dx + dy * dy > r2) continue;
     const rem = S.paths[e.pi].len - e.d;
@@ -1505,7 +1587,7 @@ function moveToward(o, tx, ty, step) {
 function pickForHunter(rx, ry) {
   let best = null, br = Infinity, assist = null, asr = Infinity;
   for (const e of S.enemies) {
-    if (!e.alive || e.flying || dist(e.x, e.y, rx, ry) > 1.25) continue;
+    if (!e.alive || e.flying || e.phased > 0 || dist(e.x, e.y, rx, ry) > 1.25) continue;
     const rem = S.paths[e.pi].len - e.d;
     if (!e.blocker) { if (rem < br) { best = e; br = rem; } } else if (rem < asr) { assist = e; asr = rem; }
   }
@@ -1527,7 +1609,7 @@ function updateSquad(t, st, dt) {
 }
 function updateHunter(h, t, st, rx, ry, dt) {
   let e = h.target;
-  if (e && (!e.alive || dist(e.x, e.y, rx, ry) > 1.9)) { if (e.blocker === h) e.blocker = null; h.target = e = null; }
+  if (e && (!e.alive || e.phased > 0 || dist(e.x, e.y, rx, ry) > 1.9)) { if (e.blocker === h) e.blocker = null; h.target = e = null; }
   if (!e || e.blocker !== h) {
     const ne = pickForHunter(rx, ry);
     if (ne && !ne.blocker) { h.target = ne; ne.blocker = h; e = ne; }
@@ -1557,7 +1639,7 @@ function updateEnt(u, t, st, rx, ry, dt) {
   } else u.moving = false;
   if (u.held.length < st.hold) for (const e of S.enemies) {
     if (u.held.length >= st.hold) break;
-    if (!e.alive || e.flying || e.blocker || dist(e.x, e.y, u.x, u.y) > u.reach) continue;
+    if (!e.alive || e.flying || e.blocker || e.phased > 0 || dist(e.x, e.y, u.x, u.y) > u.reach) continue;
     e.blocker = u; u.held.push(e);
   }
   if (!u.held.length) return;
@@ -1591,15 +1673,19 @@ function placeEnemy(e, dt) {
   if (e.engaged && e.blocker) e.face = e.blocker.x >= e.x ? 1 : -1;
   else if (Math.abs(p.dx) > 0.3) e.face = p.dx > 0 ? 1 : -1;
 }
-function spawnEnemy(type, pi, d) {
-  const D = DEMONS[type], hp = Math.round(D.hp * S.L.hpMul * (D.boss ? 1 : 1 + 0.06 * S.wave));
+function spawnEnemy(type, pi, d, v) {
+  const D = DEMONS[type], V = v ? VARIANTS[v] : {}, hp = Math.round(D.hp * S.L.hpMul * (D.boss ? 1 : 1 + 0.06 * S.wave) * (V.hp || 1));
   const e = {
     type, D, pi, d: d || 0, hp, maxHp: hp, alive: true, x: 0, y: 0, ox: 0, oy: 0, dirx: 0, diry: 1, face: 1,
-    off: D.boss ? 0 : rand(-0.18, 0.18), speed: D.speed * rand(0.94, 1.06), slowF: 1, slowT: 0, stunT: 0,
+    off: D.boss ? 0 : rand(-0.18, 0.18), speed: D.speed * rand(0.94, 1.06) * (V.speed || 1), slowF: 1, slowT: 0, stunT: 0,
+    v: v || null, tint: v || D.tint || null, armor: Math.min(0.8, (D.armor || 0) + (V.armor || 0)), mres: D.mres || 0,
+    magicMul: V.magicMul || 1, dmgMul: V.dmgMul || 1, regen: V.regen || 0, bounty: v ? Math.ceil(D.bounty * 1.3) : D.bounty,
+    phaseCd: V.phase ? rand(1.5, 3.5) : 0, phased: 0, hasteT: 0, roarT: 4, mendT: 4,
     blocker: null, engaged: false, cdT: (D.cd || 1) * 0.5, atk: 0, flash: 0, phase: Math.random() * TAU,
     flying: !!D.flying, healT: 2 + Math.random(), summonT: 6, curseT: 4, shielded: false,
   };
   placeEnemy(e, 0); S.enemies.push(e);
+  if (D.boss) { banner(D.name, 'Босс вышел из разлома'); Snd.play('horn'); }
   return e;
 }
 function updateEnemy(e, dt) {
@@ -1608,32 +1694,54 @@ function updateEnemy(e, dt) {
   if (e.atk > 0) e.atk -= dt;
   if (e.slowT > 0) { e.slowT -= dt; if (e.slowT <= 0) e.slowF = 1; }
   if (e.stunT > 0) e.stunT -= dt;
-  if (e.blocker && !holds(e.blocker, e)) e.blocker = null;
+  if (e.regen && e.hp < e.maxHp) e.hp = Math.min(e.maxHp, e.hp + e.maxHp * e.regen * dt);
+  if (e.hasteT > 0) e.hasteT -= dt;
+  if (e.phaseCd) { if (e.phased > 0) e.phased -= dt; else if ((e.phaseCd -= dt) <= 0) { e.phased = 1.2; e.phaseCd = 5; } }
+  if (e.blocker && (e.phased > 0 || !holds(e.blocker, e))) e.blocker = null;
   e.engaged = !!(e.blocker && dist(e.x, e.y, e.blocker.x, e.blocker.y) < e.blocker.reach);
   if (e.engaged) {
     e.cdT -= dt; e.phase += dt * 2;
-    if (e.cdT <= 0) { e.cdT = D.cd; e.atk = 0.22; hitUnit(e.blocker, D.dmg, e); if (!e.alive) return; }
+    if (e.cdT <= 0) { e.cdT = D.cd; e.atk = 0.22; hitUnit(e.blocker, D.dmg * e.dmgMul, e); if (!e.alive) return; }
   } else {
     e.cdT = (D.cd || 1) * 0.5;
     if (e.stunT <= 0) {
-      e.d += e.speed * e.slowF * dt;
-      e.phase += dt * 7 * e.speed * e.slowF;
+      const sp = e.speed * e.slowF * (e.hasteT > 0 ? 1.4 : 1);
+      e.d += sp * dt;
+      e.phase += dt * 7 * sp;
       if (e.d >= S.paths[e.pi].len) { leak(e); return; }
     }
   }
   if (D.heal) { e.healT -= dt; if (e.healT <= 0) { e.healT = 3.5; healAround(e); } }
-  if (D.summon) { e.summonT -= dt; if (e.summonT <= 0) { e.summonT = 7; for (let k = 0; k < 2; k++) spawnEnemy('imp', e.pi, Math.max(0, e.d - 0.4 - k * 0.3)); S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.3, r1: 1.2, t: 0, life: 0.6, color: '255,90,40', ground: true }); } }
-  if (D.curse) { e.curseT -= dt; if (e.curseT <= 0) { e.curseT = 8; curseTower(e); } }
+  if (D.summon && (e.summoned || 0) < 10 && S.enemies.length < 40 && (e.summonT -= dt) <= 0) {
+    e.summonT = D.summonEvery || 7; e.summoned = (e.summoned || 0) + (D.summonN || 2);
+    for (let k = 0; k < (D.summonN || 2); k++) spawnEnemy(D.summon, e.pi, Math.max(0, e.d - 0.4 - k * 0.3));
+    S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.3, r1: 1.2, t: 0, life: 0.6, color: '255,90,40', ground: true });
+  }
+  if (D.roar && (e.roarT -= dt) <= 0) {
+    e.roarT = 7;
+    for (const o of S.enemies) if (o !== e && o.alive && dist(o.x, o.y, e.x, e.y) < 2.2) o.hasteT = 3;
+    S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.3, r1: 2.2, t: 0, life: 0.7, color: '255,70,70', ground: true });
+    addText('Рёв', e.x, e.y - D.bar * DEMON_SC - 0.15, '#ff9a8a', 16);
+    Snd.play('roar');
+  }
+  if (D.mend && (e.mendT -= dt) <= 0) {
+    e.mendT = 6;
+    e.hp = Math.min(e.maxHp, e.hp + e.maxHp * 0.01);
+    for (const o of S.enemies) if (o !== e && o.alive && dist(o.x, o.y, e.x, e.y) < 1.8) o.hp = Math.min(o.maxHp, o.hp + o.maxHp * 0.1);
+    S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.3, r1: 1.8, t: 0, life: 0.7, color: '120,220,110', ground: true });
+  }
+  if (D.curse && (e.curseT -= dt) <= 0) { e.curseT = D.curse === 'freeze' ? 7 : 8; curseTower(e); }
   placeEnemy(e, dt);
 }
 function curseTower(e) {
   let best = null, bd = 3.4;
   for (const t of S.towers) if (t && t.curse <= 0) { const d = dist(t.x, t.y, e.x, e.y); if (d < bd) { bd = d; best = t; } }
   if (!best) return;
-  best.curse = 5;
-  S.fx.push({ k: 'curse', x: e.x + e.face * 0.5, y: e.y - 1.6, x2: best.x, y2: best.y - 0.4, t: 0, life: 0.7 });
-  addText('Проклятие', best.x, best.y - 1.0, '#e2b5ff', 15);
-  Snd.play('curse');
+  const ice = e.D.curse === 'freeze';
+  best.curse = ice ? 4 : 5; best.curseKind = e.D.curse;
+  S.fx.push({ k: 'curse', ice, x: e.x + e.face * 0.5, y: e.y - (ice ? e.D.hit * DEMON_SC : 1.6), x2: best.x, y2: best.y - 0.4, t: 0, life: 0.7 });
+  addText(ice ? 'Заморозка' : 'Проклятие', best.x, best.y - 1.0, ice ? '#cfeeff' : '#e2b5ff', 15);
+  Snd.play(ice ? 'freeze' : 'curse');
 }
 function healAround(w) {
   let n = 0;
@@ -1642,19 +1750,19 @@ function healAround(w) {
 }
 // phys: armour applies; pierce: half the armour; magic: magic resistance applies
 function damage(e, amt, type) {
-  if (!e.alive) return;
-  const res = type === 'magic' ? (e.D.mres || 0) : type === 'pierce' ? (e.D.armor || 0) * 0.5 : (e.D.armor || 0);
-  e.hp -= amt * (1 - res) * (e.shielded ? 0.8 : 1);
+  if (!e.alive || e.phased > 0) return;
+  const res = type === 'magic' ? e.mres : type === 'pierce' ? e.armor * 0.5 : e.armor;
+  e.hp -= amt * (1 - res) * (e.shielded ? 0.8 : 1) * (type === 'magic' ? e.magicMul : 1);
   e.flash = 0.08;
   if (e.hp <= 0) kill(e);
 }
 function kill(e) {
-  e.alive = false; S.gold += e.D.bounty; S.kills++;
+  e.alive = false; S.gold += e.bounty; S.kills++;
   if (e.blocker) e.blocker = null;
-  addText('+' + e.D.bounty, e.x, e.y - e.D.bar * DEMON_SC, '#f3d685', e.D.boss ? 22 : 14);
+  addText('+' + e.bounty, e.x, e.y - e.D.bar * DEMON_SC, '#f3d685', e.D.boss ? 22 : 14);
   burst(e.x, e.y - e.D.hit, e.D.boss ? 60 : 12, e.D.curse ? '#c46bff' : '#ff7a3a', e.D.boss ? 2.4 : 1.4, 0.8, 0.06, 0.9);
   burst(e.x, e.y - e.D.hit, e.D.boss ? 20 : 5, 'rgba(40,20,20,.8)', 0.6, 0.7, 0.09, 0.4);
-  if (e.D.split) for (let k = 0; k < e.D.split; k++) { const s = spawnEnemy('spark', e.pi, Math.max(0, e.d - k * 0.18)); s.off = rand(-0.25, 0.25); }
+  if (e.D.split) for (let k = 0; k < e.D.split; k++) { const s = spawnEnemy('spark', e.pi, Math.max(0, e.d - k * 0.18), e.v); s.off = rand(-0.25, 0.25); }
   if (e.D.boss) { S.shake = reduceMotion ? 0 : 0.6; banner(e.D.title, '+' + e.D.bounty + ' монет'); }
   Snd.play('coin');
 }
@@ -1716,7 +1824,7 @@ function drawFx(g, f) {
   else if (f.k === 'beam') { g.beginPath(); g.moveTo(f.x, f.y); g.quadraticCurveTo((f.x + f.x2) / 2, Math.min(f.y, f.y2) - 0.6, f.x2, f.y2); g.lineWidth = 0.04; g.strokeStyle = `rgba(150,255,140,${a * 0.8})`; g.stroke(); }
   else if (f.k === 'curse') {
     const mx = (f.x + f.x2) / 2 + Math.sin(f.t * 30) * 0.15, my = (f.y + f.y2) / 2 - 0.4;
-    for (const [w, col] of [[0.07, `rgba(200,120,255,${a * 0.8})`], [0.022, `rgba(255,230,255,${a})`]]) { g.beginPath(); g.moveTo(f.x, f.y); g.quadraticCurveTo(mx, my, f.x2, f.y2); g.lineWidth = w; g.strokeStyle = col; g.stroke(); }
+    for (const [w, col] of f.ice ? [[0.08, `rgba(150,215,255,${a * 0.8})`], [0.025, `rgba(240,250,255,${a})`]] : [[0.07, `rgba(200,120,255,${a * 0.8})`], [0.022, `rgba(255,230,255,${a})`]]) { g.beginPath(); g.moveTo(f.x, f.y); g.quadraticCurveTo(mx, my, f.x2, f.y2); g.lineWidth = w; g.strokeStyle = col; g.stroke(); }
   }
   else if (f.k === 'roots') {
     const grow = Math.min(1, f.t / 0.2), fade = f.t > f.life - 0.3 ? (f.life - f.t) / 0.3 : 1;
@@ -1735,13 +1843,13 @@ function drawFx(g, f) {
 /* ---------- waves ---------- */
 function waveSummary(L, wi) {
   const m = new Map();
-  for (const [type, count] of L.waves[wi]) m.set(type, (m.get(type) || 0) + count);
+  L.waves[wi].forEach(([type, count], gi) => { const v = L.gv[wi][gi], key = v ? type + ':' + v : type; m.set(key, (m.get(key) || 0) + count); });
   return [...m];
 }
 function startWave() {
   if (!S || S.waveActive || S.over) return;
   closeSheets(); cancelRally();
-  S.spawners = S.L.waves[S.wave].map(([type, count, interval, delay, path = -1]) => ({ type, left: count, interval, timer: delay, path }));
+  S.spawners = S.L.waves[S.wave].map(([type, count, interval, delay, path = -1], gi) => ({ type, left: count, interval, timer: delay, path, v: S.L.gv[S.wave][gi] }));
   S.waveActive = true;
   Snd.play('horn');
   banner(`Волна ${S.wave + 1}`, S.wave === S.L.waves.length - 1 ? 'Последняя волна' : '');
@@ -1754,7 +1862,7 @@ function updateWave(dt) {
     sp.timer -= dt;
     while (sp.left > 0 && sp.timer <= 0) {
       const pi = sp.path >= 0 ? Math.min(sp.path, S.paths.length - 1) : (S.spawnCount++ % S.paths.length);
-      spawnEnemy(sp.type, pi, 0); sp.left--; sp.timer += sp.interval;
+      spawnEnemy(sp.type, pi, 0, sp.v); sp.left--; sp.timer += sp.interval;
     }
   }
 }
@@ -1841,7 +1949,7 @@ function drawWorld(g, time) {
   for (const [, k, o] of list) {
     if (k === 0) drawTowerObj(g, o, time);
     else if (k === 1) scaled(g, o, HUNTER_SC, () => drawSquadUnit(g, o, time));
-    else scaled(g, o, DEMON_SC, () => drawDemon(g, o, time));
+    else scaled(g, o, DEMON_SC * (o.D.scale || 1), () => drawDemon(g, o, time));
   }
   for (const p of S.projectiles) {
     if (p.kind === 'arrow') {
@@ -1857,7 +1965,7 @@ function drawWorld(g, time) {
     } else { glow(g, p.x, p.y, 0.25, 'rgba(160,215,255,.55)'); circ(g, p.x, p.y, 0.07, '#f0f9ff'); }
   }
   const fl = S.enemies.filter(e => e.flying).sort((a, b) => a.y - b.y);
-  for (const e of fl) scaled(g, e, DEMON_SC, () => drawDemon(g, e, time));
+  for (const e of fl) scaled(g, e, DEMON_SC * (e.D.scale || 1), () => drawDemon(g, e, time));
   for (const t of S.towers) if (t && t.griffins) for (const b of t.griffins) scaled(g, b, 1.1, () => drawGriffinBird(g, b.x, b.y, b.face, time + t.si, b.state === 'dive'));
   for (const f of S.fx) if (!f.ground) drawFx(g, f);
   // health bars
@@ -1883,7 +1991,11 @@ function drawTowerObj(g, t, time) {
   if (s !== 1) { g.save(); g.translate(t.x, t.y + 0.25); g.scale(s, s); g.translate(-t.x, -(t.y + 0.25)); }
   drawTower(g, t.type, t.lvl, t.x, t.y, time + t.si * 0.7, t.aim, t.fire);
   if (s !== 1) g.restore();
-  if (t.curse > 0) {
+  if (t.curse > 0 && t.curseKind === 'freeze') {
+    const a = Math.min(1, t.curse) * 0.9;
+    glow(g, t.x, t.y - 0.3, 0.62, `rgba(150,215,255,${a * 0.55})`);
+    for (let i = 0; i < 5; i++) { const cx = t.x - 0.3 + i * 0.15, cy = t.y + 0.1 - (i % 2) * 0.12; g.globalAlpha = a; poly(g, [cx, cy - 0.2, cx + 0.05, cy, cx, cy + 0.04, cx - 0.05, cy], '#e3f5ff'); g.globalAlpha = 1; }
+  } else if (t.curse > 0) {
     const a = Math.min(1, t.curse) * 0.85;
     glow(g, t.x, t.y - 0.3, 0.62, `rgba(110,30,170,${a * 0.6})`);
     g.lineWidth = 0.028; g.strokeStyle = `rgba(210,150,255,${a})`;
@@ -1965,13 +2077,15 @@ function towerIcon(canvas, type, lvl) {
   if (type === 'griffin') drawGriffinBird(g, 0.02, -0.88, 1, 0.3, false);
 }
 const demonIcons = {};
-for (const type of Object.keys(DEMONS)) {
-  const c = document.createElement('canvas'), px = 60, D = DEMONS[type], span = D.icon || 1.1, sc = px / span;
+function demonIcon(key) {
+  if (demonIcons[key]) return demonIcons[key];
+  const [type, v] = key.split(':'), D = DEMONS[type], k = D.scale || 1, px = 60, sc = px / (D.icon || 1.1) * k;
+  const c = document.createElement('canvas');
   c.width = c.height = px;
   const g = c.getContext('2d');
   g.setTransform(sc, 0, 0, sc, px / 2, px * 0.82);
-  drawDemon(g, { type, D, x: 0, y: 0, face: 1, phase: 0.6, flash: 0, slowT: 0, stunT: 0, atk: 0, flying: !!D.flying }, 0.3);
-  demonIcons[type] = c.toDataURL();
+  drawDemon(g, { type, D, v: v || null, tint: v || D.tint || null, x: 0, y: 0, face: 1, phase: 0.6, flash: 0, slowT: 0, stunT: 0, atk: 0, phased: 0, flying: !!D.flying }, 0.3);
+  return (demonIcons[key] = c.toDataURL());
 }
 
 /* ================= UI ================= */
@@ -1982,6 +2096,7 @@ const el = {
   tIcon: $('tIcon'), tName: $('tName'), tLvl: $('tLvl'), tStats: $('tStats'), upBtn: $('upBtn'), rallyBtn: $('rallyBtn'), sellBtn: $('sellBtn'),
   nextLbl: $('nextLbl'), foes: $('foes'), waveBtn: $('waveBtn'), rallyCancel: $('rallyCancel'),
   menu: $('menu'), levels: $('levels'), pause: $('pause'), end: $('end'), soundBtn: $('soundBtn'),
+  bossBar: $('bossBar'), bossName: $('bossName'), bossFill: $('bossFill'),
 };
 let toastTimer = 0, bannerTimer = 0;
 function toast(msg, ms = 2600, danger = false) {
@@ -2141,13 +2256,20 @@ function setFooter() {
     el.waveBtn.disabled = S.over; el.waveBtn.textContent = 'В бой!';
   }
   const wi = Math.min(S.wave, L.waves.length - 1);
-  el.foes.innerHTML = waveSummary(L, wi).map(([type, n]) => `<button class="foe" data-type="${type}" aria-label="${DEMONS[type].name}: ${n}"><img src="${demonIcons[type]}" alt="">×${n}</button>`).join('');
-  el.foes.querySelectorAll('.foe').forEach(b => b.addEventListener('click', () => { const D = DEMONS[b.dataset.type]; toast(`${D.name}: ${D.info}`, 3400); }));
+  el.foes.innerHTML = waveSummary(L, wi).map(([key, n]) => { const [type, v] = key.split(':'); return `<button class="foe${DEMONS[type].boss ? ' boss' : ''}" data-key="${key}" aria-label="${demonName(type, v)}: ${n}"><img src="${demonIcon(key)}" alt="">×${n}</button>`; }).join('');
+  el.foes.querySelectorAll('.foe').forEach(b => b.addEventListener('click', () => { const [type, v] = b.dataset.key.split(':'), D = DEMONS[type]; toast(`${demonName(type, v)}: ${D.info}${v ? '. ' + VARIANTS[v].info[0].toUpperCase() + VARIANTS[v].info.slice(1) : ''}`, 4200); }));
   hud.nl = null;
-  if (!S.waveActive && !S.over && S.wave > 0 && S.wave < L.waves.length) {
-    const seen = new Set(); for (let i = 0; i < S.wave; i++) for (const [type] of L.waves[i]) seen.add(type);
-    const fresh = waveSummary(L, S.wave).map(([t]) => t).filter(t => !seen.has(t));
-    if (fresh.length) setTimeout(() => { if (S && !S.waveActive) { const D = DEMONS[fresh[0]]; toast(`Новый враг — ${D.name}: ${D.info}`, 4800); } }, 1400);
+  if (!S.waveActive && !S.over && S.wave < L.waves.length) {
+    const seenT = new Set(), seenV = new Set();
+    for (let i = 0; i < S.wave; i++) L.waves[i].forEach(([type], gi) => { seenT.add(type); if (L.gv[i][gi]) seenV.add(L.gv[i][gi]); });
+    const next = L.waves[S.wave], boss = next.find(([type]) => DEMONS[type].boss);
+    const newT = next.map(([t]) => t).filter(t => !seenT.has(t) && !DEMONS[t].boss);
+    const newV = L.gv[S.wave].filter(v => v && !seenV.has(v));
+    let msg = null;
+    if (boss) msg = `В этой волне придёт босс — ${DEMONS[boss[0]].name}: ${DEMONS[boss[0]].info}`;
+    else if (S.wave > 0 && newT.length) msg = `Новый враг — ${DEMONS[newT[0]].name}: ${DEMONS[newT[0]].info}`;
+    else if (newV.length) msg = `Новые демоны — ${VARIANTS[newV[0]].many}: ${VARIANTS[newV[0]].info}`;
+    if (msg) setTimeout(() => { if (S && !S.waveActive) toast(msg, 5200); }, S.wave === 0 ? 7000 : 1400);
   }
 }
 const hud = {};
@@ -2155,6 +2277,12 @@ function setText(node, key, v) { if (hud[key] === v) return false; hud[key] = v;
 function updateHUD() {
   if (!S) return;
   setText(el.lives, 'l', String(S.lives));
+  const boss = S.enemies.find(e => e.alive && e.D.boss);
+  if (boss) {
+    if (el.bossBar.hidden) { el.bossBar.hidden = false; el.bossName.textContent = boss.D.name; stage.classList.add('boss-on'); hud.bp = null; }
+    const pct = Math.max(0, Math.round(boss.hp / boss.maxHp * 200) / 2);
+    if (hud.bp !== pct) { hud.bp = pct; el.bossFill.style.width = pct + '%'; }
+  } else if (!el.bossBar.hidden) { el.bossBar.hidden = true; stage.classList.remove('boss-on'); }
   const prevGold = hud.g;
   if (setText(el.gold, 'g', String(S.gold))) {
     if (prevGold != null && S.gold > +prevGold) { el.goldStat.classList.remove('bump'); void el.goldStat.offsetWidth; el.goldStat.classList.add('bump'); }
@@ -2177,7 +2305,8 @@ function renderLevels() {
     const locked = i >= progress.unlocked, st = progress.stars[i] || 0;
     const stars = `<span>${'★'.repeat(st)}</span><span class="off">${'★'.repeat(3 - st)}</span>`;
     const sub = locked ? `Откроется после победы в городе «${LEVELS[i - 1].name}»` : `${L.sub} · ${L.waves.length} волн`;
-    return `<button class="lvl" data-li="${i}" ${locked ? 'disabled' : ''}><span class="nm">${L.name}</span><span class="sub">${sub}</span><span class="stars" aria-label="Звёзд: ${st} из 3">${stars}</span></button>`;
+    const boss = L.waves[L.waves.length - 1].find(([type]) => DEMONS[type].boss);
+    return `<button class="lvl" data-li="${i}" ${locked ? 'disabled' : ''}><span class="nm">${L.name}</span><span class="sub">${sub}</span><span class="boss">Босс: ${DEMONS[boss[0]].name}</span><span class="stars" aria-label="Звёзд: ${st} из 3">${stars}</span></button>`;
   }).join('');
   el.levels.querySelectorAll('.lvl').forEach(b => b.addEventListener('click', () => startLevel(+b.dataset.li)));
 }
@@ -2187,6 +2316,7 @@ function showMenu() {
   el.menu.hidden = false; el.pause.hidden = true; el.end.hidden = true;
   el.banner.hidden = true; el.toast.hidden = true;
   $('app').classList.add('in-menu');
+  el.bossBar.hidden = true; stage.classList.remove('boss-on');
   renderLevels();
 }
 function startLevel(li) {
@@ -2195,6 +2325,7 @@ function startLevel(li) {
   UI.paused = false; closeSheets(); cancelRally();
   el.menu.hidden = true; el.pause.hidden = true; el.end.hidden = true;
   $('app').classList.remove('in-menu');
+  el.bossBar.hidden = true; stage.classList.remove('boss-on');
   setFooter();
   banner(S.L.name, S.L.sub);
   const fresh = li > 0 ? ORDER.filter(k => TOWERS[k].from === li) : [];
@@ -2325,6 +2456,32 @@ window.__silvenor = {
   build(si, type) { UI.sel = { si }; UI.buildType = type; doBuild(); return !!S.towers[si]; },
   upgrade(si) { UI.sel = { si }; upgrade(); closeSheets(); },
   upCost(t) { const nx = TOWERS[t.type].levels[t.lvl + 1]; return nx ? nx.up : 0; },
+  // Android back button: returns false only on the city list, so the app can close
+  back() {
+    if (UI.rally != null) { cancelRally(); return true; }
+    if (UI.sel) { closeSheets(); return true; }
+    if (!el.end.hidden || (S && S.over)) { showMenu(); return true; }
+    if (S && UI.paused) { setPaused(false); return true; }
+    if (S) { setPaused(true); return true; }
+    return false;
+  },
+  pause() { if (S && !S.over && !UI.paused) setPaused(true); },
+  icon(size, part) {
+    const c = document.createElement('canvas'), g = c.getContext('2d'), s = size;
+    c.width = c.height = s;
+    if (part !== 'fg') {
+      const bgr = g.createRadialGradient(s * 0.5, s * 0.38, s * 0.05, s * 0.5, s * 0.5, s * 0.75);
+      bgr.addColorStop(0, '#24503a'); bgr.addColorStop(1, '#0b1412');
+      g.fillStyle = bgr; g.fillRect(0, 0, s, s);
+      g.setTransform(s, 0, 0, s, 0, 0);
+      glow(g, 0.5, 0.95, 0.5, 'rgba(255,90,40,.35)');
+    }
+    if (part === 'bg') return c.toDataURL('image/png');
+    const k = part === 'fg' ? s * 0.4 : s * 0.58;
+    g.setTransform(k, 0, 0, k, s * 0.5, s * (part === 'fg' ? 0.66 : 0.72));
+    drawMage(g, 2, 0, 0, 0.6, 0.12);
+    return c.toDataURL('image/png');
+  },
 };
 const hot = window.claude && window.claude.hot;
 if (hot && typeof hot.snapshot === 'function') hot.snapshot(snapshot);
