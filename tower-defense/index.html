@@ -7,7 +7,8 @@
 <meta name="theme-color" content="#0b1412">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<meta name="color-scheme" content="dark">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-top:var(--inset-top,env(safe-area-inset-top,0px));padding-bottom:var(--inset-bottom,env(safe-area-inset-bottom,0px))}</style>
 <!--/standalone-->
 <title>Оборона Сильвенора</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,7 +76,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline
 
 /* Stage */
 #stage{position:relative;flex:1;min-height:0;overflow:hidden}
-#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#cv{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;display:block;touch-action:none}
 
 /* Wave bar: label and button on top, the coming demons below */
 #bar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"lbl btn" "foes foes";align-items:center;gap:7px 12px;padding:9px 14px 11px;z-index:2;
@@ -118,6 +119,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline
 
 /* Sheets over the map */
 .sheet{position:absolute;left:10px;right:10px;z-index:5;padding:12px 14px 14px;border-radius:20px;max-width:520px;margin:0 auto;
+  max-height:calc(100% - 20px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   background:linear-gradient(180deg,rgba(30,78,60,.97),rgba(10,30,23,.97));border:1.5px solid var(--line-gold);
   box-shadow:0 16px 44px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 34px rgba(0,0,0,.25)}
 .sheet.at-bottom{bottom:10px;animation:fromBottom .2s ease-out}
@@ -167,7 +169,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline
   background:linear-gradient(90deg,rgba(255,110,60,0),rgba(255,110,60,.7) 25%,rgba(255,170,60,.7) 75%,rgba(255,110,60,0))}
 .banner span:empty{display:none}
 @keyframes bannerIn{0%{opacity:0;transform:translateY(10px) scale(.94)}12%{opacity:1;transform:none}78%{opacity:1}100%{opacity:0}}
-.boss-bar{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:5;width:min(340px,calc(100% - 32px));padding:7px 12px 9px;border-radius:14px;pointer-events:none;
+.boss-bar{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:5;width:calc(100% - 32px);max-width:340px;padding:7px 12px 9px;border-radius:14px;pointer-events:none;
   background:linear-gradient(180deg,rgba(84,12,24,.94),rgba(32,6,10,.94));border:1.5px solid #ffb35c;box-shadow:0 0 20px rgba(255,80,40,.5)}
 .boss-name{font-family:var(--font-display);font-weight:700;font-size:17px;line-height:1.1;color:#ffe1a8;text-align:center;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .boss-name::before{content:'♛ ';color:var(--gold)}
@@ -178,15 +180,15 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline
   border:1px solid #7fd6ff;background:linear-gradient(180deg,#3a8cc4,#1d5682);box-shadow:0 3px 0 #0b2a44,0 6px 16px rgba(0,0,0,.4)}
 
 /* Full screens */
-.screen{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;padding:20px 16px;overflow-y:auto;
+.screen{position:absolute;top:0;right:0;bottom:0;left:0;z-index:10;display:flex;flex-direction:column;padding:20px 16px;overflow-y:auto;
   background:radial-gradient(ellipse at 50% -10%,rgba(80,200,140,.32),transparent 55%),radial-gradient(ellipse at 50% 115%,rgba(255,90,40,.32),transparent 50%),linear-gradient(180deg,rgba(6,20,14,.7),rgba(5,12,9,.93))}
 .screen-inner{width:100%;max-width:440px;margin:auto;display:flex;flex-direction:column;gap:14px}
 .eyebrow{margin:0;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#ff9a6a;text-shadow:0 0 12px rgba(255,90,40,.7)}
 h1,h2{font-family:var(--font-display);font-weight:700;margin:0;text-wrap:balance;
   background:linear-gradient(180deg,#fffbe6 8%,#ffd166 52%,#ff9e2c 96%);-webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 3px 0 rgba(0,0,0,.65)) drop-shadow(0 0 22px rgba(255,190,80,.35))}
-h1{font-size:clamp(46px,13.5vw,66px);line-height:.92}
-h2{font-size:clamp(38px,10vw,50px);line-height:.95}
+h1{font-size:50px;font-size:clamp(46px,13.5vw,66px);line-height:.92}
+h2{font-size:40px;font-size:clamp(38px,10vw,50px);line-height:.95}
 .lead{margin:0;color:#d4ecdf;font-size:16px;max-width:38ch}
 .levels{display:flex;flex-direction:column;gap:9px}
 .lvl{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;text-align:left;padding:11px 16px;border-radius:16px;
@@ -300,6 +302,7 @@ details.howto li::marker{color:var(--gold)}
         <button class="primary wide" id="resumeBtn">Продолжить</button>
         <button class="ghost" id="restartBtn">Начать город заново</button>
         <button class="ghost sky" id="soundBtn">Звук: вкл</button>
+        <button class="ghost sky" id="gfxBtn">Графика: авто</button>
         <button class="ghost" id="menuBtn">К выбору города</button>
       </div>
     </div>
@@ -771,10 +774,33 @@ function ell(g, x, y, rx, ry, fill) { g.beginPath(); g.ellipse(x, y, rx, ry, 0, 
 function circ(g, x, y, r, fill) { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fillStyle = fill; g.fill(); }
 function poly(g, p, fill) { g.beginPath(); g.moveTo(p[0], p[1]); for (let i = 2; i < p.length; i += 2) g.lineTo(p[i], p[i + 1]); g.closePath(); g.fillStyle = fill; g.fill(); }
 function line(g, x1, y1, x2, y2, w, col) { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.lineWidth = w; g.strokeStyle = col; g.stroke(); }
-function glow(g, x, y, r, col) { const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, col); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
+// Soft glows are drawn from a cached radial-gradient sprite per colour (alpha via globalAlpha):
+// much cheaper on phone GPUs than building a new gradient for every glow in every frame.
+const GLOWS = new Map();
+function glow(g, x, y, r, col) {
+  const i = col.lastIndexOf(',');
+  if (!col.startsWith('rgba(') || i < 0) { const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, col); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); return; }
+  const a = Math.min(1, parseFloat(col.slice(i + 1)));
+  if (!(a > 0) || !(r > 0)) return;
+  const key = col.slice(5, i);
+  let spr = GLOWS.get(key);
+  if (!spr) {
+    spr = document.createElement('canvas'); spr.width = spr.height = 96;
+    const sg = spr.getContext('2d'), gr = sg.createRadialGradient(48, 48, 0, 48, 48, 48);
+    gr.addColorStop(0, `rgba(${key},1)`); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    sg.fillStyle = gr; sg.fillRect(0, 0, 96, 96);
+    GLOWS.set(key, spr);
+  }
+  const ga = g.globalAlpha; g.globalAlpha = ga * a;
+  g.drawImage(spr, x - r, y - r, r * 2, r * 2);
+  g.globalAlpha = ga;
+}
 function shadow(g, x, y, rx, ry, a = 0.35) { ell(g, x, y, rx, ry, `rgba(0,0,0,${a})`); }
 
 /* ---------- towers ---------- */
+// Towers are drawn in two passes: TP = 1 draws only the still parts (cached as a sprite per type and level),
+// TP = 2 only the moving ones (archers, crystals, flags, glows). TP = 0 draws everything at once (icons).
+let TP = 0;
 function towerTop(type, lvl, y) {
   if (type === 'archer') return y + 0.2 - (0.62 + lvl * 0.1) - 0.16;
   if (type === 'mage') return y + 0.2 - (0.82 + lvl * 0.1) - 0.12;
@@ -795,6 +821,7 @@ function detailBuilder(seed) {
     d(rad, c, x, y) { get('d', rad, c).push(x, y); },      // dots
     e(c, x, y, rx, ry, rot) { get('e', 0, c).push(x, y, rx, ry, rot); }, // small ellipses (leaves, stones)
     a(w, c, x, y, rad, a0, a1) { get('a', w, c).push(x, y, rad, a0, a1); }, // arcs
+    p(c, ...pts) { get('p', 0, c).push(pts.length, ...pts); },                // filled polygons
   };
 }
 function drawDetail(g, key, lvl, x, y, gen) {
@@ -810,6 +837,7 @@ function drawDetail(g, key, lvl, x, y, gen) {
     if (o.k === 's') { for (let i = 0; i < p.length; i += 4) { g.moveTo(x + p[i], y + p[i + 1]); g.lineTo(x + p[i + 2], y + p[i + 3]); } g.lineWidth = o.a; g.strokeStyle = o.c; g.stroke(); }
     else if (o.k === 'd') { for (let i = 0; i < p.length; i += 2) { g.moveTo(x + p[i] + o.a, y + p[i + 1]); g.arc(x + p[i], y + p[i + 1], o.a, 0, TAU); } g.fillStyle = o.c; g.fill(); }
     else if (o.k === 'e') { for (let i = 0; i < p.length; i += 5) { g.moveTo(x + p[i] + p[i + 2], y + p[i + 1]); g.ellipse(x + p[i], y + p[i + 1], p[i + 2], p[i + 3], p[i + 4], 0, TAU); } g.fillStyle = o.c; g.fill(); }
+    else if (o.k === 'p') { for (let i = 0; i < p.length; i += p[i] + 1) { g.moveTo(x + p[i + 1], y + p[i + 2]); for (let j = 3; j <= p[i]; j += 2) g.lineTo(x + p[i + j], y + p[i + j + 1]); g.closePath(); } g.fillStyle = o.c; g.fill(); }
     else { for (let i = 0; i < p.length; i += 5) { const cx = x + p[i], cy = y + p[i + 1]; g.moveTo(cx + Math.cos(p[i + 3]) * p[i + 2], cy + Math.sin(p[i + 3]) * p[i + 2]); g.arc(cx, cy, p[i + 2], p[i + 3], p[i + 4]); } g.lineWidth = o.a; g.strokeStyle = o.c; g.stroke(); }
   }
 }
@@ -1004,8 +1032,9 @@ const DET = {
   },
 };
 function drawArcher(g, lvl, x, y, time, aim, fire) {
-  shadow(g, x, y + 0.27, 0.34, 0.11);
   const top = y + 0.2 - (0.62 + lvl * 0.1);
+  if (TP !== 2) {
+  shadow(g, x, y + 0.27, 0.34, 0.11);
   poly(g, [x - 0.3, y + 0.27, x + 0.3, y + 0.27, x + 0.26, y + 0.1, x - 0.26, y + 0.1], '#7c867e');
   const gr = g.createLinearGradient(x - 0.24, 0, x + 0.24, 0);
   gr.addColorStop(0, '#f3f0e4'); gr.addColorStop(1, '#a8a493');
@@ -1022,9 +1051,11 @@ function drawArcher(g, lvl, x, y, time, aim, fire) {
   poly(g, [x - 0.31, top + 0.13, x + 0.31, top + 0.13, x + 0.27, top + 0.02, x - 0.27, top + 0.02], '#5b4430');
   line(g, x - 0.31, top + 0.13, x + 0.31, top + 0.13, 0.02, lvl ? '#d8b45a' : '#3c2c1e');
   drawDetail(g, 'archerTop', lvl, x, y, DET.archerTop);
+  if (lvl >= 2) line(g, x - 0.26, top + 0.04, x - 0.26, top - 0.42, 0.022, '#d8c49a');
+  }
+  if (TP === 1) return;
   if (lvl >= 2) { // banner
     const wv = Math.sin(time * 3) * 0.03;
-    line(g, x - 0.26, top + 0.04, x - 0.26, top - 0.42, 0.022, '#d8c49a');
     poly(g, [x - 0.26, top - 0.42, x - 0.04, top - 0.37 + wv, x - 0.26, top - 0.28], '#3f9a63');
     circ(g, x - 0.19, top - 0.36 + wv / 2, 0.022, '#e9c46a');
   }
@@ -1044,6 +1075,7 @@ function drawArcher(g, lvl, x, y, time, aim, fire) {
   g.restore();
 }
 function drawLodge(g, lvl, x, y, time) {
+  if (TP !== 2) {
   shadow(g, x, y + 0.27, 0.38, 0.12);
   if (lvl >= 1) {
     for (let i = -3; i <= 3; i++) line(g, x + i * 0.11, y + 0.31, x + i * 0.11, y + 0.18, 0.026, '#5a4030');
@@ -1058,8 +1090,6 @@ function drawLodge(g, lvl, x, y, time) {
   }
   drawDetail(g, 'lodgeWalls', 0, x, y, DET.lodgeWalls);
   g.fillStyle = '#22160d'; g.beginPath(); g.moveTo(x - 0.08, wy1); g.lineTo(x - 0.08, y + 0.04); g.arc(x, y + 0.04, 0.08, Math.PI, 0); g.lineTo(x + 0.08, wy1); g.closePath(); g.fill();
-  const fl = 0.8 + Math.sin(time * 7) * 0.12;
-  glow(g, x + 0.19, y - 0.01, 0.2, `rgba(255,200,110,${0.4 * fl})`);
   circ(g, x + 0.19, y - 0.01, 0.03, '#ffd27a');
   drawDetail(g, 'lodgeFront', 0, x, y, DET.lodgeFront);
   const py = y - 0.6 - lvl * 0.04;
@@ -1074,15 +1104,20 @@ function drawLodge(g, lvl, x, y, time) {
     g.moveTo(x + s * 0.15, py - 0.11); g.lineTo(x + s * 0.25, py - 0.15);
   }
   g.stroke(); g.lineCap = 'butt';
+  if (lvl >= 2) line(g, x + 0.33, y + 0.2, x + 0.33, y - 0.45, 0.022, '#d8c49a');
+  }
+  if (TP === 1) return;
+  const fl = 0.8 + Math.sin(time * 7) * 0.12;
+  glow(g, x + 0.19, y - 0.01, 0.2, `rgba(255,200,110,${0.4 * fl})`);
   if (lvl >= 2) {
     const wv = Math.sin(time * 3 + 1) * 0.03;
-    line(g, x + 0.33, y + 0.2, x + 0.33, y - 0.45, 0.022, '#d8c49a');
     poly(g, [x + 0.33, y - 0.45, x + 0.55, y - 0.4 + wv, x + 0.33, y - 0.31], '#3f9a63');
   }
 }
 function drawMage(g, lvl, x, y, time, fire) {
-  shadow(g, x, y + 0.27, 0.32, 0.11);
   const top = y + 0.2 - (0.82 + lvl * 0.1);
+  if (TP !== 2) {
+  shadow(g, x, y + 0.27, 0.32, 0.11);
   poly(g, [x - 0.28, y + 0.27, x + 0.28, y + 0.27, x + 0.23, y + 0.1, x - 0.23, y + 0.1], '#667283');
   const gr = g.createLinearGradient(x - 0.2, 0, x + 0.2, 0);
   gr.addColorStop(0, '#f2f6f8'); gr.addColorStop(1, '#8f9fb1');
@@ -1098,6 +1133,8 @@ function drawMage(g, lvl, x, y, time, fire) {
   ell(g, x, top + 0.14, 0.2, 0.06, '#c3cfda');
   g.beginPath(); g.ellipse(x, top + 0.14, 0.2, 0.06, 0, 0, Math.PI); g.lineWidth = 0.02; g.strokeStyle = '#d8b45a'; g.stroke();
   drawDetail(g, 'mageTop', lvl, x, y, DET.mageTop);
+  }
+  if (TP === 1) return;
   const cy = top - 0.12 + Math.sin(time * 2.2) * 0.035;
   glow(g, x, cy, 0.34 + fire * 0.8, `rgba(150,210,255,${0.32 + fire * 1.6})`);
   poly(g, [x, cy - 0.16, x + 0.075, cy, x, cy + 0.11, x - 0.075, cy], '#dff2ff');
@@ -1105,6 +1142,8 @@ function drawMage(g, lvl, x, y, time, fire) {
   for (let i = 0; i < lvl; i++) { const a = time * 2 + i * Math.PI; circ(g, x + Math.cos(a) * 0.2, cy + Math.sin(a) * 0.07, 0.024, '#eaf6ff'); }
 }
 function drawDruid(g, lvl, x, y, time, fire) {
+  const cr = 0.3 + lvl * 0.04, cy = y - 0.5 - lvl * 0.04, fx = x + 0.21, fy = y + 0.22;
+  if (TP !== 2) {
   shadow(g, x, y + 0.27, 0.4, 0.12);
   g.strokeStyle = '#5a3d25'; g.lineWidth = 0.05; g.lineCap = 'round';
   for (const s of [-1, 1]) { g.beginPath(); g.moveTo(x + s * 0.08, y + 0.12); g.quadraticCurveTo(x + s * 0.25, y + 0.13, x + s * 0.34, y + 0.25); g.stroke(); }
@@ -1113,29 +1152,31 @@ function drawDruid(g, lvl, x, y, time, fire) {
   line(g, x - 0.07, y + 0.18, x - 0.04, y - 0.3, 0.015, 'rgba(40,25,14,.6)');
   line(g, x + 0.08, y + 0.2, x + 0.05, y - 0.25, 0.015, 'rgba(40,25,14,.6)');
   drawDetail(g, 'druidTrunk', 0, x, y, DET.druidTrunk);
-  const pulse = 0.65 + Math.sin(time * 3) * 0.2 + fire * 2;
   ell(g, x, y - 0.03, 0.065, 0.1, '#1d130a');
-  glow(g, x, y - 0.03, 0.22, `rgba(170,255,170,${0.32 * pulse})`);
   circ(g, x, y - 0.03, 0.033, '#d8ffd0');
-  const cr = 0.3 + lvl * 0.04, cy = y - 0.5 - lvl * 0.04;
   circ(g, x - cr * 0.62, cy + 0.07, cr * 0.7, '#24553a');
   circ(g, x + cr * 0.62, cy + 0.07, cr * 0.7, '#24553a');
   circ(g, x, cy - cr * 0.25, cr * 0.86, '#2e6c45');
   circ(g, x - cr * 0.25, cy - cr * 0.45, cr * 0.45, '#3f8a58');
   drawDetail(g, 'druidCanopy', lvl, x, y, DET.druidCanopy);
   if (lvl >= 1) for (let i = 0; i < 5; i++) { const a = i * 1.7 + 0.4; circ(g, x + Math.cos(a) * cr * 0.7, cy + Math.sin(a) * cr * 0.45, 0.028, i % 2 ? '#f2a7c7' : '#fff3c4'); }
-  if (lvl >= 2) for (let i = 0; i < 4; i++) { const a = time * 1.3 + i * 1.6; glow(g, x + Math.cos(a) * 0.42, cy + Math.sin(a * 1.3) * 0.25, 0.06, 'rgba(220,255,140,.75)'); }
   // the druid
-  const fx = x + 0.21, fy = y + 0.22;
   poly(g, [fx - 0.075, fy, fx + 0.075, fy, fx, fy - 0.25], '#7a5a3a');
   circ(g, fx, fy - 0.27, 0.045, '#f0d9b5');
   g.beginPath(); g.arc(fx, fy - 0.28, 0.055, Math.PI, 0); g.fillStyle = '#4f3a24'; g.fill();
   line(g, fx + 0.09, fy + 0.02, fx + 0.11, fy - 0.38, 0.022, '#8a6a44');
+  }
+  if (TP === 1) return;
+  const pulse = 0.65 + Math.sin(time * 3) * 0.2 + fire * 2;
+  glow(g, x, y - 0.03, 0.22, `rgba(170,255,170,${0.32 * pulse})`);
+  circ(g, x, y - 0.03, 0.033, '#d8ffd0');
+  if (lvl >= 2) for (let i = 0; i < 4; i++) { const a = time * 1.3 + i * 1.6; glow(g, x + Math.cos(a) * 0.42, cy + Math.sin(a * 1.3) * 0.25, 0.06, 'rgba(220,255,140,.75)'); }
   glow(g, fx + 0.11, fy - 0.4, 0.09 + fire * 0.3, 'rgba(150,255,150,.8)');
 }
 function drawRanger(g, lvl, x, y, time, aim, fire) {
-  shadow(g, x, y + 0.27, 0.34, 0.11);
   const top = y - 0.5 - lvl * 0.06;
+  if (TP !== 2) {
+  shadow(g, x, y + 0.27, 0.34, 0.11);
   g.lineCap = 'round';
   for (const s of [-1, 1]) line(g, x + s * 0.25, y + 0.24, x + s * 0.16, top + 0.05, 0.05, '#5d4330');
   line(g, x - 0.22, y + 0.04, x + 0.2, y - 0.18, 0.025, '#4b3626');
@@ -1146,6 +1187,15 @@ function drawRanger(g, lvl, x, y, time, aim, fire) {
   drawDetail(g, 'rangerFrame', lvl, x, y, DET.rangerFrame);
   for (const s of [-1, 1]) line(g, x + s * 0.27, top, x + s * 0.27, top - (lvl >= 1 ? 0.44 : 0.15), 0.022, '#5d4330');
   line(g, x - 0.27, top - 0.12, x + 0.27, top - 0.12, 0.018, '#5d4330');
+  if (lvl >= 1) {
+    const ry = top - 0.46;
+    poly(g, [x - 0.38, ry + 0.04, x, ry - 0.18 - lvl * 0.03, x + 0.38, ry + 0.04, x, ry - 0.03], '#2a6341');
+    poly(g, [x - 0.38, ry + 0.04, x, ry - 0.18 - lvl * 0.03, x - 0.02, ry - 0.03], '#367a50');
+    drawDetail(g, 'rangerRoof', lvl, x, y, DET.rangerRoof);
+  }
+  if (lvl >= 2) line(g, x + 0.27, top - 0.44, x + 0.27, top - 0.74, 0.02, '#d8c49a');
+  }
+  if (TP === 1) return;
   // the ranger
   const ay = top - 0.01;
   poly(g, [x - 0.1, ay, x + 0.1, ay, x, ay - 0.26], '#4a5d52');
@@ -1159,15 +1209,8 @@ function drawRanger(g, lvl, x, y, time, aim, fire) {
   g.beginPath(); g.moveTo(ex, -ey); g.lineTo(-pull - 0.02, 0); g.lineTo(ex, ey); g.lineWidth = 0.01; g.strokeStyle = '#eef3ea'; g.stroke();
   if (fire <= 0) { line(g, -pull - 0.02, 0, 0.24, 0, 0.018, '#cfd8dc'); poly(g, [0.3, 0, 0.23, -0.03, 0.23, 0.03], '#bfe6ff'); }
   g.restore();
-  if (lvl >= 1) {
-    const ry = top - 0.46;
-    poly(g, [x - 0.38, ry + 0.04, x, ry - 0.18 - lvl * 0.03, x + 0.38, ry + 0.04, x, ry - 0.03], '#2a6341');
-    poly(g, [x - 0.38, ry + 0.04, x, ry - 0.18 - lvl * 0.03, x - 0.02, ry - 0.03], '#367a50');
-    drawDetail(g, 'rangerRoof', lvl, x, y, DET.rangerRoof);
-  }
   if (lvl >= 2) {
     const wv = Math.sin(time * 3) * 0.03;
-    line(g, x + 0.27, top - 0.44, x + 0.27, top - 0.74, 0.02, '#d8c49a');
     poly(g, [x + 0.27, top - 0.74, x + 0.47, top - 0.69 + wv, x + 0.27, top - 0.62], '#2b4f7a');
     circ(g, x + 0.34, top - 0.69 + wv / 2, 0.022, '#e9f3ff');
   }
@@ -1183,6 +1226,7 @@ function drawGriffinBird(g, x, y, f, time, fast) {
   circ(g, x + f * 0.115, y - 0.065, 0.014, '#1a1a1a');
 }
 function drawNest(g, lvl, x, y, time) {
+  if (TP !== 2) {
   shadow(g, x, y + 0.27, 0.36, 0.12);
   poly(g, [x - 0.3, y + 0.27, x + 0.3, y + 0.27, x + 0.22, y - 0.18, x + 0.14, y - 0.62, x - 0.12, y - 0.66, x - 0.24, y - 0.24], '#666c75');
   poly(g, [x - 0.3, y + 0.27, x - 0.03, y + 0.27, x - 0.05, y - 0.12, x - 0.12, y - 0.66, x - 0.24, y - 0.24], '#7e858e');
@@ -1198,9 +1242,11 @@ function drawNest(g, lvl, x, y, time) {
   drawDetail(g, 'nestTop', 0, x, y, DET.nestTop);
   ell(g, x, y - 0.71, 0.18, 0.05, '#33251a');
   if (lvl >= 1) ell(g, x + 0.08, y - 0.74, 0.04, 0.055, '#efe2b8');
+  if (lvl >= 2) line(g, x - 0.24, y - 0.66, x - 0.26, y - 1.05, 0.02, '#d8c49a');
+  }
+  if (TP === 1) return;
   if (lvl >= 2) {
     const wv = Math.sin(time * 3) * 0.03;
-    line(g, x - 0.24, y - 0.66, x - 0.26, y - 1.05, 0.02, '#d8c49a');
     poly(g, [x - 0.26, y - 1.05, x - 0.05, y - 1.0 + wv, x - 0.26, y - 0.93], '#c9902c');
   }
 }
@@ -1212,6 +1258,7 @@ function menhir(g, x, y, h, lit) {
   if (lit) line(g, x, y - h * 0.25, x, y - h * 0.65, 0.02, 'rgba(150,255,170,.75)');
 }
 function drawGrove(g, lvl, x, y, time) {
+  if (TP !== 2) {
   shadow(g, x, y + 0.25, 0.4, 0.13);
   ell(g, x, y + 0.13, 0.37, 0.15, '#2b4732');
   drawDetail(g, 'groveGround', lvl, x, y, DET.groveGround);
@@ -1222,11 +1269,14 @@ function drawGrove(g, lvl, x, y, time) {
   circ(g, x - 0.1, y - 0.36, cr, '#2f6e46'); circ(g, x + 0.1, y - 0.38, cr, '#2f6e46'); circ(g, x, y - 0.5, cr + 0.02, '#3f8a58');
   drawDetail(g, 'groveCanopy', lvl, x, y, DET.groveCanopy);
   if (lvl >= 2) for (let i = 0; i < 4; i++) circ(g, x + Math.cos(i * 1.6) * 0.12, y - 0.42 + Math.sin(i * 1.6) * 0.08, 0.024, '#f2a7c7');
-  glow(g, x, y - 0.06, 0.2, `rgba(150,255,170,${0.28 + 0.12 * Math.sin(time * 2.5)})`);
   menhir(g, x - 0.13, y + 0.21, 0.3, true);
   menhir(g, x + 0.14, y + 0.22, 0.27, lvl >= 1);
+  }
+  if (TP === 1) return;
+  glow(g, x, y - 0.06, 0.2, `rgba(150,255,170,${0.28 + 0.12 * Math.sin(time * 2.5)})`);
 }
 function drawBard(g, lvl, x, y, time) {
+  if (TP !== 2) {
   shadow(g, x, y + 0.27, 0.36, 0.12);
   ell(g, x, y + 0.17, 0.34, 0.12, '#bfc7c3'); ell(g, x, y + 0.14, 0.32, 0.1, '#e3e8e5');
   g.fillStyle = '#d6dde0';
@@ -1252,6 +1302,8 @@ function drawBard(g, lvl, x, y, time) {
   const fy = dy - 0.22 - lvl * 0.025;
   line(g, x, fy, x, fy - 0.12, 0.02, '#d8b45a');
   g.beginPath(); g.arc(x, fy - 0.15, 0.04, 0.5, TAU - 0.5); g.lineWidth = 0.018; g.strokeStyle = '#e9c46a'; g.stroke();
+  }
+  if (TP === 1) return;
   const n = 2 + lvl;
   for (let i = 0; i < n; i++) {
     const ph = (time * 0.55 + i / n) % 1, nx = x + 0.1 + Math.sin(ph * 6 + i * 2) * 0.22, ny = y - 0.35 - ph * 0.7;
@@ -1271,11 +1323,261 @@ function drawTower(g, type, lvl, x, y, time, aim, fire) {
   else drawBard(g, lvl, x, y, time);
 }
 
+/* ---------- fine demon detail ---------- */
+// Each layer is generated once in the demon's own coordinates (facing right), turned into Path2D objects
+// grouped by colour, and drawn mirrored to the facing side. Off on economy graphics and while a demon flashes.
+const DDET = new Map();
+function demonDetail(g, key, ax, ay, f, gen) {
+  let ops = DDET.get(key);
+  if (!ops) {
+    let h = 11; for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 2654435761);
+    const b = detailBuilder(h >>> 0); gen(b);
+    ops = [...b.ops.values()].map(o => {
+      const p = o.p, path = new Path2D();
+      if (o.k === 's') for (let i = 0; i < p.length; i += 4) { path.moveTo(p[i], p[i + 1]); path.lineTo(p[i + 2], p[i + 3]); }
+      else if (o.k === 'd') for (let i = 0; i < p.length; i += 2) { path.moveTo(p[i] + o.a, p[i + 1]); path.arc(p[i], p[i + 1], o.a, 0, TAU); }
+      else if (o.k === 'e') for (let i = 0; i < p.length; i += 5) { path.moveTo(p[i] + p[i + 2] * Math.cos(p[i + 4]), p[i + 1] + p[i + 2] * Math.sin(p[i + 4])); path.ellipse(p[i], p[i + 1], p[i + 2], p[i + 3], p[i + 4], 0, TAU); }
+      else if (o.k === 'p') for (let i = 0; i < p.length; i += p[i] + 1) { path.moveTo(p[i + 1], p[i + 2]); for (let j = 3; j <= p[i]; j += 2) path.lineTo(p[i + j], p[i + j + 1]); path.closePath(); }
+      else for (let i = 0; i < p.length; i += 5) { path.moveTo(p[i] + Math.cos(p[i + 3]) * p[i + 2], p[i + 1] + Math.sin(p[i + 3]) * p[i + 2]); path.arc(p[i], p[i + 1], p[i + 2], p[i + 3], p[i + 4]); }
+      return { stroke: o.k === 's' || o.k === 'a', w: o.a, c: o.c, path };
+    });
+    DDET.set(key, ops);
+  }
+  g.save(); g.translate(ax, ay); if (f < 0) g.scale(-1, 1);
+  for (const o of ops) {
+    if (o.stroke) { g.lineWidth = o.w; g.strokeStyle = o.c; g.stroke(o.path); }
+    else { g.fillStyle = o.c; g.fill(o.path); }
+  }
+  g.restore();
+}
+// short marks across a quadratic curve (horn ridges): n marks of half-length hl between t0 and t1
+function ridges(b, w, c, p0x, p0y, p1x, p1y, p2x, p2y, n, t0, t1, hl) {
+  for (let i = 0; i < n; i++) {
+    const t = t0 + (t1 - t0) * i / Math.max(1, n - 1), u = 1 - t;
+    const x = u * u * p0x + 2 * u * t * p1x + t * t * p2x, y = u * u * p0y + 2 * u * t * p1y + t * t * p2y;
+    let dx = 2 * u * (p1x - p0x) + 2 * t * (p2x - p1x), dy = 2 * u * (p1y - p0y) + 2 * t * (p2y - p1y);
+    const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+    b.s(w, c, x - dy * hl, y + dx * hl, x + dy * hl, y - dx * hl);
+  }
+}
+const inEll = (x, y, rx, ry, k = 1) => (x / rx) ** 2 + (y / ry) ** 2 < k;
+const DD = {
+  imp(b) {
+    for (const [x, y] of [[-0.11, 0.04], [-0.08, 0.095], [-0.125, -0.03], [0.1, 0.085], [-0.02, 0.125], [0.06, 0.12], [-0.06, -0.12]]) b.d(0.012, 'rgba(90,15,8,.5)', x, y);
+    b.a(0.012, 'rgba(255,230,200,.4)', 0.03, -0.03, 0.075, Math.PI + 0.5, Math.PI + 1.3);
+    for (const [x, y] of [[0.0, 0.01], [0.06, 0.01], [0.03, 0.045]]) b.a(0.008, 'rgba(120,30,15,.45)', x, y, 0.028, 0.35, Math.PI - 0.35);
+    b.s(0.014, 'rgba(70,10,5,.85)', -0.01, -0.07, 0.04, -0.06, 0.06, -0.06, 0.11, -0.072);
+    b.s(0.012, 'rgba(50,5,2,.9)', 0.02, 0.036, 0.1, 0.03);
+    b.p('#fff4e0', 0.033, 0.034, 0.047, 0.034, 0.04, 0.058); b.p('#fff4e0', 0.078, 0.031, 0.092, 0.031, 0.085, 0.054);
+    for (const s of [-1, 1]) b.s(0.008, 'rgba(120,90,60,.75)', s * 0.112, -0.16, s * 0.064, -0.165, s * 0.125, -0.21, s * 0.099, -0.213);
+  },
+  houndBody(b) {
+    for (const x of [-0.04, 0.02, 0.08]) b.s(0.012, 'rgba(20,0,0,.45)', x, -0.05, x - 0.02, 0.06);
+    b.s(0.008, 'rgba(255,140,50,.75)', -0.17, 0.0, -0.12, 0.03, -0.12, 0.03, -0.075, 0.0);
+    for (let x = -0.15; x <= 0.16; x += 0.05) b.s(0.008, 'rgba(30,5,5,.6)', x, 0.07, x - 0.02, 0.105);
+    b.a(0.014, 'rgba(255,180,160,.16)', -0.13, 0.0, 0.06, -1.3, 1.1);
+    b.s(0.012, 'rgba(255,200,180,.14)', -0.18, -0.07, 0.12, -0.085);
+  },
+  houndHead(b) {
+    b.s(0.035, '#34363d', 0.135, -0.11, 0.155, 0.06);
+    b.p('#a8aeb6', 0.125, -0.085, 0.085, -0.115, 0.14, -0.1); b.p('#a8aeb6', 0.13, -0.02, 0.085, -0.03, 0.135, 0.005); b.p('#a8aeb6', 0.14, 0.035, 0.1, 0.05, 0.15, 0.055);
+    b.p('#fff2dc', 0.283, 0.022, 0.3, 0.018, 0.29, 0.045); b.p('#fff2dc', 0.323, 0.009, 0.34, 0.004, 0.33, 0.028);
+    b.d(0.008, 'rgba(0,0,0,.7)', 0.37, -0.016);
+    b.s(0.014, 'rgba(20,0,0,.75)', 0.215, -0.088, 0.29, -0.074);
+  },
+  bruteBody(b) {
+    b.s(0.012, 'rgba(50,8,15,.42)', 0.04, 0.0, 0.04, 0.17);
+    for (const y of [0.03, 0.08]) b.a(0.011, 'rgba(50,8,15,.4)', 0.04, y, 0.06, 0.4, Math.PI - 0.4);
+    b.a(0.012, 'rgba(50,8,15,.4)', -0.03, -0.03, 0.08, 0.25, 1.6); b.a(0.012, 'rgba(50,8,15,.4)', 0.11, -0.03, 0.08, 1.55, 2.9);
+    b.s(0.014, 'rgba(255,190,190,.22)', -0.2, -0.06, -0.12, 0.05);
+    for (let i = 0; i < 4; i++) { const t = i / 3, x = -0.2 + 0.08 * t, y = -0.06 + 0.11 * t; b.s(0.006, 'rgba(255,220,200,.35)', x - 0.02, y + 0.015, x + 0.02, y - 0.015); }
+    b.s(0.05, '#3a2418', -0.23, 0.17, 0.23, 0.17);
+    b.s(0.008, 'rgba(255,220,170,.2)', -0.22, 0.152, 0.22, 0.152);
+    for (const x of [-0.18, -0.1, 0.17]) b.d(0.012, '#c8ccd2', x, 0.17);
+    b.p('#d8b45a', 0.0, 0.142, 0.08, 0.142, 0.08, 0.198, 0.0, 0.198); b.p('#3a2418', 0.018, 0.158, 0.062, 0.158, 0.062, 0.182, 0.018, 0.182);
+  },
+  brutePads(b) {
+    for (const s of [-1, 1]) {
+      for (const [x, y] of [[0.29, -0.155], [0.21, -0.105], [0.13, -0.155]]) b.d(0.012, '#d0d4da', s * x, y);
+      b.s(0.01, 'rgba(255,255,255,.3)', s * 0.12, -0.19, s * 0.28, -0.19);
+    }
+  },
+  bruteHead(b) {
+    b.s(0.024, 'rgba(40,6,12,.85)', -0.01, -0.245, 0.14, -0.248);
+    b.p('#f1e2c0', 0.0, -0.135, 0.026, -0.135, 0.006, -0.19); b.p('#f1e2c0', 0.098, -0.135, 0.124, -0.135, 0.118, -0.19);
+    b.a(0.01, '#d8b45a', 0.065, -0.17, 0.022, 0.2, Math.PI - 0.2);
+    for (const s of [-1, 1]) ridges(b, 0.011, 'rgba(120,95,60,.8)', 0.05 + s * 0.08, -0.27, s * 0.34, -0.3, s * 0.28, -0.54, 4, 0.3, 0.8, 0.032);
+  },
+  gargoyle(b) {
+    b.s(0.01, 'rgba(30,25,45,.6)', -0.05, -0.08, -0.02, -0.02, -0.02, -0.02, -0.06, 0.05, 0.06, 0.02, 0.03, 0.08);
+    b.s(0.012, 'rgba(255,255,255,.2)', -0.09, -0.03, -0.08, 0.06);
+    for (const [x, y] of [[0.05, 0.09], [-0.07, 0.1], [0.08, -0.04], [-0.03, 0.12]]) b.d(0.011, '#9aa86a', x, y);
+    b.s(0.016, 'rgba(40,35,60,.85)', -0.07, -0.183, 0.07, -0.183);
+    b.s(0.01, 'rgba(25,20,40,.85)', -0.035, -0.1, 0.035, -0.1);
+    b.p('#f0ecf6', -0.03, -0.1, -0.018, -0.1, -0.024, -0.08); b.p('#f0ecf6', 0.018, -0.1, 0.03, -0.1, 0.024, -0.08);
+    for (const s of [-1, 1]) b.s(0.007, 'rgba(60,55,80,.8)', s * 0.06, -0.24, s * 0.04, -0.235, s * 0.075, -0.27, s * 0.055, -0.268);
+  },
+  warlock(b) {
+    b.s(0.012, 'rgba(10,0,20,.45)', -0.04, 0.06, -0.02, -0.3, 0.05, 0.06, 0.03, -0.28, -0.11, 0.06, -0.06, -0.2);
+    b.s(0.01, 'rgba(200,160,255,.2)', 0.0, 0.05, 0.01, -0.3);
+    b.s(0.026, '#8a49b8', -0.1, -0.16, 0.1, -0.16);
+    b.d(0.016, '#e9c46a', 0.0, -0.16);
+    for (const x of [-0.11, -0.035, 0.04, 0.115]) b.s(0.008, 'rgba(235,170,255,.9)', x - 0.015, 0.035, x, 0.005, x, 0.005, x + 0.015, 0.035);
+  },
+  shieldBody(b) {
+    b.s(0.01, 'rgba(15,12,20,.55)', -0.17, -0.05, 0.17, -0.05, 0.0, -0.12, 0.0, 0.08);
+    for (const [x, y] of [[-0.15, -0.1], [0.15, -0.1], [-0.13, 0.05], [0.13, 0.05], [-0.05, -0.1], [0.05, -0.1]]) b.d(0.011, '#9a94a6', x, y);
+    b.s(0.012, 'rgba(255,255,255,.22)', -0.17, -0.112, 0.02, -0.112);
+    for (const y of [0.11, 0.15]) for (let x = -0.13 + (y > 0.12 ? 0.02 : 0); x <= 0.13; x += 0.04) if (inEll(x, y, 0.2, 0.21, 0.92)) b.a(0.007, 'rgba(170,165,185,.55)', x, y - 0.01, 0.02, 0.2, Math.PI - 0.2);
+    b.s(0.02, '#5a5664', -0.02, -0.34, -0.02, -0.27);
+    b.d(0.01, '#a8a2b4', -0.09, -0.22); b.d(0.01, '#a8a2b4', 0.05, -0.22);
+  },
+  shieldFace(b) {
+    for (const [x, y] of [[0.11, -0.27], [0.29, -0.27], [0.29, 0.1], [0.2, 0.19], [0.11, 0.1]]) b.d(0.014, '#c2bccc', x, y);
+    b.s(0.016, 'rgba(25,10,10,.65)', 0.14, -0.15, 0.2, -0.09, 0.2, -0.09, 0.26, -0.15);
+    b.s(0.007, 'rgba(255,255,255,.25)', 0.12, 0.02, 0.17, -0.05, 0.24, 0.07, 0.28, 0.0);
+    b.s(0.008, 'rgba(255,255,255,.2)', 0.115, -0.285, 0.285, -0.285);
+  },
+  golemBody(b) {
+    b.s(0.013, 'rgba(0,0,0,.42)', -0.3, 0.14, -0.16, 0.08, -0.16, 0.08, -0.1, 0.27, 0.31, -0.06, 0.2, 0.0, 0.2, 0.0, 0.27, 0.2, -0.08, -0.32, -0.02, -0.18, -0.02, -0.18, 0.18, -0.28);
+    b.s(0.013, 'rgba(255,230,200,.14)', -0.26, -0.17, -0.09, -0.3, -0.07, -0.31, 0.17, -0.27, 0.19, -0.27, 0.3, -0.07);
+    for (let i = 0; i < 16; i++) { const a = b.rr(0, TAU), r = Math.sqrt(b.r()); b.d(b.rr(0.01, 0.02), 'rgba(0,0,0,.28)', Math.cos(a) * r * 0.22, Math.sin(a) * r * 0.2); }
+    for (const [x, y] of [[-0.17, -0.06], [-0.08, 0.08], [0.07, -0.13], [0.14, 0.04], [0.0, 0.2]]) b.d(0.011, 'rgba(255,170,70,.9)', x, y);
+  },
+  golemHead(b) {
+    b.s(0.022, 'rgba(0,0,0,.5)', -0.04, -0.355, 0.13, -0.35);
+    b.s(0.009, 'rgba(255,130,40,.85)', 0.06, -0.39, 0.045, -0.36, 0.045, -0.36, 0.06, -0.345);
+    b.s(0.01, 'rgba(0,0,0,.45)', 0.0, -0.26, 0.09, -0.255);
+  },
+  wyvBody(b) {
+    for (const [y, o] of [[-0.065, 0], [-0.025, 0.025], [0.015, 0]]) for (let x = -0.16 + o; x <= 0.13; x += 0.05) if (inEll(x, y, 0.2, 0.12, 0.75)) b.a(0.008, 'rgba(15,30,20,.5)', x, y, 0.024, 0.35, Math.PI - 0.35);
+    for (let x = -0.06; x <= 0.11; x += 0.034) { const hh = 0.052 * Math.sqrt(Math.max(0, 1 - ((x - 0.03) / 0.12) ** 2)); b.s(0.008, 'rgba(80,60,30,.55)', x, 0.04 - hh, x, 0.04 + hh); }
+    for (const x of [-0.13, -0.06, 0.01, 0.08]) { const top = -0.12 * Math.sqrt(1 - (x / 0.2) ** 2); b.p('#25332a', x - 0.025, top + 0.015, x - 0.005, top - 0.045, x + 0.02, top + 0.015); }
+  },
+  wyvHead(b) {
+    b.p('#fff4e0', 0.298, -0.074, 0.312, -0.074, 0.305, -0.056); b.p('#fff4e0', 0.338, -0.084, 0.352, -0.084, 0.345, -0.066);
+    b.d(0.007, 'rgba(0,0,0,.7)', 0.38, -0.112);
+    b.s(0.014, 'rgba(10,20,12,.75)', 0.205, -0.172, 0.3, -0.156);
+    b.s(0.008, 'rgba(10,20,12,.6)', 0.28, -0.09, 0.37, -0.096);
+    b.p('#2a3a2e', 0.125, -0.07, 0.14, -0.115, 0.16, -0.08); b.p('#2a3a2e', 0.165, -0.1, 0.18, -0.145, 0.2, -0.11);
+    for (let i = 0; i < 3; i++) b.s(0.006, 'rgba(200,180,130,.5)', 0.15 + i * 0.025, -0.02 - i * 0.022, 0.18 + i * 0.025, -0.035 - i * 0.022);
+  },
+  lordRobe(b) {
+    for (const s of [-1, 1]) for (let t = 0.04; t < 0.95; t += 0.11) {
+      const x0 = s * (0.26 - 0.12 * t), y0 = 0.1 - 0.75 * t, x1 = s * (0.26 - 0.12 * (t + 0.05)), y1 = 0.1 - 0.75 * (t + 0.05);
+      b.s(0.013, 'rgba(233,196,106,.85)', x0, y0, x1, y1);
+    }
+    b.s(0.014, 'rgba(0,0,0,.4)', -0.38, 0.08, -0.24, -0.6, 0.38, 0.08, 0.24, -0.6, -0.32, 0.08, -0.22, -0.38, 0.33, 0.08, 0.22, -0.4);
+    for (const y of [-0.12, -0.32]) {
+      b.s(0.011, 'rgba(215,140,255,.95)', -0.035, y, 0.035, y, 0.0, y - 0.045, 0.0, y + 0.045);
+      b.s(0.008, 'rgba(215,140,255,.8)', -0.025, y - 0.03, 0.0, y - 0.055, 0.0, y - 0.055, 0.025, y - 0.03, -0.025, y + 0.03, 0.0, y + 0.055, 0.0, y + 0.055, 0.025, y + 0.03);
+    }
+    for (let x = -0.4; x <= 0.41; x += 0.1) b.p('#c9a24f', x - 0.022, 0.078, x, 0.04, x + 0.022, 0.078);
+  },
+  lordTop(b) {
+    for (const y of [-0.02, 0.06]) { const w = 0.27 * Math.sqrt(1 - ((y + 0.14) / 0.29) ** 2) - 0.02; b.s(0.012, 'rgba(0,0,0,.45)', -w, y, w, y); b.d(0.011, '#b88ad8', -w + 0.04, y); b.d(0.011, '#b88ad8', w - 0.04, y); }
+    for (const s of [-1, 1]) {
+      b.p('#3c2a4a', s * 0.15, -0.335, s * 0.19, -0.47, s * 0.235, -0.335); b.p('#3c2a4a', s * 0.255, -0.33, s * 0.325, -0.43, s * 0.32, -0.305);
+      for (const [x, y] of [[0.14, -0.3], [0.22, -0.248], [0.3, -0.3]]) b.d(0.011, '#c9a6e6', s * x, y);
+    }
+  },
+  lordHead(b) {
+    b.s(0.009, 'rgba(205,120,255,.85)', -0.1, -0.5, -0.065, -0.445, 0.1, -0.5, 0.065, -0.445);
+    b.s(0.013, 'rgba(0,0,0,.85)', -0.05, -0.445, 0.05, -0.445);
+    b.p('#efe6ff', -0.04, -0.447, -0.026, -0.447, -0.033, -0.425); b.p('#efe6ff', 0.026, -0.447, 0.04, -0.447, 0.033, -0.425);
+    for (const s of [-1, 1]) ridges(b, 0.013, 'rgba(110,90,60,.8)', s * 0.1, -0.58, s * 0.32, -0.6, s * 0.26, -0.38, 3, 0.35, 0.8, 0.032);
+  },
+  bat(b) {
+    for (let a = 0.5; a < 2.7; a += 0.42) b.s(0.006, 'rgba(30,10,15,.6)', Math.cos(a) * 0.062, Math.sin(a) * 0.07, Math.cos(a) * 0.08, Math.sin(a) * 0.09);
+    b.e('rgba(255,170,170,.2)', 0, 0.025, 0.035, 0.04, 0);
+    b.p('#fff4f0', -0.013, 0.004, -0.004, 0.004, -0.008, 0.026); b.p('#fff4f0', 0.004, 0.004, 0.013, 0.004, 0.008, 0.026);
+    b.p('rgba(255,140,160,.55)', -0.044, -0.056, -0.036, -0.108, -0.024, -0.062); b.p('rgba(255,140,160,.55)', 0.044, -0.056, 0.036, -0.108, 0.024, -0.062);
+  },
+  bomberBody(b) {
+    b.s(0.028, '#3a2414', -0.1, -0.09, 0.09, 0.1);
+    b.p('#d8b45a', -0.025, -0.02, 0.012, -0.02, 0.012, 0.016, -0.025, 0.016);
+    b.e('#5a3a1e', -0.06, 0.09, 0.036, 0.03, 0); b.d(0.008, '#d8b45a', -0.06, 0.08);
+    for (const [x, y] of [[0.08, -0.08], [-0.09, 0.03], [0.1, 0.05], [-0.03, -0.1]]) b.d(0.01, 'rgba(40,20,10,.5)', x, y);
+  },
+  bomberFace(b) {
+    for (const x of [0.015, 0.07]) b.a(0.012, '#9a8a6a', x, -0.02, 0.033, 0, TAU);
+    b.s(0.012, '#9a8a6a', 0.048, -0.022, 0.037, -0.022);
+    b.s(0.016, '#3a2414', -0.018, -0.03, -0.12, -0.05);
+    b.a(0.007, 'rgba(255,255,255,.6)', 0.015, -0.02, 0.022, Math.PI + 0.4, Math.PI + 1.2); b.a(0.007, 'rgba(255,255,255,.6)', 0.07, -0.02, 0.022, Math.PI + 0.4, Math.PI + 1.2);
+  },
+  wraithBody(b) {
+    b.s(0.012, 'rgba(90,130,160,.45)', -0.07, 0.0, -0.08, 0.17, 0.02, 0.0, 0.03, 0.19, 0.09, -0.02, 0.1, 0.15);
+    for (let i = 0; i < 7; i++) { const t = i / 6, x = -0.13 + 0.26 * t, y = 0.05 + Math.sin(t * Math.PI) * 0.05; b.e('#7f94a6', x, y, 0.017, 0.01, i % 2 ? Math.PI / 2 : 0); }
+  },
+  wraithFace(b) {
+    b.a(0.014, 'rgba(255,255,255,.45)', 0.02, -0.1, 0.085, Math.PI + 0.25, TAU - 0.25);
+    b.s(0.008, 'rgba(120,200,255,.35)', -0.1, -0.05, -0.07, 0.0);
+  },
+  necro(b) {
+    for (let k = 0; k < 3; k++) { const y = -0.23 + k * 0.035; b.s(0.01, 'rgba(232,226,200,.8)', -0.05, y, -0.014, y + 0.012, 0.014, y + 0.012, 0.05, y); }
+    b.s(0.012, 'rgba(232,226,200,.85)', 0.0, -0.25, 0.0, -0.16);
+    b.s(0.012, 'rgba(0,0,0,.4)', -0.11, 0.06, -0.06, -0.2, 0.1, 0.06, 0.05, -0.22);
+    for (const x of [-0.12, -0.04, 0.05, 0.13]) b.p('#0c120c', x - 0.022, 0.09, x, 0.035, x + 0.022, 0.09);
+    for (const [x, y] of [[-0.09, 0.0], [0.1, -0.02], [0.0, 0.025]]) b.d(0.01, 'rgba(140,255,140,.85)', x, y);
+    b.d(0.008, '#1a1a1a', -0.012, -0.126); b.d(0.008, '#1a1a1a', 0.012, -0.126);
+    b.s(0.005, '#1a1a1a', -0.015, -0.1, 0.015, -0.1);
+  },
+  skeleton(b) {
+    b.s(0.006, 'rgba(80,70,50,.75)', 0.0, -0.2, 0.02, -0.17, 0.02, -0.17, 0.0, -0.15);
+    b.s(0.012, 'rgba(60,50,40,.7)', -0.02, -0.074, 0.06, -0.074);
+    for (const x of [-0.008, 0.012, 0.032, 0.05]) b.s(0.005, 'rgba(60,50,40,.85)', x, -0.086, x, -0.063);
+    b.p('rgba(40,30,20,.85)', 0.022, -0.108, 0.038, -0.108, 0.03, -0.092);
+    b.d(0.009, '#9aa0a8', 0.2, -0.045); b.d(0.009, '#9aa0a8', 0.226, -0.068);
+  },
+  ramBody(b) {
+    for (const x of [-0.17, -0.05, 0.07, 0.19]) {
+      const hh = 0.16 * Math.sqrt(1 - (x / 0.32) ** 2) - 0.01;
+      b.s(0.014, 'rgba(20,10,8,.5)', x, -hh, x + 0.01, hh);
+      for (const y of [-0.06, 0.02, 0.09]) if (Math.abs(y) < hh - 0.02) b.d(0.011, '#a8aeb6', x + 0.004, y);
+    }
+    for (let i = 0; i < 9; i++) b.e('#8a8f96', -0.2 + i * 0.05, 0.115 + Math.sin(i / 8 * Math.PI) * 0.02, 0.016, 0.009, i % 2 ? Math.PI / 2 : 0);
+    b.s(0.012, 'rgba(255,200,180,.2)', -0.26, -0.02, -0.2, 0.05);
+  },
+  ramHead(b) {
+    for (const [x, y] of [[0.22, -0.04], [0.26, -0.075], [0.33, -0.075], [0.38, -0.035]]) b.d(0.012, '#d0d6dc', x, y);
+    b.s(0.01, 'rgba(0,0,0,.4)', 0.24, 0.0, 0.36, 0.03);
+    b.a(0.012, '#d8b45a', 0.4, 0.075, 0.026, -0.3, Math.PI + 0.3);
+  },
+  drumBody(b) {
+    b.s(0.011, 'rgba(255,170,70,.8)', -0.11, -0.14, -0.06, -0.1, -0.06, -0.1, -0.01, -0.14, 0.04, -0.16, 0.09, -0.12, 0.09, -0.12, 0.14, -0.16);
+    b.s(0.03, '#3a2414', -0.15, -0.2, 0.13, 0.03);
+    for (const t of [0.2, 0.5, 0.8]) b.d(0.011, '#d8b45a', -0.15 + 0.28 * t, -0.2 + 0.23 * t);
+    b.a(0.012, 'rgba(40,8,6,.4)', 0.0, -0.02, 0.12, 0.5, 1.4);
+  },
+  drumSkin(b) {
+    b.e('rgba(170,30,20,.8)', 0.04, 0.03, 0.065, 0.024, 0); b.e('#ecd6ac', 0.04, 0.03, 0.048, 0.015, 0); b.e('rgba(170,30,20,.85)', 0.04, 0.03, 0.018, 0.007, 0);
+    for (let i = 0; i < 7; i++) { const a = 0.25 + i * (Math.PI - 0.5) / 6; b.d(0.01, '#d8b45a', 0.04 + Math.cos(a) * 0.155, 0.07 + Math.sin(a) * 0.11); }
+  },
+  bossBody(b) {
+    for (const [y, o] of [[-0.3, 0], [-0.22, 0.04], [0.12, 0], [0.2, 0.04]]) for (let x = -0.34 + o; x <= 0.34; x += 0.08) if (inEll(x, y, 0.42, 0.42, 0.82) && Math.abs(x) > 0.1) b.a(0.01, 'rgba(0,0,0,.35)', x, y, 0.035, 0.35, Math.PI - 0.35);
+    b.a(0.016, 'rgba(255,120,80,.16)', -0.15, -0.1, 0.16, 2.2, 3.6);
+    for (let i = 0; i < 11; i++) { const x = -0.3 + i * 0.06; b.e('#7a7f88', x, 0.3 - Math.abs(x) * 0.08, 0.026, 0.016, i % 2 ? Math.PI / 2 : 0); }
+    b.d(0.05, '#e8dcc0', 0.0, 0.3); b.d(0.012, '#2a0a0e', -0.018, 0.29); b.d(0.012, '#2a0a0e', 0.018, 0.29);
+  },
+  bossArms(b) {
+    for (const s of [-1, 1]) {
+      b.p('#a8aeb6', s * 0.48, 0.0, s * 0.62, -0.03, s * 0.51, 0.06); b.p('#a8aeb6', s * 0.5, 0.12, s * 0.62, 0.17, s * 0.47, 0.18);
+    }
+  },
+  bossHead(b) {
+    for (const s of [-1, 1]) ridges(b, 0.018, 'rgba(110,80,50,.8)', s * 0.12, -0.5, s * 0.5, -0.5, s * 0.42, -0.92, 4, 0.3, 0.85, 0.045);
+    b.s(0.032, 'rgba(0,0,0,.6)', -0.13, -0.475, 0.13, -0.475);
+    b.s(0.014, 'rgba(0,0,0,.85)', -0.075, -0.345, 0.075, -0.345);
+    b.p('#f1e2c0', -0.065, -0.347, -0.04, -0.347, -0.052, -0.3); b.p('#f1e2c0', 0.04, -0.347, 0.065, -0.347, 0.052, -0.3);
+    b.s(0.01, 'rgba(255,140,60,.75)', -0.14, -0.4, -0.1, -0.36, 0.14, -0.4, 0.1, -0.36);
+  },
+};
+
 /* ---------- demons ---------- */
 function drawDemon(g, e, time) {
   const D = e.D, x = e.x, y = e.y, f = e.face || 1, ph = e.phase, W = e.flash > 0, tk = e.tint;
   const c = (col) => W ? '#fff6ee' : tk ? tinted(col, tk) : col;
-  const ghost = e.phased > 0;
+  const ghost = e.phased > 0, det = QL > 0 && !W;
   if (ghost) g.globalAlpha = 0.3;
   if (tk) variantAura(g, e, time, false);
   if (!e.flying && (e.slowT > 0 || e.stunT > 0)) {
@@ -1297,6 +1599,7 @@ function drawDemon(g, e, time) {
       circ(g, ax + f * 0.03, cy - 0.03, 0.1, c('#de5638'));
       poly(g, [ax - 0.1, cy - 0.1, ax - 0.04, cy - 0.13, ax - 0.14, cy - 0.27], '#f1dcb4');
       poly(g, [ax + 0.1, cy - 0.1, ax + 0.04, cy - 0.13, ax + 0.14, cy - 0.27], '#f1dcb4');
+      if (det) demonDetail(g, 'imp', ax, cy, f, DD.imp);
       circ(g, ax + f * 0.015, cy - 0.03, 0.027, '#ffd84a'); circ(g, ax + f * 0.085, cy - 0.03, 0.027, '#ffd84a');
       break;
     }
@@ -1309,6 +1612,7 @@ function drawDemon(g, e, time) {
       }
       poly(g, [ax - f * 0.22, cy - 0.02, ax - f * 0.42, cy - 0.12 + Math.sin(time * 18) * 0.03, ax - f * 0.24, cy + 0.04], '#ff8a2f');
       ell(g, ax, cy, 0.24, 0.105, c('#4a1414'));
+      if (det) demonDetail(g, 'houndBody', ax, cy, f, DD.houndBody);
       for (let i = 0; i < 5; i++) {
         const mx = ax + f * (-0.15 + i * 0.07), h = 0.1 + Math.abs(Math.sin(time * 16 + i * 1.7)) * 0.07;
         poly(g, [mx - 0.04, cy - 0.06, mx + f * 0.01, cy - 0.06 - h, mx + 0.04, cy - 0.06], i % 2 ? '#ffb347' : '#ff6a2a');
@@ -1316,6 +1620,7 @@ function drawDemon(g, e, time) {
       circ(g, ax + f * 0.22, cy - 0.04, 0.085, c('#5a1818'));
       poly(g, [ax + f * 0.26, cy - 0.06, ax + f * 0.38, cy - 0.01, ax + f * 0.26, cy + 0.03], c('#5a1818'));
       poly(g, [ax + f * 0.18, cy - 0.1, ax + f * 0.2, cy - 0.2, ax + f * 0.25, cy - 0.1], '#2a0a0a');
+      if (det) demonDetail(g, 'houndHead', ax, cy, f, DD.houndHead);
       circ(g, ax + f * 0.25, cy - 0.06, 0.022, '#ffde59');
       break;
     }
@@ -1327,16 +1632,19 @@ function drawDemon(g, e, time) {
       line(g, ax + 0.12, cy + 0.2, ax + 0.13 - l, y + 0.07, 0.11, c('#4a121b'));
       ell(g, ax, cy, 0.3, 0.27, c('#7d2232'));
       ell(g, ax + f * 0.04, cy + 0.07, 0.17, 0.14, c('#9b3141'));
+      if (det) demonDetail(g, 'bruteBody', ax, cy, f, DD.bruteBody);
       const raise = e.atk > 0 ? -0.18 * Math.sin((e.atk / 0.22) * Math.PI) : 0;
       circ(g, ax - f * 0.3, cy + 0.1, 0.095, c('#651a27'));
       circ(g, ax + f * 0.32, cy + 0.1 + raise, 0.1, c('#651a27'));
       ell(g, ax - 0.21, cy - 0.15, 0.13, 0.08, '#5b6069'); ell(g, ax + 0.21, cy - 0.15, 0.13, 0.08, '#5b6069');
       poly(g, [ax - 0.27, cy - 0.2, ax - 0.24, cy - 0.33, ax - 0.19, cy - 0.21], '#9aa0a8');
       poly(g, [ax + 0.27, cy - 0.2, ax + 0.24, cy - 0.33, ax + 0.19, cy - 0.21], '#9aa0a8');
+      if (det) demonDetail(g, 'brutePads', ax, cy, f, DD.brutePads);
       circ(g, ax + f * 0.05, cy - 0.2, 0.12, c('#6a1c29'));
       g.lineCap = 'round'; g.lineWidth = 0.06; g.strokeStyle = '#e8d7b0';
       for (const s of [-1, 1]) { g.beginPath(); g.moveTo(ax + f * 0.05 + s * 0.08, cy - 0.27); g.quadraticCurveTo(ax + s * 0.34, cy - 0.3, ax + s * 0.28, cy - 0.54); g.stroke(); }
       g.lineCap = 'butt';
+      if (det) demonDetail(g, 'bruteHead', ax, cy, f, DD.bruteHead);
       circ(g, ax + f * 0.02, cy - 0.21, 0.025, '#ffa531'); circ(g, ax + f * 0.11, cy - 0.21, 0.025, '#ffa531');
       break;
     }
@@ -1346,6 +1654,7 @@ function drawDemon(g, e, time) {
       for (const s of [-1, 1]) poly(g, [x + s * 0.07, cy - 0.03, x + s * 0.43, cy - 0.17 - flap * 0.16, x + s * 0.37, cy + 0.02 - flap * 0.06, x + s * 0.27, cy - 0.01, x + s * 0.18, cy + 0.08], c('#4a4460'));
       ell(g, x, cy, 0.12, 0.15, c('#7a7290'));
       circ(g, x, cy - 0.15, 0.085, c('#857d9b'));
+      if (det) demonDetail(g, 'gargoyle', x, cy, f, DD.gargoyle);
       poly(g, [x - 0.06, cy - 0.2, x - 0.02, cy - 0.21, x - 0.09, cy - 0.31], '#d8d0e6');
       poly(g, [x + 0.06, cy - 0.2, x + 0.02, cy - 0.21, x + 0.09, cy - 0.31], '#d8d0e6');
       circ(g, x + f * 0.0 - 0.03, cy - 0.15, 0.022, '#ff3b3b'); circ(g, x + 0.03, cy - 0.15, 0.022, '#ff3b3b');
@@ -1356,6 +1665,7 @@ function drawDemon(g, e, time) {
       shadow(g, x, y + 0.09, 0.19, 0.06);
       poly(g, [ax - 0.17, y + 0.08, ax + 0.17, y + 0.08, ax + 0.07, y - 0.33, ax - 0.07, y - 0.33], c('#3d2257'));
       line(g, ax - 0.16, y + 0.06, ax + 0.16, y + 0.06, 0.03, '#8a49b8');
+      if (det) demonDetail(g, 'warlock', ax, y, f, DD.warlock);
       circ(g, ax, y - 0.37 + b, 0.1, c('#2a173d'));
       ell(g, ax + f * 0.02, y - 0.35 + b, 0.06, 0.05, '#120a1c');
       circ(g, ax + f * 0.0, y - 0.36 + b, 0.016, '#e3a6ff'); circ(g, ax + f * 0.045, y - 0.36 + b, 0.016, '#e3a6ff');
@@ -1377,9 +1687,11 @@ function drawDemon(g, e, time) {
       circ(g, ax - f * 0.02, cy - 0.24, 0.1, c('#3d3a44'));
       for (const s of [-1, 1]) poly(g, [ax + s * 0.07, cy - 0.3, ax + s * 0.12, cy - 0.27, ax + s * 0.2, cy - 0.42], '#d9c7a4');
       line(g, ax - f * 0.02 - 0.05, cy - 0.24, ax - f * 0.02 + 0.05, cy - 0.24, 0.02, '#ff9a3a');
+      if (det) demonDetail(g, 'shieldBody', ax, cy, f, DD.shieldBody);
       const sx = ax + f * 0.2;
       poly(g, [sx - 0.11, cy - 0.3, sx + 0.11, cy - 0.3, sx + 0.11, cy + 0.12, sx, cy + 0.23, sx - 0.11, cy + 0.12], c('#4a4652'));
       g.beginPath(); g.moveTo(sx - 0.11, cy - 0.3); g.lineTo(sx + 0.11, cy - 0.3); g.lineTo(sx + 0.11, cy + 0.12); g.lineTo(sx, cy + 0.23); g.lineTo(sx - 0.11, cy + 0.12); g.closePath(); g.lineWidth = 0.022; g.strokeStyle = '#8a8496'; g.stroke();
+      if (det) demonDetail(g, 'shieldFace', ax, cy, f, DD.shieldFace);
       glow(g, sx, cy - 0.04, 0.12, 'rgba(255,90,60,.55)');
       circ(g, sx, cy - 0.04, 0.03, '#ff6b4a');
       break;
@@ -1390,6 +1702,7 @@ function drawDemon(g, e, time) {
       ell(g, ax - 0.13 + l, y + 0.0, 0.09, 0.1, c('#2b2523'));
       ell(g, ax + 0.13 - l, y + 0.0, 0.09, 0.1, c('#2b2523'));
       poly(g, [ax - 0.3, cy + 0.14, ax - 0.27, cy - 0.18, ax - 0.08, cy - 0.32, ax + 0.18, cy - 0.28, ax + 0.31, cy - 0.06, ax + 0.27, cy + 0.2, ax - 0.1, cy + 0.27], c('#3a302c'));
+      if (det) demonDetail(g, 'golemBody', ax, cy, 1, DD.golemBody);
       const lava = 0.6 + Math.sin(time * 4 + ph) * 0.25;
       glow(g, ax, cy, 0.24, `rgba(255,120,40,${lava * 0.6})`);
       g.strokeStyle = `rgba(255,130,40,${lava})`; g.lineWidth = 0.028; g.beginPath();
@@ -1399,6 +1712,7 @@ function drawDemon(g, e, time) {
       circ(g, ax - f * 0.32, cy + 0.1, 0.1, c('#332a27'));
       circ(g, ax + f * 0.34, cy + 0.08 + raise, 0.11, c('#332a27'));
       circ(g, ax + f * 0.04, cy - 0.3, 0.09, c('#2e2624'));
+      if (det) demonDetail(g, 'golemHead', ax, cy, f, DD.golemHead);
       circ(g, ax + f * 0.0, cy - 0.31, 0.022, '#ffcf5a'); circ(g, ax + f * 0.08, cy - 0.31, 0.022, '#ffcf5a');
       break;
     }
@@ -1422,10 +1736,12 @@ function drawDemon(g, e, time) {
       }
       ell(g, x, cy, 0.2, 0.12, c('#4a6250'));
       ell(g, x + f * 0.03, cy + 0.04, 0.12, 0.055, '#8f7d58');
+      if (det) demonDetail(g, 'wyvBody', x, cy, f, DD.wyvBody);
       line(g, x + f * 0.12, cy - 0.03, x + f * 0.22, cy - 0.1, 0.07, c('#4a6250'));
       circ(g, x + f * 0.24, cy - 0.12, 0.075, c('#4a6250'));
       poly(g, [x + f * 0.28, cy - 0.15, x + f * 0.4, cy - 0.1, x + f * 0.28, cy - 0.07], c('#4a6250'));
       poly(g, [x + f * 0.2, cy - 0.17, x + f * 0.12, cy - 0.3, x + f * 0.24, cy - 0.19], '#d8c7a0');
+      if (det) demonDetail(g, 'wyvHead', x, cy, f, DD.wyvHead);
       circ(g, x + f * 0.27, cy - 0.13, 0.018, '#ff5a3a');
       break;
     }
@@ -1435,8 +1751,10 @@ function drawDemon(g, e, time) {
       poly(g, [ax - 0.5, y + 0.1, ax + 0.5, y + 0.1, ax + 0.27, cy - 0.32, ax - 0.27, cy - 0.32], c('#1f1030'));
       poly(g, [ax - 0.26, y + 0.1, ax + 0.26, y + 0.1, ax + 0.14, cy - 0.1, ax - 0.14, cy - 0.1], c('#3a1d55'));
       line(g, ax - 0.5, y + 0.09, ax + 0.5, y + 0.09, 0.03, '#8a3fd0');
+      if (det) demonDetail(g, 'lordRobe', ax, y, f, DD.lordRobe);
       ell(g, ax, cy - 0.14, 0.27, 0.29, c('#2a1638'));
       ell(g, ax - 0.22, cy - 0.3, 0.13, 0.08, '#3c2a4a'); ell(g, ax + 0.22, cy - 0.3, 0.13, 0.08, '#3c2a4a');
+      if (det) demonDetail(g, 'lordTop', ax, cy, f, DD.lordTop);
       const pulse = 0.55 + Math.sin(time * 3) * 0.25;
       glow(g, ax, cy - 0.12, 0.2, `rgba(200,110,255,${pulse})`);
       poly(g, [ax, cy - 0.22, ax + 0.06, cy - 0.12, ax, cy - 0.02, ax - 0.06, cy - 0.12], '#e2b5ff');
@@ -1444,6 +1762,7 @@ function drawDemon(g, e, time) {
       for (let i = 0; i < 5; i++) { const sx = ax - 0.14 + i * 0.07, h = i === 2 ? 0.26 : i % 2 ? 0.17 : 0.13; poly(g, [sx - 0.03, cy - 0.6, sx, cy - 0.6 - h, sx + 0.03, cy - 0.6], '#2d1b3d'); circ(g, sx, cy - 0.6 - h, 0.016, '#c46bff'); }
       g.lineWidth = 0.05; g.strokeStyle = '#bba98a';
       for (const s of [-1, 1]) { g.beginPath(); g.moveTo(ax + s * 0.1, cy - 0.58); g.quadraticCurveTo(ax + s * 0.32, cy - 0.6, ax + s * 0.26, cy - 0.38); g.stroke(); }
+      if (det) demonDetail(g, 'lordHead', ax, cy, f, DD.lordHead);
       circ(g, ax - 0.05, cy - 0.52, 0.024, '#e7a6ff'); circ(g, ax + 0.05, cy - 0.52, 0.024, '#e7a6ff');
       const sx = ax + f * 0.44;
       line(g, sx, y + 0.08, sx, cy - 0.78, 0.04, '#2d1b3d');
@@ -1463,6 +1782,7 @@ function drawDemon(g, e, time) {
       ell(g, x, cy, 0.07, 0.08, c('#5a2632'));
       poly(g, [x - 0.05, cy - 0.05, x - 0.035, cy - 0.13, x - 0.015, cy - 0.06], c('#5a2632'));
       poly(g, [x + 0.05, cy - 0.05, x + 0.035, cy - 0.13, x + 0.015, cy - 0.06], c('#5a2632'));
+      if (det) demonDetail(g, 'bat', x, cy, f, DD.bat);
       circ(g, x - 0.022, cy - 0.025, 0.014, '#ff4a4a'); circ(g, x + 0.022, cy - 0.025, 0.014, '#ff4a4a');
       break;
     }
@@ -1479,10 +1799,12 @@ function drawDemon(g, e, time) {
       g.restore();
       circ(g, ax, cy, 0.13, c('#d8642c'));
       circ(g, ax + f * 0.03, cy - 0.02, 0.08, c('#ef7a3a'));
+      if (det) demonDetail(g, 'bomberBody', ax, cy, f, DD.bomberBody);
       poly(g, [ax - 0.08, cy - 0.08, ax - 0.03, cy - 0.11, ax - 0.1, cy - 0.21], '#f1dcb4');
       poly(g, [ax + 0.08, cy - 0.08, ax + 0.03, cy - 0.11, ax + 0.1, cy - 0.21], '#f1dcb4');
       circ(g, ax + f * 0.015, cy - 0.02, 0.022, '#fff07a'); circ(g, ax + f * 0.07, cy - 0.02, 0.022, '#fff07a');
       line(g, ax, cy + 0.045, ax + f * 0.07, cy + 0.04, 0.012, '#3a0e04');
+      if (det) demonDetail(g, 'bomberFace', ax, cy, f, DD.bomberFace);
       break;
     }
     case 'wraith': {
@@ -1493,9 +1815,11 @@ function drawDemon(g, e, time) {
       for (let i = 0; i < 3; i++) { const tx = x - 0.12 + i * 0.08, wav = Math.sin(time * 6 + i * 1.7) * 0.03; g.lineTo(tx + 0.04, y - 0.06 + wav); g.lineTo(tx + 0.08, y + 0.03 - wav); }
       g.quadraticCurveTo(x + 0.17, cy + 0.12, x + 0.15, cy - 0.05); g.closePath();
       g.fillStyle = c('#b8d8ee'); g.fill();
+      if (det) demonDetail(g, 'wraithBody', x, cy, f, DD.wraithBody);
       line(g, x + f * 0.12, cy, x + f * 0.24, cy + 0.05 + fl, 0.03, c('#c8e2f2'));
       circ(g, x, cy - 0.12, 0.12, c('#d8ecf8'));
       ell(g, x + f * 0.02, cy - 0.1, 0.075, 0.07, '#10202e');
+      if (det) demonDetail(g, 'wraithFace', x, cy, f, DD.wraithFace);
       circ(g, x + f * 0.02 - 0.025, cy - 0.11, 0.018, '#7af0ff'); circ(g, x + f * 0.02 + 0.025, cy - 0.11, 0.018, '#7af0ff');
       g.restore();
       break;
@@ -1506,6 +1830,7 @@ function drawDemon(g, e, time) {
       poly(g, [ax - 0.17, y + 0.08, ax + 0.17, y + 0.08, ax + 0.07, y - 0.33, ax - 0.07, y - 0.33], c('#1f2a1f'));
       line(g, ax - 0.16, y + 0.06, ax + 0.16, y + 0.06, 0.03, '#d8d2b8');
       circ(g, ax, y - 0.12, 0.035, '#e8e2c8');
+      if (det) demonDetail(g, 'necro', ax, y, f, DD.necro);
       circ(g, ax, y - 0.37 + b, 0.1, c('#16201a'));
       ell(g, ax + f * 0.02, y - 0.35 + b, 0.06, 0.05, '#050805');
       circ(g, ax, y - 0.36 + b, 0.016, '#7aff7a'); circ(g, ax + f * 0.045, y - 0.36 + b, 0.016, '#7aff7a');
@@ -1525,6 +1850,7 @@ function drawDemon(g, e, time) {
       line(g, ax + f * 0.02, cy - 0.04, ax + f * 0.12, cy + 0.03, 0.018, bone);
       line(g, ax + f * 0.12, cy + 0.03, ax + f * 0.24, cy - 0.08, 0.026, '#8a5a3a');
       circ(g, ax + f * 0.01, cy - 0.13, 0.075, c('#f0ead6'));
+      if (det) demonDetail(g, 'skeleton', ax, cy, f, DD.skeleton);
       circ(g, ax + f * 0.03 - 0.03, cy - 0.13, 0.02, '#1a0808'); circ(g, ax + f * 0.03 + 0.025, cy - 0.13, 0.02, '#1a0808');
       circ(g, ax + f * 0.03 - 0.03, cy - 0.13, 0.009, '#ff4a3a'); circ(g, ax + f * 0.03 + 0.025, cy - 0.13, 0.009, '#ff4a3a');
       break;
@@ -1535,11 +1861,13 @@ function drawDemon(g, e, time) {
       for (const [dx, sg] of [[-0.2, 1], [-0.08, -1], [0.08, 1], [0.2, -1]]) line(g, ax + f * dx, cy + 0.08, ax + f * dx + sg * l, y + 0.07, 0.07, c('#3a2420'));
       ell(g, ax, cy, 0.32, 0.16, c('#5a2e26'));
       ell(g, ax - f * 0.04, cy + 0.06, 0.22, 0.07, c('#6e3a30'));
+      if (det) demonDetail(g, 'ramBody', ax, cy, f, DD.ramBody);
       for (let i = 0; i < 4; i++) { const px = ax - f * 0.2 + f * i * 0.12; poly(g, [px - 0.07, cy - 0.08, px, cy - 0.2, px + 0.07, cy - 0.08], c('#5b6069')); circ(g, px, cy - 0.12, 0.015, '#a8aeb6'); }
       const hx = ax + f * 0.3, hy = cy + 0.02;
       ell(g, hx, hy, 0.13, 0.11, c('#6a7078'));
       poly(g, [hx + f * 0.1, hy - 0.05, hx + f * 0.27, hy, hx + f * 0.1, hy + 0.05], '#c8ced4');
       poly(g, [hx - f * 0.02, hy - 0.08, hx - f * 0.1, hy - 0.22, hx + f * 0.04, hy - 0.1], '#e8d7b0');
+      if (det) demonDetail(g, 'ramHead', ax, cy, f, DD.ramHead);
       circ(g, hx + f * 0.05, hy - 0.02, 0.022, '#ff7a2f');
       break;
     }
@@ -1549,6 +1877,7 @@ function drawDemon(g, e, time) {
       line(g, ax - 0.08, cy + 0.16, ax - 0.09 + l, y + 0.07, 0.07, c('#4a1a14'));
       line(g, ax + 0.08, cy + 0.16, ax + 0.09 - l, y + 0.07, 0.07, c('#4a1a14'));
       ell(g, ax, cy - 0.04, 0.2, 0.2, c('#8a2a22'));
+      if (det) demonDetail(g, 'drumBody', ax, cy, f, DD.drumBody);
       circ(g, ax + f * 0.02, cy - 0.26, 0.1, c('#7a221c'));
       poly(g, [ax - 0.06, cy - 0.33, ax - 0.02, cy - 0.35, ax - 0.12, cy - 0.46], '#e8d7b0');
       poly(g, [ax + 0.08, cy - 0.33, ax + 0.04, cy - 0.35, ax + 0.14, cy - 0.46], '#e8d7b0');
@@ -1556,6 +1885,7 @@ function drawDemon(g, e, time) {
       ell(g, ax + f * 0.04, cy + 0.07, 0.16, 0.12, '#6a4424');
       for (let i = 0; i < 5; i++) line(g, ax + f * 0.04 - 0.13 + i * 0.065, cy + 0.04, ax + f * 0.04 - 0.1 + i * 0.065, cy + 0.15, 0.01, '#d8b47a');
       ell(g, ax + f * 0.04, cy + 0.03, 0.16, 0.06, '#ecd6ac');
+      if (det) demonDetail(g, 'drumSkin', ax, cy, f, DD.drumSkin);
       line(g, ax - 0.13, cy - 0.06, ax - 0.03, cy - 0.01 - beat * 0.13, 0.022, '#c9a06a');
       line(g, ax + 0.17, cy - 0.06, ax + 0.09, cy - 0.01 - (1 - beat) * 0.13, 0.022, '#c9a06a');
       break;
@@ -1574,12 +1904,15 @@ function drawDemon(g, e, time) {
       g.moveTo(ax + 0.22, cy - 0.15); g.lineTo(ax + 0.1, cy + 0.02); g.lineTo(ax + 0.2, cy + 0.2); g.stroke();
       glow(g, ax, cy - 0.02, 0.2, `rgba(255,150,60,${lava})`);
       circ(g, ax, cy - 0.02, 0.06, '#ffb35c');
+      if (det) demonDetail(g, 'bossBody', ax, cy, f, DD.bossBody);
       circ(g, ax - 0.4, cy + 0.08, 0.13, c('#2a0a0e')); circ(g, ax + 0.4, cy + 0.08, 0.13, c('#2a0a0e'));
+      if (det) demonDetail(g, 'bossArms', ax, cy, f, DD.bossArms);
       circ(g, ax, cy - 0.42, 0.17, c('#2a0a0e'));
       g.lineCap = 'round'; g.lineWidth = 0.09; g.strokeStyle = '#d9c39a';
       for (const s of [-1, 1]) { g.beginPath(); g.moveTo(ax + s * 0.12, cy - 0.5); g.quadraticCurveTo(ax + s * 0.5, cy - 0.5, ax + s * 0.42, cy - 0.92); g.stroke(); }
       g.lineCap = 'butt';
       for (let i = 0; i < 5; i++) { const fx = ax - 0.12 + i * 0.06, h = 0.1 + Math.abs(Math.sin(time * 12 + i * 2.1)) * 0.1; poly(g, [fx - 0.03, cy - 0.56, fx, cy - 0.56 - h, fx + 0.03, cy - 0.56], i % 2 ? '#ffd24a' : '#ff6a2a'); }
+      if (det) demonDetail(g, 'bossHead', ax, cy, f, DD.bossHead);
       circ(g, ax - 0.06, cy - 0.43, 0.03, '#ffe14a'); circ(g, ax + 0.06, cy - 0.43, 0.03, '#ffe14a');
       break;
     }
@@ -2125,13 +2458,38 @@ function drawClouds(g, time, theme) {
   }
 }
 
+/* ================= graphics quality ================= */
+// 2 = high, 1 = medium (lower resolution), 0 = economy (lowest resolution, no fine demon detail, fewer particles).
+// In auto mode the game starts high and steps down for good when battles keep running below ~38 fps.
+const GFX_NAMES = ['экономная', 'средняя', 'высокая'], DPR_CAP = [1.25, 1.75, 2.5];
+const GFX = { mode: store.get('silvenor.gfx', 'auto'), auto: clamp(store.get('silvenor.gfxAuto', 2) | 0, 0, 2) };
+if (GFX.mode !== 'auto') GFX.mode = clamp(GFX.mode | 0, 0, 2);
+let QL = GFX.mode === 'auto' ? GFX.auto : GFX.mode;
+function applyGfx() {
+  QL = GFX.mode === 'auto' ? GFX.auto : GFX.mode;
+  store.set('silvenor.gfx', GFX.mode); store.set('silvenor.gfxAuto', GFX.auto);
+  resize();
+  if (el.gfxBtn) el.gfxBtn.textContent = 'Графика: ' + (GFX.mode === 'auto' ? `авто (${GFX_NAMES[QL]})` : GFX_NAMES[QL]);
+}
+const perf = { t: 0, n: 0, slow: 0 };
+function watchPerf(gap) {
+  if (GFX.mode !== 'auto' || GFX.auto === 0 || !S || !S.waveActive || UI.paused || document.hidden || gap > 1500) { perf.t = perf.n = perf.slow = 0; return; }
+  perf.t += gap; perf.n++; if (gap > 26) perf.slow++;
+  if (perf.t < 4000) return;
+  if (perf.slow > perf.n * 0.3) { GFX.auto--; applyGfx(); }
+  perf.t = perf.n = perf.slow = 0;
+}
+
 /* ================= canvas & layout ================= */
 const stage = $('stage'), cv = $('cv'), ctx = cv.getContext('2d');
 let W = 1, H = 1, dpr = 1, ts = 40, offX = 0, offY = 0;
+// the world transform of the current frame, in device pixels (used to place cached tower sprites)
+const WT = { k: 1, ox: 0, oy: 0 };
 function resize() {
   const r = stage.getBoundingClientRect();
   W = Math.max(1, r.width); H = Math.max(1, r.height);
-  dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP[QL]);
+  SPR.clear();
   cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
   ts = Math.min(W / COLS, H / ROWS);
   offX = (W - ts * COLS) / 2; offY = (H - ts * ROWS) / 2;
@@ -2621,7 +2979,8 @@ function updateProj(p, dt) {
   }
 }
 function burst(x, y, n, color, speed, life, size, up = 0) {
-  if (!S || S.fx.length > 700) return;
+  if (!S || S.fx.length > (QL ? 700 : 300)) return;
+  if (!QL) n = Math.ceil(n / 2);
   for (let i = 0; i < n; i++) {
     const a = Math.random() * TAU, v = Math.random() * speed;
     S.fx.push({ k: 'p', x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - up, t: 0, life: rand(life * 0.5, life), size: rand(size * 0.6, size), color, grav: up ? -0.3 : 2.2 });
@@ -2670,6 +3029,7 @@ function startWave() {
   if (!S || S.waveActive || S.over) return;
   closeSheets(); cancelRally();
   S.spawners = S.L.waves[S.wave].map(([type, count, interval, delay, path = -1], gi) => ({ type, left: count, interval, timer: delay, path, v: S.L.gv[S.wave][gi] }));
+  S.wSnap = snapshot();
   S.waveActive = true;
   Snd.play('horn');
   banner(`Волна ${S.wave + 1}`, S.wave === S.L.waves.length - 1 ? 'Последняя волна' : '');
@@ -2806,12 +3166,36 @@ function drawWorld(g, time) {
 }
 const DEMON_SC = 1.22, HUNTER_SC = 1.18;
 function scaled(g, o, k, fn) { g.save(); g.translate(o.x, o.y); g.scale(k, k); g.translate(-o.x, -o.y); fn(); g.restore(); }
+// The still part of each tower type and level is rendered once at the current scale and reused every frame.
+const SPR = new Map(), SPR_X = 0.66, SPR_TOP = 1.46, SPR_W = 1.32, SPR_H = 1.92;
+function towerSprite(type, lvl) {
+  const key = type + lvl;
+  let c = SPR.get(key);
+  if (!c) {
+    const k = WT.k;
+    c = document.createElement('canvas');
+    c.width = Math.ceil(SPR_W * k); c.height = Math.ceil(SPR_H * k);
+    const g = c.getContext('2d');
+    g.setTransform(k, 0, 0, k, SPR_X * k, SPR_TOP * k);
+    TP = 1; drawTower(g, type, lvl, 0, 0, 0, 0, 0); TP = 0;
+    SPR.set(key, c);
+  }
+  return c;
+}
 function drawTowerObj(g, t, time) {
   let s = 1;
   if (t.pop > 0) s = 0.6 + 0.4 * easeOutBack(1 - t.pop / 0.35);
-  if (s !== 1) { g.save(); g.translate(t.x, t.y + 0.25); g.scale(s, s); g.translate(-t.x, -(t.y + 0.25)); }
-  drawTower(g, t.type, t.lvl, t.x, t.y, time + t.si * 0.7, t.aim, t.fire);
-  if (s !== 1) g.restore();
+  if (s !== 1) {
+    g.save(); g.translate(t.x, t.y + 0.25); g.scale(s, s); g.translate(-t.x, -(t.y + 0.25));
+    drawTower(g, t.type, t.lvl, t.x, t.y, time + t.si * 0.7, t.aim, t.fire);
+    g.restore();
+  } else {
+    const spr = towerSprite(t.type, t.lvl);
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.drawImage(spr, Math.round(WT.ox + (t.x - SPR_X) * WT.k), Math.round(WT.oy + (t.y - SPR_TOP) * WT.k));
+    g.setTransform(WT.k, 0, 0, WT.k, WT.ox, WT.oy);
+    TP = 2; drawTower(g, t.type, t.lvl, t.x, t.y, time + t.si * 0.7, t.aim, t.fire); TP = 0;
+  }
   if (t.curse > 0 && t.curseKind === 'freeze') {
     const a = Math.min(1, t.curse) * 0.9;
     glow(g, t.x, t.y - 0.3, 0.62, `rgba(150,215,255,${a * 0.55})`);
@@ -2899,7 +3283,8 @@ function render(time) {
   let sx = 0, sy = 0;
   if (S && S.shake > 0) { const m = S.shake * 9; sx = rand(-m, m); sy = rand(-m, m); }
   ctx.drawImage(bg, sx * dpr, sy * dpr);
-  ctx.setTransform(dpr * ts, 0, 0, dpr * ts, dpr * (offX + sx), dpr * (offY + sy));
+  WT.k = dpr * ts; WT.ox = dpr * (offX + sx); WT.oy = dpr * (offY + sy);
+  ctx.setTransform(WT.k, 0, 0, WT.k, WT.ox, WT.oy);
   const theme = LEVELS[li].theme;
   drawClouds(ctx, time, theme);
   drawKingdomLive(ctx, time);
@@ -2955,7 +3340,7 @@ const el = {
   buildSheet: $('buildSheet'), towerSheet: $('towerSheet'), cards: $('cards'), buildDesc: $('buildDesc'), buildBtn: $('buildBtn'),
   tIcon: $('tIcon'), tName: $('tName'), tLvl: $('tLvl'), tStats: $('tStats'), upBtn: $('upBtn'), rallyBtn: $('rallyBtn'), sellBtn: $('sellBtn'),
   nextLbl: $('nextLbl'), foes: $('foes'), waveBtn: $('waveBtn'), rallyCancel: $('rallyCancel'),
-  menu: $('menu'), levels: $('levels'), pause: $('pause'), end: $('end'), soundBtn: $('soundBtn'),
+  menu: $('menu'), levels: $('levels'), pause: $('pause'), end: $('end'), soundBtn: $('soundBtn'), gfxBtn: $('gfxBtn'),
   bossBar: $('bossBar'), bossName: $('bossName'), bossFill: $('bossFill'),
 };
 let toastTimer = 0, bannerTimer = 0;
@@ -2993,6 +3378,7 @@ function openBuild(si) {
   UI.sel = { si }; UI.buildType = null; UI.sellArm = 0;
   el.towerSheet.hidden = true;
   refreshBuild();
+  el.toast.hidden = true; // the hint would cover the panel header on short screens
   placeSheet(el.buildSheet, si); el.buildSheet.hidden = false;
   Snd.play('tap');
 }
@@ -3045,6 +3431,7 @@ function openTower(si) {
   UI.sel = { si }; UI.buildType = null; UI.sellArm = 0;
   el.buildSheet.hidden = true;
   refreshTower();
+  el.toast.hidden = true;
   placeSheet(el.towerSheet, si); el.towerSheet.hidden = false;
   Snd.play('tap');
 }
@@ -3182,7 +3569,7 @@ function renderLevels() {
   el.levels.querySelectorAll('.lvl').forEach(b => b.addEventListener('click', () => startLevel(+b.dataset.li)));
 }
 function showMenu() {
-  S = null; UI.paused = false; closeSheets(); cancelRally();
+  S = null; UI.paused = false; closeSheets(); cancelRally(); clearResume();
   menuLi = Math.max(0, Math.min(progress.unlocked - 1, LEVELS.length - 1));
   el.menu.hidden = false; el.pause.hidden = true; el.end.hidden = true;
   el.banner.hidden = true; el.toast.hidden = true;
@@ -3204,7 +3591,7 @@ function startLevel(li) {
   setTimeout(() => { if (S && S.li === li && S.wave === 0 && !S.waveActive && S.towers.every(t => !t)) toast('Нажмите на каменную площадку у дороги, чтобы поставить защитника', 5000); }, 1500);
 }
 function finish(win) {
-  S.over = true; S.waveActive = false;
+  S.over = true; S.waveActive = false; clearResume();
   closeSheets(); cancelRally(); setFooter();
   const li = S.li;
   let stars = 0;
@@ -3272,19 +3659,50 @@ el.pauseBtn.addEventListener('click', () => setPaused(!UI.paused));
 $('resumeBtn').addEventListener('click', () => setPaused(false));
 $('restartBtn').addEventListener('click', () => { if (S) startLevel(S.li); });
 $('menuBtn').addEventListener('click', showMenu);
+// auto → high → medium → economy → auto (choosing auto again retries high quality)
+el.gfxBtn.addEventListener('click', () => {
+  GFX.mode = GFX.mode === 'auto' ? 2 : GFX.mode === 0 ? 'auto' : GFX.mode - 1;
+  if (GFX.mode === 'auto') GFX.auto = 2;
+  applyGfx(); Snd.play('tap');
+});
 el.soundBtn.addEventListener('click', () => { Snd.on = !Snd.on; store.set('silvenor.sound', Snd.on); el.soundBtn.textContent = 'Звук: ' + (Snd.on ? 'вкл' : 'выкл'); });
 $('nextBtn').addEventListener('click', () => { if (S) startLevel(Math.min(S.li + 1, LEVELS.length - 1)); });
 $('retryBtn').addEventListener('click', () => { if (S) startLevel(S.li); });
 $('endMenuBtn').addEventListener('click', showMenu);
-document.addEventListener('visibilitychange', () => { if (document.hidden && S && !S.over && !UI.paused) setPaused(true); });
+// Phones with little memory often close a game in the background (or the WebView renderer is killed):
+// the city in progress is saved as it was when the current wave began and reopens paused.
+function saveResume() { if (S && !S.over) store.set('silvenor.resume', snapshot()); else clearResume(); }
+function clearResume() { try { localStorage.removeItem('silvenor.resume'); } catch (e) { /* storage unavailable */ } }
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) return;
+  if (S && !S.over && !UI.paused) setPaused(true);
+  saveResume();
+});
+window.addEventListener('pagehide', saveResume);
+// Android app: keep the screen on only while a battle is running
+let awake = null;
+function syncAwake() {
+  const want = !!(S && !S.over && !UI.paused);
+  if (want === awake || !window.SilvenorAndroid) return;
+  awake = want;
+  try { window.SilvenorAndroid.keepAwake(want); } catch (e) { /* bridge unavailable */ }
+}
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { if (UI.rally != null) cancelRally(); else if (UI.sel) closeSheets(); else if (S && !S.over) setPaused(!UI.paused); }
   if ((e.key === ' ' || e.key === 'Enter') && e.target === document.body && S && !S.waveActive && !UI.paused) { e.preventDefault(); startWave(); }
 });
 
 /* ---------- loop ---------- */
-let lastT = 0;
+// Frame pacing: battles run at the display rate, but 120 Hz and faster screens are held to ~60 fps;
+// the city list draws at ~30 fps and the paused map at ~15 fps to save battery.
+let lastT = 0, lastDraw = 0, rafPrev = 0, rafAvg = 16.7;
 function frame(now) {
+  requestAnimationFrame(frame);
+  rafAvg += (Math.min(50, Math.max(1, now - (rafPrev || now - 16.7))) - rafAvg) * 0.05; rafPrev = now;
+  const minGap = !S || S.over ? 30 : UI.paused ? 64 : rafAvg < 10 ? 14 : 0;
+  const gap = now - lastDraw;
+  if (gap < minGap) return;
+  lastDraw = now;
   const dt = Math.min(0.1, Math.max(0, (now - lastT) / 1000)); lastT = now;
   const time = now / 1000;
   if (S && !S.over && !UI.paused) {
@@ -3294,16 +3712,18 @@ function frame(now) {
   updateAmbient(dt, S ? S.li : menuLi);
   render(time);
   updateHUD();
-  requestAnimationFrame(frame);
+  watchPerf(gap);
+  syncAwake();
 }
 
 /* ---------- live-update snapshot & boot ---------- */
 function snapshot() {
   if (!S || S.over) return { screen: 'menu' };
+  if (S.waveActive && S.wSnap) return S.wSnap;
   return { li: S.li, wave: S.wave, gold: S.gold, lives: S.lives, speed: UI.speed, towers: S.towers.map(t => t && { type: t.type, lvl: t.lvl, spent: t.spent, rally: t.rally || null }) };
 }
 function start(data) {
-  resize();
+  applyGfx();
   showMenu();
   if (data && data.li != null && LEVELS[data.li] && Array.isArray(data.towers)) {
     startLevel(data.li);
@@ -3323,7 +3743,7 @@ function start(data) {
   requestAnimationFrame(t => { lastT = t; frame(t); });
 }
 window.__silvenor = {
-  get S() { return S; }, startLevel, startWave, update, drawTower,
+  get S() { return S; }, startLevel, startWave, update, drawTower, drawDemon, render, DEMONS,
   build(si, type) { UI.sel = { si }; UI.buildType = type; doBuild(); return !!S.towers[si]; },
   upgrade(si) { UI.sel = { si }; upgrade(); closeSheets(); },
   upCost(t) { const nx = TOWERS[t.type].levels[t.lvl + 1]; return nx ? nx.up : 0; },
@@ -3356,7 +3776,12 @@ window.__silvenor = {
 };
 const hot = window.claude && window.claude.hot;
 if (hot && typeof hot.snapshot === 'function') hot.snapshot(snapshot);
-if (hot && typeof hot.ready === 'function') hot.ready(start); else start((hot && hot.data) || {});
+if (hot && typeof hot.ready === 'function') hot.ready(start);
+else {
+  const resume = !(hot && hot.data) && store.get('silvenor.resume', null);
+  start((hot && hot.data) || resume || {});
+  if (resume && S) setPaused(true);
+}
 })();
 </script>
 </body>
