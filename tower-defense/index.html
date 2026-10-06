@@ -219,7 +219,7 @@ details.howto li::marker{color:var(--gold)}
 <body>
 <div id="app">
   <header id="hud" class="gilded">
-    <div class="stat" id="livesStat" title="Жизни города" aria-label="Жизни города">
+    <div class="stat" id="livesStat" title="Прочность стен города" aria-label="Прочность стен города">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.4-4.5-9.5-9C1 8.7 3.1 5 6.7 5c2 0 3.5 1.1 4.3 2.5h2C13.8 6.1 15.3 5 17.3 5c3.6 0 5.7 3.7 4.2 7-2.1 4.5-9.5 9-9.5 9z" fill="var(--blood)"/></svg>
       <span id="lives">20</span>
     </div>
@@ -275,7 +275,7 @@ details.howto li::marker{color:var(--gold)}
     <div class="screen-inner">
       <p class="eyebrow">Пепельный разлом открылся</p>
       <h1>Оборона Сильвенора</h1>
-      <p class="lead">Демоны идут захватывать города эльфов. Ставьте защитников на каменные площадки у дороги и отбивайте волну за волной, от пограничной заставы до крепости у самого разлома.</p>
+      <p class="lead">Демоны идут захватывать города эльфов. Ставьте защитников на каменные площадки у дороги и отбивайте волну за волной, через десять городов — от пограничной заставы до Престола Бездны.</p>
       <div class="levels" id="levels"></div>
       <details class="howto">
         <summary>Как играть</summary>
@@ -285,7 +285,9 @@ details.howto li::marker{color:var(--gold)}
           <li>За каждую отбитую волну город платит монеты. Тратьте их на новых защитников или улучшения до 3 уровня.</li>
           <li>В новых городах появляются новые защитники: следопыт, грифоны, древень и лунная арфистка. Арфистка сама не бьёт, но усиливает соседей.</li>
           <li>Демоны бывают огненными, ледяными, теневыми и кровавыми: у каждой версии свои сильные и слабые стороны. Нажмите на значок демона внизу, чтобы узнать подробности.</li>
-          <li>В конце каждого города приходит босс, и каждый следующий сильнее предыдущего. Демон, дошедший до ворот, отнимает жизни города, а босс — все сразу.</li>
+          <li>Дальше по пути встретятся нетопыри, бесы-подрывники, призраки, которых не удержать охотникам, некроманты с армией скелетов, барабанщики войны и осадные бегемоты.</li>
+          <li>Демон, дошедший до ворот, бьёт по стенам столько, сколько у него осталось здоровья: недобитый великан опаснее десятка бесов. Осадный бегемот бьёт вдвое сильнее.</li>
+          <li>В конце каждого города приходит босс, и каждый следующий сильнее предыдущего. Если босс дойдёт до ворот, город падёт сразу.</li>
         </ul>
       </details>
     </div>
@@ -442,10 +444,21 @@ const DEMONS = {
   rogach:   { name: 'Кровавый Рогач', base: 'brute', scale: 1.7, tint: 'blood', hp: 1100, speed: 0.42, armor: 0.3, boss: true, roar: true, bounty: 80, dmg: 45, cd: 1.4, lives: 20, barW: 0.9, title: 'Кровавый Рогач повержен', info: 'вожак громил: рёвом подгоняет демонов рядом; если дойдёт до ворот, город падёт' },
   queen:    { name: 'Скайра, королева гончих', fem: true, base: 'hound', scale: 2.1, tint: 'fire', hp: 1400, speed: 0.6, armor: 0.15, boss: true, summon: 'hound', summonN: 2, summonEvery: 8, bounty: 110, dmg: 40, cd: 1.0, lives: 20, barW: 0.95, title: 'Королева гончих повержена', info: 'созывает адских гончих; если дойдёт до ворот, город падёт' },
   tyrant:   { name: 'Мор’Гул, тиран топей', base: 'golem', scale: 1.7, tint: 'swamp', hp: 3200, speed: 0.32, armor: 0.15, mres: 0.3, boss: true, mend: true, bounty: 180, dmg: 60, cd: 1.5, lives: 20, barW: 1.1, title: 'Тиран топей повержен', info: 'залечивает себя и демонов вокруг; если дойдёт до ворот, город падёт' },
-  skjolda:  { name: 'Скьольда, ледяная виверна', fem: true, base: 'wyvern', scale: 1.6, tint: 'ice', flying: true, hp: 3600, speed: 0.38, armor: 0.3, boss: true, curse: 'freeze', bounty: 220, lives: 20, barW: 1.1, title: 'Ледяная виверна повержена', info: 'летает и ледяным дыханием замораживает башни; если долетит до ворот, крепость падёт' },
+  bat:      { name: 'Нетопырь', hp: 28, speed: 1.75, flying: true, bounty: 2, lives: 1, bar: 0.68, hit: 0.46, info: 'летает стаями: быстрый, но хрупкий' },
+  bomber:   { name: 'Бес-подрывник', hp: 70, speed: 1.35, bomb: true, bounty: 5, dmg: 6, cd: 0.8, lives: 1, bar: 0.56, hit: 0.16, info: 'взрывается, когда его убивают или задерживают, и ранит охотников и древня вокруг' },
+  wraith:   { name: 'Призрак', hp: 120, speed: 0.95, armor: 0.5, ghost: true, bounty: 9, lives: 1, bar: 0.78, hit: 0.32, info: 'проходит сквозь охотников и древня; стрелы и копья бьют его вполсилы, магия — в полную силу' },
+  necro:    { name: 'Некромант', hp: 140, speed: 0.65, mres: 0.3, raise: true, bounty: 12, dmg: 10, cd: 1.2, lives: 1, bar: 0.8, hit: 0.26, info: 'поднимает павших рядом демонов скелетами' },
+  skeleton: { name: 'Скелет', hp: 50, speed: 0.95, armor: 0.2, bounty: 1, dmg: 8, cd: 0.9, lives: 1, bar: 0.56, hit: 0.16, info: 'встаёт из павших демонов; кости плохо берут стрелы' },
+  ram:      { name: 'Осадный бегемот', hp: 460, speed: 0.42, armor: 0.4, siege: 2, bounty: 22, dmg: 35, cd: 1.6, lives: 2, bar: 0.86, hit: 0.28, barW: 0.65, ring: 0.42, icon: 1.4, info: 'тяжёлая броня; у ворот бьёт по стенам вдвое сильнее' },
+  drummer:  { name: 'Барабанщик войны', hp: 160, speed: 0.7, drum: true, bounty: 12, dmg: 12, cd: 1.1, lives: 1, bar: 0.82, hit: 0.26, barW: 0.45, info: 'бой барабана ускоряет демонов вокруг' },
+  skjolda:  { name: 'Скьольда, ледяная виверна', fem: true, base: 'wyvern', scale: 1.6, tint: 'ice', flying: true, hp: 3400, speed: 0.38, armor: 0.3, boss: true, curse: 'freeze', bounty: 220, lives: 20, barW: 1.1, title: 'Ледяная виверна повержена', info: 'летает и ледяным дыханием замораживает башни; если долетит до ворот, крепость падёт' },
+  lich:     { name: 'Лич Морвен', base: 'necro', scale: 1.8, tint: 'shadow', hp: 6400, speed: 0.34, armor: 0.2, mres: 0.35, boss: true, summon: 'skeleton', summonN: 3, summonEvery: 7, bounty: 260, dmg: 60, cd: 1.4, lives: 20, barW: 1.1, title: 'Лич повержен', info: 'призывает скелетов; если дойдёт до ворот, город падёт' },
+  colossus: { name: 'Кристальный колосс', base: 'golem', scale: 1.95, tint: 'crystal', hp: 6800, speed: 0.3, armor: 0.3, mres: 0.2, boss: true, stoneskin: true, bounty: 300, dmg: 80, cd: 1.6, lives: 20, barW: 1.2, title: 'Колосс разбит', info: 'время от времени покрывается кристаллами и почти не получает урона; если дойдёт до ворот, город падёт' },
+  batlord:  { name: 'Скарр, повелитель нетопырей', base: 'bat', scale: 2.8, tint: 'blood', flying: true, hp: 6700, speed: 0.3, armor: 0.25, boss: true, summon: 'bat', summonN: 3, summonEvery: 6, bounty: 340, lives: 20, barW: 1.1, title: 'Повелитель нетопырей повержен', info: 'летает и созывает стаи нетопырей; если долетит до ворот, город падёт' },
+  king:     { name: 'Ваал’Тор, Король Бездны', base: 'lord', scale: 1.3, tint: 'void', hp: 7400, speed: 0.27, armor: 0.3, mres: 0.3, boss: true, curse: 'curse', roar: true, summon: 'wraith', summonN: 2, summonEvery: 9, bounty: 500, dmg: 110, cd: 1.6, lives: 20, barW: 1.3, title: 'Король Бездны повержен', info: 'проклинает башни, призывает призраков и подгоняет демонов рёвом; если дойдёт до ворот, всё будет потеряно' },
 };
 // crown position over the head of each base body: [x offset toward the facing side, height]
-const CROWN = { brute: [0.05, 0.9], hound: [0.22, 0.33], golem: [0.04, 0.72], wyvern: [0.24, 0.78] };
+const CROWN = { brute: [0.05, 0.9], hound: [0.22, 0.33], golem: [0.04, 0.72], wyvern: [0.24, 0.78], necro: [0.01, 0.5], bat: [0, 0.6] };
 for (const D of Object.values(DEMONS)) if (D.base) {
   const B = DEMONS[D.base];
   D.bar = B.bar * D.scale; D.hit = B.hit * D.scale; D.ring = B.ring || 0.22; D.icon = (B.icon || 1.1) * D.scale; D.crown = true;
@@ -458,13 +471,13 @@ const VARIANTS = {
   blood:  { adj: ['Кровавый', 'Кровавая'], many: 'кровавые', hp: 1.25, regen: 0.012, info: 'живучие и постоянно залечивают раны' },
 };
 // recolouring for variants and bosses: [r, g, b, strength]
-const TINTS = { fire: [255, 120, 30, 0.42], ice: [160, 215, 255, 0.55], shadow: [60, 35, 100, 0.55], blood: [150, 0, 25, 0.45], swamp: [70, 120, 60, 0.5] };
+const TINTS = { fire: [255, 120, 30, 0.42], ice: [160, 215, 255, 0.55], shadow: [60, 35, 100, 0.55], blood: [150, 0, 25, 0.45], swamp: [70, 120, 60, 0.5], crystal: [175, 140, 255, 0.5], void: [110, 40, 180, 0.55] };
 const demonName = (type, v) => { const D = DEMONS[type]; return v ? `${VARIANTS[v].adj[D.fem ? 1 : 0]} ${D.name[0].toLowerCase()}${D.name.slice(1)}` : D.name; };
 
 // Wave group: [demon, count, seconds between, start delay, path (-1 = alternate)]
 const LEVELS = [
   {
-    name: 'Ивовый Брод', sub: 'Пограничная застава у реки', theme: 'forest', gold: 240, lives: 20, hpMul: 0.9, variants: ['fire'], vChance: 0.15,
+    name: 'Ивовый Брод', sub: 'Пограничная застава у реки', theme: 'forest', gold: 240, lives: 1500, hpMul: 0.9, variants: ['fire'], vChance: 0.15,
     paths: [[[1, -1], [1, 3], [7, 3], [7, 7], [2, 7], [2, 11], [6, 11], [6, 14]]],
     slots: [[2, 1], [4, 2], [6, 2], [3, 5], [5, 5], [8, 5], [0, 9], [4, 9], [6, 9], [1, 12], [4, 13], [7, 13]],
     waves: [
@@ -479,7 +492,7 @@ const LEVELS = [
     ],
   },
   {
-    name: 'Аэлин', sub: 'Лунный город, прорыв с двух сторон', theme: 'forest', gold: 300, lives: 20, hpMul: 0.95, variants: ['fire', 'ice'], vChance: 0.2,
+    name: 'Аэлин', sub: 'Лунный город, прорыв с двух сторон', theme: 'forest', gold: 300, lives: 1700, hpMul: 0.95, variants: ['fire', 'ice'], vChance: 0.2,
     paths: [
       [[1, -1], [1, 4], [4, 4], [4, 7], [7, 7], [7, 11], [3, 11], [3, 14]],
       [[7, -1], [7, 4], [4, 4], [4, 7], [7, 7], [7, 11], [3, 11], [3, 14]],
@@ -499,7 +512,7 @@ const LEVELS = [
     ],
   },
   {
-    name: 'Сильвенор', sub: 'Столица у Древа Жизни', theme: 'forest', gold: 340, lives: 20, hpMul: 1.18, variants: ['fire', 'ice', 'blood'], vChance: 0.25,
+    name: 'Сильвенор', sub: 'Столица у Древа Жизни', theme: 'forest', gold: 340, lives: 2200, hpMul: 1.18, variants: ['fire', 'ice', 'blood'], vChance: 0.25,
     paths: [
       [[4, -1], [4, 2], [1, 2], [1, 6], [6, 6], [6, 9], [2, 9], [2, 12], [5, 12], [5, 14]],
       [[9, 3], [7, 3], [7, 6], [6, 6], [6, 9], [2, 9], [2, 12], [5, 12], [5, 14]],
@@ -521,7 +534,7 @@ const LEVELS = [
     ],
   },
   {
-    name: 'Ивенмир', sub: 'Город на сваях среди серебряных топей', theme: 'swamp', gold: 420, lives: 20, hpMul: 1.0, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.3,
+    name: 'Ивенмир', sub: 'Город на сваях среди серебряных топей', theme: 'swamp', gold: 420, lives: 2000, hpMul: 1.0, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.3,
     paths: [
       [[-1, 2], [3, 2], [3, 6], [1, 6], [1, 10], [4, 10], [4, 14]],
       [[9, 4], [6, 4], [6, 8], [1, 8], [1, 10], [4, 10], [4, 14]],
@@ -532,7 +545,7 @@ const LEVELS = [
       [['hound', 8, 0.6, 0, 0], ['imp', 8, 0.7, 2, 1]],
       [['shield', 2, 3, 0, -1], ['imp', 10, 0.7, 1, -1]],
       [['brute', 2, 3, 0, 0], ['shield', 2, 3, 1, 1], ['hound', 8, 0.5, 4, -1]],
-      [['gargoyle', 10, 0.9, 0, -1], ['warlock', 2, 3, 2, -1]],
+      [['bat', 14, 0.5, 0, -1], ['warlock', 2, 3, 2, -1]],
       [['shield', 3, 2.4, 0, -1], ['brute', 3, 2.4, 1, -1], ['imp', 12, 0.5, 3, -1]],
       [['golem', 2, 4, 0, -1], ['hound', 14, 0.4, 3, -1]],
       [['warlock', 4, 2.4, 0, -1], ['shield', 4, 2.4, 1, -1], ['gargoyle', 8, 0.9, 4, -1]],
@@ -543,7 +556,7 @@ const LEVELS = [
     ],
   },
   {
-    name: 'Звездопад', sub: 'Горная крепость на снежном перевале', theme: 'snow', gold: 440, lives: 20, hpMul: 1.05, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.3,
+    name: 'Звездопад', sub: 'Горная крепость на снежном перевале', theme: 'snow', gold: 440, lives: 2200, hpMul: 1.05, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.3,
     paths: [
       [[1, -1], [1, 2], [4, 2], [4, 5], [7, 5], [7, 8], [1, 8], [1, 11], [6, 11], [6, 14]],
       [[7, -1], [7, 2], [4, 2], [4, 5], [7, 5], [7, 8], [1, 8], [1, 11], [6, 11], [6, 14]],
@@ -555,7 +568,7 @@ const LEVELS = [
       [['gargoyle', 8, 1, 0, -1], ['imp', 10, 0.6, 2, -1]],
       [['wyvern', 2, 4, 0, -1], ['gargoyle', 6, 1, 2, -1]],
       [['brute', 5, 2, 0, -1], ['shield', 2, 2.5, 1, -1]],
-      [['golem', 3, 3, 0, -1], ['warlock', 3, 2.5, 2, -1], ['imp', 14, 0.4, 4, -1]],
+      [['golem', 3, 3, 0, -1], ['warlock', 3, 2.5, 2, -1], ['bomber', 8, 0.8, 4, -1]],
       [['wyvern', 4, 3, 0, -1], ['hound', 16, 0.35, 2, -1]],
       [['shield', 4, 2, 0, -1], ['brute', 6, 1.6, 1, -1]],
       [['gargoyle', 16, 0.6, 0, -1], ['wyvern', 3, 3, 4, -1]],
@@ -566,7 +579,7 @@ const LEVELS = [
     ],
   },
   {
-    name: 'Последний Рассвет', sub: 'Крепость у самого разлома', theme: 'rift', gold: 560, lives: 20, hpMul: 0.98, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.35,
+    name: 'Последний Рассвет', sub: 'Крепость у самого разлома', theme: 'rift', gold: 560, lives: 2400, hpMul: 0.98, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.35,
     paths: [
       [[1, -1], [1, 3], [4, 3], [4, 6], [7, 6], [7, 10], [4, 10], [4, 14]],
       [[7, -1], [7, 3], [4, 3], [4, 6], [7, 6], [7, 10], [4, 10], [4, 14]],
@@ -582,13 +595,112 @@ const LEVELS = [
       [['golem', 4, 2.5, 0, -1], ['hound', 18, 0.35, 2, -1]],
       [['shield', 4, 2, 0, -1], ['brute', 6, 1.6, 1, -1], ['warlock', 2, 2.6, 3, -1]],
       [['wyvern', 5, 2.4, 0, -1], ['gargoyle', 14, 0.6, 2, -1]],
-      [['golem', 5, 2.2, 0, -1], ['shield', 3, 2.2, 1, -1], ['imp', 18, 0.4, 3, -1]],
+      [['golem', 5, 2.2, 0, -1], ['necro', 2, 3, 1, -1], ['imp', 14, 0.45, 3, -1]],
       [['brute', 9, 1.3, 0, -1], ['warlock', 4, 2.2, 2, -1], ['hound', 20, 0.3, 4, -1]],
       [['wyvern', 8, 1.8, 0, -1], ['gargoyle', 16, 0.55, 2, -1]],
       [['golem', 6, 2, 0, -1], ['shield', 5, 1.8, 1, -1], ['warlock', 4, 2.4, 3, -1]],
-      [['hound', 36, 0.22, 0, -1], ['imp', 30, 0.25, 2, -1], ['wyvern', 6, 2, 5, -1]],
+      [['hound', 30, 0.25, 0, -1], ['wraith', 8, 1.1, 2, -1], ['wyvern', 5, 2.2, 5, -1]],
       [['golem', 6, 1.8, 0, -1], ['brute', 9, 1.3, 1, -1], ['shield', 5, 1.8, 2, -1], ['wyvern', 5, 2.2, 5, -1]],
       [['lord', 1, 1, 0, 0], ['shield', 5, 2.4, 3, -1], ['golem', 3, 3, 6, -1], ['imp', 20, 0.6, 4, -1]],
+    ],
+  },
+  {
+    name: 'Золотолесье', sub: 'Осенний город в золотом лесу', theme: 'autumn', gold: 600, lives: 2600, hpMul: 1.05, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.35,
+    paths: [
+      [[4, -1], [4, 1], [6, 1], [6, 4], [2, 4], [2, 7], [5, 7], [5, 10], [2, 10], [2, 14]],
+      [[8, -1], [8, 8], [5, 8], [5, 10], [2, 10], [2, 14]],
+    ],
+    slots: [[3, 2], [5, 2], [7, 3], [4, 6], [1, 6], [7, 6], [4, 9], [6, 9], [1, 9], [8, 10], [3, 12], [5, 12], [1, 13]],
+    waves: [
+      [['imp', 14, 0.6, 0, -1]],
+      [['bat', 14, 0.45, 0, -1]],
+      [['bomber', 6, 1.2, 0, -1], ['imp', 10, 0.6, 2, -1]],
+      [['brute', 5, 1.8, 0, -1], ['drummer', 2, 3, 1, -1]],
+      [['hound', 16, 0.4, 0, -1], ['bat', 12, 0.5, 3, -1]],
+      [['shield', 4, 2, 0, -1], ['bomber', 8, 0.9, 2, -1], ['drummer', 2, 3, 3, -1]],
+      [['golem', 4, 2.4, 0, -1], ['bat', 16, 0.4, 2, -1]],
+      [['brute', 8, 1.4, 0, -1], ['drummer', 3, 2.5, 1, -1], ['warlock', 3, 2.5, 3, -1]],
+      [['wyvern', 4, 2.4, 0, -1], ['bomber', 10, 0.8, 2, -1]],
+      [['shield', 6, 1.6, 0, -1], ['golem', 5, 2, 2, -1], ['drummer', 3, 2.5, 4, -1]],
+      [['hound', 24, 0.3, 0, -1], ['bat', 20, 0.35, 2, -1], ['bomber', 8, 0.8, 5, -1]],
+      [['brute', 10, 1.2, 0, -1], ['shield', 6, 1.6, 1, -1], ['warlock', 4, 2.4, 3, -1], ['drummer', 3, 2.4, 5, -1]],
+      [['lich', 1, 1, 0, 0], ['bomber', 8, 1, 4, -1], ['brute', 6, 2, 6, 1], ['drummer', 2, 3, 8, -1]],
+    ],
+  },
+  {
+    name: 'Хрустальные копи', sub: 'Подземный город среди самоцветов', theme: 'crystal', gold: 640, lives: 2800, hpMul: 1.02, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.38,
+    paths: [
+      [[-1, 1], [3, 1], [3, 5], [6, 5], [6, 9], [3, 9], [3, 12], [6, 12], [6, 14]],
+      [[9, 2], [8, 2], [8, 7], [6, 7], [6, 9], [3, 9], [3, 12], [6, 12], [6, 14]],
+    ],
+    slots: [[2, 3], [5, 3], [7, 4], [1, 6], [4, 7], [7, 8], [2, 10], [4, 11], [7, 11], [2, 13], [5, 13], [7, 13]],
+    waves: [
+      [['skeleton', 14, 0.6, 0, -1]],
+      [['wraith', 6, 1.4, 0, -1], ['imp', 10, 0.6, 2, -1]],
+      [['necro', 2, 3, 0, -1], ['brute', 4, 2, 1, -1]],
+      [['bat', 16, 0.4, 0, -1], ['bomber', 6, 1, 3, -1]],
+      [['wraith', 8, 1.1, 0, -1], ['shield', 4, 2, 2, -1]],
+      [['golem', 5, 2.2, 0, -1], ['necro', 2, 3, 1, -1], ['hound', 14, 0.4, 3, -1]],
+      [['ram', 2, 4, 0, -1], ['skeleton', 16, 0.5, 1, -1]],
+      [['wyvern', 5, 2.2, 0, -1], ['bat', 14, 0.45, 2, -1]],
+      [['brute', 8, 1.4, 0, -1], ['drummer', 3, 2.5, 1, -1], ['wraith', 8, 1, 3, -1]],
+      [['ram', 3, 3.5, 0, -1], ['necro', 3, 2.5, 1, -1], ['shield', 5, 1.8, 3, -1]],
+      [['hound', 26, 0.3, 0, -1], ['bomber', 10, 0.8, 3, -1]],
+      [['golem', 6, 2, 0, -1], ['wraith', 10, 0.9, 2, -1], ['warlock', 4, 2.4, 4, -1]],
+      [['ram', 4, 3, 0, -1], ['brute', 10, 1.2, 1, -1], ['drummer', 4, 2.2, 3, -1], ['necro', 3, 2.5, 5, -1]],
+      [['colossus', 1, 1, 0, 0], ['wraith', 10, 1, 3, -1], ['skeleton', 16, 0.5, 6, -1]],
+    ],
+  },
+  {
+    name: 'Жемчужная гавань', sub: 'Белый город у тёплого моря', theme: 'coast', gold: 680, lives: 3000, hpMul: 1.05, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.4,
+    paths: [
+      [[1, -1], [1, 3], [4, 3], [4, 6], [1, 6], [1, 10], [5, 10], [5, 14]],
+      [[7, -1], [7, 3], [4, 3], [4, 6], [1, 6], [1, 10], [5, 10], [5, 14]],
+      [[9, 8], [7, 8], [7, 10], [5, 10], [5, 14]],
+    ],
+    slots: [[2, 1], [4, 1], [6, 1], [3, 5], [6, 5], [0, 8], [3, 8], [5, 7], [8, 6], [6, 9], [3, 12], [7, 12]],
+    waves: [
+      [['imp', 14, 0.5, 0, -1], ['bat', 10, 0.5, 2, -1]],
+      [['hound', 18, 0.35, 0, -1]],
+      [['bomber', 8, 1, 0, -1], ['shield', 3, 2.5, 2, -1]],
+      [['bat', 22, 0.35, 0, -1], ['gargoyle', 8, 0.9, 3, -1]],
+      [['ram', 2, 4, 0, -1], ['brute', 6, 1.6, 1, -1]],
+      [['wraith', 10, 1, 0, -1], ['necro', 2, 3, 2, -1]],
+      [['golem', 6, 2, 0, -1], ['drummer', 3, 2.5, 1, -1], ['hound', 16, 0.4, 3, -1]],
+      [['wyvern', 6, 2, 0, -1], ['bat', 18, 0.4, 2, -1]],
+      [['ram', 3, 3.5, 0, -1], ['shield', 6, 1.6, 1, -1], ['warlock', 3, 2.5, 3, -1]],
+      [['bomber', 14, 0.6, 0, -1], ['brute', 8, 1.4, 2, -1]],
+      [['wraith', 12, 0.9, 0, -1], ['skeleton', 20, 0.4, 2, -1], ['necro', 3, 2.5, 4, -1]],
+      [['wyvern', 6, 2, 0, -1], ['gargoyle', 14, 0.6, 2, -1], ['bat', 20, 0.35, 4, -1]],
+      [['ram', 5, 2.8, 0, -1], ['golem', 6, 2, 1, -1], ['drummer', 4, 2.2, 3, -1], ['shield', 6, 1.6, 5, -1]],
+      [['batlord', 1, 1, 0, 0], ['bat', 20, 0.4, 3, -1], ['brute', 8, 1.8, 6, -1], ['wraith', 8, 1.2, 8, -1]],
+    ],
+  },
+  {
+    name: 'Престол Бездны', sub: 'Последняя битва на пороге демонов', theme: 'void', gold: 760, lives: 3400, hpMul: 1.1, variants: ['fire', 'ice', 'blood', 'shadow'], vChance: 0.42,
+    paths: [
+      [[2, -1], [2, 2], [6, 2], [6, 5], [2, 5], [2, 8], [7, 8], [7, 11], [3, 11], [3, 14]],
+      [[9, 1], [8, 1], [8, 8], [7, 8], [7, 11], [3, 11], [3, 14]],
+      [[-1, 5], [2, 5], [2, 8], [7, 8], [7, 11], [3, 11], [3, 14]],
+    ],
+    slots: [[1, 1], [4, 1], [4, 3], [7, 3], [1, 7], [4, 6], [7, 6], [2, 10], [5, 10], [8, 10], [2, 13], [5, 13], [7, 13]],
+    waves: [
+      [['imp', 18, 0.45, 0, -1]],
+      [['skeleton', 18, 0.45, 0, -1], ['bat', 12, 0.45, 2, -1]],
+      [['brute', 6, 1.6, 0, -1], ['drummer', 2, 3, 1, -1]],
+      [['wraith', 10, 1, 0, -1], ['bomber', 8, 0.9, 2, -1]],
+      [['gargoyle', 14, 0.6, 0, -1], ['wyvern', 3, 3, 3, -1]],
+      [['ram', 3, 3.5, 0, -1], ['shield', 5, 1.8, 1, -1]],
+      [['necro', 3, 2.5, 0, -1], ['golem', 5, 2.2, 1, -1], ['hound', 18, 0.35, 3, -1]],
+      [['bat', 26, 0.3, 0, -1], ['bomber', 12, 0.7, 3, -1]],
+      [['brute', 10, 1.2, 0, -1], ['drummer', 4, 2.2, 1, -1], ['warlock', 4, 2.4, 3, -1]],
+      [['wraith', 14, 0.8, 0, -1], ['wyvern', 5, 2.4, 2, -1]],
+      [['ram', 5, 2.8, 0, -1], ['golem', 6, 2, 1, -1], ['shield', 6, 1.6, 3, -1]],
+      [['hound', 30, 0.25, 0, -1], ['skeleton', 24, 0.3, 2, -1], ['necro', 4, 2.2, 4, -1]],
+      [['wyvern', 8, 1.8, 0, -1], ['bat', 24, 0.3, 2, -1], ['gargoyle', 12, 0.6, 4, -1]],
+      [['ram', 6, 2.4, 0, -1], ['brute', 12, 1, 1, -1], ['drummer', 5, 2, 3, -1], ['warlock', 4, 2.4, 5, -1]],
+      [['golem', 8, 1.6, 0, -1], ['wraith', 14, 0.8, 2, -1], ['bomber', 14, 0.6, 4, -1], ['shield', 8, 1.4, 6, -1]],
+      [['king', 1, 1, 0, 0], ['wraith', 10, 1.2, 4, -1], ['ram', 3, 4, 8, -1], ['skeleton', 20, 0.5, 6, -1]],
     ],
   },
 ];
@@ -596,6 +708,10 @@ const THEMES = {
   forest: { base: ['#22402e', '#244a32', '#295436'], patches: ['rgba(90,150,75,.22)', 'rgba(16,40,26,.38)', 'rgba(130,170,90,.14)', 'rgba(70,58,34,.16)'], light: 'rgba(210,240,255,.08)', blade: [112, 40, 30, 24, 22, 18, 0.75], road: ['#21170e', '#5e4a33', '#735c40', 'rgba(170,146,108,.25)'], stone: ['#8d7d63', '#7b6b52', '#9c8c72', '#6a5c46'], edge: true, tree: 'round', treeChance: 0.62, deco: ['bush', 'rocks', 'shroom', 'flowers', 'fern', 'log', 'flowers', 'fern'], roofs: ['#2f8a62', '#2a7a96', '#3d9a6e'], air: 'leaves' },
   swamp:  { base: ['#1d3532', '#1e3c36', '#22443c'], patches: ['rgba(70,120,95,.22)', 'rgba(8,26,26,.38)', 'rgba(110,130,70,.14)'], light: 'rgba(190,240,230,.08)', blade: [82, 45, 24, 22, 20, 16, 0.7], road: ['#140e0a', '#4c3b2c', '#5e4a37', 'rgba(150,130,95,.2)'], stone: ['#6e604a', '#5c503d', '#7c6d55'], edge: true, tree: 'willow', treeChance: 0.5, deco: ['pool', 'reeds', 'shroom', 'pool', 'reeds', 'fern'], roofs: ['#3f7a5a', '#5a7a44', '#2f6a6a'], air: 'mist', mist: true },
   snow:   { base: ['#b4c4d2', '#c9d6e1', '#dbe4ec'], patches: ['rgba(255,255,255,.4)', 'rgba(140,165,195,.22)', 'rgba(220,232,245,.3)'], light: 'rgba(255,250,235,.14)', blade: [205, 20, 30, 20, 84, 12, 0.7], road: ['#525a62', '#8c8c86', '#a3a199', 'rgba(255,255,255,.22)'], stone: ['#c6d0d9', '#aab6c1', '#e6edf2'], edge: false, tree: 'pine', treeChance: 0.58, deco: ['rocks', 'crystal', 'drift', 'drift'], roofs: ['#3a6aa8', '#4a82c4', '#5a6fb8'], air: 'snow' },
+  autumn: { base: ['#3b301c', '#423520', '#4a3b22'], patches: ['rgba(190,110,40,.18)', 'rgba(30,20,10,.32)', 'rgba(220,170,60,.12)', 'rgba(140,60,30,.16)'], light: 'rgba(255,220,170,.08)', blade: [32, 22, 45, 20, 32, 16, 0.75], road: ['#22170c', '#5e4630', '#735840', 'rgba(190,150,100,.25)'], stone: ['#8d7a60', '#7a6850', '#a08a6a'], edge: true, tree: 'round', treeHue: [8, 42, 64, 10], treeChance: 0.62, deco: ['leafpile', 'rocks', 'shroom', 'log', 'leafpile', 'bush'], roofs: ['#b5552a', '#8a3a22', '#c7842e'], air: 'leaves' },
+  crystal: { base: ['#1d1a33', '#221e3c', '#272245'], patches: ['rgba(140,100,255,.18)', 'rgba(8,6,20,.38)', 'rgba(80,200,255,.12)'], light: 'rgba(190,170,255,.1)', blade: [255, 40, 30, 20, 30, 16, 0.6], road: ['#0e0c18', '#3a3450', '#4a4262', 'rgba(170,150,255,.18)'], stone: ['#5a5478', '#6a6290', '#4a4466', '#7a72a8'], edge: false, tree: 'crystal', treeChance: 0.5, deco: ['crystal', 'gem', 'rocks', 'gem'], roofs: ['#4a5ab8', '#6a4ab8', '#3a8ab8'], air: 'sparkle' },
+  coast:  { base: ['#c4a874', '#cfb482', '#d9c190'], patches: ['rgba(255,240,200,.3)', 'rgba(150,120,70,.2)', 'rgba(120,170,160,.15)'], light: 'rgba(255,250,230,.12)', blade: [75, 25, 35, 20, 45, 15, 0.7], road: ['#6a5a40', '#9a8662', '#ab9670', 'rgba(255,245,220,.25)'], stone: ['#d8ccb0', '#c2b494', '#e6dcc2', '#b0a080'], edge: false, tree: 'palm', treeChance: 0.42, deco: ['shell', 'pool', 'rocks', 'shell', 'starfish'], roofs: ['#2f86b8', '#3aa0c0', '#2a6aa0'], air: 'gulls', ripples: true },
+  void:   { base: ['#150b1d', '#180d24', '#1c0f2a'], patches: ['rgba(140,60,220,.18)', 'rgba(4,2,8,.45)', 'rgba(220,80,200,.1)'], light: null, blade: [280, 30, 25, 15, 18, 10, 0.55], road: ['#07040a', '#2a2036', '#362a44', 'rgba(190,90,255,.12)'], stone: ['#2a2036', '#3a2c4a', '#1c1426', '#4a3a5e'], edge: false, tree: 'void', treeChance: 0.45, deco: ['voidpool', 'shards', 'rocks', 'voidpool'], roofs: ['#3a2a5a', '#4a2a6a', '#5a3a7a'], air: 'voidash', cracks: true, crack: [190, 90, 255] },
   rift:   { base: ['#2a1414', '#29191a', '#2e1c18'], patches: ['rgba(110,35,20,.25)', 'rgba(8,4,4,.4)', 'rgba(160,60,20,.14)'], light: null, blade: [10, 25, 18, 15, 14, 10, 0.55], road: ['#0c0707', '#33272a', '#41332f', 'rgba(255,90,40,.12)'], stone: ['#2a2224', '#3a2e2c', '#1c1618', '#4a3a36'], edge: false, tree: 'dead', treeChance: 0.42, deco: ['lava', 'rocks', 'shards', 'lava'], roofs: ['#6a3a8a', '#5a2f7b', '#7a3a6a'], air: 'ash', cracks: true },
 };
 
@@ -667,6 +783,226 @@ function towerTop(type, lvl, y) {
   if (type === 'griffin') return y - 0.85;
   return y - 0.3;
 }
+/* ---------- fine tower detail: generated once per tower/level/layer, drawn as a few batched paths ---------- */
+const DETAIL = new Map();
+function detailBuilder(seed) {
+  const ops = new Map(), r = mulberry32(seed);
+  const get = (k, a, c) => { const key = k + a + c; let o = ops.get(key); if (!o) ops.set(key, o = { k, a, c, p: [] }); return o.p; };
+  return {
+    r, ops,
+    rr: (a, b) => a + r() * (b - a),
+    s(w, c, ...p) { get('s', w, c).push(...p); },          // segments x1,y1,x2,y2
+    d(rad, c, x, y) { get('d', rad, c).push(x, y); },      // dots
+    e(c, x, y, rx, ry, rot) { get('e', 0, c).push(x, y, rx, ry, rot); }, // small ellipses (leaves, stones)
+    a(w, c, x, y, rad, a0, a1) { get('a', w, c).push(x, y, rad, a0, a1); }, // arcs
+  };
+}
+function drawDetail(g, key, lvl, x, y, gen) {
+  const id = key + lvl;
+  let ops = DETAIL.get(id);
+  if (!ops) {
+    let h = 7; for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 2654435761);
+    const b = detailBuilder(h >>> 0); gen(b, lvl);
+    DETAIL.set(id, ops = [...b.ops.values()]);
+  }
+  for (const o of ops) {
+    const p = o.p; g.beginPath();
+    if (o.k === 's') { for (let i = 0; i < p.length; i += 4) { g.moveTo(x + p[i], y + p[i + 1]); g.lineTo(x + p[i + 2], y + p[i + 3]); } g.lineWidth = o.a; g.strokeStyle = o.c; g.stroke(); }
+    else if (o.k === 'd') { for (let i = 0; i < p.length; i += 2) { g.moveTo(x + p[i] + o.a, y + p[i + 1]); g.arc(x + p[i], y + p[i + 1], o.a, 0, TAU); } g.fillStyle = o.c; g.fill(); }
+    else if (o.k === 'e') { for (let i = 0; i < p.length; i += 5) { g.moveTo(x + p[i] + p[i + 2], y + p[i + 1]); g.ellipse(x + p[i], y + p[i + 1], p[i + 2], p[i + 3], p[i + 4], 0, TAU); } g.fillStyle = o.c; g.fill(); }
+    else { for (let i = 0; i < p.length; i += 5) { const cx = x + p[i], cy = y + p[i + 1]; g.moveTo(cx + Math.cos(p[i + 3]) * p[i + 2], cy + Math.sin(p[i + 3]) * p[i + 2]); g.arc(cx, cy, p[i + 2], p[i + 3], p[i + 4]); } g.lineWidth = o.a; g.strokeStyle = o.c; g.stroke(); }
+  }
+}
+// half-width of a trapezoid running from (yb, hb) at the bottom to (yt, ht) at the top
+const trapW = (yy, yb, hb, yt, ht) => hb + (ht - hb) * (yy - yb) / (yt - yb);
+// stone courses with staggered joints over a trapezoid
+function masonry(b, yb, hb, yt, ht, rowH, blockW, mortar, hi) {
+  let row = 0;
+  for (let yy = yb; yy > yt + 0.02; yy -= rowH, row++) {
+    const y2 = Math.max(yt, yy - rowH), w = trapW(y2, yb, hb, yt, ht) - 0.008;
+    if (y2 > yt + 0.005) b.s(0.008, mortar, -w, y2, w, y2);
+    const wm = trapW((yy + y2) / 2, yb, hb, yt, ht);
+    for (let jx = -wm + (row % 2 ? blockW / 2 : blockW) ; jx < wm - 0.03; jx += blockW) {
+      b.s(0.007, mortar, jx, yy - 0.004, jx, y2 + 0.004);
+      if (hi) b.s(0.006, hi, jx + 0.012, y2 + 0.012, jx + Math.min(blockW - 0.03, wm - jx - 0.02), y2 + 0.012);
+    }
+    if (hi) b.s(0.006, hi, -wm + 0.012, y2 + 0.012, Math.min(-wm + blockW - 0.02, wm), y2 + 0.012);
+  }
+}
+function scatterTrap(b, n, yb, hb, yt, ht, fn) {
+  for (let i = 0; i < n; i++) { const yy = b.rr(yt + 0.02, yb - 0.02), w = trapW(yy, yb, hb, yt, ht) - 0.03; fn(b.rr(-w, w), yy); }
+}
+function leafCluster(b, n, cx, cy, rx, ry, cols, size = 0.028) {
+  for (let i = 0; i < n; i++) {
+    const a = b.rr(0, TAU), d = Math.sqrt(b.r());
+    b.e(cols[i % cols.length], cx + Math.cos(a) * rx * d, cy + Math.sin(a) * ry * d, size * b.rr(0.8, 1.2), size * 0.5, b.rr(-1.2, 1.2));
+  }
+}
+const towerTopL = (lvl, h) => 0.2 - (h + lvl * 0.1);
+const DET = {
+  archerBody(b, lvl) {
+    const top = towerTopL(lvl, 0.62);
+    // stone footing
+    b.s(0.008, 'rgba(38,44,40,.6)', -0.28, 0.185, 0.28, 0.185);
+    for (const jx of [-0.17, -0.05, 0.07, 0.19]) b.s(0.007, 'rgba(38,44,40,.6)', jx, 0.1, jx, 0.185);
+    for (const jx of [-0.22, -0.1, 0.02, 0.14, 0.25]) b.s(0.007, 'rgba(38,44,40,.6)', jx, 0.185, jx, 0.27);
+    for (const jx of [-0.24, -0.12, 0, 0.12]) b.s(0.006, 'rgba(255,255,255,.22)', jx + 0.02, 0.198, jx + 0.08, 0.198);
+    for (let i = 0; i < 9; i++) b.d(b.rr(0.008, 0.016), i % 3 ? '#4f8a54' : '#7fb46a', b.rr(-0.27, 0.27), b.rr(0.1, 0.13));
+    // birch bark: lenticels, peeling curls and a shaded flank
+    scatterTrap(b, 34, 0.11, 0.24, top + 0.11, 0.16, (px, py) => { const l = b.rr(0.015, 0.045); b.s(0.008, 'rgba(66,58,46,.5)', px - l / 2, py, px + l / 2, py + b.rr(-0.006, 0.006)); });
+    scatterTrap(b, 10, 0.11, 0.24, top + 0.11, 0.16, (px, py) => b.a(0.006, 'rgba(150,140,115,.55)', px, py, 0.018, 0.3, 2.2));
+    b.s(0.03, 'rgba(110,104,84,.22)', 0.19, 0.1, 0.13, top + 0.12);
+    b.s(0.012, 'rgba(255,255,255,.35)', -0.19, 0.08, -0.135, top + 0.14);
+    // arrow slit
+    b.s(0.026, '#3a3328', 0.02, top + 0.34, 0.02, top + 0.46);
+    b.s(0.01, '#3a3328', -0.01, top + 0.4, 0.05, top + 0.4);
+  },
+  archerTop(b, lvl) {
+    const top = towerTopL(lvl, 0.62);
+    // ivy leaves along the vine
+    for (let i = 0; i < 9; i++) {
+      const t = 0.08 + i * 0.1, u = 1 - t;
+      const px = u * u * -0.2 + 2 * u * t * 0.12 + t * t * -0.1, py = u * u * 0.12 + 2 * u * t * -0.08 + t * t * (top + 0.22);
+      const s = i % 2 ? 1 : -1;
+      b.e(i % 3 ? '#4f9a62' : '#78c07f', px + s * 0.025, py, 0.028, 0.014, s * 0.7);
+    }
+    // planks, nails
+    for (let px = -0.24; px <= 0.25; px += 0.07) b.s(0.007, 'rgba(28,18,10,.55)', px, top + 0.03, px + 0.005, top + 0.12);
+    for (let px = -0.27; px <= 0.27; px += 0.07) b.d(0.008, 'rgba(235,215,165,.75)', px + 0.035, top + 0.105);
+    b.s(0.01, 'rgba(255,220,160,.25)', -0.27, top + 0.03, 0.27, top + 0.03);
+    // gold filigree on upgraded bands
+    for (let i = 0; i < lvl; i++) for (let k = -2; k <= 2; k++) b.d(0.011, '#fff1b8', k * 0.07, top + 0.2 + i * 0.09);
+  },
+  lodgeWalls(b) {
+    for (let i = 0; i < 4; i++) {
+      const ly = -0.18 + 0.05 + i * 0.1;
+      b.s(0.012, 'rgba(255,215,160,.16)', -0.29, ly - 0.035, 0.29, ly - 0.035);
+      for (let k = 0; k < 7; k++) { const px = b.rr(-0.26, 0.2), l = b.rr(0.04, 0.09); b.s(0.006, 'rgba(38,22,10,.5)', px, ly + b.rr(-0.02, 0.02), px + l, ly + b.rr(-0.02, 0.02)); }
+      for (const sx of [-0.3, 0.3]) { b.a(0.006, 'rgba(70,44,24,.85)', sx, ly, 0.02, 0, TAU); b.d(0.007, 'rgba(70,44,24,.85)', sx, ly); }
+    }
+    for (let i = 0; i < 8; i++) b.e(i % 2 ? '#80827b' : '#696b65', -0.28 + i * 0.08, 0.225, 0.042, 0.024, 0);
+    for (let i = 0; i < 8; i++) b.s(0.006, 'rgba(255,255,255,.22)', -0.3 + i * 0.08, 0.212, -0.27 + i * 0.08, 0.209);
+  },
+  lodgeFront(b) {
+    // door frame, window frame, hanging pelt and a woodpile
+    b.a(0.018, '#8a6442', 0, 0.04, 0.095, Math.PI, TAU);
+    b.s(0.018, '#8a6442', -0.095, 0.04, -0.095, 0.22, 0.095, 0.04, 0.095, 0.22);
+    b.s(0.014, '#4a2f1a', 0.15, -0.05, 0.23, -0.05, 0.15, 0.03, 0.23, 0.03, 0.15, -0.05, 0.15, 0.03, 0.23, -0.05, 0.23, 0.03, 0.19, -0.05, 0.19, 0.03);
+    b.s(0.012, '#d8b080', 0.13, 0.045, 0.25, 0.045);
+    b.e('#9a6a3c', -0.2, 0.0, 0.055, 0.075, 0); b.e('#b88552', -0.2, -0.02, 0.035, 0.05, 0);
+    b.s(0.01, '#5a3a20', -0.25, -0.075, -0.15, -0.075);
+    for (let i = 0; i < 3; i++) for (let k = 0; k <= i % 2; k++) { b.d(0.026, '#8a5a32', 0.37 + k * 0.05, 0.2 - i * 0.045); b.d(0.012, '#d9b07a', 0.37 + k * 0.05, 0.2 - i * 0.045); }
+  },
+  lodgeRoof(b, lvl) {
+    const by = -0.13, py = -0.6 - lvl * 0.04;
+    for (let i = 0; i < 46; i++) {
+      const t = b.rr(0.04, 0.9), yy = by + (py - by) * t, w = 0.41 * (1 - t) - 0.02, px = b.rr(-w, w);
+      b.s(0.007, i % 3 ? 'rgba(14,34,20,.55)' : 'rgba(140,200,140,.3)', px, yy, px + (px < 0 ? -0.012 : 0.012), yy + 0.045);
+    }
+    for (let i = 0; i < 12; i++) { const px = -0.38 + i * 0.07; b.e(i % 3 ? '#4d8a4f' : '#6aa860', px, by + 0.005 - b.r() * 0.01, 0.034, 0.016, b.rr(-0.4, 0.4)); }
+    for (let i = 0; i < 4; i++) b.d(0.01, i % 2 ? '#f2d07a' : '#e9a6c0', -0.3 + i * 0.2, by - 0.01);
+  },
+  mageBody(b, lvl) {
+    const top = towerTopL(lvl, 0.82);
+    masonry(b, 0.11, 0.19, top + 0.15, 0.1, 0.085, 0.085, 'rgba(66,86,108,.38)', 'rgba(255,255,255,.4)');
+    b.s(0.008, 'rgba(36,46,60,.55)', -0.26, 0.185, 0.26, 0.185);
+    for (const jx of [-0.16, -0.04, 0.08, 0.2]) b.s(0.007, 'rgba(36,46,60,.55)', jx, 0.1, jx, 0.185);
+    for (const jx of [-0.22, -0.1, 0.02, 0.14]) b.s(0.007, 'rgba(36,46,60,.55)', jx, 0.185, jx, 0.27);
+    // glowing runes on the footing
+    for (let i = 0; i < 5; i++) { const px = -0.2 + i * 0.1; b.s(0.008, 'rgba(160,220,255,.85)', px, 0.21, px + 0.02, 0.245, px + 0.02, 0.245, px + 0.035, 0.215); }
+    b.s(0.03, 'rgba(70,90,120,.18)', 0.15, 0.1, 0.085, top + 0.16);
+  },
+  mageTop(b, lvl) {
+    const top = towerTopL(lvl, 0.82);
+    for (let i = 0; i < 12; i++) { const a = Math.PI * (i + 0.5) / 12; b.d(0.009, '#ffeaa0', -Math.cos(a) * 0.19, top + 0.14 + Math.sin(a) * 0.055); }
+    b.a(0.007, 'rgba(255,255,255,.55)', 0, top + 0.13, 0.16, Math.PI * 1.1, Math.PI * 1.6);
+  },
+  druidTrunk(b) {
+    for (let k = 0; k < 5; k++) {
+      let px = -0.12 + k * 0.06, py = 0.21;
+      while (py > -0.33) { const ny = py - b.rr(0.04, 0.08), nx = px + b.rr(-0.015, 0.015) - px * 0.08; b.s(0.008, 'rgba(36,22,12,.5)', px, py, nx, ny); px = nx; py = ny; }
+    }
+    b.e('#3b2614', 0.07, -0.2, 0.022, 0.032, 0.2); b.a(0.007, '#7a5634', 0.07, -0.2, 0.03, 0, TAU);
+    b.s(0.014, 'rgba(255,220,170,.18)', -0.15, 0.2, -0.09, -0.33);
+    for (let i = 0; i < 14; i++) b.d(b.rr(0.008, 0.016), i % 3 ? '#4f8a4a' : '#86c06a', b.rr(-0.17, 0.17), b.rr(0.12, 0.23));
+    // mushrooms at the roots
+    for (const [mx, my, s] of [[-0.3, 0.24, 1], [-0.22, 0.27, 0.75]]) {
+      b.s(0.018 * s, '#efe3c8', mx, my, mx, my - 0.045 * s);
+      b.e('#c9483a', mx, my - 0.05 * s, 0.04 * s, 0.024 * s, 0);
+      b.d(0.007 * s, '#f6ecd6', mx - 0.015 * s, my - 0.056 * s); b.d(0.006 * s, '#f6ecd6', mx + 0.017 * s, my - 0.05 * s);
+    }
+  },
+  druidCanopy(b, lvl) {
+    const cr = 0.3 + lvl * 0.04, cy = -0.5 - lvl * 0.04;
+    leafCluster(b, 30, 0, cy - cr * 0.1, cr * 1.15, cr * 0.75, ['#1d4a30', '#3b8456', '#2a6440'], 0.034);
+    leafCluster(b, 14, -cr * 0.25, cy - cr * 0.5, cr * 0.42, cr * 0.3, ['#5aa86c', '#74bf7c'], 0.03);
+    for (let i = 0; i < 10; i++) { const a = b.rr(0, TAU); b.d(0.008, 'rgba(220,255,200,.5)', Math.cos(a) * cr * 0.6 - 0.05, cy - cr * 0.35 + Math.sin(a) * cr * 0.3); }
+  },
+  rangerFrame(b, lvl) {
+    const top = -0.5 - lvl * 0.06;
+    for (const s of [-1, 1]) for (let k = 0; k < 5; k++) { const t = 0.12 + k * 0.17, px = s * (0.25 - 0.09 * t), py = 0.24 + (top + 0.05 - 0.24) * t; b.s(0.006, 'rgba(30,18,10,.55)', px - 0.01, py, px - 0.008, py - 0.05); }
+    b.s(0.009, '#d9c48c', -0.03, -0.1, 0.03, -0.04, -0.03, -0.04, 0.03, -0.1, -0.035, -0.07, 0.035, -0.07);
+    for (const s of [-1, 1]) b.s(0.009, '#d9c48c', s * 0.21, top + 0.1, s * 0.25, top + 0.13, s * 0.2, top + 0.13, s * 0.24, top + 0.16);
+    for (let px = -0.24; px <= 0.25; px += 0.08) b.s(0.007, 'rgba(30,18,10,.55)', px, top - 0.015, px + 0.004, top + 0.075);
+    b.s(0.01, 'rgba(255,220,160,.25)', -0.27, top - 0.012, 0.27, top - 0.012);
+    // quiver rack and lantern
+    b.s(0.03, '#7a4e2c', 0.2, top - 0.02, 0.23, top - 0.16);
+    for (let i = 0; i < 3; i++) b.s(0.008, '#e8eef0', 0.205 + i * 0.012, top - 0.15, 0.2 + i * 0.016, top - 0.21);
+  },
+  rangerRoof(b, lvl) {
+    const ry = -0.5 - lvl * 0.06 - 0.46, py = ry - 0.18 - lvl * 0.03;
+    for (let row = 0; row < 4; row++) {
+      const t = row / 4 + 0.08, yy = ry + 0.02 + (py - ry) * t, w = 0.36 * (1 - t);
+      for (let px = -w; px <= w; px += 0.06) b.e(row % 2 ? '#3d8a58' : '#1f5034', px + (row % 2) * 0.03, yy, 0.032, 0.015, 0.25 * Math.sign(px));
+    }
+  },
+  nestRock(b) {
+    let px = 0.08, py = 0.25;
+    for (let i = 0; i < 6; i++) { const nx = px + b.rr(-0.05, 0.05), ny = py - b.rr(0.07, 0.12); b.s(0.01, 'rgba(36,40,46,.6)', px, py, nx, ny); px = nx; py = ny; }
+    for (const [ax, ay] of [[-0.21, 0.12], [-0.18, -0.28], [0.17, -0.25]]) b.s(0.008, 'rgba(36,40,46,.55)', ax, ay, ax + 0.06, ay + 0.02, ax + 0.06, ay + 0.02, ax + 0.1, ay - 0.01);
+    for (let i = 0; i < 5; i++) b.s(0.008, 'rgba(255,255,255,.25)', -0.22 + i * 0.012, 0.2 - i * 0.12, -0.18 + i * 0.012, 0.18 - i * 0.12);
+    for (let i = 0; i < 16; i++) { const py = b.rr(-0.58, 0.22), w = 0.12 + 0.16 * (py + 0.6) / 0.84; b.d(b.rr(0.007, 0.015), ['#c9a646', '#9cbf6a', '#e2d27a'][i % 3], b.rr(-w, w - 0.04), py); }
+  },
+  nestTop(b) {
+    for (let i = 0; i < 16; i++) { const a = b.rr(0, TAU), r0 = b.rr(0.14, 0.24); b.s(0.01, i % 2 ? '#8e6a42' : '#5e4228', Math.cos(a) * r0 - 0.04, -0.68 + Math.sin(a) * 0.05, Math.cos(a) * r0 + 0.05, -0.67 + Math.sin(a + 0.6) * 0.06); }
+    b.e('#f4efe2', -0.22, -0.66, 0.045, 0.014, -0.5); b.s(0.005, '#a89c80', -0.26, -0.645, -0.18, -0.675);
+  },
+  groveGround(b, lvl) {
+    for (let i = 0; i < 16; i++) { const px = b.rr(-0.32, 0.32), py = 0.13 + b.rr(-0.1, 0.1) * Math.sqrt(1 - (px / 0.37) ** 2); b.s(0.007, i % 2 ? '#5e9a5e' : '#3f7a48', px, py, px - 0.012, py - 0.04, px, py, px + 0.014, py - 0.035); }
+    for (let i = 0; i < 4 + lvl * 2; i++) b.d(0.012, i % 2 ? '#f4e6a4' : '#c8b6f0', b.rr(-0.3, 0.3), 0.13 + b.rr(-0.07, 0.07));
+  },
+  groveCanopy(b, lvl) {
+    const cr = 0.13 + lvl * 0.02;
+    leafCluster(b, 22, 0, -0.42, cr * 1.6, cr * 1.1, ['#1f5034', '#4a9a62', '#2f6e46'], 0.026);
+  },
+  bardBase(b) {
+    for (let i = 0; i < 12; i++) { const a0 = 0.15 + i * 0.237, a1 = a0 + 0.237; b.s(0.007, 'rgba(120,130,128,.6)', Math.cos(a0) * 0.3, 0.14 + Math.sin(a0) * 0.085, Math.cos(a1) * 0.3, 0.14 + Math.sin(a1) * 0.085); }
+    for (let i = 0; i < 6; i++) { const px = b.rr(-0.26, 0.2); b.s(0.005, 'rgba(150,160,175,.55)', px, 0.12 + b.rr(-0.04, 0.04), px + b.rr(0.03, 0.07), 0.12 + b.rr(-0.04, 0.04)); }
+    for (const dx of [-0.16, 0.16]) b.s(0.006, 'rgba(140,150,160,.55)', dx - 0.007, -0.48, dx - 0.007, 0.1, dx + 0.008, -0.48, dx + 0.008, 0.1);
+  },
+  bardPillars(b) {
+    for (const dx of [-0.29, 0.29]) {
+      b.s(0.006, 'rgba(130,142,150,.6)', dx - 0.011, -0.44, dx - 0.011, 0.14, dx + 0.004, -0.44, dx + 0.004, 0.14);
+      b.s(0.008, 'rgba(255,255,255,.7)', dx - 0.019, -0.44, dx - 0.019, 0.14);
+      b.s(0.024, '#c9d1d6', dx - 0.042, -0.455, dx + 0.042, -0.455, dx - 0.04, 0.15, dx + 0.04, 0.15);
+      b.s(0.008, '#d8b45a', dx - 0.04, -0.44, dx + 0.04, -0.44);
+      b.s(0.007, '#4f9a62', dx - 0.026, -0.1, dx + 0.026, -0.18, dx + 0.026, -0.18, dx - 0.02, -0.28);
+      b.e('#5aa86c', dx + 0.03, -0.17, 0.02, 0.01, 0.6); b.e('#5aa86c', dx - 0.024, -0.26, 0.02, 0.01, -0.6);
+    }
+  },
+  bardDome(b, lvl) {
+    const dy = -0.48, H = 0.44 + lvl * 0.05;
+    for (let row = 1; row < 6; row++) {
+      const yy = dy - row * 0.04;
+      for (let px = -0.32 + (row % 2) * 0.035; px <= 0.32; px += 0.07) {
+        const t = (px + 0.35) / 0.7, hy = dy - 2 * t * (1 - t) * H;
+        if (yy - 0.03 > hy) b.a(0.007, 'rgba(110,96,170,.5)', px, yy - 0.03, 0.033, 0.35, Math.PI - 0.35);
+      }
+    }
+    for (let i = 0; i < 9; i++) b.d(0.01, '#ffe9a0', -0.32 + i * 0.08, dy + 0.012);
+    b.a(0.012, 'rgba(255,255,255,.4)', 0, dy + 0.15, 0.3, Math.PI * 1.2, Math.PI * 1.4);
+  },
+};
 function drawArcher(g, lvl, x, y, time, aim, fire) {
   shadow(g, x, y + 0.27, 0.34, 0.11);
   const top = y + 0.2 - (0.62 + lvl * 0.1);
@@ -674,6 +1010,7 @@ function drawArcher(g, lvl, x, y, time, aim, fire) {
   const gr = g.createLinearGradient(x - 0.24, 0, x + 0.24, 0);
   gr.addColorStop(0, '#f3f0e4'); gr.addColorStop(1, '#a8a493');
   poly(g, [x - 0.24, y + 0.12, x - 0.16, top + 0.1, x + 0.16, top + 0.1, x + 0.24, y + 0.12], gr);
+  drawDetail(g, 'archerBody', lvl, x, y, DET.archerBody);
   // birch marks
   for (let i = 0; i < 4; i++) line(g, x - 0.12 + (i % 2) * 0.13, y - 0.02 - i * 0.12, x - 0.05 + (i % 2) * 0.13, y - 0.02 - i * 0.12, 0.025, 'rgba(60,55,45,.55)');
   // ivy
@@ -684,6 +1021,7 @@ function drawArcher(g, lvl, x, y, time, aim, fire) {
   // platform
   poly(g, [x - 0.31, top + 0.13, x + 0.31, top + 0.13, x + 0.27, top + 0.02, x - 0.27, top + 0.02], '#5b4430');
   line(g, x - 0.31, top + 0.13, x + 0.31, top + 0.13, 0.02, lvl ? '#d8b45a' : '#3c2c1e');
+  drawDetail(g, 'archerTop', lvl, x, y, DET.archerTop);
   if (lvl >= 2) { // banner
     const wv = Math.sin(time * 3) * 0.03;
     line(g, x - 0.26, top + 0.04, x - 0.26, top - 0.42, 0.022, '#d8c49a');
@@ -718,14 +1056,17 @@ function drawLodge(g, lvl, x, y, time) {
     line(g, x - 0.3, ly + 0.045, x + 0.3, ly + 0.045, 0.012, 'rgba(30,18,10,.6)');
     circ(g, x - 0.3, ly, 0.035, '#8a6442'); circ(g, x + 0.3, ly, 0.035, '#8a6442');
   }
+  drawDetail(g, 'lodgeWalls', 0, x, y, DET.lodgeWalls);
   g.fillStyle = '#22160d'; g.beginPath(); g.moveTo(x - 0.08, wy1); g.lineTo(x - 0.08, y + 0.04); g.arc(x, y + 0.04, 0.08, Math.PI, 0); g.lineTo(x + 0.08, wy1); g.closePath(); g.fill();
   const fl = 0.8 + Math.sin(time * 7) * 0.12;
   glow(g, x + 0.19, y - 0.01, 0.2, `rgba(255,200,110,${0.4 * fl})`);
   circ(g, x + 0.19, y - 0.01, 0.03, '#ffd27a');
+  drawDetail(g, 'lodgeFront', 0, x, y, DET.lodgeFront);
   const py = y - 0.6 - lvl * 0.04;
   poly(g, [x - 0.41, wy0 + 0.05, x, py, x + 0.41, wy0 + 0.05], '#2a573a');
   poly(g, [x - 0.41, wy0 + 0.05, x, py, x - 0.02, wy0 + 0.05], '#367049');
   for (let i = 1; i < 4; i++) line(g, x - 0.41 + i * 0.1, wy0 + 0.05, x, py + 0.02, 0.01, 'rgba(20,45,30,.6)');
+  drawDetail(g, 'lodgeRoof', lvl, x, y, DET.lodgeRoof);
   g.strokeStyle = '#efe3c8'; g.lineWidth = 0.026; g.lineCap = 'round'; g.beginPath();
   for (const s of [-1, 1]) {
     g.moveTo(x, py + 0.02); g.quadraticCurveTo(x + s * 0.13, py - 0.04, x + s * 0.19, py - 0.2);
@@ -746,6 +1087,7 @@ function drawMage(g, lvl, x, y, time, fire) {
   const gr = g.createLinearGradient(x - 0.2, 0, x + 0.2, 0);
   gr.addColorStop(0, '#f2f6f8'); gr.addColorStop(1, '#8f9fb1');
   poly(g, [x - 0.19, y + 0.12, x - 0.1, top + 0.14, x + 0.1, top + 0.14, x + 0.19, y + 0.12], gr);
+  drawDetail(g, 'mageBody', lvl, x, y, DET.mageBody);
   for (let i = 0; i < 2; i++) {
     const wy = y - 0.04 - i * 0.27;
     glow(g, x, wy, 0.11, 'rgba(140,200,255,.35)');
@@ -755,6 +1097,7 @@ function drawMage(g, lvl, x, y, time, fire) {
   if (lvl >= 2) for (const s of [-1, 1]) poly(g, [x + s * 0.17, top + 0.16, x + s * 0.21, top - 0.12, x + s * 0.13, top + 0.16], '#dfe7ee');
   ell(g, x, top + 0.14, 0.2, 0.06, '#c3cfda');
   g.beginPath(); g.ellipse(x, top + 0.14, 0.2, 0.06, 0, 0, Math.PI); g.lineWidth = 0.02; g.strokeStyle = '#d8b45a'; g.stroke();
+  drawDetail(g, 'mageTop', lvl, x, y, DET.mageTop);
   const cy = top - 0.12 + Math.sin(time * 2.2) * 0.035;
   glow(g, x, cy, 0.34 + fire * 0.8, `rgba(150,210,255,${0.32 + fire * 1.6})`);
   poly(g, [x, cy - 0.16, x + 0.075, cy, x, cy + 0.11, x - 0.075, cy], '#dff2ff');
@@ -769,6 +1112,7 @@ function drawDruid(g, lvl, x, y, time, fire) {
   poly(g, [x - 0.17, y + 0.23, x + 0.17, y + 0.23, x + 0.1, y - 0.36, x - 0.1, y - 0.36], '#6b4a2e');
   line(g, x - 0.07, y + 0.18, x - 0.04, y - 0.3, 0.015, 'rgba(40,25,14,.6)');
   line(g, x + 0.08, y + 0.2, x + 0.05, y - 0.25, 0.015, 'rgba(40,25,14,.6)');
+  drawDetail(g, 'druidTrunk', 0, x, y, DET.druidTrunk);
   const pulse = 0.65 + Math.sin(time * 3) * 0.2 + fire * 2;
   ell(g, x, y - 0.03, 0.065, 0.1, '#1d130a');
   glow(g, x, y - 0.03, 0.22, `rgba(170,255,170,${0.32 * pulse})`);
@@ -778,6 +1122,7 @@ function drawDruid(g, lvl, x, y, time, fire) {
   circ(g, x + cr * 0.62, cy + 0.07, cr * 0.7, '#24553a');
   circ(g, x, cy - cr * 0.25, cr * 0.86, '#2e6c45');
   circ(g, x - cr * 0.25, cy - cr * 0.45, cr * 0.45, '#3f8a58');
+  drawDetail(g, 'druidCanopy', lvl, x, y, DET.druidCanopy);
   if (lvl >= 1) for (let i = 0; i < 5; i++) { const a = i * 1.7 + 0.4; circ(g, x + Math.cos(a) * cr * 0.7, cy + Math.sin(a) * cr * 0.45, 0.028, i % 2 ? '#f2a7c7' : '#fff3c4'); }
   if (lvl >= 2) for (let i = 0; i < 4; i++) { const a = time * 1.3 + i * 1.6; glow(g, x + Math.cos(a) * 0.42, cy + Math.sin(a * 1.3) * 0.25, 0.06, 'rgba(220,255,140,.75)'); }
   // the druid
@@ -798,6 +1143,7 @@ function drawRanger(g, lvl, x, y, time, aim, fire) {
   g.lineCap = 'butt';
   poly(g, [x - 0.31, top + 0.08, x + 0.31, top + 0.08, x + 0.27, top - 0.02, x - 0.27, top - 0.02], '#6e5038');
   line(g, x - 0.31, top + 0.08, x + 0.31, top + 0.08, 0.02, lvl ? '#d8b45a' : '#3c2c1e');
+  drawDetail(g, 'rangerFrame', lvl, x, y, DET.rangerFrame);
   for (const s of [-1, 1]) line(g, x + s * 0.27, top, x + s * 0.27, top - (lvl >= 1 ? 0.44 : 0.15), 0.022, '#5d4330');
   line(g, x - 0.27, top - 0.12, x + 0.27, top - 0.12, 0.018, '#5d4330');
   // the ranger
@@ -817,6 +1163,7 @@ function drawRanger(g, lvl, x, y, time, aim, fire) {
     const ry = top - 0.46;
     poly(g, [x - 0.38, ry + 0.04, x, ry - 0.18 - lvl * 0.03, x + 0.38, ry + 0.04, x, ry - 0.03], '#2a6341');
     poly(g, [x - 0.38, ry + 0.04, x, ry - 0.18 - lvl * 0.03, x - 0.02, ry - 0.03], '#367a50');
+    drawDetail(g, 'rangerRoof', lvl, x, y, DET.rangerRoof);
   }
   if (lvl >= 2) {
     const wv = Math.sin(time * 3) * 0.03;
@@ -842,11 +1189,13 @@ function drawNest(g, lvl, x, y, time) {
   line(g, x - 0.2, y - 0.05, x + 0.18, y - 0.1, 0.014, 'rgba(40,44,50,.6)');
   line(g, x - 0.16, y - 0.36, x + 0.15, y - 0.4, 0.014, 'rgba(40,44,50,.6)');
   ell(g, x + 0.12, y + 0.1, 0.08, 0.04, '#3f6a45'); ell(g, x - 0.17, y - 0.2, 0.06, 0.03, '#3f6a45');
+  drawDetail(g, 'nestRock', 0, x, y, DET.nestRock);
   if (lvl >= 1) { g.fillStyle = '#d8b45a'; g.fillRect(x - 0.2, y + 0.02, 0.36, 0.025); }
   ell(g, x, y - 0.68, 0.27, 0.09, '#5a4027');
   g.lineCap = 'round';
   for (let i = 0; i < 9; i++) { const a = i * 0.7; line(g, x + Math.cos(a) * 0.17, y - 0.68 + Math.sin(a) * 0.05, x + Math.cos(a) * 0.3, y - 0.69 + Math.sin(a + 0.4) * 0.08, 0.018, '#7a5a38'); }
   g.lineCap = 'butt';
+  drawDetail(g, 'nestTop', 0, x, y, DET.nestTop);
   ell(g, x, y - 0.71, 0.18, 0.05, '#33251a');
   if (lvl >= 1) ell(g, x + 0.08, y - 0.74, 0.04, 0.055, '#efe2b8');
   if (lvl >= 2) {
@@ -858,16 +1207,20 @@ function drawNest(g, lvl, x, y, time) {
 function menhir(g, x, y, h, lit) {
   poly(g, [x - 0.07, y, x + 0.07, y, x + 0.055, y - h, x - 0.01, y - h - 0.045, x - 0.065, y - h + 0.02], '#737b74');
   poly(g, [x - 0.07, y, x - 0.01, y, x - 0.01, y - h - 0.045, x - 0.065, y - h + 0.02], '#868f87');
+  line(g, x - 0.035, y - h * 0.38, x + 0.03, y - h * 0.47, 0.01, 'rgba(40,46,42,.5)'); line(g, x - 0.03, y - h * 0.72, x + 0.025, y - h * 0.8, 0.01, 'rgba(40,46,42,.5)');
+  circ(g, x + 0.03, y - h * 0.15, 0.014, '#a9b86a'); circ(g, x - 0.035, y - h * 0.6, 0.011, '#c9a646');
   if (lit) line(g, x, y - h * 0.25, x, y - h * 0.65, 0.02, 'rgba(150,255,170,.75)');
 }
 function drawGrove(g, lvl, x, y, time) {
   shadow(g, x, y + 0.25, 0.4, 0.13);
   ell(g, x, y + 0.13, 0.37, 0.15, '#2b4732');
+  drawDetail(g, 'groveGround', lvl, x, y, DET.groveGround);
   menhir(g, x - 0.25, y + 0.06, 0.4, lvl >= 1);
   menhir(g, x + 0.25, y + 0.06, 0.43, lvl >= 2);
   line(g, x, y + 0.12, x, y - 0.3, 0.06, '#5b3f26');
   const cr = 0.13 + lvl * 0.02;
   circ(g, x - 0.1, y - 0.36, cr, '#2f6e46'); circ(g, x + 0.1, y - 0.38, cr, '#2f6e46'); circ(g, x, y - 0.5, cr + 0.02, '#3f8a58');
+  drawDetail(g, 'groveCanopy', lvl, x, y, DET.groveCanopy);
   if (lvl >= 2) for (let i = 0; i < 4; i++) circ(g, x + Math.cos(i * 1.6) * 0.12, y - 0.42 + Math.sin(i * 1.6) * 0.08, 0.024, '#f2a7c7');
   glow(g, x, y - 0.06, 0.2, `rgba(150,255,170,${0.28 + 0.12 * Math.sin(time * 2.5)})`);
   menhir(g, x - 0.13, y + 0.21, 0.3, true);
@@ -878,6 +1231,7 @@ function drawBard(g, lvl, x, y, time) {
   ell(g, x, y + 0.17, 0.34, 0.12, '#bfc7c3'); ell(g, x, y + 0.14, 0.32, 0.1, '#e3e8e5');
   g.fillStyle = '#d6dde0';
   for (const dx of [-0.16, 0.16]) g.fillRect(x + dx - 0.022, y - 0.5, 0.044, 0.62);
+  drawDetail(g, 'bardBase', 0, x, y, DET.bardBase);
   // harpist
   poly(g, [x - 0.11, y + 0.13, x + 0.07, y + 0.13, x - 0.02, y - 0.17], '#9a86c9');
   line(g, x - 0.09, y + 0.12, x + 0.05, y + 0.12, 0.02, '#e2c26a');
@@ -888,10 +1242,12 @@ function drawBard(g, lvl, x, y, time) {
   for (let i = 1; i <= 3; i++) line(g, x + 0.06 + i * 0.012, y + 0.06 - i * 0.02, x + 0.07 + i * 0.012, y - 0.14 + i * 0.03, 0.006, '#fff4cc');
   g.fillStyle = '#e6ebee';
   for (const dx of [-0.29, 0.29]) g.fillRect(x + dx - 0.026, y - 0.46, 0.052, 0.62);
+  drawDetail(g, 'bardPillars', 0, x, y, DET.bardPillars);
   const dy = y - 0.48;
   ell(g, x, dy, 0.37, 0.08, '#a99fd6');
   g.beginPath(); g.moveTo(x - 0.35, dy); g.quadraticCurveTo(x, dy - 0.44 - lvl * 0.05, x + 0.35, dy); g.closePath(); g.fillStyle = '#bdb3e6'; g.fill();
   g.beginPath(); g.moveTo(x - 0.35, dy); g.quadraticCurveTo(x - 0.1, dy - 0.38 - lvl * 0.05, x - 0.02, dy - 0.22); g.lineTo(x - 0.05, dy); g.closePath(); g.fillStyle = '#d2cbf0'; g.fill();
+  drawDetail(g, 'bardDome', lvl, x, y, DET.bardDome);
   line(g, x - 0.37, dy, x + 0.37, dy, 0.02, '#d8b45a');
   const fy = dy - 0.22 - lvl * 0.025;
   line(g, x, fy, x, fy - 0.12, 0.02, '#d8b45a');
@@ -1097,6 +1453,113 @@ function drawDemon(g, e, time) {
       poly(g, [sx - 0.035, cy - 0.78, sx, cy - 0.78 - fh * 0.6, sx + 0.035, cy - 0.78], '#f3dcff');
       break;
     }
+    case 'bat': {
+      const hgt = 0.45 + Math.sin(ph * 0.9) * 0.06, cy = y - hgt, flap = Math.sin(ph * 3.2);
+      shadow(g, x, y + 0.07, 0.13, 0.04, 0.2);
+      for (const s of [-1, 1]) {
+        poly(g, [x + s * 0.05, cy - 0.02, x + s * 0.2, cy - 0.12 - flap * 0.12, x + s * 0.3, cy - 0.02 - flap * 0.1, x + s * 0.24, cy + 0.02, x + s * 0.19, cy - 0.01, x + s * 0.14, cy + 0.04, x + s * 0.07, cy + 0.03], c('#4a1f2a'));
+        line(g, x + s * 0.06, cy - 0.01, x + s * 0.2, cy - 0.11 - flap * 0.12, 0.01, 'rgba(255,150,150,.35)');
+      }
+      ell(g, x, cy, 0.07, 0.08, c('#5a2632'));
+      poly(g, [x - 0.05, cy - 0.05, x - 0.035, cy - 0.13, x - 0.015, cy - 0.06], c('#5a2632'));
+      poly(g, [x + 0.05, cy - 0.05, x + 0.035, cy - 0.13, x + 0.015, cy - 0.06], c('#5a2632'));
+      circ(g, x - 0.022, cy - 0.025, 0.014, '#ff4a4a'); circ(g, x + 0.022, cy - 0.025, 0.014, '#ff4a4a');
+      break;
+    }
+    case 'bomber': {
+      const b = Math.abs(Math.sin(ph)) * 0.05, cy = y - 0.11 - b, ax = x + f * atk, l = Math.sin(ph) * 0.05;
+      shadow(g, x, y + 0.09, 0.19, 0.06);
+      line(g, ax - 0.05, cy + 0.09, ax - 0.06 + l, y + 0.08, 0.04, c('#5c2a10'));
+      line(g, ax + 0.05, cy + 0.09, ax + 0.06 - l, y + 0.08, 0.04, c('#5c2a10'));
+      g.save(); g.translate(ax - f * 0.13, cy - 0.04); g.rotate(-f * 0.25);
+      ell(g, 0, 0, 0.1, 0.13, c('#7a4a22'));
+      line(g, -0.098, -0.05, 0.098, -0.05, 0.016, '#3a3a40'); line(g, -0.098, 0.05, 0.098, 0.05, 0.016, '#3a3a40');
+      line(g, 0, -0.12, 0.02, -0.18, 0.012, '#3a2a1a');
+      glow(g, 0.02, -0.19, 0.06 + Math.abs(Math.sin(time * 20)) * 0.04, 'rgba(255,200,80,.85)'); circ(g, 0.02, -0.19, 0.018, '#fff2a0');
+      g.restore();
+      circ(g, ax, cy, 0.13, c('#d8642c'));
+      circ(g, ax + f * 0.03, cy - 0.02, 0.08, c('#ef7a3a'));
+      poly(g, [ax - 0.08, cy - 0.08, ax - 0.03, cy - 0.11, ax - 0.1, cy - 0.21], '#f1dcb4');
+      poly(g, [ax + 0.08, cy - 0.08, ax + 0.03, cy - 0.11, ax + 0.1, cy - 0.21], '#f1dcb4');
+      circ(g, ax + f * 0.015, cy - 0.02, 0.022, '#fff07a'); circ(g, ax + f * 0.07, cy - 0.02, 0.022, '#fff07a');
+      line(g, ax, cy + 0.045, ax + f * 0.07, cy + 0.04, 0.012, '#3a0e04');
+      break;
+    }
+    case 'wraith': {
+      const fl = Math.sin(time * 3 + ph) * 0.03, cy = y - 0.2 + fl;
+      g.save(); g.globalAlpha *= 0.85;
+      glow(g, x, cy, 0.32, 'rgba(160,220,255,.38)');
+      g.beginPath(); g.moveTo(x - 0.15, cy - 0.05); g.quadraticCurveTo(x - 0.17, cy + 0.12, x - 0.12, y + 0.02);
+      for (let i = 0; i < 3; i++) { const tx = x - 0.12 + i * 0.08, wav = Math.sin(time * 6 + i * 1.7) * 0.03; g.lineTo(tx + 0.04, y - 0.06 + wav); g.lineTo(tx + 0.08, y + 0.03 - wav); }
+      g.quadraticCurveTo(x + 0.17, cy + 0.12, x + 0.15, cy - 0.05); g.closePath();
+      g.fillStyle = c('#b8d8ee'); g.fill();
+      line(g, x + f * 0.12, cy, x + f * 0.24, cy + 0.05 + fl, 0.03, c('#c8e2f2'));
+      circ(g, x, cy - 0.12, 0.12, c('#d8ecf8'));
+      ell(g, x + f * 0.02, cy - 0.1, 0.075, 0.07, '#10202e');
+      circ(g, x + f * 0.02 - 0.025, cy - 0.11, 0.018, '#7af0ff'); circ(g, x + f * 0.02 + 0.025, cy - 0.11, 0.018, '#7af0ff');
+      g.restore();
+      break;
+    }
+    case 'necro': {
+      const b = Math.sin(ph * 0.6) * 0.02, ax = x + f * atk * 0.5, sx = ax + f * 0.19, fh = 0.1 + Math.abs(Math.sin(time * 9)) * 0.05;
+      shadow(g, x, y + 0.09, 0.19, 0.06);
+      poly(g, [ax - 0.17, y + 0.08, ax + 0.17, y + 0.08, ax + 0.07, y - 0.33, ax - 0.07, y - 0.33], c('#1f2a1f'));
+      line(g, ax - 0.16, y + 0.06, ax + 0.16, y + 0.06, 0.03, '#d8d2b8');
+      circ(g, ax, y - 0.12, 0.035, '#e8e2c8');
+      circ(g, ax, y - 0.37 + b, 0.1, c('#16201a'));
+      ell(g, ax + f * 0.02, y - 0.35 + b, 0.06, 0.05, '#050805');
+      circ(g, ax, y - 0.36 + b, 0.016, '#7aff7a'); circ(g, ax + f * 0.045, y - 0.36 + b, 0.016, '#7aff7a');
+      line(g, sx, y + 0.08, sx, y - 0.44, 0.026, '#4a3a2a');
+      circ(g, sx, y - 0.48, 0.045, '#e8e2c8'); circ(g, sx - 0.015, y - 0.485, 0.01, '#111'); circ(g, sx + 0.015, y - 0.485, 0.01, '#111');
+      glow(g, sx, y - 0.56, 0.16, 'rgba(120,255,120,.5)');
+      poly(g, [sx - 0.035, y - 0.52, sx, y - 0.52 - fh, sx + 0.035, y - 0.52], '#8aff6a');
+      break;
+    }
+    case 'skeleton': {
+      const b = Math.abs(Math.sin(ph)) * 0.04, cy = y - 0.14 - b, ax = x + f * atk, l = Math.sin(ph) * 0.05, bone = c('#e6e0cc');
+      shadow(g, x, y + 0.08, 0.15, 0.05);
+      line(g, ax - 0.04, cy + 0.08, ax - 0.05 + l, y + 0.07, 0.022, bone);
+      line(g, ax + 0.04, cy + 0.08, ax + 0.05 - l, y + 0.07, 0.022, bone);
+      line(g, ax, cy - 0.06, ax, cy + 0.08, 0.025, bone);
+      for (let i = 0; i < 3; i++) line(g, ax - 0.06 + i * 0.01, cy - 0.04 + i * 0.035, ax + 0.06 - i * 0.01, cy - 0.04 + i * 0.035, 0.016, c('#d8d2bc'));
+      line(g, ax + f * 0.02, cy - 0.04, ax + f * 0.12, cy + 0.03, 0.018, bone);
+      line(g, ax + f * 0.12, cy + 0.03, ax + f * 0.24, cy - 0.08, 0.026, '#8a5a3a');
+      circ(g, ax + f * 0.01, cy - 0.13, 0.075, c('#f0ead6'));
+      circ(g, ax + f * 0.03 - 0.03, cy - 0.13, 0.02, '#1a0808'); circ(g, ax + f * 0.03 + 0.025, cy - 0.13, 0.02, '#1a0808');
+      circ(g, ax + f * 0.03 - 0.03, cy - 0.13, 0.009, '#ff4a3a'); circ(g, ax + f * 0.03 + 0.025, cy - 0.13, 0.009, '#ff4a3a');
+      break;
+    }
+    case 'ram': {
+      const b = Math.abs(Math.sin(ph * 0.7)) * 0.025, cy = y - 0.22 - b, ax = x + f * atk * 0.6, l = Math.sin(ph * 0.7) * 0.05;
+      shadow(g, x, y + 0.1, 0.42, 0.1);
+      for (const [dx, sg] of [[-0.2, 1], [-0.08, -1], [0.08, 1], [0.2, -1]]) line(g, ax + f * dx, cy + 0.08, ax + f * dx + sg * l, y + 0.07, 0.07, c('#3a2420'));
+      ell(g, ax, cy, 0.32, 0.16, c('#5a2e26'));
+      ell(g, ax - f * 0.04, cy + 0.06, 0.22, 0.07, c('#6e3a30'));
+      for (let i = 0; i < 4; i++) { const px = ax - f * 0.2 + f * i * 0.12; poly(g, [px - 0.07, cy - 0.08, px, cy - 0.2, px + 0.07, cy - 0.08], c('#5b6069')); circ(g, px, cy - 0.12, 0.015, '#a8aeb6'); }
+      const hx = ax + f * 0.3, hy = cy + 0.02;
+      ell(g, hx, hy, 0.13, 0.11, c('#6a7078'));
+      poly(g, [hx + f * 0.1, hy - 0.05, hx + f * 0.27, hy, hx + f * 0.1, hy + 0.05], '#c8ced4');
+      poly(g, [hx - f * 0.02, hy - 0.08, hx - f * 0.1, hy - 0.22, hx + f * 0.04, hy - 0.1], '#e8d7b0');
+      circ(g, hx + f * 0.05, hy - 0.02, 0.022, '#ff7a2f');
+      break;
+    }
+    case 'drummer': {
+      const b = Math.abs(Math.sin(ph * 0.8)) * 0.03, cy = y - 0.24 - b, ax = x + f * atk * 0.5, beat = Math.max(0, Math.sin(time * 6.3)), l = Math.sin(ph * 0.8) * 0.05;
+      shadow(g, x, y + 0.1, 0.26, 0.08);
+      line(g, ax - 0.08, cy + 0.16, ax - 0.09 + l, y + 0.07, 0.07, c('#4a1a14'));
+      line(g, ax + 0.08, cy + 0.16, ax + 0.09 - l, y + 0.07, 0.07, c('#4a1a14'));
+      ell(g, ax, cy - 0.04, 0.2, 0.2, c('#8a2a22'));
+      circ(g, ax + f * 0.02, cy - 0.26, 0.1, c('#7a221c'));
+      poly(g, [ax - 0.06, cy - 0.33, ax - 0.02, cy - 0.35, ax - 0.12, cy - 0.46], '#e8d7b0');
+      poly(g, [ax + 0.08, cy - 0.33, ax + 0.04, cy - 0.35, ax + 0.14, cy - 0.46], '#e8d7b0');
+      circ(g, ax + f * 0.0, cy - 0.27, 0.02, '#ffd04a'); circ(g, ax + f * 0.06, cy - 0.27, 0.02, '#ffd04a');
+      ell(g, ax + f * 0.04, cy + 0.07, 0.16, 0.12, '#6a4424');
+      for (let i = 0; i < 5; i++) line(g, ax + f * 0.04 - 0.13 + i * 0.065, cy + 0.04, ax + f * 0.04 - 0.1 + i * 0.065, cy + 0.15, 0.01, '#d8b47a');
+      ell(g, ax + f * 0.04, cy + 0.03, 0.16, 0.06, '#ecd6ac');
+      line(g, ax - 0.13, cy - 0.06, ax - 0.03, cy - 0.01 - beat * 0.13, 0.022, '#c9a06a');
+      line(g, ax + 0.17, cy - 0.06, ax + 0.09, cy - 0.01 - (1 - beat) * 0.13, 0.022, '#c9a06a');
+      break;
+    }
     case 'boss': {
       const b = Math.abs(Math.sin(ph * 0.6)) * 0.04, cy = y - 0.5 - b, ax = x + f * atk * 0.5;
       shadow(g, x, y + 0.13, 0.62, 0.17, 0.45);
@@ -1121,7 +1584,7 @@ function drawDemon(g, e, time) {
       break;
     }
   }
-  if (tk) variantAura(g, e, time, true);
+  if (tk || e.skin > 0) variantAura(g, e, time, true);
   if (ghost) g.globalAlpha = 1;
 }
 function drawHunter(g, h, time) {
@@ -1159,13 +1622,19 @@ function variantAura(g, e, time, front) {
     else if (e.tint === 'ice') glow(g, x, hy, 0.38, 'rgba(170,220,255,.35)');
     else if (e.tint === 'shadow') glow(g, x, hy, 0.4, 'rgba(50,15,80,.5)');
     else if (e.tint === 'swamp') glow(g, x, hy, 0.42, 'rgba(110,190,90,.3)');
+    else if (e.tint === 'crystal') glow(g, x, hy, 0.45, 'rgba(190,150,255,.35)');
+    else if (e.tint === 'void') glow(g, x, hy, 0.5, `rgba(150,60,230,${0.35 + 0.12 * s})`);
     else if (e.tint === 'blood') { g.beginPath(); g.ellipse(x, e.y + 0.08, 0.3, 0.1, 0, 0, TAU); g.lineWidth = 0.03; g.strokeStyle = `rgba(220,30,50,${0.5 + 0.3 * s})`; g.stroke(); }
     return;
   }
   if (e.tint === 'fire') for (const dx of [-0.07, 0.06]) { const h = 0.1 + Math.abs(Math.sin(time * 14 + dx * 40)) * 0.07; poly(g, [x + dx - 0.035, hy - 0.16, x + dx, hy - 0.16 - h, x + dx + 0.035, hy - 0.16], '#ffb347'); }
   else if (e.tint === 'ice') for (let i = 0; i < 3; i++) { const a = time * 1.5 + i * 2.1, cx = x + Math.cos(a) * 0.24, cy = hy + Math.sin(a) * 0.1; poly(g, [cx, cy - 0.06, cx + 0.03, cy, cx, cy + 0.06, cx - 0.03, cy], '#dff3ff'); }
   else if (e.tint === 'shadow') for (let i = 0; i < 2; i++) { const a = time * 2 + i * Math.PI; circ(g, x + Math.cos(a) * 0.22, hy - 0.1 + Math.sin(a * 1.3) * 0.08, 0.035, 'rgba(170,120,230,.75)'); }
-  if (D.crown) {
+  if (e.skin > 0) for (let i = 0; i < 7; i++) {
+    const a = i * TAU / 7 + time, cx = x + Math.cos(a) * 0.3, cy = hy + Math.sin(a) * 0.18;
+    poly(g, [cx, cy - 0.11, cx + 0.05, cy, cx, cy + 0.06, cx - 0.05, cy], 'rgba(220,200,255,.85)');
+  }
+  if (D.crown && CROWN[D.base]) {
     const [cx0, ch] = CROWN[D.base], cx = x + f * cx0, cy = e.y - ch - (e.flying ? Math.sin(e.phase * 0.6) * 0.05 : 0);
     poly(g, [cx - 0.12, cy, cx - 0.13, cy - 0.12, cx - 0.06, cy - 0.06, cx, cy - 0.15, cx + 0.06, cy - 0.06, cx + 0.13, cy - 0.12, cx + 0.12, cy], '#e9c46a');
     circ(g, cx, cy - 0.04, 0.025, '#d9435a');
@@ -1217,8 +1686,44 @@ function stone(g, x, y, r, col, seed) {
   poly(g, p, col);
   ell(g, x - r * 0.25, y - r * 0.22, r * 0.45, r * 0.24, 'rgba(255,255,255,.17)');
 }
+let TREE_HUE = [122, 30, 46, 0];
 function drawTree(g, x, y, s, kind, hue) {
   const seed = x * 13.7 + y * 7.3;
+  if (kind === 'crystal') {
+    const cols = hue > 0.5 ? ['#a6e2ff', '#4a9ee0', '#e6f8ff'] : ['#dcb0ff', '#9a5ae0', '#f6eaff'];
+    shadow(g, x + s * 0.1, y + 0.04, s * 0.8, s * 0.28, 0.3);
+    glow(g, x, y - s * 0.6, s * 1.1, hue > 0.5 ? 'rgba(120,200,255,.28)' : 'rgba(200,140,255,.28)');
+    for (const [dx, h, w] of [[-0.3, 0.9, 0.16], [0.28, 1.0, 0.15], [0, 1.5, 0.2], [0.12, 0.7, 0.12]]) {
+      const cx = x + dx * s, top = y - h * s, ww = w * s;
+      poly(g, [cx - ww, y, cx - ww * 0.8, top + ww, cx, top, cx + ww * 0.8, top + ww, cx + ww, y], cols[1]);
+      poly(g, [cx - ww, y, cx - ww * 0.8, top + ww, cx, top, cx, y], cols[0]);
+      line(g, cx - ww * 0.4, y - s * 0.1, cx - ww * 0.3, top + ww * 1.4, s * 0.025, cols[2]);
+    }
+    return;
+  }
+  if (kind === 'palm') {
+    const lean = (hue - 0.5) * 0.7;
+    shadow(g, x + s * 0.4, y + 0.04, s * 0.9, s * 0.28, 0.25);
+    for (let i = 0; i < 8; i++) { const t = i / 8, tx = x + lean * s * t * t, ty = y - s * 1.35 * t; ell(g, tx, ty, s * 0.09, s * 0.06, i % 2 ? '#8a6a44' : '#a8825a'); }
+    const hx = x + lean * s, hy = y - s * 1.35;
+    g.lineCap = 'round';
+    for (let i = 0; i < 7; i++) {
+      const a = -Math.PI / 2 + (i - 3) * 0.6, ex = hx + Math.cos(a) * s * 0.78, ey = hy + Math.sin(a) * s * 0.3 + s * 0.32;
+      for (const [w, col] of [[s * 0.13, '#2a7a40'], [s * 0.05, '#4fb064']]) { g.beginPath(); g.moveTo(hx, hy); g.quadraticCurveTo((hx + ex) / 2 + Math.cos(a) * s * 0.1, (hy + ey) / 2 - s * 0.28, ex, ey); g.lineWidth = w; g.strokeStyle = col; g.stroke(); }
+    }
+    g.lineCap = 'butt';
+    for (const [dx, dy] of [[-0.05, 0.04], [0.05, 0.05], [0, 0.09]]) circ(g, hx + dx * s, hy + dy * s, s * 0.06, '#6a4422');
+    return;
+  }
+  if (kind === 'void') {
+    shadow(g, x + s * 0.1, y + 0.04, s * 0.7, s * 0.25, 0.4);
+    poly(g, [x - s * 0.18, y, x - s * 0.05, y - s * 0.8, x - s * 0.25, y - s * 1.3, x + s * 0.06, y - s * 0.9, x + s * 0.18, y], '#140a1c');
+    poly(g, [x + s * 0.02, y - s * 0.6, x + s * 0.32, y - s * 0.95, x + s * 0.1, y - s * 0.55], '#1c0f26');
+    line(g, x - s * 0.06, y - s * 0.1, x - s * 0.1, y - s * 0.9, s * 0.03, 'rgba(190,90,255,.85)');
+    line(g, x + s * 0.06, y - s * 0.6, x + s * 0.25, y - s * 0.88, s * 0.02, 'rgba(190,90,255,.7)');
+    glow(g, x - s * 0.22, y - s * 1.28, s * 0.32, 'rgba(190,90,255,.55)'); circ(g, x - s * 0.22, y - s * 1.28, s * 0.06, '#f0d0ff');
+    return;
+  }
   shadow(g, x + s * 0.12, y + 0.05, s * 1.05, s * 0.36, kind === 'pine' ? 0.2 : 0.32);
   if (kind === 'dead') {
     g.lineCap = 'round'; g.strokeStyle = '#3a221d'; g.lineWidth = s * 0.16;
@@ -1264,11 +1769,11 @@ function drawTree(g, x, y, s, kind, hue) {
   g.lineCap = 'round';
   for (const k of [-1, 1]) line(g, x + k * s * 0.12, y + 0.01, x + k * s * 0.3, y + 0.05, s * 0.07, birch ? '#a8a494' : '#4a3222');
   g.lineCap = 'butt';
-  const h0 = 122 + hue * 30, B = [[-0.4, -0.82, 0.48], [0.42, -0.86, 0.48], [0, -0.78, 0.46], [-0.22, -1.12, 0.5], [0.24, -1.16, 0.46], [0, -1.36, 0.42]];
-  for (const [bx, by, br] of B) circ(g, x + bx * s + s * 0.05, y + by * s + s * 0.07, br * s, `hsl(${h0},42%,11%)`);
-  for (const [bx, by, br] of B) circ(g, x + bx * s, y + by * s, br * s * 0.9, `hsl(${h0},46%,${by < -1 ? 23 : 19}%)`);
-  for (const [bx, by, br] of B) circ(g, x + bx * s - br * s * 0.28, y + by * s - br * s * 0.3, br * s * 0.42, `hsla(${h0 - 6},54%,32%,.9)`);
-  for (let i = 0; i < 12; i++) circ(g, x + (hash(seed + i) - 0.5) * s * 1.1, y - s * (0.75 + hash(seed + i * 7) * 0.7), s * 0.045, `hsla(${h0 - 12},62%,${40 + hash(seed + i * 3) * 12}%,.75)`);
+  const [hb, hr, sat, lit] = TREE_HUE, h0 = hb + hue * hr, B = [[-0.4, -0.82, 0.48], [0.42, -0.86, 0.48], [0, -0.78, 0.46], [-0.22, -1.12, 0.5], [0.24, -1.16, 0.46], [0, -1.36, 0.42]];
+  for (const [bx, by, br] of B) circ(g, x + bx * s + s * 0.05, y + by * s + s * 0.07, br * s, `hsl(${h0},${sat - 4}%,${11 + lit}%)`);
+  for (const [bx, by, br] of B) circ(g, x + bx * s, y + by * s, br * s * 0.9, `hsl(${h0},${sat}%,${(by < -1 ? 23 : 19) + lit}%)`);
+  for (const [bx, by, br] of B) circ(g, x + bx * s - br * s * 0.28, y + by * s - br * s * 0.3, br * s * 0.42, `hsla(${h0 - 6},${sat + 8}%,${32 + lit}%,.9)`);
+  for (let i = 0; i < 12; i++) circ(g, x + (hash(seed + i) - 0.5) * s * 1.1, y - s * (0.75 + hash(seed + i * 7) * 0.7), s * 0.045, `hsla(${h0 - 12},${sat + 16}%,${40 + lit + hash(seed + i * 3) * 12}%,.75)`);
   const kindRoll = hash(seed * 3.1);
   if (kindRoll > 0.62) {
     const [col, halo] = FRUIT[Math.floor(hash(seed * 5) * 3)];
@@ -1331,6 +1836,24 @@ function drawDeco(g, it) {
     const lg = g.createRadialGradient(x, y, 0.02, x, y, 0.26); lg.addColorStop(0, '#ffe08a'); lg.addColorStop(0.5, '#ff8a2a'); lg.addColorStop(1, '#c0300a');
     ell(g, x, y, 0.25, 0.11, lg);
     ell(g, x + 0.07, y + 0.02, 0.06, 0.025, '#3a1a10');
+  } else if (it.k === 'leafpile') {
+    for (let i = 0; i < 9; i++) { const a = i * 2.4, r = 0.04 + (i % 3) * 0.05; g.save(); g.translate(x + Math.cos(a) * r * 1.6, y + Math.sin(a) * r * 0.7); g.rotate(a); ell(g, 0, 0, 0.05, 0.024, ['#e0902e', '#c4502a', '#f2c64a', '#a8401e'][i % 4]); g.restore(); }
+  } else if (it.k === 'gem') {
+    glow(g, x, y - 0.06, 0.24, 'rgba(255,120,220,.3)');
+    poly(g, [x - 0.06, y, x - 0.03, y - 0.2, x + 0.02, y], '#ff9ae0'); poly(g, [x, y, x + 0.04, y - 0.15, x + 0.08, y], '#d05ab8');
+    line(g, x - 0.035, y - 0.03, x - 0.028, y - 0.15, 0.01, 'rgba(255,255,255,.8)');
+  } else if (it.k === 'shell') {
+    shadow(g, x + 0.02, y + 0.03, 0.09, 0.03, 0.2);
+    g.beginPath(); g.moveTo(x - 0.08, y + 0.02); g.quadraticCurveTo(x, y - 0.12, x + 0.08, y + 0.02); g.closePath(); g.fillStyle = it.dead ? '#8a6a5a' : '#f6dcc8'; g.fill();
+    for (let i = -2; i <= 2; i++) line(g, x, y + 0.02, x + i * 0.03, y - 0.06 + Math.abs(i) * 0.02, 0.008, '#d8a890');
+  } else if (it.k === 'starfish') {
+    const p = []; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 0.035 : 0.09; p.push(x + Math.cos(a) * r, y + Math.sin(a) * r * 0.7); }
+    poly(g, p, '#ff8a5a'); circ(g, x, y, 0.015, '#ffd2a0');
+  } else if (it.k === 'voidpool') {
+    glow(g, x, y, 0.45, 'rgba(170,70,255,.3)');
+    ell(g, x, y + 0.02, 0.31, 0.15, '#0a0410');
+    const vg = g.createRadialGradient(x, y, 0.02, x, y, 0.26); vg.addColorStop(0, '#f0c8ff'); vg.addColorStop(0.5, '#a050ff'); vg.addColorStop(1, '#4a1080');
+    ell(g, x, y, 0.25, 0.11, vg);
   } else if (it.k === 'shards') {
     poly(g, [x - 0.08, y, x - 0.04, y - 0.28, x + 0.02, y], '#141012'); poly(g, [x, y, x + 0.06, y - 0.2, x + 0.11, y], '#221a1e');
     line(g, x - 0.04, y - 0.26, x - 0.03, y - 0.12, 0.012, 'rgba(255,110,50,.7)');
@@ -1358,10 +1881,10 @@ function portalSpot(p) {
 const bg = document.createElement('canvas'), bgx = bg.getContext('2d');
 let bgFor = -1;
 let CITY = { flags: [], torches: [], windows: [], gates: [], walk: null };
-function crack(g, rng, x, y, a, n, step) {
-  const pts = [[x, y]];
+function crack(g, rng, x, y, a, n, step, rgb) {
+  const pts = [[x, y]], [r, gr, b] = rgb || [255, 120, 50];
   for (let j = 0; j < n; j++) { a += (rng() - 0.5) * 0.9; x += Math.cos(a) * step; y += Math.sin(a) * step; pts.push([x, y]); }
-  for (const [w, col] of [[0.1, 'rgba(255,90,30,.16)'], [0.026, 'rgba(255,140,60,.7)']]) {
+  for (const [w, col] of [[0.1, `rgba(${r},${gr},${b},.16)`], [0.026, `rgba(${r},${gr},${b},.75)`]]) {
     g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (const q of pts) g.lineTo(q[0], q[1]); g.lineWidth = w; g.strokeStyle = col; g.stroke();
   }
 }
@@ -1442,6 +1965,7 @@ function drawKingdom(g, L, P, rng, ex0, ex1, ey1) {
 function renderBg(li) {
   bg.width = cv.width; bg.height = cv.height; bgFor = li;
   const g = bgx, L = LEVELS[li], P = PREP[li], TH = THEMES[L.theme], rng = mulberry32(li * 7919 + 17);
+  TREE_HUE = TH.treeHue || [122, 30, 46, 0];
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.fillStyle = '#08100d'; g.fillRect(0, 0, bg.width, bg.height);
   g.setTransform(dpr * ts, 0, 0, dpr * ts, dpr * offX, dpr * offY);
@@ -1459,6 +1983,15 @@ function renderBg(li) {
     tuft(g, x, y, h, `hsla(${hue},${sat}%,${lit}%,${ba})`, `hsla(${hue - 6},${sat + 8}%,${Math.min(96, lit + 12)}%,${ba})`);
   }
   if (TH.mist) for (let i = 0; i < 14; i++) glow(g, rng() * COLS, rng() * ROWS, 1 + rng() * 1.4, 'rgba(200,235,225,.08)');
+  if (TH.ripples) {
+    g.lineWidth = 0.02; g.lineCap = 'round';
+    for (let i = 0; i < area * 2.2; i++) {
+      const x = ex0 + rng() * (ex1 - ex0), y = ey0 + rng() * (ey1 - ey0), w = 0.25 + rng() * 0.3;
+      g.strokeStyle = rng() < 0.5 ? 'rgba(255,248,225,.45)' : 'rgba(150,120,70,.28)';
+      g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + w / 2, y - 0.06, x + w, y); g.stroke();
+    }
+    g.lineCap = 'butt';
+  }
   // road: soft shoulder, packed earth, worn middle, then fitted stones and ruts
   g.lineJoin = 'round'; g.lineCap = 'round';
   const stroke = (w, col) => { for (const p of P.paths) { g.beginPath(); g.moveTo(p.pts[0].x, p.pts[0].y); for (const q of p.pts) g.lineTo(q.x, q.y); g.lineWidth = w; g.strokeStyle = col; g.stroke(); } };
@@ -1501,7 +2034,7 @@ function renderBg(li) {
     }
     g.restore();
   }
-  if (TH.cracks) for (let k = 0; k < 16; k++) crack(g, rng, rng() * COLS, rng() * 13, rng() * TAU, 5, 0.2);
+  if (TH.cracks) for (let k = 0; k < 16; k++) crack(g, rng, rng() * COLS, rng() * 13, rng() * TAU, 5, 0.2, TH.crack);
   // scenery
   const items = [];
   const nearRoad = (c, r) => { for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) { const rr = r + dr, cc = c + dc; if (rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS && P.grid[rr][cc] === 1) return true; } return false; };
@@ -1790,9 +2323,15 @@ function computeAuras() {
     const st = stats(b);
     for (const t of S.towers) if (t && t.type !== 'bard' && dist(t.x, t.y, b.x, b.y) <= st.range + 0.01) { t.buff = Math.max(t.buff, 1 + st.boost); t.haste = Math.max(t.haste, 1 + (st.haste || 0)); }
   }
-  let shields = null;
-  for (const e of S.enemies) { e.shielded = false; if (e.alive && e.D.aura) (shields || (shields = [])).push(e); }
+  let shields = null, drums = null;
+  for (const e of S.enemies) {
+    e.shielded = false; e.drummed = false;
+    if (!e.alive) continue;
+    if (e.D.aura) (shields || (shields = [])).push(e);
+    if (e.D.drum) (drums || (drums = [])).push(e);
+  }
   if (shields) for (const s of shields) for (const e of S.enemies) if (e !== s && e.alive && dist(e.x, e.y, s.x, s.y) < 1.3) e.shielded = true;
+  if (drums) for (const s of drums) for (const e of S.enemies) if (e !== s && e.alive && dist(e.x, e.y, s.x, s.y) < 1.6) e.drummed = true;
 }
 
 /* ---------- griffins ---------- */
@@ -1841,7 +2380,7 @@ function moveToward(o, tx, ty, step) {
 function pickForHunter(rx, ry) {
   let best = null, br = Infinity, assist = null, asr = Infinity;
   for (const e of S.enemies) {
-    if (!e.alive || e.flying || e.phased > 0 || dist(e.x, e.y, rx, ry) > 1.25) continue;
+    if (!e.alive || e.flying || e.D.ghost || e.phased > 0 || dist(e.x, e.y, rx, ry) > 1.25) continue;
     const rem = S.paths[e.pi].len - e.d;
     if (!e.blocker) { if (rem < br) { best = e; br = rem; } } else if (rem < asr) { assist = e; asr = rem; }
   }
@@ -1893,7 +2432,7 @@ function updateEnt(u, t, st, rx, ry, dt) {
   } else u.moving = false;
   if (u.held.length < st.hold) for (const e of S.enemies) {
     if (u.held.length >= st.hold) break;
-    if (!e.alive || e.flying || e.blocker || e.phased > 0 || dist(e.x, e.y, u.x, u.y) > u.reach) continue;
+    if (!e.alive || e.flying || e.D.ghost || e.blocker || e.phased > 0 || dist(e.x, e.y, u.x, u.y) > u.reach) continue;
     e.blocker = u; u.held.push(e);
   }
   if (!u.held.length) return;
@@ -1935,6 +2474,7 @@ function spawnEnemy(type, pi, d, v) {
     v: v || null, tint: v || D.tint || null, armor: Math.min(0.8, (D.armor || 0) + (V.armor || 0)), mres: D.mres || 0,
     magicMul: V.magicMul || 1, dmgMul: V.dmgMul || 1, regen: V.regen || 0, bounty: v ? Math.ceil(D.bounty * 1.3) : D.bounty,
     phaseCd: V.phase ? rand(1.5, 3.5) : 0, phased: 0, hasteT: 0, roarT: 4, mendT: 4,
+    drummed: false, drumT: Math.random(), raiseCd: 0, fuse: 0, skin: 0, skinCd: 5,
     blocker: null, engaged: false, cdT: (D.cd || 1) * 0.5, atk: 0, flash: 0, phase: Math.random() * TAU,
     flying: !!D.flying, healT: 2 + Math.random(), summonT: 6, curseT: 4, shielded: false,
   };
@@ -1956,11 +2496,12 @@ function updateEnemy(e, dt) {
   e.engaged = !!(e.blocker && dist(e.x, e.y, e.blocker.x, e.blocker.y) < e.blocker.reach);
   if (e.engaged) {
     e.cdT -= dt; e.phase += dt * 2;
+    if (D.bomb && (e.fuse += dt) > 0.6) { e.alive = false; S.kills++; explode(e); return; }
     if (e.cdT <= 0) { e.cdT = D.cd; e.atk = 0.22; hitUnit(e.blocker, D.dmg * e.dmgMul, e); if (!e.alive) return; }
   } else {
     e.cdT = (D.cd || 1) * 0.5;
     if (e.stunT <= 0) {
-      const sp = e.speed * e.slowF * (e.hasteT > 0 ? 1.4 : 1);
+      const sp = e.speed * e.slowF * (e.hasteT > 0 ? 1.4 : 1) * (e.drummed ? 1.25 : 1);
       e.d += sp * dt;
       e.phase += dt * 7 * sp;
       if (e.d >= S.paths[e.pi].len) { leak(e); return; }
@@ -1986,6 +2527,12 @@ function updateEnemy(e, dt) {
     S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.3, r1: 1.8, t: 0, life: 0.7, color: '120,220,110', ground: true });
   }
   if (D.curse && (e.curseT -= dt) <= 0) { e.curseT = D.curse === 'freeze' ? 7 : 8; curseTower(e); }
+  if (e.raiseCd > 0) e.raiseCd -= dt;
+  if (D.drum && (e.drumT -= dt) <= 0) { e.drumT = 1.2; if (S.fx.length < 400) S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.2, r1: 1.6, t: 0, life: 0.5, color: '255,150,70', ground: true }); }
+  if (D.stoneskin) {
+    if (e.skin > 0) e.skin -= dt;
+    else if ((e.skinCd -= dt) <= 0) { e.skin = 3; e.skinCd = 9; addText('Каменная кожа', e.x, e.y - D.bar * DEMON_SC - 0.15, '#d8c8ff', 15); }
+  }
   placeEnemy(e, dt);
 }
 function curseTower(e) {
@@ -2007,7 +2554,7 @@ function healAround(w) {
 function damage(e, amt, type) {
   if (!e.alive || e.phased > 0) return;
   const res = type === 'magic' ? e.mres : type === 'pierce' ? e.armor * 0.5 : e.armor;
-  e.hp -= amt * (1 - res) * (e.shielded ? 0.8 : 1) * (type === 'magic' ? e.magicMul : 1);
+  e.hp -= amt * (1 - res) * (e.shielded ? 0.8 : 1) * (type === 'magic' ? e.magicMul : 1) * (e.skin > 0 ? 0.3 : 1);
   e.flash = 0.08;
   if (e.hp <= 0) kill(e);
 }
@@ -2017,17 +2564,35 @@ function kill(e) {
   addText('+' + e.bounty, e.x, e.y - e.D.bar * DEMON_SC, '#f3d685', e.D.boss ? 22 : 14);
   burst(e.x, e.y - e.D.hit, e.D.boss ? 60 : 12, e.D.curse ? '#c46bff' : '#ff7a3a', e.D.boss ? 2.4 : 1.4, 0.8, 0.06, 0.9);
   burst(e.x, e.y - e.D.hit, e.D.boss ? 20 : 5, 'rgba(40,20,20,.8)', 0.6, 0.7, 0.09, 0.4);
+  if (e.D.bomb) explode(e);
+  if (!e.D.boss && e.type !== 'skeleton' && S.enemies.length < 60) {
+    const n = S.enemies.find(o => o.alive && o.D.raise && o.raiseCd <= 0 && dist(o.x, o.y, e.x, e.y) < 2);
+    if (n) {
+      n.raiseCd = 2.5;
+      const sk = spawnEnemy('skeleton', e.pi, e.d); sk.off = e.off;
+      S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.1, r1: 0.6, t: 0, life: 0.5, color: '130,255,120', ground: true });
+    }
+  }
   if (e.D.split) for (let k = 0; k < e.D.split; k++) { const s = spawnEnemy('spark', e.pi, Math.max(0, e.d - k * 0.18), e.v); s.off = rand(-0.25, 0.25); }
   if (e.D.boss) { S.shake = reduceMotion ? 0 : 0.6; banner(e.D.title, '+' + e.D.bounty + ' монет'); }
   Snd.play('coin');
 }
+// a demon at the gate strikes the walls with the health it has left (siege beasts twice as hard); a boss takes the city
 function leak(e) {
   e.alive = false;
-  S.lives = Math.max(0, S.lives - e.D.lives);
-  S.shake = reduceMotion ? 0 : 0.3; S.hurt = 0.7;
-  addText('−' + e.D.lives, e.x, e.y - 0.5, '#ff7b7b', 19);
+  const boss = e.D.boss, hit = boss ? S.lives : Math.max(1, Math.ceil(e.hp * (e.D.siege || 1)));
+  S.lives = Math.max(0, S.lives - hit);
+  S.shake = reduceMotion ? 0 : boss ? 0.7 : 0.3; S.hurt = boss ? 1.2 : 0.7;
+  addText('−' + hit, e.x, e.y - 0.5, '#ff7b7b', boss ? 24 : 19);
   Snd.play('leak');
+  if (boss) { S.bossIn = `${e.D.name} ${e.D.fem ? 'прорвалась' : 'прорвался'} за ворота.`; banner(`${e.D.name} в городе`, 'Город пал'); }
   if (S.lives <= 0 && !S.over) finish(false);
+}
+function explode(e) {
+  S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.1, r1: 0.95, t: 0, life: 0.4, color: '255,150,50', ground: true });
+  burst(e.x, e.y - 0.15, 18, '#ffb347', 2, 0.5, 0.06);
+  for (const t of S.towers) if (t && t.units) for (const u of t.units) if (u.alive && dist(u.x, u.y, e.x, e.y) < 0.95) hitUnit(u, 70, null);
+  Snd.play('boom');
 }
 
 /* ---------- projectiles & effects ---------- */
@@ -2295,6 +2860,24 @@ function drawAir(g, kind, time) {
       g.save(); g.translate(x, y); g.scale(2.6, 0.6); glow(g, 0, 0, 1, 'rgba(210,240,230,.12)'); g.restore();
     }
     fireflies(g, time);
+  } else if (kind === 'sparkle') {
+    for (let i = 0; i < 26; i++) {
+      const t = time * 0.3 + i * 0.77, x = (i * 2.13 + Math.sin(t) * 0.5) % COLS, y = ROWS - ((i * 1.91 + time * (0.2 + (i % 4) * 0.05)) % (ROWS + 1));
+      const a = 0.4 + 0.4 * Math.sin(time * 4 + i * 2);
+      glow(g, x, y, 0.09, i % 2 ? `rgba(160,220,255,${a})` : `rgba(220,160,255,${a})`); circ(g, x, y, 0.016, '#ffffff');
+    }
+  } else if (kind === 'gulls') {
+    for (let i = 0; i < 4; i++) {
+      const x = ((time * (0.5 + i * 0.12) + i * 3.3) % (COLS + 3)) - 1.5, y = 2 + i * 3.1 + Math.sin(time * 0.8 + i) * 0.5, w = Math.sin(time * 6 + i) * 0.05;
+      g.beginPath(); g.moveTo(x - 0.16, y - w); g.quadraticCurveTo(x - 0.08, y - 0.07, x, y); g.quadraticCurveTo(x + 0.08, y - 0.07, x + 0.16, y - w);
+      g.lineWidth = 0.025; g.strokeStyle = 'rgba(255,255,255,.9)'; g.stroke();
+    }
+  } else if (kind === 'voidash') {
+    for (let i = 0; i < 38; i++) {
+      const sp = 0.25 + (i % 5) * 0.06, y = ROWS + 0.5 - ((i * 2.11 + time * sp) % (ROWS + 1)), x = ((i * 2.71) % COLS) + Math.sin(time * 0.6 + i) * 0.4;
+      if (i % 3) circ(g, x, y, 0.022 + (i % 3) * 0.008, 'rgba(150,110,190,.5)');
+      else { glow(g, x, y, 0.09, 'rgba(200,100,255,.55)'); circ(g, x, y, 0.02, '#f0c8ff'); }
+    }
   } else if (kind === 'snow') {
     for (let i = 0; i < 52; i++) {
       const sp = 0.5 + (i % 7) * 0.08, y = ((i * 2.37 + time * sp) % (ROWS + 1)) - 0.5, x = ((i * 1.93) % COLS) + Math.sin(time * 0.8 + i) * 0.3;
@@ -2583,6 +3166,10 @@ const CITY_UI = {
   swamp: '--t1:#1f6a62;--t2:#0b2624;--tb:#55baa9;--tg:rgba(140,255,230,.28)',
   snow: '--t1:#3f76a8;--t2:#13273d;--tb:#9ad8ff;--tg:rgba(210,240,255,.4)',
   rift: '--t1:#8a2234;--t2:#2a0b10;--tb:#ff8a66;--tg:rgba(255,130,60,.4)',
+  autumn: '--t1:#9a5a1c;--t2:#3a1f0a;--tb:#ffb35c;--tg:rgba(255,180,80,.38)',
+  crystal: '--t1:#5a3fae;--t2:#1c1440;--tb:#b49aff;--tg:rgba(190,160,255,.4)',
+  coast: '--t1:#2a8ab0;--t2:#0f3a50;--tb:#8fe0ff;--tg:rgba(255,240,190,.4)',
+  void: '--t1:#4a1a6a;--t2:#12061c;--tb:#d07aff;--tg:rgba(200,90,255,.42)',
 };
 function renderLevels() {
   el.levels.innerHTML = LEVELS.map((L, i) => {
@@ -2627,18 +3214,18 @@ function finish(win) {
     progress.unlocked = Math.max(progress.unlocked, Math.min(LEVELS.length, li + 2));
     store.set('silvenor.progress', progress);
   }
-  const snap = { win, li, stars, kills: S.kills, lives: S.lives, max: S.maxLives, wave: S.wave, total: S.L.waves.length, name: S.L.name };
+  const snap = { win, li, stars, kills: S.kills, lives: S.lives, max: S.maxLives, wave: S.wave, total: S.L.waves.length, name: S.L.name, bossIn: S.bossIn };
   setTimeout(() => showEnd(snap), 1100);
 }
 function showEnd(r) {
   if (!S || S.li !== r.li) return;
   $('endEyebrow').textContent = r.win ? 'Демоны отброшены' : 'Ворота пробиты';
-  $('endTitle').textContent = r.win ? `${r.name} выстоял` : `${r.name} пал`;
+  $('endTitle').textContent = r.win ? `${r.name}: город выстоял` : `${r.name}: город пал`;
   $('endStars').innerHTML = `<span>${'★'.repeat(r.stars)}</span><span class="off">${'★'.repeat(3 - r.stars)}</span>`;
   $('endStars').setAttribute('aria-label', `Звёзд: ${r.stars} из 3`);
   $('endText').textContent = r.win
-    ? `Повержено демонов: ${r.kills}. Жизней у города осталось: ${r.lives} из ${r.max}.${r.li === LEVELS.length - 1 ? ' Разлом закрыт, эльфийские земли спасены.' : ''}`
-    : `Вы продержались ${r.wave} ${plural(r.wave, 'волну', 'волны', 'волн')} из ${r.total} и одолели ${r.kills} ${plural(r.kills, 'демона', 'демонов', 'демонов')}. Попробуйте другую расстановку.`;
+    ? `Повержено демонов: ${r.kills}. Прочность стен: ${r.lives} из ${r.max}.${r.li === LEVELS.length - 1 ? ' Бездна запечатана, эльфийские земли спасены.' : ''}`
+    : `${r.bossIn ? r.bossIn + ' ' : ''}Вы продержались ${r.wave} ${plural(r.wave, 'волну', 'волны', 'волн')} из ${r.total} и одолели ${r.kills} ${plural(r.kills, 'демона', 'демонов', 'демонов')}. Попробуйте другую расстановку.`;
   const hasNext = r.win && r.li < LEVELS.length - 1;
   $('nextBtn').hidden = !hasNext;
   el.end.hidden = false;
@@ -2736,7 +3323,7 @@ function start(data) {
   requestAnimationFrame(t => { lastT = t; frame(t); });
 }
 window.__silvenor = {
-  get S() { return S; }, startLevel, startWave, update,
+  get S() { return S; }, startLevel, startWave, update, drawTower,
   build(si, type) { UI.sel = { si }; UI.buildType = type; doBuild(); return !!S.towers[si]; },
   upgrade(si) { UI.sel = { si }; upgrade(); closeSheets(); },
   upCost(t) { const nx = TOWERS[t.type].levels[t.lvl + 1]; return nx ? nx.up : 0; },
