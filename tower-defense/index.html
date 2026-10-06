@@ -42,6 +42,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--leaf);outline
 .coin{display:inline-block;width:1em;height:1em;vertical-align:-0.14em;flex:none}
 
 #app{position:relative;height:100%;max-width:760px;margin:0 auto;display:flex;flex-direction:column;background:var(--night)}
+#app.in-menu #hud,#app.in-menu #bar{visibility:hidden}
 
 /* HUD */
 #hud{display:flex;align-items:center;gap:12px;padding:8px 16px;background:linear-gradient(var(--panel),var(--night));border-bottom:1px solid var(--line)}
@@ -65,16 +66,16 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--leaf);outline
 #bar{display:flex;align-items:center;gap:12px;padding:10px 16px;min-height:70px;background:linear-gradient(var(--night),var(--panel));border-top:1px solid var(--line)}
 #next{flex:1;min-width:0}
 .lbl-sm{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.foes{display:flex;flex-wrap:wrap;gap:2px 10px;margin-top:2px}
-.foe{display:flex;align-items:center;gap:1px;padding:0;border:0;background:none;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;color:var(--silver)}
-.foe img{width:30px;height:30px}
+.foes{display:flex;flex-wrap:wrap;gap:2px 7px;margin-top:2px}
+.foe{display:flex;align-items:center;gap:1px;padding:0;border:0;background:none;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;color:var(--silver)}
+.foe img{width:26px;height:26px}
 .primary{border:0;border-radius:14px;padding:12px 18px;background:linear-gradient(#f4d98c,#d6a945);color:var(--ink);font-family:var(--font-display);font-weight:700;font-size:20px;line-height:1;
   box-shadow:0 2px 0 #8a661c,0 6px 18px rgba(233,196,106,.22);display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
 .primary:disabled{background:var(--panel-2);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);cursor:default}
 .primary.wide{width:100%}
 .ghost{border:1px solid var(--line);background:var(--panel-2);border-radius:12px;padding:11px 12px;font-weight:700;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .ghost.warn{border-color:#7a3a3a;color:#ffb3a8;background:#2a1716}
-#waveBtn{min-width:132px}
+#waveBtn{min-width:112px;padding-inline:16px}
 
 /* Sheets over the map */
 .sheet{position:absolute;left:10px;right:10px;z-index:5;padding:12px 14px 14px;border-radius:18px;background:rgba(13,23,20,.96);border:1px solid var(--line);
@@ -89,14 +90,20 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--leaf);outline
 .sheet-title{font-family:var(--font-display);font-weight:700;font-size:23px;line-height:1.05}
 .sheet-sub{font-size:13.5px;color:var(--muted)}
 .x{width:38px;height:38px;flex:none;border-radius:11px;border:1px solid var(--line);background:transparent;font-size:17px;padding:0}
-.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.card{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 3px 7px;border-radius:14px;border:1px solid var(--line);background:var(--panel-2);min-width:0}
-.card canvas{width:46px;height:46px}
-.card .nm{font-size:12.5px;font-weight:700;line-height:1.08;text-align:center;min-height:2.2em;display:flex;align-items:center}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.card{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 3px 6px;border-radius:13px;border:1px solid var(--line);background:var(--panel-2);min-width:0}
+.card canvas{width:42px;height:42px}
+.card .nm{font-size:12.5px;font-weight:700;line-height:1.15;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.card .lock{display:none;align-items:center;gap:3px;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.card .lock svg{width:12px;height:12px}
+.card.locked canvas{filter:grayscale(1) brightness(.75);opacity:.55}
+.card.locked .nm{color:var(--muted)}
+.card.locked .cost{display:none}
+.card.locked .lock{display:flex}
 .card .cost{display:flex;align-items:center;gap:3px;font-weight:800;font-size:14px;color:var(--gold);font-variant-numeric:tabular-nums}
 .card[aria-pressed="true"]{border-color:var(--gold);background:#29281b;box-shadow:inset 0 0 0 1px var(--gold)}
 .card.poor .cost{color:var(--blood)}
-.desc{font-size:14.5px;line-height:1.35;margin:10px 2px 12px;min-height:2.7em;max-width:60ch}
+.desc{font-size:14.5px;line-height:1.35;margin:9px 2px 10px;min-height:2.7em;max-width:60ch}
 .stats{display:grid;grid-template-columns:auto auto 1fr;gap:5px 12px;font-size:15px;margin:0 2px 12px;font-variant-numeric:tabular-nums}
 .stats .k{color:var(--muted)}
 .stats b{font-weight:800}
@@ -123,9 +130,9 @@ h1,h2{font-family:var(--font-display);font-weight:700;margin:0;text-wrap:balance
 h1{font-size:clamp(44px,13vw,64px);line-height:.9;text-shadow:0 0 34px rgba(134,215,160,.22)}
 h2{font-size:clamp(36px,10vw,48px);line-height:.95}
 .lead{margin:0;color:var(--muted);font-size:16px;max-width:38ch}
-.levels{display:flex;flex-direction:column;gap:10px}
-.lvl{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;text-align:left;padding:13px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(27,43,39,.92)}
-.lvl .nm{font-family:var(--font-display);font-size:24px;font-weight:700;line-height:1.05}
+.levels{display:flex;flex-direction:column;gap:8px}
+.lvl{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;text-align:left;padding:11px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(27,43,39,.92)}
+.lvl .nm{font-family:var(--font-display);font-size:22px;font-weight:700;line-height:1.05}
 .lvl .sub{font-size:13.5px;color:var(--muted);grid-column:1}
 .lvl .stars{grid-row:1/3;grid-column:2;font-size:20px;color:var(--gold);letter-spacing:2px}
 .lvl .stars .off{color:#46564f}
@@ -203,7 +210,7 @@ details.howto ul{margin:0 0 14px;padding-left:18px;display:flex;flex-direction:c
     <div class="screen-inner">
       <p class="eyebrow">Пепельный разлом открылся</p>
       <h1>Оборона Сильвенора</h1>
-      <p class="lead">Демоны идут захватывать города эльфов. Ставьте лучников, магов, друидов и охотников на каменные площадки у дороги и отбивайте волну за волной.</p>
+      <p class="lead">Демоны идут захватывать города эльфов. Ставьте защитников на каменные площадки у дороги и отбивайте волну за волной, от пограничной заставы до крепости у самого разлома.</p>
       <div class="levels" id="levels"></div>
       <details class="howto">
         <summary>Как играть</summary>
@@ -211,7 +218,8 @@ details.howto ul{margin:0 0 14px;padding-left:18px;display:flex;flex-direction:c
           <li>Нажмите на каменную площадку и выберите защитника. Второе нажатие на ту же карточку сразу строит.</li>
           <li>Охотники выходят на дорогу и держат демонов, пока их не убьют. Через несколько секунд из дома выходят новые. Точку сбора можно перенести.</li>
           <li>За каждую отбитую волну город платит монеты. Тратьте их на новых защитников или улучшения до 3 уровня.</li>
-          <li>Демон, дошедший до ворот, отнимает жизни города. Громила забирает 2, архидемон — все.</li>
+          <li>В новых городах появляются новые защитники: следопыт, грифоны, древень и лунная арфистка. Арфистка сама не бьёт, но усиливает соседей.</li>
+          <li>Демон, дошедший до ворот, отнимает жизни города. Крупные забирают 2, повелители демонов — все.</li>
         </ul>
       </details>
     </div>
@@ -273,9 +281,10 @@ const store = {
 };
 
 /* ================= game data ================= */
+// `from` is the first city (0-based) where the defender can be built.
 const TOWERS = {
   archer: {
-    name: 'Лучники', cost: 70,
+    name: 'Лучники', short: 'Лучники', cost: 70, from: 0,
     desc: 'Быстро стреляют по одной цели. Достают и летающих демонов.',
     levels: [
       { dmg: [8, 12], range: 2.7, cd: 0.75 },
@@ -284,7 +293,7 @@ const TOWERS = {
     ],
   },
   hunters: {
-    name: 'Дом охотников', cost: 80,
+    name: 'Дом охотников', short: 'Охотники', cost: 80, from: 0, barracks: true,
     desc: 'Охотники выходят на дорогу и держат демонов. Демоны быстро их убивают, но из дома выходят новые.',
     levels: [
       { count: 2, hp: 70, dmg: [6, 9], cd: 1.0, respawn: 9, range: 2.3 },
@@ -293,7 +302,7 @@ const TOWERS = {
     ],
   },
   mage: {
-    name: 'Лунный маг', cost: 110,
+    name: 'Лунный маг', short: 'Маг', cost: 110, from: 0,
     desc: 'Бьёт лунным взрывом по площади. Магия проходит сквозь броню громил.',
     levels: [
       { dmg: [24, 34], splash: 0.85, range: 2.5, cd: 1.6 },
@@ -302,7 +311,7 @@ const TOWERS = {
     ],
   },
   druid: {
-    name: 'Друид', cost: 90,
+    name: 'Друид', short: 'Друид', cost: 90, from: 0,
     desc: 'Корни опутывают демонов на земле: ранят и замедляют. На 3 уровне сковывают на месте.',
     levels: [
       { dmg: [6, 10], slow: 0.45, slowT: 2, area: 0.7, range: 2.4, cd: 1.8 },
@@ -310,23 +319,65 @@ const TOWERS = {
       { up: 150, dmg: [18, 24], slow: 0.6, slowT: 2.6, area: 0.9, range: 2.8, cd: 1.6, stun: 0.8 },
     ],
   },
+  ranger: {
+    name: 'Следопыт', short: 'Следопыт', cost: 100, from: 1,
+    desc: 'Бьёт очень далеко и сильно, но редко. Целится в самого живучего демона и пробивает половину брони.',
+    levels: [
+      { dmg: [45, 60], range: 3.8, cd: 2.2 },
+      { up: 110, dmg: [75, 95], range: 4.2, cd: 2.0 },
+      { up: 170, dmg: [115, 140], range: 4.6, cd: 1.8, crit: 0.25 },
+    ],
+  },
+  griffin: {
+    name: 'Гнездо грифонов', short: 'Грифоны', cost: 120, from: 2,
+    desc: 'Грифоны пикируют на демонов и возвращаются в гнездо. По летающим бьют вдвое сильнее.',
+    levels: [
+      { count: 1, dmg: [24, 32], range: 3.2, cd: 1.7 },
+      { up: 120, count: 1, dmg: [38, 48], range: 3.5, cd: 1.5 },
+      { up: 170, count: 2, dmg: [42, 54], range: 3.8, cd: 1.5 },
+    ],
+  },
+  ent: {
+    name: 'Роща древня', short: 'Древень', cost: 130, from: 3, barracks: true,
+    desc: 'Древень выходит на дорогу и держит сразу нескольких демонов, ударом бьёт всех, кого держит. Стоит долго, но и возвращается долго.',
+    levels: [
+      { count: 1, hold: 2, hp: 420, dmg: [12, 18], cd: 1.4, respawn: 16, range: 2.3 },
+      { up: 130, count: 1, hold: 3, hp: 650, dmg: [18, 26], cd: 1.3, respawn: 14, range: 2.5 },
+      { up: 190, count: 1, hold: 4, hp: 950, dmg: [26, 36], cd: 1.2, respawn: 12, range: 2.7, thorns: 10 },
+    ],
+  },
+  bard: {
+    name: 'Лунная арфистка', short: 'Арфистка', cost: 90, from: 4,
+    desc: 'Сама не бьёт. Её песня усиливает урон защитников вокруг и лечит охотников и древня.',
+    levels: [
+      { boost: 0.15, heal: 4, range: 2.5 },
+      { up: 100, boost: 0.25, heal: 7, range: 2.8 },
+      { up: 150, boost: 0.35, haste: 0.15, heal: 10, range: 3.1 },
+    ],
+  },
 };
-const ORDER = ['archer', 'hunters', 'mage', 'druid'];
+const ORDER = ['archer', 'hunters', 'mage', 'druid', 'ranger', 'griffin', 'ent', 'bard'];
 const CHEAPEST = Math.min(...ORDER.map(k => TOWERS[k].cost));
 
+// bar/hit: heights of the health bar and of the body centre; barW, ring, icon: sizes for bars, status rings and icons
 const DEMONS = {
   imp:      { name: 'Бес', hp: 45, speed: 1.15, bounty: 3, dmg: 8, cd: 0.9, lives: 1, bar: 0.5, hit: 0.14, info: 'мелкий и шустрый' },
   hound:    { name: 'Адская гончая', hp: 32, speed: 1.85, bounty: 4, dmg: 6, cd: 0.6, lives: 1, bar: 0.4, hit: 0.13, info: 'очень быстрая, проскакивает мимо медленных башен' },
-  brute:    { name: 'Рогатый громила', hp: 230, speed: 0.6, armor: 0.35, bounty: 14, dmg: 28, cd: 1.3, lives: 2, bar: 0.98, hit: 0.3, info: 'броня гасит стрелы, охотника убивает за 2–3 удара' },
+  brute:    { name: 'Рогатый громила', hp: 230, speed: 0.6, armor: 0.35, bounty: 14, dmg: 28, cd: 1.3, lives: 2, bar: 0.98, hit: 0.3, barW: 0.55, ring: 0.34, info: 'броня гасит стрелы, охотника убивает за 2–3 удара' },
   gargoyle: { name: 'Горгулья', hp: 80, speed: 1.0, flying: true, bounty: 7, lives: 1, bar: 0.84, hit: 0.45, info: 'летает: охотники и корни её не остановят' },
   warlock:  { name: 'Колдун бездны', hp: 110, speed: 0.75, mres: 0.5, heal: true, bounty: 10, dmg: 10, cd: 1.2, lives: 1, bar: 0.74, hit: 0.25, info: 'лечит демонов рядом, магия бьёт его вполсилы' },
-  boss:     { name: 'Архидемон Мал’Гарот', hp: 3600, speed: 0.36, armor: 0.25, mres: 0.25, boss: true, bounty: 150, dmg: 70, cd: 1.5, lives: 20, bar: 1.6, hit: 0.55, info: 'призывает бесов; если дойдёт до ворот, город падёт' },
+  shield:   { name: 'Щитоносец', hp: 170, speed: 0.7, armor: 0.4, aura: true, bounty: 12, dmg: 14, cd: 1.1, lives: 2, bar: 0.9, hit: 0.26, barW: 0.5, ring: 0.3, info: 'держит щит над соседями: урон по демонам рядом с ним на пятую часть меньше' },
+  golem:    { name: 'Магмовый голем', hp: 340, speed: 0.5, mres: 0.3, split: 3, bounty: 14, dmg: 30, cd: 1.4, lives: 2, bar: 1.0, hit: 0.3, barW: 0.6, ring: 0.36, icon: 1.3, info: 'медленный и крепкий; разбившись, выпускает три быстрые искры' },
+  spark:    { name: 'Искра', hp: 24, speed: 2.2, bounty: 1, dmg: 4, cd: 0.6, lives: 1, bar: 0.42, hit: 0.15, info: 'крошечный и очень быстрый огонёк' },
+  wyvern:   { name: 'Виверна бездны', hp: 330, speed: 0.8, armor: 0.2, flying: true, bounty: 18, lives: 2, bar: 1.08, hit: 0.52, barW: 0.6, icon: 1.7, info: 'тяжёлый летающий демон: охотники, древень и корни её не держат' },
+  boss:     { name: 'Архидемон Мал’Гарот', hp: 3600, speed: 0.36, armor: 0.25, mres: 0.25, boss: true, summon: true, bounty: 150, dmg: 70, cd: 1.5, lives: 20, bar: 1.6, hit: 0.55, barW: 1.1, ring: 0.55, icon: 2.3, title: 'Архидемон повержен', info: 'призывает бесов; если дойдёт до ворот, город падёт' },
+  lord:     { name: 'Азгорот, Владыка Разлома', hp: 7000, speed: 0.3, armor: 0.3, mres: 0.3, boss: true, curse: true, bounty: 300, dmg: 90, cd: 1.6, lives: 20, bar: 1.85, hit: 0.6, barW: 1.2, ring: 0.6, icon: 2.7, title: 'Владыка Разлома повержен', info: 'проклятием сковывает ближайшую башню; если дойдёт до ворот, крепость падёт' },
 };
 
 // Wave group: [demon, count, seconds between, start delay, path (-1 = alternate)]
 const LEVELS = [
   {
-    name: 'Ивовый Брод', sub: 'Пограничная застава у реки', gold: 240, lives: 20, hpMul: 0.9,
+    name: 'Ивовый Брод', sub: 'Пограничная застава у реки', theme: 'forest', gold: 240, lives: 20, hpMul: 0.9,
     paths: [[[1, -1], [1, 3], [7, 3], [7, 7], [2, 7], [2, 11], [6, 11], [6, 14]]],
     slots: [[2, 1], [4, 2], [6, 2], [3, 5], [5, 5], [8, 5], [0, 9], [4, 9], [6, 9], [1, 12], [4, 13], [7, 13]],
     waves: [
@@ -341,7 +392,7 @@ const LEVELS = [
     ],
   },
   {
-    name: 'Аэлин', sub: 'Лунный город, прорыв с двух сторон', gold: 300, lives: 20, hpMul: 0.95,
+    name: 'Аэлин', sub: 'Лунный город, прорыв с двух сторон', theme: 'forest', gold: 300, lives: 20, hpMul: 0.95,
     paths: [
       [[1, -1], [1, 4], [4, 4], [4, 7], [7, 7], [7, 11], [3, 11], [3, 14]],
       [[7, -1], [7, 4], [4, 4], [4, 7], [7, 7], [7, 11], [3, 11], [3, 14]],
@@ -361,7 +412,7 @@ const LEVELS = [
     ],
   },
   {
-    name: 'Сильвенор', sub: 'Столица у Древа Жизни', gold: 340, lives: 20, hpMul: 1.18,
+    name: 'Сильвенор', sub: 'Столица у Древа Жизни', theme: 'forest', gold: 340, lives: 20, hpMul: 1.18,
     paths: [
       [[4, -1], [4, 2], [1, 2], [1, 6], [6, 6], [6, 9], [2, 9], [2, 12], [5, 12], [5, 14]],
       [[9, 3], [7, 3], [7, 6], [6, 6], [6, 9], [2, 9], [2, 12], [5, 12], [5, 14]],
@@ -382,7 +433,84 @@ const LEVELS = [
       [['boss', 1, 1, 0, 0], ['imp', 16, 0.6, 4, -1], ['brute', 6, 2.5, 8, 1]],
     ],
   },
+  {
+    name: 'Ивенмир', sub: 'Город на сваях среди серебряных топей', theme: 'swamp', gold: 420, lives: 20, hpMul: 1.0,
+    paths: [
+      [[-1, 2], [3, 2], [3, 6], [1, 6], [1, 10], [4, 10], [4, 14]],
+      [[9, 4], [6, 4], [6, 8], [1, 8], [1, 10], [4, 10], [4, 14]],
+    ],
+    slots: [[1, 0], [4, 3], [2, 4], [4, 6], [7, 6], [2, 7], [0, 9], [4, 9], [7, 9], [6, 11], [2, 12], [5, 13]],
+    waves: [
+      [['imp', 10, 0.8, 0, -1]],
+      [['hound', 8, 0.6, 0, 0], ['imp', 8, 0.7, 2, 1]],
+      [['shield', 2, 3, 0, -1], ['imp', 10, 0.7, 1, -1]],
+      [['brute', 2, 3, 0, 0], ['shield', 2, 3, 1, 1], ['hound', 8, 0.5, 4, -1]],
+      [['gargoyle', 10, 0.9, 0, -1], ['warlock', 2, 3, 2, -1]],
+      [['shield', 3, 2.4, 0, -1], ['brute', 3, 2.4, 1, -1], ['imp', 12, 0.5, 3, -1]],
+      [['golem', 2, 4, 0, -1], ['hound', 14, 0.4, 3, -1]],
+      [['warlock', 4, 2.4, 0, -1], ['shield', 4, 2.4, 1, -1], ['gargoyle', 8, 0.9, 4, -1]],
+      [['golem', 4, 3, 0, -1], ['imp', 18, 0.4, 2, -1]],
+      [['brute', 6, 1.7, 0, -1], ['shield', 3, 2.2, 2, -1], ['warlock', 3, 2.6, 4, -1]],
+      [['hound', 24, 0.3, 0, -1], ['gargoyle', 12, 0.7, 3, -1], ['golem', 3, 3, 6, -1]],
+      [['golem', 4, 2.6, 0, -1], ['shield', 4, 2, 1, -1], ['brute', 6, 1.6, 3, -1], ['warlock', 3, 2.6, 5, -1]],
+    ],
+  },
+  {
+    name: 'Звездопад', sub: 'Горная крепость на снежном перевале', theme: 'snow', gold: 440, lives: 20, hpMul: 1.05,
+    paths: [
+      [[1, -1], [1, 2], [4, 2], [4, 5], [7, 5], [7, 8], [1, 8], [1, 11], [6, 11], [6, 14]],
+      [[7, -1], [7, 2], [4, 2], [4, 5], [7, 5], [7, 8], [1, 8], [1, 11], [6, 11], [6, 14]],
+    ],
+    slots: [[2, 1], [6, 1], [3, 3], [5, 3], [3, 6], [5, 7], [8, 6], [0, 10], [3, 10], [5, 10], [7, 10], [3, 13], [7, 13]],
+    waves: [
+      [['imp', 12, 0.7, 0, -1]],
+      [['hound', 12, 0.5, 0, -1]],
+      [['gargoyle', 8, 1, 0, -1], ['imp', 10, 0.6, 2, -1]],
+      [['wyvern', 2, 4, 0, -1], ['gargoyle', 6, 1, 2, -1]],
+      [['brute', 5, 2, 0, -1], ['shield', 2, 2.5, 1, -1]],
+      [['golem', 3, 3, 0, -1], ['warlock', 3, 2.5, 2, -1], ['imp', 14, 0.4, 4, -1]],
+      [['wyvern', 4, 3, 0, -1], ['hound', 16, 0.35, 2, -1]],
+      [['shield', 4, 2, 0, -1], ['brute', 6, 1.6, 1, -1]],
+      [['gargoyle', 16, 0.6, 0, -1], ['wyvern', 3, 3, 4, -1]],
+      [['golem', 6, 2.2, 0, -1], ['warlock', 5, 2.2, 2, -1], ['hound', 16, 0.35, 4, -1]],
+      [['brute', 8, 1.3, 0, -1], ['shield', 4, 2, 2, -1], ['wyvern', 3, 3, 5, -1]],
+      [['hound', 30, 0.25, 0, -1], ['gargoyle', 14, 0.6, 3, -1], ['imp', 20, 0.3, 6, -1]],
+      [['wyvern', 6, 2.2, 0, -1], ['golem', 6, 2, 2, -1], ['shield', 6, 1.8, 4, -1], ['brute', 8, 1.4, 6, -1]],
+    ],
+  },
+  {
+    name: 'Последний Рассвет', sub: 'Крепость у самого разлома', theme: 'rift', gold: 560, lives: 20, hpMul: 0.98,
+    paths: [
+      [[1, -1], [1, 3], [4, 3], [4, 6], [7, 6], [7, 10], [4, 10], [4, 14]],
+      [[7, -1], [7, 3], [4, 3], [4, 6], [7, 6], [7, 10], [4, 10], [4, 14]],
+      [[-1, 6], [4, 6], [7, 6], [7, 10], [4, 10], [4, 14]],
+    ],
+    slots: [[2, 1], [4, 1], [6, 1], [2, 4], [5, 4], [1, 8], [4, 8], [6, 8], [8, 8], [2, 10], [3, 12], [6, 12], [8, 12]],
+    waves: [
+      [['imp', 15, 0.6, 0, -1]],
+      [['hound', 15, 0.45, 0, -1]],
+      [['brute', 3, 2.2, 0, -1], ['shield', 1, 3, 1, -1]],
+      [['gargoyle', 10, 0.8, 0, -1], ['wyvern', 1, 4, 3, -1]],
+      [['warlock', 3, 2.4, 0, -1], ['brute', 4, 2, 1, -1], ['imp', 14, 0.45, 3, -1]],
+      [['golem', 4, 2.5, 0, -1], ['hound', 18, 0.35, 2, -1]],
+      [['shield', 4, 2, 0, -1], ['brute', 6, 1.6, 1, -1], ['warlock', 2, 2.6, 3, -1]],
+      [['wyvern', 5, 2.4, 0, -1], ['gargoyle', 14, 0.6, 2, -1]],
+      [['golem', 5, 2.2, 0, -1], ['shield', 3, 2.2, 1, -1], ['imp', 18, 0.4, 3, -1]],
+      [['brute', 9, 1.3, 0, -1], ['warlock', 4, 2.2, 2, -1], ['hound', 20, 0.3, 4, -1]],
+      [['wyvern', 8, 1.8, 0, -1], ['gargoyle', 16, 0.55, 2, -1]],
+      [['golem', 6, 2, 0, -1], ['shield', 5, 1.8, 1, -1], ['warlock', 4, 2.4, 3, -1]],
+      [['hound', 36, 0.22, 0, -1], ['imp', 30, 0.25, 2, -1], ['wyvern', 6, 2, 5, -1]],
+      [['golem', 6, 1.8, 0, -1], ['brute', 9, 1.3, 1, -1], ['shield', 5, 1.8, 2, -1], ['wyvern', 5, 2.2, 5, -1]],
+      [['lord', 1, 1, 0, 0], ['shield', 5, 2.4, 3, -1], ['golem', 3, 3, 6, -1], ['imp', 20, 0.6, 4, -1]],
+    ],
+  },
 ];
+const THEMES = {
+  forest: { base: ['#1c2620', '#1a3025', '#1d392a'], blade: [128, 32, 24, 26, 19, 17, 0.55], road: ['#17110b', '#56442f', '#6b573d', 'rgba(150,126,92,.22)'], pebble: ['rgba(25,18,10,.55)', 'rgba(170,150,115,.35)'], tree: 'round', treeChance: 0.62, deco: ['bush', 'rocks', 'shroom', 'flowers'], air: 'fireflies' },
+  swamp:  { base: ['#18221f', '#162724', '#192c28'], blade: [90, 45, 18, 22, 15, 14, 0.5], road: ['#0f0b08', '#45362a', '#574535', 'rgba(140,120,90,.18)'], pebble: ['rgba(15,10,6,.55)', 'rgba(150,140,110,.3)'], tree: 'willow', treeChance: 0.5, deco: ['pool', 'reeds', 'shroom', 'pool', 'reeds'], air: 'fireflies', mist: true },
+  snow:   { base: ['#a9b8c6', '#c1cfda', '#d4dee7'], blade: [205, 20, 25, 20, 80, 14, 0.6], road: ['#4e555b', '#86857f', '#99978f', 'rgba(255,255,255,.2)'], pebble: ['rgba(60,62,66,.35)', 'rgba(255,255,255,.55)'], tree: 'pine', treeChance: 0.58, deco: ['rocks', 'crystal', 'drift', 'drift'], air: 'snow' },
+  rift:   { base: ['#1e1212', '#1d1513', '#211815'], blade: [10, 25, 15, 15, 12, 10, 0.5], road: ['#0a0606', '#2e2420', '#3b2f29', 'rgba(255,90,40,.1)'], pebble: ['rgba(8,4,4,.6)', 'rgba(255,110,50,.22)'], tree: 'dead', treeChance: 0.42, deco: ['lava', 'rocks', 'shards', 'lava'], air: 'ash', cracks: true },
+};
 
 /* ================= paths & level prep ================= */
 function buildPath(wps) {
@@ -435,6 +563,8 @@ function towerTop(type, lvl, y) {
   if (type === 'archer') return y + 0.2 - (0.62 + lvl * 0.1) - 0.16;
   if (type === 'mage') return y + 0.2 - (0.82 + lvl * 0.1) - 0.12;
   if (type === 'druid') return y - 0.55;
+  if (type === 'ranger') return y - 0.65 - lvl * 0.06;
+  if (type === 'griffin') return y - 0.85;
   return y - 0.3;
 }
 function drawArcher(g, lvl, x, y, time, aim, fire) {
@@ -558,11 +688,131 @@ function drawDruid(g, lvl, x, y, time, fire) {
   line(g, fx + 0.09, fy + 0.02, fx + 0.11, fy - 0.38, 0.022, '#8a6a44');
   glow(g, fx + 0.11, fy - 0.4, 0.09 + fire * 0.3, 'rgba(150,255,150,.8)');
 }
+function drawRanger(g, lvl, x, y, time, aim, fire) {
+  shadow(g, x, y + 0.27, 0.34, 0.11);
+  const top = y - 0.5 - lvl * 0.06;
+  g.lineCap = 'round';
+  for (const s of [-1, 1]) line(g, x + s * 0.25, y + 0.24, x + s * 0.16, top + 0.05, 0.05, '#5d4330');
+  line(g, x - 0.22, y + 0.04, x + 0.2, y - 0.18, 0.025, '#4b3626');
+  line(g, x + 0.22, y + 0.04, x - 0.2, y - 0.18, 0.025, '#4b3626');
+  g.lineCap = 'butt';
+  poly(g, [x - 0.31, top + 0.08, x + 0.31, top + 0.08, x + 0.27, top - 0.02, x - 0.27, top - 0.02], '#6e5038');
+  line(g, x - 0.31, top + 0.08, x + 0.31, top + 0.08, 0.02, lvl ? '#d8b45a' : '#3c2c1e');
+  for (const s of [-1, 1]) line(g, x + s * 0.27, top, x + s * 0.27, top - (lvl >= 1 ? 0.44 : 0.15), 0.022, '#5d4330');
+  line(g, x - 0.27, top - 0.12, x + 0.27, top - 0.12, 0.018, '#5d4330');
+  // the ranger
+  const ay = top - 0.01;
+  poly(g, [x - 0.1, ay, x + 0.1, ay, x, ay - 0.26], '#4a5d52');
+  circ(g, x, ay - 0.27, 0.056, '#f0d9b5');
+  g.beginPath(); g.arc(x, ay - 0.285, 0.068, Math.PI, 0); g.fillStyle = '#34463c'; g.fill();
+  poly(g, [x - 0.065, ay - 0.29, x - 0.12, ay - 0.14, x - 0.03, ay - 0.22], '#34463c');
+  const hx = x + Math.cos(aim) * 0.1, hy = ay - 0.14 + Math.sin(aim) * 0.1;
+  g.save(); g.translate(hx, hy); g.rotate(aim);
+  g.beginPath(); g.arc(-0.02, 0, 0.2, -1.15, 1.15); g.lineWidth = 0.03; g.strokeStyle = '#e6e0cc'; g.stroke();
+  const ex = Math.cos(1.15) * 0.2 - 0.02, ey = Math.sin(1.15) * 0.2, pull = fire > 0 ? 0 : 0.08;
+  g.beginPath(); g.moveTo(ex, -ey); g.lineTo(-pull - 0.02, 0); g.lineTo(ex, ey); g.lineWidth = 0.01; g.strokeStyle = '#eef3ea'; g.stroke();
+  if (fire <= 0) { line(g, -pull - 0.02, 0, 0.24, 0, 0.018, '#cfd8dc'); poly(g, [0.3, 0, 0.23, -0.03, 0.23, 0.03], '#bfe6ff'); }
+  g.restore();
+  if (lvl >= 1) {
+    const ry = top - 0.46;
+    poly(g, [x - 0.38, ry + 0.04, x, ry - 0.18 - lvl * 0.03, x + 0.38, ry + 0.04, x, ry - 0.03], '#2a6341');
+    poly(g, [x - 0.38, ry + 0.04, x, ry - 0.18 - lvl * 0.03, x - 0.02, ry - 0.03], '#367a50');
+  }
+  if (lvl >= 2) {
+    const wv = Math.sin(time * 3) * 0.03;
+    line(g, x + 0.27, top - 0.44, x + 0.27, top - 0.74, 0.02, '#d8c49a');
+    poly(g, [x + 0.27, top - 0.74, x + 0.47, top - 0.69 + wv, x + 0.27, top - 0.62], '#2b4f7a');
+    circ(g, x + 0.34, top - 0.69 + wv / 2, 0.022, '#e9f3ff');
+  }
+}
+function drawGriffinBird(g, x, y, f, time, fast) {
+  const flap = Math.sin(time * (fast ? 16 : 9));
+  for (const s of [-1, 1]) poly(g, [x + s * 0.04, y - 0.02, x + s * 0.34, y - 0.13 - flap * 0.13, x + s * 0.3, y - flap * 0.04, x + s * 0.18, y + 0.03], s === f ? '#d2a24c' : '#b88a3c');
+  line(g, x - f * 0.12, y + 0.02, x - f * 0.25, y - 0.05, 0.022, '#b88a3c');
+  circ(g, x - f * 0.26, y - 0.06, 0.025, '#8a6428');
+  ell(g, x - f * 0.02, y + 0.02, 0.13, 0.075, '#dcae55');
+  circ(g, x + f * 0.1, y - 0.05, 0.065, '#f4efe2');
+  poly(g, [x + f * 0.15, y - 0.065, x + f * 0.235, y - 0.035, x + f * 0.15, y - 0.01], '#f0c040');
+  circ(g, x + f * 0.115, y - 0.065, 0.014, '#1a1a1a');
+}
+function drawNest(g, lvl, x, y, time) {
+  shadow(g, x, y + 0.27, 0.36, 0.12);
+  poly(g, [x - 0.3, y + 0.27, x + 0.3, y + 0.27, x + 0.22, y - 0.18, x + 0.14, y - 0.62, x - 0.12, y - 0.66, x - 0.24, y - 0.24], '#666c75');
+  poly(g, [x - 0.3, y + 0.27, x - 0.03, y + 0.27, x - 0.05, y - 0.12, x - 0.12, y - 0.66, x - 0.24, y - 0.24], '#7e858e');
+  line(g, x - 0.2, y - 0.05, x + 0.18, y - 0.1, 0.014, 'rgba(40,44,50,.6)');
+  line(g, x - 0.16, y - 0.36, x + 0.15, y - 0.4, 0.014, 'rgba(40,44,50,.6)');
+  ell(g, x + 0.12, y + 0.1, 0.08, 0.04, '#3f6a45'); ell(g, x - 0.17, y - 0.2, 0.06, 0.03, '#3f6a45');
+  if (lvl >= 1) { g.fillStyle = '#d8b45a'; g.fillRect(x - 0.2, y + 0.02, 0.36, 0.025); }
+  ell(g, x, y - 0.68, 0.27, 0.09, '#5a4027');
+  g.lineCap = 'round';
+  for (let i = 0; i < 9; i++) { const a = i * 0.7; line(g, x + Math.cos(a) * 0.17, y - 0.68 + Math.sin(a) * 0.05, x + Math.cos(a) * 0.3, y - 0.69 + Math.sin(a + 0.4) * 0.08, 0.018, '#7a5a38'); }
+  g.lineCap = 'butt';
+  ell(g, x, y - 0.71, 0.18, 0.05, '#33251a');
+  if (lvl >= 1) ell(g, x + 0.08, y - 0.74, 0.04, 0.055, '#efe2b8');
+  if (lvl >= 2) {
+    const wv = Math.sin(time * 3) * 0.03;
+    line(g, x - 0.24, y - 0.66, x - 0.26, y - 1.05, 0.02, '#d8c49a');
+    poly(g, [x - 0.26, y - 1.05, x - 0.05, y - 1.0 + wv, x - 0.26, y - 0.93], '#c9902c');
+  }
+}
+function menhir(g, x, y, h, lit) {
+  poly(g, [x - 0.07, y, x + 0.07, y, x + 0.055, y - h, x - 0.01, y - h - 0.045, x - 0.065, y - h + 0.02], '#737b74');
+  poly(g, [x - 0.07, y, x - 0.01, y, x - 0.01, y - h - 0.045, x - 0.065, y - h + 0.02], '#868f87');
+  if (lit) line(g, x, y - h * 0.25, x, y - h * 0.65, 0.02, 'rgba(150,255,170,.75)');
+}
+function drawGrove(g, lvl, x, y, time) {
+  shadow(g, x, y + 0.25, 0.4, 0.13);
+  ell(g, x, y + 0.13, 0.37, 0.15, '#2b4732');
+  menhir(g, x - 0.25, y + 0.06, 0.4, lvl >= 1);
+  menhir(g, x + 0.25, y + 0.06, 0.43, lvl >= 2);
+  line(g, x, y + 0.12, x, y - 0.3, 0.06, '#5b3f26');
+  const cr = 0.13 + lvl * 0.02;
+  circ(g, x - 0.1, y - 0.36, cr, '#2f6e46'); circ(g, x + 0.1, y - 0.38, cr, '#2f6e46'); circ(g, x, y - 0.5, cr + 0.02, '#3f8a58');
+  if (lvl >= 2) for (let i = 0; i < 4; i++) circ(g, x + Math.cos(i * 1.6) * 0.12, y - 0.42 + Math.sin(i * 1.6) * 0.08, 0.024, '#f2a7c7');
+  glow(g, x, y - 0.06, 0.2, `rgba(150,255,170,${0.28 + 0.12 * Math.sin(time * 2.5)})`);
+  menhir(g, x - 0.13, y + 0.21, 0.3, true);
+  menhir(g, x + 0.14, y + 0.22, 0.27, lvl >= 1);
+}
+function drawBard(g, lvl, x, y, time) {
+  shadow(g, x, y + 0.27, 0.36, 0.12);
+  ell(g, x, y + 0.17, 0.34, 0.12, '#bfc7c3'); ell(g, x, y + 0.14, 0.32, 0.1, '#e3e8e5');
+  g.fillStyle = '#d6dde0';
+  for (const dx of [-0.16, 0.16]) g.fillRect(x + dx - 0.022, y - 0.5, 0.044, 0.62);
+  // harpist
+  poly(g, [x - 0.11, y + 0.13, x + 0.07, y + 0.13, x - 0.02, y - 0.17], '#9a86c9');
+  line(g, x - 0.09, y + 0.12, x + 0.05, y + 0.12, 0.02, '#e2c26a');
+  circ(g, x - 0.02, y - 0.2, 0.048, '#f0d9b5');
+  g.beginPath(); g.arc(x - 0.02, y - 0.21, 0.056, Math.PI * 0.9, Math.PI * 2.05); g.fillStyle = '#e8eef2'; g.fill();
+  line(g, x - 0.07, y - 0.2, x - 0.09, y - 0.04, 0.03, '#e8eef2');
+  g.beginPath(); g.moveTo(x + 0.06, y + 0.1); g.quadraticCurveTo(x + 0.22, y - 0.04, x + 0.08, y - 0.24); g.lineTo(x + 0.06, y + 0.1); g.lineWidth = 0.026; g.strokeStyle = '#e2c26a'; g.stroke();
+  for (let i = 1; i <= 3; i++) line(g, x + 0.06 + i * 0.012, y + 0.06 - i * 0.02, x + 0.07 + i * 0.012, y - 0.14 + i * 0.03, 0.006, '#fff4cc');
+  g.fillStyle = '#e6ebee';
+  for (const dx of [-0.29, 0.29]) g.fillRect(x + dx - 0.026, y - 0.46, 0.052, 0.62);
+  const dy = y - 0.48;
+  ell(g, x, dy, 0.37, 0.08, '#a99fd6');
+  g.beginPath(); g.moveTo(x - 0.35, dy); g.quadraticCurveTo(x, dy - 0.44 - lvl * 0.05, x + 0.35, dy); g.closePath(); g.fillStyle = '#bdb3e6'; g.fill();
+  g.beginPath(); g.moveTo(x - 0.35, dy); g.quadraticCurveTo(x - 0.1, dy - 0.38 - lvl * 0.05, x - 0.02, dy - 0.22); g.lineTo(x - 0.05, dy); g.closePath(); g.fillStyle = '#d2cbf0'; g.fill();
+  line(g, x - 0.37, dy, x + 0.37, dy, 0.02, '#d8b45a');
+  const fy = dy - 0.22 - lvl * 0.025;
+  line(g, x, fy, x, fy - 0.12, 0.02, '#d8b45a');
+  g.beginPath(); g.arc(x, fy - 0.15, 0.04, 0.5, TAU - 0.5); g.lineWidth = 0.018; g.strokeStyle = '#e9c46a'; g.stroke();
+  const n = 2 + lvl;
+  for (let i = 0; i < n; i++) {
+    const ph = (time * 0.55 + i / n) % 1, nx = x + 0.1 + Math.sin(ph * 6 + i * 2) * 0.22, ny = y - 0.35 - ph * 0.7;
+    g.globalAlpha = Math.min(1, (1 - ph) * 1.5);
+    ell(g, nx, ny, 0.034, 0.025, '#e9d9ff'); line(g, nx + 0.03, ny, nx + 0.03, ny - 0.1, 0.012, '#e9d9ff');
+    g.globalAlpha = 1;
+  }
+}
 function drawTower(g, type, lvl, x, y, time, aim, fire) {
   if (type === 'archer') drawArcher(g, lvl, x, y, time, aim, fire);
   else if (type === 'hunters') drawLodge(g, lvl, x, y, time);
   else if (type === 'mage') drawMage(g, lvl, x, y, time, fire);
-  else drawDruid(g, lvl, x, y, time, fire);
+  else if (type === 'druid') drawDruid(g, lvl, x, y, time, fire);
+  else if (type === 'ranger') drawRanger(g, lvl, x, y, time, aim, fire);
+  else if (type === 'griffin') drawNest(g, lvl, x, y, time);
+  else if (type === 'ent') drawGrove(g, lvl, x, y, time);
+  else drawBard(g, lvl, x, y, time);
 }
 
 /* ---------- demons ---------- */
@@ -570,7 +820,7 @@ function drawDemon(g, e, time) {
   const D = e.D, x = e.x, y = e.y, f = e.face || 1, ph = e.phase, W = e.flash > 0;
   const c = (col) => W ? '#fff6ee' : col;
   if (!e.flying && (e.slowT > 0 || e.stunT > 0)) {
-    const rr = D.boss ? 0.55 : D === DEMONS.brute ? 0.34 : 0.22;
+    const rr = D.ring || 0.22;
     g.beginPath(); g.ellipse(x, y + 0.08, rr, rr * 0.35, 0, 0, TAU); g.lineWidth = e.stunT > 0 ? 0.05 : 0.025; g.strokeStyle = e.stunT > 0 ? 'rgba(110,190,90,.95)' : 'rgba(120,220,120,.6)'; g.stroke();
   }
   const atk = e.atk > 0 ? Math.sin((e.atk / 0.22) * Math.PI) * 0.08 : 0;
@@ -658,6 +908,92 @@ function drawDemon(g, e, time) {
       circ(g, sx, y - 0.5, 0.045, '#ff8ae8');
       break;
     }
+    case 'shield': {
+      const b = Math.abs(Math.sin(ph * 0.9)) * 0.03, cy = y - 0.24 - b, ax = x + f * atk * 0.6, l = Math.sin(ph * 0.9) * 0.05;
+      shadow(g, x, y + 0.1, 0.3, 0.09);
+      line(g, ax - 0.09, cy + 0.16, ax - 0.1 + l, y + 0.07, 0.08, c('#2a2730'));
+      line(g, ax + 0.09, cy + 0.16, ax + 0.1 - l, y + 0.07, 0.08, c('#2a2730'));
+      ell(g, ax, cy, 0.2, 0.21, c('#5a1f2a'));
+      poly(g, [ax - 0.19, cy - 0.12, ax + 0.19, cy - 0.12, ax + 0.15, cy + 0.08, ax - 0.15, cy + 0.08], c('#3d3a44'));
+      circ(g, ax - f * 0.02, cy - 0.24, 0.1, c('#3d3a44'));
+      for (const s of [-1, 1]) poly(g, [ax + s * 0.07, cy - 0.3, ax + s * 0.12, cy - 0.27, ax + s * 0.2, cy - 0.42], '#d9c7a4');
+      line(g, ax - f * 0.02 - 0.05, cy - 0.24, ax - f * 0.02 + 0.05, cy - 0.24, 0.02, '#ff9a3a');
+      const sx = ax + f * 0.2;
+      poly(g, [sx - 0.11, cy - 0.3, sx + 0.11, cy - 0.3, sx + 0.11, cy + 0.12, sx, cy + 0.23, sx - 0.11, cy + 0.12], c('#4a4652'));
+      g.beginPath(); g.moveTo(sx - 0.11, cy - 0.3); g.lineTo(sx + 0.11, cy - 0.3); g.lineTo(sx + 0.11, cy + 0.12); g.lineTo(sx, cy + 0.23); g.lineTo(sx - 0.11, cy + 0.12); g.closePath(); g.lineWidth = 0.022; g.strokeStyle = '#8a8496'; g.stroke();
+      glow(g, sx, cy - 0.04, 0.12, 'rgba(255,90,60,.55)');
+      circ(g, sx, cy - 0.04, 0.03, '#ff6b4a');
+      break;
+    }
+    case 'golem': {
+      const b = Math.abs(Math.sin(ph * 0.7)) * 0.03, cy = y - 0.3 - b, ax = x + f * atk * 0.5, l = Math.sin(ph * 0.7) * 0.05;
+      shadow(g, x, y + 0.1, 0.38, 0.11);
+      ell(g, ax - 0.13 + l, y + 0.0, 0.09, 0.1, c('#2b2523'));
+      ell(g, ax + 0.13 - l, y + 0.0, 0.09, 0.1, c('#2b2523'));
+      poly(g, [ax - 0.3, cy + 0.14, ax - 0.27, cy - 0.18, ax - 0.08, cy - 0.32, ax + 0.18, cy - 0.28, ax + 0.31, cy - 0.06, ax + 0.27, cy + 0.2, ax - 0.1, cy + 0.27], c('#3a302c'));
+      const lava = 0.6 + Math.sin(time * 4 + ph) * 0.25;
+      glow(g, ax, cy, 0.24, `rgba(255,120,40,${lava * 0.6})`);
+      g.strokeStyle = `rgba(255,130,40,${lava})`; g.lineWidth = 0.028; g.beginPath();
+      g.moveTo(ax - 0.2, cy - 0.12); g.lineTo(ax - 0.05, cy); g.lineTo(ax - 0.12, cy + 0.16);
+      g.moveTo(ax + 0.1, cy - 0.22); g.lineTo(ax + 0.04, cy - 0.04); g.lineTo(ax + 0.2, cy + 0.08); g.stroke();
+      const raise = e.atk > 0 ? -0.15 * Math.sin((e.atk / 0.22) * Math.PI) : 0;
+      circ(g, ax - f * 0.32, cy + 0.1, 0.1, c('#332a27'));
+      circ(g, ax + f * 0.34, cy + 0.08 + raise, 0.11, c('#332a27'));
+      circ(g, ax + f * 0.04, cy - 0.3, 0.09, c('#2e2624'));
+      circ(g, ax + f * 0.0, cy - 0.31, 0.022, '#ffcf5a'); circ(g, ax + f * 0.08, cy - 0.31, 0.022, '#ffcf5a');
+      break;
+    }
+    case 'spark': {
+      const cy = y - 0.17 + Math.sin(ph * 2) * 0.03, h = 0.16 + Math.abs(Math.sin(time * 18 + ph)) * 0.05;
+      shadow(g, x, y + 0.06, 0.1, 0.035, 0.25);
+      glow(g, x, cy, 0.22, 'rgba(255,140,40,.5)');
+      poly(g, [x - 0.08, cy + 0.04, x, cy - h, x + 0.08, cy + 0.04, x, cy + 0.09], W ? '#fff6ee' : '#ff8a2a');
+      poly(g, [x - 0.04, cy + 0.03, x, cy - h * 0.55, x + 0.04, cy + 0.03, x, cy + 0.06], '#ffe08a');
+      circ(g, x - 0.02 + f * 0.01, cy, 0.012, '#3a1000'); circ(g, x + 0.02 + f * 0.01, cy, 0.012, '#3a1000');
+      break;
+    }
+    case 'wyvern': {
+      const hgt = 0.5 + Math.sin(ph * 0.6) * 0.05, cy = y - hgt, flap = Math.sin(ph * 1.6);
+      shadow(g, x, y + 0.08, 0.32, 0.08, 0.22);
+      g.strokeStyle = c('#2c3b2f'); g.lineWidth = 0.05; g.beginPath(); g.moveTo(x - f * 0.15, cy + 0.04); g.quadraticCurveTo(x - f * 0.38, cy + 0.14, x - f * 0.48, cy - 0.02); g.stroke();
+      poly(g, [x - f * 0.47, cy - 0.09, x - f * 0.57, cy - 0.01, x - f * 0.45, cy + 0.04], '#8a2232');
+      for (const s of [-1, 1]) {
+        poly(g, [x + s * 0.08, cy - 0.06, x + s * 0.62, cy - 0.3 - flap * 0.22, x + s * 0.55, cy - 0.04 - flap * 0.08, x + s * 0.4, cy - 0.02, x + s * 0.3, cy + 0.06, x + s * 0.15, cy + 0.08], c(s === f ? '#3e5242' : '#33453a'));
+        line(g, x + s * 0.1, cy - 0.05, x + s * 0.55, cy - 0.06 - flap * 0.08, 0.012, 'rgba(15,25,18,.6)');
+      }
+      ell(g, x, cy, 0.2, 0.12, c('#4a6250'));
+      ell(g, x + f * 0.03, cy + 0.04, 0.12, 0.055, '#8f7d58');
+      line(g, x + f * 0.12, cy - 0.03, x + f * 0.22, cy - 0.1, 0.07, c('#4a6250'));
+      circ(g, x + f * 0.24, cy - 0.12, 0.075, c('#4a6250'));
+      poly(g, [x + f * 0.28, cy - 0.15, x + f * 0.4, cy - 0.1, x + f * 0.28, cy - 0.07], c('#4a6250'));
+      poly(g, [x + f * 0.2, cy - 0.17, x + f * 0.12, cy - 0.3, x + f * 0.24, cy - 0.19], '#d8c7a0');
+      circ(g, x + f * 0.27, cy - 0.13, 0.018, '#ff5a3a');
+      break;
+    }
+    case 'lord': {
+      const b = Math.sin(ph * 0.5) * 0.03, cy = y - 0.55 + b, ax = x + f * atk * 0.4;
+      shadow(g, x, y + 0.14, 0.62, 0.17, 0.45);
+      poly(g, [ax - 0.5, y + 0.1, ax + 0.5, y + 0.1, ax + 0.27, cy - 0.32, ax - 0.27, cy - 0.32], c('#1f1030'));
+      poly(g, [ax - 0.26, y + 0.1, ax + 0.26, y + 0.1, ax + 0.14, cy - 0.1, ax - 0.14, cy - 0.1], c('#3a1d55'));
+      line(g, ax - 0.5, y + 0.09, ax + 0.5, y + 0.09, 0.03, '#8a3fd0');
+      ell(g, ax, cy - 0.14, 0.27, 0.29, c('#2a1638'));
+      ell(g, ax - 0.22, cy - 0.3, 0.13, 0.08, '#3c2a4a'); ell(g, ax + 0.22, cy - 0.3, 0.13, 0.08, '#3c2a4a');
+      const pulse = 0.55 + Math.sin(time * 3) * 0.25;
+      glow(g, ax, cy - 0.12, 0.2, `rgba(200,110,255,${pulse})`);
+      poly(g, [ax, cy - 0.22, ax + 0.06, cy - 0.12, ax, cy - 0.02, ax - 0.06, cy - 0.12], '#e2b5ff');
+      circ(g, ax, cy - 0.52, 0.15, c('#1a0c24'));
+      for (let i = 0; i < 5; i++) { const sx = ax - 0.14 + i * 0.07, h = i === 2 ? 0.26 : i % 2 ? 0.17 : 0.13; poly(g, [sx - 0.03, cy - 0.6, sx, cy - 0.6 - h, sx + 0.03, cy - 0.6], '#2d1b3d'); circ(g, sx, cy - 0.6 - h, 0.016, '#c46bff'); }
+      g.lineWidth = 0.05; g.strokeStyle = '#bba98a';
+      for (const s of [-1, 1]) { g.beginPath(); g.moveTo(ax + s * 0.1, cy - 0.58); g.quadraticCurveTo(ax + s * 0.32, cy - 0.6, ax + s * 0.26, cy - 0.38); g.stroke(); }
+      circ(g, ax - 0.05, cy - 0.52, 0.024, '#e7a6ff'); circ(g, ax + 0.05, cy - 0.52, 0.024, '#e7a6ff');
+      const sx = ax + f * 0.44;
+      line(g, sx, y + 0.08, sx, cy - 0.78, 0.04, '#2d1b3d');
+      glow(g, sx, cy - 0.84, 0.32, `rgba(190,90,255,${0.45 + Math.sin(time * 4) * 0.2})`);
+      const fh = 0.18 + Math.abs(Math.sin(time * 10)) * 0.06;
+      poly(g, [sx - 0.07, cy - 0.78, sx, cy - 0.78 - fh, sx + 0.07, cy - 0.78], '#c46bff');
+      poly(g, [sx - 0.035, cy - 0.78, sx, cy - 0.78 - fh * 0.6, sx + 0.035, cy - 0.78], '#f3dcff');
+      break;
+    }
     case 'boss': {
       const b = Math.abs(Math.sin(ph * 0.6)) * 0.04, cy = y - 0.5 - b, ax = x + f * atk * 0.5;
       shadow(g, x, y + 0.13, 0.62, 0.17, 0.45);
@@ -698,20 +1034,60 @@ function drawHunter(g, h, time) {
   line(g, x - f * 0.06 + f * th, cy + 0.04, x + f * (0.22 + th), cy - 0.1, 0.02, '#a88458');
   poly(g, [x + f * (0.27 + th), cy - 0.13, x + f * (0.2 + th), cy - 0.12, x + f * (0.22 + th), cy - 0.07], '#dfe6e8');
 }
+function drawEnt(g, u, time) {
+  const x = u.x, y = u.y, f = u.face || 1, W = u.flash > 0;
+  const step = u.moving ? Math.sin(time * 6 + u.k) : 0, sw = u.swing > 0 ? Math.sin((u.swing / 0.35) * Math.PI) : 0;
+  shadow(g, x, y + 0.06, 0.28, 0.08);
+  line(g, x - 0.08, y - 0.16, x - 0.12 + step * 0.06, y + 0.05, 0.075, '#4e3521');
+  line(g, x + 0.08, y - 0.16, x + 0.12 - step * 0.06, y + 0.05, 0.075, '#4e3521');
+  poly(g, [x - 0.16, y - 0.1, x + 0.16, y - 0.1, x + 0.12, y - 0.62, x - 0.12, y - 0.62], W ? '#fff6ee' : '#6b4a2e');
+  line(g, x - 0.06, y - 0.14, x - 0.04, y - 0.5, 0.015, 'rgba(40,25,14,.6)');
+  line(g, x + 0.07, y - 0.16, x + 0.05, y - 0.46, 0.015, 'rgba(40,25,14,.6)');
+  const ay = y - 0.46;
+  g.lineCap = 'round';
+  line(g, x - f * 0.12, ay, x - f * 0.32, ay + 0.14, 0.05, '#5b3f26');
+  const hx = x + f * (0.34 + sw * 0.06), hy = ay + 0.12 - sw * 0.3;
+  line(g, x + f * 0.12, ay, hx, hy, 0.06, '#5b3f26');
+  line(g, hx, hy, hx + f * 0.07, hy - 0.06, 0.025, '#5b3f26');
+  line(g, hx, hy, hx + f * 0.08, hy + 0.03, 0.025, '#5b3f26');
+  g.lineCap = 'butt';
+  circ(g, x + f * 0.02 - 0.045, y - 0.5, 0.024, '#c8ff9a'); circ(g, x + f * 0.02 + 0.045, y - 0.5, 0.024, '#c8ff9a');
+  line(g, x + f * 0.02 - 0.04, y - 0.4, x + f * 0.02 + 0.04, y - 0.41, 0.014, '#2a1a0e');
+  circ(g, x - 0.15, y - 0.68, 0.15, '#25583a'); circ(g, x + 0.15, y - 0.7, 0.15, '#25583a');
+  circ(g, x, y - 0.82, 0.18, '#357a4d'); circ(g, x - 0.06, y - 0.88, 0.09, '#4b9a62');
+}
+function drawSquadUnit(g, u, time) { if (u.held) drawEnt(g, u, time); else drawHunter(g, u, time); }
 function hpBar(g, x, y, w, frac, col) {
   g.fillStyle = 'rgba(10,6,6,.75)'; g.fillRect(x - w / 2 - 0.015, y - 0.015, w + 0.03, 0.07);
   g.fillStyle = col; g.fillRect(x - w / 2, y, w * clamp(frac, 0, 1), 0.04);
 }
 
 /* ---------- map background ---------- */
-function drawTree(g, x, y, s, dead, hue) {
-  shadow(g, x, y + 0.04, s * 0.95, s * 0.32, 0.3);
-  if (dead) {
+function drawTree(g, x, y, s, kind, hue) {
+  shadow(g, x, y + 0.04, s * 0.95, s * 0.32, kind === 'pine' ? 0.18 : 0.3);
+  if (kind === 'dead') {
     g.lineCap = 'round'; g.strokeStyle = '#3a221d'; g.lineWidth = s * 0.16;
     g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - s * 1.2); g.moveTo(x, y - s * 0.6); g.lineTo(x - s * 0.5, y - s * 1.1); g.moveTo(x, y - s * 0.85); g.lineTo(x + s * 0.45, y - s * 1.35); g.stroke();
     g.lineWidth = s * 0.07; g.beginPath(); g.moveTo(x - s * 0.3, y - s * 0.9); g.lineTo(x - s * 0.55, y - s * 0.85); g.moveTo(x + s * 0.25, y - s * 1.1); g.lineTo(x + s * 0.2, y - s * 1.4); g.stroke();
     g.lineCap = 'butt';
     circ(g, x - s * 0.45, y - s * 1.12, s * 0.07, '#a2391f'); circ(g, x + s * 0.42, y - s * 1.33, s * 0.06, '#c4522a');
+    return;
+  }
+  if (kind === 'pine') {
+    line(g, x, y + 0.02, x, y - s * 0.4, s * 0.16, '#4a3426');
+    for (let i = 0; i < 3; i++) {
+      const w = s * (0.75 - i * 0.18), by = y - s * (0.25 + i * 0.42), ty = by - s * 0.62;
+      poly(g, [x - w, by, x, ty, x + w, by], `hsl(${150 + hue * 20},30%,${17 + i * 2}%)`);
+      poly(g, [x - w * 0.55, by - s * 0.24, x, ty, x + w * 0.5, by - s * 0.26, x + w * 0.1, by - s * 0.18], 'rgba(240,246,250,.92)');
+    }
+    return;
+  }
+  if (kind === 'willow') {
+    line(g, x, y + 0.02, x - s * 0.05, y - s * 0.75, s * 0.2, '#3f3324');
+    circ(g, x, y - s * 1.05, s * 0.6, `hsl(${95 + hue * 25},26%,20%)`);
+    g.strokeStyle = `hsla(${95 + hue * 25},30%,28%,.9)`; g.lineWidth = s * 0.07; g.lineCap = 'round';
+    for (let i = 0; i < 7; i++) { const dx = (i / 6 - 0.5) * s * 1.2; g.beginPath(); g.moveTo(x + dx, y - s * 0.95); g.quadraticCurveTo(x + dx * 1.15, y - s * 0.5, x + dx * 1.05, y - s * 0.12 - (i % 3) * s * 0.08); g.stroke(); }
+    g.lineCap = 'butt';
     return;
   }
   const birch = hue > 0.82;
@@ -721,6 +1097,37 @@ function drawTree(g, x, y, s, dead, hue) {
   circ(g, x + s * 0.36, y - s * 0.82, s * 0.56, `hsl(${h0},34%,16%)`);
   circ(g, x, y - s * 1.15, s * 0.62, `hsl(${h0},37%,22%)`);
   circ(g, x - s * 0.16, y - s * 1.3, s * 0.32, `hsla(${h0 - 6},40%,31%,.9)`);
+}
+function drawDeco(g, it) {
+  const { x, y } = it;
+  if (it.k === 'bush') { const h = it.dead ? 15 : 145; circ(g, x - 0.08, y, 0.12, `hsl(${h},32%,17%)`); circ(g, x + 0.08, y + 0.01, 0.11, `hsl(${h},32%,17%)`); circ(g, x, y - 0.06, 0.12, `hsl(${h},36%,23%)`); }
+  else if (it.k === 'rocks') { const sn = it.theme === 'snow'; ell(g, x, y, 0.12, 0.08, sn ? '#7f8a94' : '#58615b'); ell(g, x - 0.02, y - 0.02, 0.08, 0.05, sn ? '#f2f6f9' : '#727c75'); ell(g, x + 0.13, y + 0.04, 0.06, 0.04, sn ? '#8a949d' : '#5e6862'); }
+  else if (it.k === 'shroom') {
+    if (it.dead) { ell(g, x, y, 0.1, 0.05, 'rgba(255,90,40,.25)'); return; }
+    glow(g, x, y - 0.05, 0.22, 'rgba(110,190,255,.22)');
+    for (const [dx, sc] of [[0, 1], [0.09, 0.7], [-0.08, 0.6]]) { line(g, x + dx, y, x + dx, y - 0.08 * sc, 0.022, '#d8e4ea'); g.beginPath(); g.arc(x + dx, y - 0.08 * sc, 0.055 * sc, Math.PI, 0); g.fillStyle = '#7cc6ff'; g.fill(); }
+  } else if (it.k === 'flowers') {
+    for (let i = 0; i < 5; i++) circ(g, x + Math.cos(i * 2.4) * 0.12, y + Math.sin(i * 2.4) * 0.07, 0.026, it.dead ? '#7a2a1f' : ['#f2a7c7', '#fff3c4', '#b8a6ff'][i % 3]);
+  } else if (it.k === 'pool') {
+    ell(g, x, y + 0.02, 0.36, 0.17, '#1d2a2a');
+    ell(g, x, y, 0.32, 0.14, it.dead ? '#3a1414' : '#22404a');
+    ell(g, x - 0.1, y - 0.04, 0.12, 0.03, 'rgba(200,230,255,.18)');
+    if (!it.dead) { ell(g, x + 0.14, y + 0.03, 0.06, 0.03, '#3f7a4a'); ell(g, x - 0.16, y + 0.05, 0.05, 0.025, '#3f7a4a'); circ(g, x + 0.15, y + 0.02, 0.016, '#f2c7e0'); }
+  } else if (it.k === 'reeds') {
+    for (let i = 0; i < 5; i++) { const dx = (i - 2) * 0.05, h = 0.22 + (i % 2) * 0.08; line(g, x + dx, y, x + dx * 1.4, y - h, 0.016, it.dead ? '#5a2a1c' : '#5f7a45'); if (i % 2 === 0) ell(g, x + dx * 1.4, y - h, 0.018, 0.045, '#5a3d24'); }
+  } else if (it.k === 'crystal') {
+    glow(g, x, y - 0.08, 0.24, 'rgba(160,220,255,.3)');
+    poly(g, [x - 0.05, y, x - 0.08, y - 0.18, x - 0.02, y - 0.28, x + 0.02, y], '#bfe6ff');
+    poly(g, [x, y, x + 0.03, y - 0.22, x + 0.09, y - 0.14, x + 0.08, y], '#8fcff5');
+  } else if (it.k === 'drift') {
+    ell(g, x, y + 0.03, 0.3, 0.1, 'rgba(120,140,160,.35)'); ell(g, x, y, 0.28, 0.1, '#eef3f7'); ell(g, x - 0.06, y - 0.03, 0.14, 0.04, '#ffffff');
+  } else if (it.k === 'lava') {
+    glow(g, x, y, 0.4, 'rgba(255,90,30,.25)');
+    ell(g, x, y + 0.02, 0.3, 0.14, '#2a1410'); ell(g, x, y, 0.24, 0.1, '#ff6a22'); ell(g, x - 0.05, y - 0.02, 0.12, 0.04, '#ffc35a');
+  } else if (it.k === 'shards') {
+    poly(g, [x - 0.08, y, x - 0.04, y - 0.26, x + 0.02, y], '#141012'); poly(g, [x, y, x + 0.06, y - 0.18, x + 0.11, y], '#221a1e');
+    line(g, x - 0.04, y - 0.24, x - 0.03, y - 0.12, 0.012, 'rgba(255,110,50,.6)');
+  }
 }
 function drawSlotBase(g, x, y) {
   shadow(g, x, y + 0.13, 0.43, 0.2, 0.4);
@@ -733,39 +1140,49 @@ function drawSlotBase(g, x, y) {
     line(g, x + rx * 0.31, y + 0.02 + ry * 0.155, x + rx * 0.36, y + 0.02 + ry * 0.18, 0.018, 'rgba(233,196,106,.3)');
   }
 }
+// where a rift opens on the map edge, and which way is "into the map"
 function portalSpot(p) {
   const s = p.pts[0];
-  if (s.x > COLS) return { x: COLS - 0.08, y: s.y, v: true };
-  if (s.x < 0) return { x: 0.08, y: s.y, v: true };
-  return { x: s.x, y: 0.12, v: false };
+  if (s.x > COLS) return { x: COLS - 0.08, y: s.y, v: true, ix: -1, iy: 0 };
+  if (s.x < 0) return { x: 0.08, y: s.y, v: true, ix: 1, iy: 0 };
+  return { x: s.x, y: 0.12, v: false, ix: 0, iy: 1 };
 }
 const bg = document.createElement('canvas'), bgx = bg.getContext('2d');
 let bgFor = -1;
+function crack(g, rng, x, y, a, n, step) {
+  const pts = [[x, y]];
+  for (let j = 0; j < n; j++) { a += (rng() - 0.5) * 0.9; x += Math.cos(a) * step; y += Math.sin(a) * step; pts.push([x, y]); }
+  for (const [w, col] of [[0.09, 'rgba(255,90,30,.14)'], [0.024, 'rgba(255,128,60,.6)']]) {
+    g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (const q of pts) g.lineTo(q[0], q[1]); g.lineWidth = w; g.strokeStyle = col; g.stroke();
+  }
+}
 function renderBg(li) {
   bg.width = cv.width; bg.height = cv.height; bgFor = li;
-  const g = bgx, L = LEVELS[li], P = PREP[li], rng = mulberry32(li * 7919 + 17);
+  const g = bgx, L = LEVELS[li], P = PREP[li], TH = THEMES[L.theme], rng = mulberry32(li * 7919 + 17);
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.fillStyle = '#08100d'; g.fillRect(0, 0, bg.width, bg.height);
   g.setTransform(dpr * ts, 0, 0, dpr * ts, dpr * offX, dpr * offY);
   const ex0 = -offX / ts - 0.5, ey0 = -offY / ts - 0.5, ex1 = (W - offX) / ts + 0.5, ey1 = (H - offY) / ts + 0.5;
   const base = g.createLinearGradient(0, 0, 0, ROWS);
-  base.addColorStop(0, '#1c2620'); base.addColorStop(0.45, '#1a3025'); base.addColorStop(1, '#1d392a');
+  base.addColorStop(0, TH.base[0]); base.addColorStop(0.45, TH.base[1]); base.addColorStop(1, TH.base[2]);
   g.fillStyle = base; g.fillRect(ex0, ey0, ex1 - ex0, ey1 - ey0);
   for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if ((r + c) % 2 === 0) { g.fillStyle = 'rgba(255,255,255,.012)'; g.fillRect(c, r, 1, 1); }
   g.lineCap = 'round';
+  const [h0, hr, s0, sr, l0, lr, ba] = TH.blade;
   const blades = Math.round((ex1 - ex0) * (ey1 - ey0) * 13);
   for (let i = 0; i < blades; i++) {
     const x = ex0 + rng() * (ex1 - ex0), y = ey0 + rng() * (ey1 - ey0), l = 0.05 + rng() * 0.08;
-    g.strokeStyle = `hsla(${128 + rng() * 32},${24 + rng() * 26}%,${19 + rng() * 17}%,.55)`;
+    g.strokeStyle = `hsla(${h0 + rng() * hr},${s0 + rng() * sr}%,${l0 + rng() * lr}%,${ba})`;
     g.lineWidth = 0.022; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (rng() - 0.5) * 0.07, y - l); g.stroke();
   }
+  if (TH.mist) for (let i = 0; i < 14; i++) glow(g, rng() * COLS, rng() * ROWS, 1 + rng() * 1.4, 'rgba(200,225,220,.07)');
   // road
   g.lineJoin = 'round';
   const stroke = (w, col) => { for (const p of P.paths) { g.beginPath(); g.moveTo(p.pts[0].x, p.pts[0].y); for (const q of p.pts) g.lineTo(q.x, q.y); g.lineWidth = w; g.strokeStyle = col; g.stroke(); } };
-  stroke(1.02, '#17110b'); stroke(0.9, '#56442f'); stroke(0.66, '#6b573d'); stroke(0.3, 'rgba(150,126,92,.22)');
+  stroke(1.02, TH.road[0]); stroke(0.9, TH.road[1]); stroke(0.66, TH.road[2]); stroke(0.3, TH.road[3]);
   for (const p of P.paths) for (let d = 0; d < p.len; d += 0.16) {
     const q = posAt(p, d), o = (rng() - 0.5) * 0.72;
-    ell(g, q.x - q.dy * o, q.y + q.dx * o, 0.025 + rng() * 0.03, 0.018 + rng() * 0.015, rng() < 0.5 ? 'rgba(25,18,10,.55)' : 'rgba(170,150,115,.35)');
+    ell(g, q.x - q.dy * o, q.y + q.dx * o, 0.025 + rng() * 0.03, 0.018 + rng() * 0.015, rng() < 0.5 ? TH.pebble[0] : TH.pebble[1]);
   }
   // scorched earth and lava cracks at the rifts
   const portals = P.paths.map(portalSpot).filter((s, i, a) => a.findIndex(o => Math.abs(o.x - s.x) < 0.1 && Math.abs(o.y - s.y) < 0.1) === i);
@@ -773,41 +1190,26 @@ function renderBg(li) {
     const rg = g.createRadialGradient(s.x, s.y, 0, s.x, s.y, 3.2);
     rg.addColorStop(0, 'rgba(48,6,8,.85)'); rg.addColorStop(0.45, 'rgba(38,8,8,.5)'); rg.addColorStop(1, 'rgba(30,8,8,0)');
     g.fillStyle = rg; g.beginPath(); g.arc(s.x, s.y, 3.2, 0, TAU); g.fill();
-    for (let k = 0; k < 6; k++) {
-      let x = s.x, y = s.y, a = s.v ? Math.PI + (rng() - 0.5) * 2.2 : Math.PI / 2 + (rng() - 0.5) * 2.2;
-      const pts = [[x, y]];
-      for (let j = 0; j < 7; j++) { a += (rng() - 0.5) * 0.9; x += Math.cos(a) * 0.22; y += Math.sin(a) * 0.22; pts.push([x, y]); }
-      for (const [w, col] of [[0.09, 'rgba(255,90,30,.14)'], [0.024, 'rgba(255,128,60,.6)']]) {
-        g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (const q of pts) g.lineTo(q[0], q[1]); g.lineWidth = w; g.strokeStyle = col; g.stroke();
-      }
-    }
+    const a0 = Math.atan2(s.iy, s.ix);
+    for (let k = 0; k < 6; k++) crack(g, rng, s.x, s.y, a0 + (rng() - 0.5) * 2.2, 7, 0.22);
   }
+  if (TH.cracks) for (let k = 0; k < 16; k++) crack(g, rng, rng() * COLS, rng() * 13, rng() * TAU, 5, 0.2);
   // scenery
   const items = [];
   const nearRoad = (c, r) => { for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) { const rr = r + dr, cc = c + dc; if (rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS && P.grid[rr][cc] === 1) return true; } return false; };
   const corrupt = (x, y) => Math.min(...portals.map(s => dist(x, y, s.x, s.y) / 3.2));
+  const treeKind = (x, y) => (TH.tree !== 'dead' && corrupt(x, y) < 1 && rng() > corrupt(x, y) * 0.75) ? 'dead' : TH.tree;
   for (let r = 0; r < 13; r++) for (let c = 0; c < COLS; c++) {
     if (P.grid[r][c] !== 0) continue;
     const x = c + 0.5 + (rng() - 0.5) * 0.3, y = r + 0.62 + (rng() - 0.5) * 0.22, cr = corrupt(x, y);
-    if (!nearRoad(c, r) && rng() < 0.62) items.push({ k: 'tree', x, y, s: 0.34 + rng() * 0.14, dead: cr < 1 && rng() > cr * 0.75, hue: rng() });
-    else if (rng() < 0.5) items.push({ k: ['bush', 'rocks', 'shroom', 'flowers'][Math.floor(rng() * 4)], x: c + 0.5 + (rng() - 0.5) * 0.5, y: r + 0.5 + (rng() - 0.5) * 0.5, s: rng(), dead: cr < 0.8 });
+    if (!nearRoad(c, r) && rng() < TH.treeChance) items.push({ k: 'tree', x, y, s: 0.34 + rng() * 0.14, kind: treeKind(x, y), hue: rng() });
+    else if (rng() < 0.5) items.push({ k: TH.deco[Math.floor(rng() * TH.deco.length)], x: c + 0.5 + (rng() - 0.5) * 0.5, y: r + 0.5 + (rng() - 0.5) * 0.5, dead: cr < 0.8, theme: L.theme });
   }
-  if (ex0 < -0.4) for (let x = ex0 + 0.3; x < -0.2; x += 0.75) for (let y = ey0 + 0.6; y < Math.min(ey1, 14.3); y += 0.8) items.push({ k: 'tree', x: x + rng() * 0.3, y: y + rng() * 0.3, s: 0.36 + rng() * 0.14, dead: corrupt(x, y) < 1 && rng() > 0.3, hue: rng() });
-  if (ex1 > COLS + 0.4) for (let x = COLS + 0.4; x < ex1; x += 0.75) for (let y = ey0 + 0.6; y < Math.min(ey1, 14.3); y += 0.8) items.push({ k: 'tree', x: x + rng() * 0.3, y: y + rng() * 0.3, s: 0.36 + rng() * 0.14, dead: corrupt(x, y) < 1 && rng() > 0.3, hue: rng() });
+  const edgeTrees = (xa, xb) => { for (let x = xa; x < xb; x += 0.75) for (let y = ey0 + 0.6; y < Math.min(ey1, 14.3); y += 0.8) { const tx = x + rng() * 0.3, ty = y + rng() * 0.3; items.push({ k: 'tree', x: tx, y: ty, s: 0.36 + rng() * 0.14, kind: treeKind(tx, ty), hue: rng() }); } };
+  if (ex0 < -0.4) edgeTrees(ex0 + 0.3, -0.2);
+  if (ex1 > COLS + 0.4) edgeTrees(COLS + 0.4, ex1);
   items.sort((a, b) => a.y - b.y);
-  for (const it of items) {
-    if (it.k === 'tree') drawTree(g, it.x, it.y, it.s, it.dead, it.hue);
-    else if (it.k === 'bush') { const h = it.dead ? 15 : 145; circ(g, it.x - 0.08, it.y, 0.12, `hsl(${h},32%,17%)`); circ(g, it.x + 0.08, it.y + 0.01, 0.11, `hsl(${h},32%,17%)`); circ(g, it.x, it.y - 0.06, 0.12, `hsl(${h},36%,23%)`); }
-    else if (it.k === 'rocks') { ell(g, it.x, it.y, 0.12, 0.08, '#58615b'); ell(g, it.x - 0.02, it.y - 0.02, 0.08, 0.05, '#727c75'); ell(g, it.x + 0.13, it.y + 0.04, 0.06, 0.04, '#5e6862'); }
-    else if (it.k === 'shroom') {
-      if (it.dead) { ell(g, it.x, it.y, 0.1, 0.05, 'rgba(255,90,40,.25)'); continue; }
-      glow(g, it.x, it.y - 0.05, 0.22, 'rgba(110,190,255,.22)');
-      for (const [dx, sc] of [[0, 1], [0.09, 0.7], [-0.08, 0.6]]) { line(g, it.x + dx, it.y, it.x + dx, it.y - 0.08 * sc, 0.022, '#d8e4ea'); g.beginPath(); g.arc(it.x + dx, it.y - 0.08 * sc, 0.055 * sc, Math.PI, 0); g.fillStyle = '#7cc6ff'; g.fill(); }
-    } else if (it.k === 'flowers') {
-      for (let i = 0; i < 5; i++) circ(g, it.x + Math.cos(i * 2.4) * 0.12, it.y + Math.sin(i * 2.4) * 0.07, 0.026, it.dead ? '#7a2a1f' : ['#f2a7c7', '#fff3c4', '#b8a6ff'][i % 3]);
-    }
-  }
-  // slots
+  for (const it of items) { if (it.k === 'tree') drawTree(g, it.x, it.y, it.s, it.kind, it.hue); else drawDeco(g, it); }
   for (const [c, r] of L.slots) drawSlotBase(g, c + 0.5, r + 0.5);
   // the city: spires behind the wall, then the wall and gates
   const gates = [...new Set(P.paths.map(p => p.pts[p.pts.length - 1].x))];
@@ -816,7 +1218,7 @@ function renderBg(li) {
     if (P.grid[13][c] !== 0 || P.grid[14][c] !== 0 || gates.some(gx => Math.abs(gx - (c + 0.5)) < 1)) continue;
     const x = c + 0.5 + (rng() - 0.5) * 0.2, top = 13.45 + rng() * 0.35;
     g.fillStyle = '#d9dfd6'; g.fillRect(x - 0.1, top + 0.2, 0.2, 14.6 - top);
-    poly(g, [x - 0.15, top + 0.22, x, top - 0.28, x + 0.15, top + 0.22], '#2f6b4a');
+    poly(g, [x - 0.15, top + 0.22, x, top - 0.28, x + 0.15, top + 0.22], L.theme === 'rift' ? '#5a2f6b' : '#2f6b4a');
     line(g, x, top - 0.28, x, top - 0.38, 0.02, '#e9c46a');
     circ(g, x, top + 0.42, 0.035, '#ffd98a');
   }
@@ -826,6 +1228,7 @@ function renderBg(li) {
   g.fillStyle = wg; g.fillRect(ex0, wy, ex1 - ex0, Math.max(1.2, ey1 - wy));
   g.fillStyle = '#c9d0c6';
   for (let x = Math.floor(ex0); x < ex1; x += 0.34) g.fillRect(x, wy - 0.11, 0.2, 0.12);
+  if (L.theme === 'snow') { g.fillStyle = '#ffffff'; for (let x = Math.floor(ex0); x < ex1; x += 0.34) g.fillRect(x - 0.02, wy - 0.14, 0.24, 0.05); }
   for (let x = Math.floor(ex0); x < ex1; x += 0.5) line(g, x, wy + 0.32, x, wy + 0.6, 0.012, 'rgba(70,80,72,.5)');
   line(g, ex0, wy + 0.3, ex1, wy + 0.3, 0.012, 'rgba(70,80,72,.5)');
   line(g, ex0, wy + 0.1, ex1, wy + 0.1, 0.03, '#c9a85a');
@@ -836,10 +1239,9 @@ function renderBg(li) {
     g.beginPath(); g.arc(gx, wy + 0.02, 0.36, Math.PI, 0); g.lineWidth = 0.04; g.strokeStyle = '#d8b45a'; g.stroke();
     for (const s of [-1, 1]) { const bx = gx + s * 0.95; if (bx < 0.2 || bx > COLS - 0.2) continue; g.fillStyle = '#2f7d52'; g.fillRect(bx - 0.1, wy + 0.12, 0.2, 0.36); poly(g, [bx - 0.1, wy + 0.48, bx + 0.1, wy + 0.48, bx, wy + 0.58], '#2f7d52'); circ(g, bx, wy + 0.28, 0.045, '#e9c46a'); }
   }
-  // vignette
   g.setTransform(1, 0, 0, 1, 0, 0);
   const vg = g.createRadialGradient(bg.width / 2, bg.height / 2, Math.min(bg.width, bg.height) * 0.35, bg.width / 2, bg.height / 2, Math.max(bg.width, bg.height) * 0.75);
-  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.45)');
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, L.theme === 'snow' ? 'rgba(20,30,45,.35)' : 'rgba(0,0,0,.45)');
   g.fillStyle = vg; g.fillRect(0, 0, bg.width, bg.height);
 }
 function drawPortal(g, p, time) {
@@ -892,7 +1294,7 @@ const Snd = {
   },
   play(name) {
     if (!this.on || !this.ac || this.ac.state !== 'running') return;
-    const now = this.ac.currentTime, gap = { arrow: 0.09, boom: 0.12, roots: 0.15, hit: 0.1, coin: 0.06, fall: 0.15 }[name] || 0.03;
+    const now = this.ac.currentTime, gap = { arrow: 0.09, bolt: 0.12, swoop: 0.12, slam: 0.15, curse: 0.3, boom: 0.12, roots: 0.15, hit: 0.1, coin: 0.06, fall: 0.15 }[name] || 0.03;
     if (this.last[name] && now - this.last[name] < gap) return;
     this.last[name] = now;
     try {
@@ -906,6 +1308,10 @@ const Snd = {
         case 'boom': this.noise(0.3, 0.12, 420); this.tone(180, 0.25, 'sine', 0.06, 70); break;
         case 'roots': this.tone(210, 0.22, 'sine', 0.05, 120); break;
         case 'fall': this.tone(392, 0.3, 'triangle', 0.05, 196); break;
+        case 'bolt': this.noise(0.08, 0.06, 4200); this.tone(900, 0.08, 'triangle', 0.025, 1400); break;
+        case 'swoop': this.tone(700, 0.18, 'sine', 0.04, 300); break;
+        case 'slam': this.noise(0.2, 0.1, 180); this.tone(90, 0.2, 'sine', 0.07, 50); break;
+        case 'curse': this.tone(330, 0.6, 'sawtooth', 0.035, 110); this.tone(311, 0.6, 'sawtooth', 0.025, 104, 0.05); break;
         case 'leak': this.tone(110, 0.45, 'square', 0.06, 55); break;
         case 'win': [523, 659, 784, 1046, 1318].forEach((f, i) => this.tone(f, 0.3, 'triangle', 0.06, 0, i * 0.12)); break;
         case 'lose': [392, 330, 262, 196].forEach((f, i) => this.tone(f, 0.45, 'sawtooth', 0.035, 0, i * 0.2)); break;
@@ -919,7 +1325,10 @@ document.addEventListener('pointerdown', () => Snd.init(), { capture: true });
 let S = null;
 let menuLi = 0;
 const UI = { sel: null, buildType: null, rally: null, speed: 1, paused: false, sellArm: 0 };
-let progress = store.get('silvenor.progress', { unlocked: 1, stars: [0, 0, 0] });
+let progress = store.get('silvenor.progress', { unlocked: 1, stars: [] });
+if (!progress || typeof progress !== 'object') progress = { unlocked: 1, stars: [] };
+if (!Array.isArray(progress.stars)) progress.stars = [];
+progress.unlocked = clamp(progress.unlocked | 0 || 1, 1, LEVELS.length);
 const amb = [];
 
 function newState(li) {
@@ -933,6 +1342,7 @@ function newState(li) {
 }
 const stats = t => TOWERS[t.type].levels[t.lvl];
 const sellValue = t => Math.floor(t.spent * 0.6);
+const available = (type, li) => TOWERS[type].from <= li;
 
 /* ---------- towers ---------- */
 function defaultRally(t) {
@@ -946,17 +1356,29 @@ function defaultRally(t) {
   return { x: best.x, y: best.y };
 }
 const FORM = [[-0.24, -0.1], [0.24, -0.1], [0, 0.2]];
-function syncHunters(t) {
+// Squad units: hunters hold one demon each (target); the treant holds several (held list) and has a longer reach.
+function syncUnits(t) {
+  const st = stats(t), big = t.type === 'ent';
+  while (t.units.length < st.count) t.units.push({ k: t.units.length, t, x: t.x, y: t.y + 0.25, hp: st.hp, maxHp: st.hp, alive: true, target: null, held: big ? [] : null, reach: big ? 0.62 : 0.45, cd: 0, respawn: 0, face: 1, flash: 0, swing: 0, moving: false });
+  for (const u of t.units) { u.maxHp = st.hp; if (u.alive) u.hp = st.hp; }
+}
+function syncGriffins(t) {
   const st = stats(t);
-  while (t.hunters.length < st.count) t.hunters.push({ k: t.hunters.length, t, x: t.x, y: t.y + 0.25, hp: st.hp, maxHp: st.hp, alive: true, target: null, cd: 0, respawn: 0, face: 1, flash: 0, swing: 0, moving: false });
-  for (const h of t.hunters) { h.maxHp = st.hp; if (h.alive) h.hp = st.hp; }
+  while (t.griffins.length < st.count) t.griffins.push({ x: t.x, y: t.y - 0.95, ang: t.griffins.length * Math.PI, state: 'home', target: null, cd: 0.4 + t.griffins.length * 0.7, face: 1, moving: false });
 }
 function makeTower(type, si) {
   const [c, r] = S.L.slots[si];
-  const t = { type, si, lvl: 0, x: c + 0.5, y: r + 0.5, cd: 0.3, spent: TOWERS[type].cost, aim: -Math.PI / 4, pop: 0, fire: 0 };
-  if (type === 'hunters') { t.hunters = []; t.rally = defaultRally(t); syncHunters(t); }
+  const t = { type, si, lvl: 0, x: c + 0.5, y: r + 0.5, cd: 0.3, spent: TOWERS[type].cost, aim: -Math.PI / 4, pop: 0, fire: 0, buff: 1, haste: 1, curse: 0 };
+  if (TOWERS[type].barracks) { t.units = []; t.rally = defaultRally(t); syncUnits(t); }
+  if (type === 'griffin') { t.griffins = []; syncGriffins(t); }
   return t;
 }
+function dropHold(u) {
+  if (u.target && u.target.blocker === u) u.target.blocker = null;
+  u.target = null;
+  if (u.held) { for (const e of u.held) if (e.blocker === u) e.blocker = null; u.held.length = 0; }
+}
+const holds = (u, e) => u.alive && (u.target === e || (u.held !== null && u.held.includes(e)));
 function findTarget(x, y, range, groundOnly, preferFresh) {
   let best = null, br = Infinity, alt = null, ar = Infinity;
   const r2 = range * range;
@@ -970,30 +1392,48 @@ function findTarget(x, y, range, groundOnly, preferFresh) {
   }
   return best || alt;
 }
+function findToughest(x, y, range) {
+  let best = null;
+  const r2 = range * range;
+  for (const e of S.enemies) {
+    if (!e.alive) continue;
+    const dx = e.x - x, dy = e.y - y;
+    if (dx * dx + dy * dy <= r2 && (!best || e.hp > best.hp)) best = e;
+  }
+  return best;
+}
 function updateTower(t, dt) {
   if (t.pop > 0) t.pop = Math.max(0, t.pop - dt);
   if (t.fire > 0) t.fire = Math.max(0, t.fire - dt);
+  if (t.curse > 0) t.curse = Math.max(0, t.curse - dt);
   const st = stats(t);
-  if (t.type === 'hunters') { updateLodge(t, st, dt); return; }
-  t.cd -= dt;
+  if (t.units) { updateSquad(t, st, dt); return; }
+  if (t.curse > 0) return;
+  if (t.type === 'bard') { healAura(t, st, dt); return; }
+  if (t.type === 'griffin') { updateNest(t, st, dt); return; }
+  t.cd -= dt * t.haste;
   if (t.cd > 0) return;
-  const e = findTarget(t.x, t.y, st.range, t.type === 'druid', t.type === 'druid');
+  const e = t.type === 'ranger' ? findToughest(t.x, t.y, st.range) : findTarget(t.x, t.y, st.range, t.type === 'druid', t.type === 'druid');
   if (!e) { t.cd = 0; return; }
   t.cd = st.cd; t.fire = 0.25;
-  const top = towerTop(t.type, t.lvl, t.y);
-  t.aim = Math.atan2(e.y - e.D.hit - (top + 0.1), e.x - t.x);
+  const top = towerTop(t.type, t.lvl, t.y), dmg = rint(st.dmg) * t.buff, hy = e.y - e.D.hit * DEMON_SC;
+  t.aim = Math.atan2(hy - (top + 0.1), e.x - t.x);
   if (t.type === 'archer') {
-    S.projectiles.push({ kind: 'arrow', x: t.x + Math.cos(t.aim) * 0.2, y: top + 0.04, tgt: e, tx: e.x, ty: e.y - e.D.hit, gx: e.x, gy: e.y, speed: 11, dmg: rint(st.dmg), ang: t.aim });
+    S.projectiles.push({ kind: 'arrow', x: t.x + Math.cos(t.aim) * 0.2, y: top + 0.04, tgt: e, tx: e.x, ty: hy, gx: e.x, gy: e.y, speed: 11, dmg, ang: t.aim });
     Snd.play('arrow');
+  } else if (t.type === 'ranger') {
+    const crit = !!st.crit && Math.random() < st.crit;
+    S.projectiles.push({ kind: 'bolt', x: t.x + Math.cos(t.aim) * 0.25, y: top + 0.04, tgt: e, tx: e.x, ty: hy, gx: e.x, gy: e.y, speed: 20, dmg: crit ? dmg * 2 : dmg, crit, ang: t.aim });
+    Snd.play('bolt');
   } else if (t.type === 'mage') {
-    S.projectiles.push({ kind: 'orb', x: t.x, y: top, tgt: e, tx: e.x, ty: e.y - e.D.hit, gx: e.x, gy: e.y, speed: 6.5, dmg: rint(st.dmg), splash: st.splash, ang: 0 });
+    S.projectiles.push({ kind: 'orb', x: t.x, y: top, tgt: e, tx: e.x, ty: hy, gx: e.x, gy: e.y, speed: 6.5, dmg, splash: st.splash, ang: 0 });
   } else {
     const gx = e.x, gy = e.y;
     S.fx.push({ k: 'beam', x: t.x + 0.32, y: t.y - 0.18, x2: gx, y2: gy, t: 0, life: 0.3 });
     S.fx.push({ k: 'roots', x: gx, y: gy, r: st.area, t: 0, life: 1.0, seed: Math.random() * 10, ground: true });
     for (const o of S.enemies) {
       if (!o.alive || o.flying || dist(o.x, o.y, gx, gy) > st.area) continue;
-      damage(o, rint(st.dmg), 'magic');
+      damage(o, dmg, 'magic');
       if (!o.alive) continue;
       const sl = o.D.boss ? st.slow * 0.5 : st.slow;
       o.slowF = Math.min(o.slowF, 1 - sl); o.slowT = Math.max(o.slowT, st.slowT);
@@ -1003,8 +1443,58 @@ function updateTower(t, dt) {
     Snd.play('roots');
   }
 }
+function healAura(b, st, dt) {
+  for (const t of S.towers) if (t && t.units) for (const u of t.units) if (u.alive && u.hp < u.maxHp && dist(u.x, u.y, b.x, b.y) <= st.range) u.hp = Math.min(u.maxHp, u.hp + st.heal * dt);
+}
+// Harpist songs and shield-bearer cover, recomputed every step.
+function computeAuras() {
+  for (const t of S.towers) if (t) { t.buff = 1; t.haste = 1; }
+  for (const b of S.towers) {
+    if (!b || b.type !== 'bard' || b.curse > 0) continue;
+    const st = stats(b);
+    for (const t of S.towers) if (t && t.type !== 'bard' && dist(t.x, t.y, b.x, b.y) <= st.range + 0.01) { t.buff = Math.max(t.buff, 1 + st.boost); t.haste = Math.max(t.haste, 1 + (st.haste || 0)); }
+  }
+  let shields = null;
+  for (const e of S.enemies) { e.shielded = false; if (e.alive && e.D.aura) (shields || (shields = [])).push(e); }
+  if (shields) for (const s of shields) for (const e of S.enemies) if (e !== s && e.alive && dist(e.x, e.y, s.x, s.y) < 1.3) e.shielded = true;
+}
 
-/* ---------- hunters ---------- */
+/* ---------- griffins ---------- */
+function griffinTarget(t, st) {
+  let air = null, ar = Infinity, ground = null, gr = Infinity;
+  const r2 = st.range * st.range;
+  for (const e of S.enemies) {
+    if (!e.alive) continue;
+    const dx = e.x - t.x, dy = e.y - t.y;
+    if (dx * dx + dy * dy > r2) continue;
+    const rem = S.paths[e.pi].len - e.d;
+    if (e.flying) { if (rem < ar) { air = e; ar = rem; } } else if (rem < gr) { ground = e; gr = rem; }
+  }
+  return air || ground;
+}
+function updateNest(t, st, dt) {
+  for (const b of t.griffins) {
+    b.cd -= dt * t.haste;
+    const hx = t.x + Math.cos(b.ang) * 0.32, hy = t.y - 0.95 + Math.sin(b.ang) * 0.1;
+    if (b.state === 'home') {
+      b.ang += dt * 1.6;
+      moveToward(b, hx, hy, 2.5 * dt);
+      if (b.cd <= 0) { const e = griffinTarget(t, st); if (e) { b.state = 'dive'; b.target = e; } else b.cd = 0.1; }
+    } else if (b.state === 'dive') {
+      let e = b.target;
+      if (!e || !e.alive || dist(e.x, e.y, t.x, t.y) > st.range + 1) { e = b.target = griffinTarget(t, st); if (!e) { b.state = 'back'; continue; } }
+      const ty = e.y - e.D.hit * DEMON_SC;
+      if (moveToward(b, e.x, ty, 6 * dt)) {
+        damage(e, rint(st.dmg) * t.buff * (e.flying ? 2 : 1), 'phys');
+        burst(b.x, b.y, 6, '#f4efe2', 1, 0.35, 0.035);
+        Snd.play('swoop');
+        b.state = 'back'; b.target = null; b.cd = st.cd;
+      }
+    } else if (moveToward(b, hx, hy, 4 * dt)) b.state = 'home';
+  }
+}
+
+/* ---------- squads: hunters and the treant ---------- */
 function moveToward(o, tx, ty, step) {
   const dx = tx - o.x, dy = ty - o.y, d = Math.hypot(dx, dy);
   if (d <= step) { o.x = tx; o.y = ty; o.moving = false; return true; }
@@ -1021,49 +1511,74 @@ function pickForHunter(rx, ry) {
   }
   return best || assist;
 }
-function updateLodge(t, st, dt) {
+function updateSquad(t, st, dt) {
   const rx = t.rally.x, ry = t.rally.y;
-  for (const h of t.hunters) {
-    if (!h.alive) {
-      h.respawn -= dt;
-      if (h.respawn <= 0) { h.alive = true; h.hp = h.maxHp; h.x = t.x; h.y = t.y + 0.25; h.target = null; burst(h.x, h.y - 0.1, 6, '#9be8b0', 0.6, 0.5, 0.04, 0.4); }
+  for (const u of t.units) {
+    if (!u.alive) {
+      if (t.curse > 0) continue;
+      u.respawn -= dt;
+      if (u.respawn <= 0) { u.alive = true; u.hp = u.maxHp; u.x = t.x; u.y = t.y + 0.25; u.target = null; if (u.held) u.held.length = 0; burst(u.x, u.y - 0.1, 6, '#9be8b0', 0.6, 0.5, 0.04, 0.4); }
       continue;
     }
-    if (h.flash > 0) h.flash -= dt;
-    if (h.swing > 0) h.swing -= dt;
-    let e = h.target;
-    if (e && (!e.alive || dist(e.x, e.y, rx, ry) > 1.9)) { if (e.blocker === h) e.blocker = null; h.target = e = null; }
-    if (!e || e.blocker !== h) {
-      const ne = pickForHunter(rx, ry);
-      if (ne && !ne.blocker) { h.target = ne; ne.blocker = h; e = ne; }
-      else if (ne && !e) { h.target = ne; e = ne; }
-    }
-    if (e) {
-      let tx, ty;
-      if (e.blocker === h) { tx = e.x + e.dirx * 0.3; ty = e.y + e.diry * 0.3; }
-      else { const s = h.k % 2 ? 1 : -1; tx = e.x - e.diry * 0.3 * s; ty = e.y + e.dirx * 0.3 * s; }
-      moveToward(h, tx, ty, 2.4 * dt);
-      if (dist(h.x, h.y, e.x, e.y) < 0.5) {
-        h.face = e.x >= h.x ? 1 : -1;
-        h.cd -= dt;
-        if (h.cd <= 0) { h.cd = st.cd; h.swing = 0.2; damage(e, rint(st.dmg), 'phys'); }
-      }
-    } else {
-      const f = FORM[h.k % 3];
-      moveToward(h, rx + f[0], ry + f[1], 2.0 * dt);
-      if (h.hp < h.maxHp) h.hp = Math.min(h.maxHp, h.hp + h.maxHp * 0.08 * dt);
-    }
+    if (u.flash > 0) u.flash -= dt;
+    if (u.swing > 0) u.swing -= dt;
+    if (u.held) updateEnt(u, t, st, rx, ry, dt); else updateHunter(u, t, st, rx, ry, dt);
   }
 }
-function hitHunter(h, dmg) {
-  const st = stats(h.t);
-  h.hp -= dmg * (1 - (st.armor || 0)); h.flash = 0.1;
-  burst(h.x, h.y - 0.12, 4, '#ffd2a0', 1, 0.25, 0.035);
-  if (h.hp <= 0) {
-    h.alive = false; h.respawn = st.respawn;
-    if (h.target && h.target.blocker === h) h.target.blocker = null;
-    h.target = null;
-    burst(h.x, h.y - 0.1, 12, '#9be8b0', 0.7, 1.0, 0.045, 0.8);
+function updateHunter(h, t, st, rx, ry, dt) {
+  let e = h.target;
+  if (e && (!e.alive || dist(e.x, e.y, rx, ry) > 1.9)) { if (e.blocker === h) e.blocker = null; h.target = e = null; }
+  if (!e || e.blocker !== h) {
+    const ne = pickForHunter(rx, ry);
+    if (ne && !ne.blocker) { h.target = ne; ne.blocker = h; e = ne; }
+    else if (ne && !e) { h.target = ne; e = ne; }
+  }
+  if (e) {
+    let tx, ty;
+    if (e.blocker === h) { tx = e.x + e.dirx * 0.3; ty = e.y + e.diry * 0.3; }
+    else { const s = h.k % 2 ? 1 : -1; tx = e.x - e.diry * 0.3 * s; ty = e.y + e.dirx * 0.3 * s; }
+    moveToward(h, tx, ty, 2.4 * dt);
+    if (dist(h.x, h.y, e.x, e.y) < 0.5) {
+      h.face = e.x >= h.x ? 1 : -1;
+      h.cd -= dt * t.haste;
+      if (h.cd <= 0) { h.cd = st.cd; h.swing = 0.2; damage(e, rint(st.dmg) * t.buff, 'phys'); }
+    }
+  } else {
+    const f = FORM[h.k % 3];
+    moveToward(h, rx + f[0], ry + f[1], 2.0 * dt);
+    if (h.hp < h.maxHp) h.hp = Math.min(h.maxHp, h.hp + h.maxHp * 0.08 * dt);
+  }
+}
+function updateEnt(u, t, st, rx, ry, dt) {
+  if (u.held.length) u.held = u.held.filter(e => e.alive && e.blocker === u);
+  if (!u.held.length) {
+    moveToward(u, rx, ry, 1.1 * dt);
+    if (u.hp < u.maxHp) u.hp = Math.min(u.maxHp, u.hp + u.maxHp * 0.05 * dt);
+  } else u.moving = false;
+  if (u.held.length < st.hold) for (const e of S.enemies) {
+    if (u.held.length >= st.hold) break;
+    if (!e.alive || e.flying || e.blocker || dist(e.x, e.y, u.x, u.y) > u.reach) continue;
+    e.blocker = u; u.held.push(e);
+  }
+  if (!u.held.length) return;
+  u.face = u.held[0].x >= u.x ? 1 : -1;
+  u.cd -= dt * t.haste;
+  if (u.cd > 0) return;
+  u.cd = st.cd; u.swing = 0.35;
+  const dmg = rint(st.dmg) * t.buff;
+  for (const e of u.held.slice()) damage(e, dmg, 'phys');
+  S.fx.push({ k: 'ring', x: u.x + u.face * 0.15, y: u.y, r0: 0.1, r1: 0.7, t: 0, life: 0.35, color: '170,225,120', ground: true });
+  Snd.play('slam');
+}
+function hitUnit(u, dmg, e) {
+  const st = stats(u.t);
+  u.hp -= dmg * (1 - (st.armor || 0)); u.flash = 0.1;
+  burst(u.x, u.y - (u.held ? 0.35 : 0.12), 4, u.held ? '#c9a27a' : '#ffd2a0', 1, 0.25, 0.035);
+  if (st.thorns && e) damage(e, st.thorns, 'phys');
+  if (u.hp <= 0) {
+    u.alive = false; u.respawn = st.respawn;
+    dropHold(u);
+    burst(u.x, u.y - 0.2, u.held ? 22 : 12, '#9be8b0', 0.8, 1.0, 0.05, 0.8);
     Snd.play('fall');
   }
 }
@@ -1082,7 +1597,7 @@ function spawnEnemy(type, pi, d) {
     type, D, pi, d: d || 0, hp, maxHp: hp, alive: true, x: 0, y: 0, ox: 0, oy: 0, dirx: 0, diry: 1, face: 1,
     off: D.boss ? 0 : rand(-0.18, 0.18), speed: D.speed * rand(0.94, 1.06), slowF: 1, slowT: 0, stunT: 0,
     blocker: null, engaged: false, cdT: (D.cd || 1) * 0.5, atk: 0, flash: 0, phase: Math.random() * TAU,
-    flying: !!D.flying, healT: 2 + Math.random(), summonT: 6,
+    flying: !!D.flying, healT: 2 + Math.random(), summonT: 6, curseT: 4, shielded: false,
   };
   placeEnemy(e, 0); S.enemies.push(e);
   return e;
@@ -1093,11 +1608,11 @@ function updateEnemy(e, dt) {
   if (e.atk > 0) e.atk -= dt;
   if (e.slowT > 0) { e.slowT -= dt; if (e.slowT <= 0) e.slowF = 1; }
   if (e.stunT > 0) e.stunT -= dt;
-  if (e.blocker && (!e.blocker.alive || e.blocker.target !== e)) e.blocker = null;
-  e.engaged = !!(e.blocker && dist(e.x, e.y, e.blocker.x, e.blocker.y) < 0.45);
+  if (e.blocker && !holds(e.blocker, e)) e.blocker = null;
+  e.engaged = !!(e.blocker && dist(e.x, e.y, e.blocker.x, e.blocker.y) < e.blocker.reach);
   if (e.engaged) {
     e.cdT -= dt; e.phase += dt * 2;
-    if (e.cdT <= 0) { e.cdT = D.cd; e.atk = 0.22; hitHunter(e.blocker, D.dmg); }
+    if (e.cdT <= 0) { e.cdT = D.cd; e.atk = 0.22; hitUnit(e.blocker, D.dmg, e); if (!e.alive) return; }
   } else {
     e.cdT = (D.cd || 1) * 0.5;
     if (e.stunT <= 0) {
@@ -1107,17 +1622,29 @@ function updateEnemy(e, dt) {
     }
   }
   if (D.heal) { e.healT -= dt; if (e.healT <= 0) { e.healT = 3.5; healAround(e); } }
-  if (D.boss) { e.summonT -= dt; if (e.summonT <= 0) { e.summonT = 7; for (let k = 0; k < 2; k++) spawnEnemy('imp', e.pi, Math.max(0, e.d - 0.4 - k * 0.3)); S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.3, r1: 1.2, t: 0, life: 0.6, color: '255,90,40', ground: true }); } }
+  if (D.summon) { e.summonT -= dt; if (e.summonT <= 0) { e.summonT = 7; for (let k = 0; k < 2; k++) spawnEnemy('imp', e.pi, Math.max(0, e.d - 0.4 - k * 0.3)); S.fx.push({ k: 'ring', x: e.x, y: e.y, r0: 0.3, r1: 1.2, t: 0, life: 0.6, color: '255,90,40', ground: true }); } }
+  if (D.curse) { e.curseT -= dt; if (e.curseT <= 0) { e.curseT = 8; curseTower(e); } }
   placeEnemy(e, dt);
+}
+function curseTower(e) {
+  let best = null, bd = 3.4;
+  for (const t of S.towers) if (t && t.curse <= 0) { const d = dist(t.x, t.y, e.x, e.y); if (d < bd) { bd = d; best = t; } }
+  if (!best) return;
+  best.curse = 5;
+  S.fx.push({ k: 'curse', x: e.x + e.face * 0.5, y: e.y - 1.6, x2: best.x, y2: best.y - 0.4, t: 0, life: 0.7 });
+  addText('Проклятие', best.x, best.y - 1.0, '#e2b5ff', 15);
+  Snd.play('curse');
 }
 function healAround(w) {
   let n = 0;
   for (const o of S.enemies) if (o.alive && o !== w && o.hp < o.maxHp && dist(o.x, o.y, w.x, w.y) < 1.4) { o.hp = Math.min(o.maxHp, o.hp + o.maxHp * 0.1); n++; }
   if (n) S.fx.push({ k: 'ring', x: w.x, y: w.y, r0: 0.2, r1: 1.4, t: 0, life: 0.6, color: '210,100,255', ground: true });
 }
+// phys: armour applies; pierce: half the armour; magic: magic resistance applies
 function damage(e, amt, type) {
   if (!e.alive) return;
-  e.hp -= amt * (type === 'magic' ? 1 - (e.D.mres || 0) : 1 - (e.D.armor || 0));
+  const res = type === 'magic' ? (e.D.mres || 0) : type === 'pierce' ? (e.D.armor || 0) * 0.5 : (e.D.armor || 0);
+  e.hp -= amt * (1 - res) * (e.shielded ? 0.8 : 1);
   e.flash = 0.08;
   if (e.hp <= 0) kill(e);
 }
@@ -1125,9 +1652,10 @@ function kill(e) {
   e.alive = false; S.gold += e.D.bounty; S.kills++;
   if (e.blocker) e.blocker = null;
   addText('+' + e.D.bounty, e.x, e.y - e.D.bar * DEMON_SC, '#f3d685', e.D.boss ? 22 : 14);
-  burst(e.x, e.y - e.D.hit, e.D.boss ? 60 : 12, '#ff7a3a', e.D.boss ? 2.4 : 1.4, 0.8, 0.06, 0.9);
+  burst(e.x, e.y - e.D.hit, e.D.boss ? 60 : 12, e.D.curse ? '#c46bff' : '#ff7a3a', e.D.boss ? 2.4 : 1.4, 0.8, 0.06, 0.9);
   burst(e.x, e.y - e.D.hit, e.D.boss ? 20 : 5, 'rgba(40,20,20,.8)', 0.6, 0.7, 0.09, 0.4);
-  if (e.D.boss) { S.shake = 0.6; banner('Архидемон повержен', '+' + e.D.bounty + ' монет'); }
+  if (e.D.split) for (let k = 0; k < e.D.split; k++) { const s = spawnEnemy('spark', e.pi, Math.max(0, e.d - k * 0.18)); s.off = rand(-0.25, 0.25); }
+  if (e.D.boss) { S.shake = reduceMotion ? 0 : 0.6; banner(e.D.title, '+' + e.D.bounty + ' монет'); }
   Snd.play('coin');
 }
 function leak(e) {
@@ -1146,7 +1674,13 @@ function updateProj(p, dt) {
   if (d > 0.001) p.ang = Math.atan2(dy, dx);
   if (d <= step + 0.02) {
     p.dead = true;
-    if (p.kind === 'arrow') { if (p.tgt) { damage(p.tgt, p.dmg, 'phys'); burst(p.tx, p.ty, 3, '#f5e6c8', 0.8, 0.2, 0.03); } }
+    if (p.kind === 'arrow' || p.kind === 'bolt') {
+      if (p.tgt) {
+        damage(p.tgt, p.dmg, p.kind === 'bolt' ? 'pierce' : 'phys');
+        burst(p.tx, p.ty, p.kind === 'bolt' ? 6 : 3, p.crit ? '#ffe7a0' : '#f5e6c8', 0.8, 0.2, 0.03);
+        if (p.crit) addText('×2', p.tx, p.ty - 0.3, '#ffe7a0', 15);
+      }
+    }
     else {
       for (const o of S.enemies) if (o.alive && dist(o.x, o.y, p.gx, p.gy) <= p.splash) damage(o, p.dmg, 'magic');
       S.fx.push({ k: 'ring', x: p.gx, y: p.gy, r0: 0.1, r1: p.splash, t: 0, life: 0.38, color: '170,220,255', ground: true });
@@ -1180,6 +1714,10 @@ function drawFx(g, f) {
   if (f.k === 'p') { g.globalAlpha = a; circ(g, f.x, f.y, f.size, f.color); g.globalAlpha = 1; }
   else if (f.k === 'ring') { g.beginPath(); g.ellipse(f.x, f.y, lerp(f.r0, f.r1, k), lerp(f.r0, f.r1, k) * 0.55, 0, 0, TAU); g.lineWidth = 0.05; g.strokeStyle = `rgba(${f.color},${a * 0.8})`; g.stroke(); g.fillStyle = `rgba(${f.color},${a * 0.12})`; g.fill(); }
   else if (f.k === 'beam') { g.beginPath(); g.moveTo(f.x, f.y); g.quadraticCurveTo((f.x + f.x2) / 2, Math.min(f.y, f.y2) - 0.6, f.x2, f.y2); g.lineWidth = 0.04; g.strokeStyle = `rgba(150,255,140,${a * 0.8})`; g.stroke(); }
+  else if (f.k === 'curse') {
+    const mx = (f.x + f.x2) / 2 + Math.sin(f.t * 30) * 0.15, my = (f.y + f.y2) / 2 - 0.4;
+    for (const [w, col] of [[0.07, `rgba(200,120,255,${a * 0.8})`], [0.022, `rgba(255,230,255,${a})`]]) { g.beginPath(); g.moveTo(f.x, f.y); g.quadraticCurveTo(mx, my, f.x2, f.y2); g.lineWidth = w; g.strokeStyle = col; g.stroke(); }
+  }
   else if (f.k === 'roots') {
     const grow = Math.min(1, f.t / 0.2), fade = f.t > f.life - 0.3 ? (f.life - f.t) / 0.3 : 1;
     ell(g, f.x, f.y + 0.05, f.r * 0.9, f.r * 0.4, `rgba(80,160,70,${0.18 * fade})`);
@@ -1235,6 +1773,7 @@ function endWave() {
 function update(dt) {
   S.time += dt;
   updateWave(dt);
+  computeAuras();
   for (const e of S.enemies) if (e.alive) updateEnemy(e, dt);
   for (const t of S.towers) if (t) updateTower(t, dt);
   for (const p of S.projectiles) updateProj(p, dt);
@@ -1274,33 +1813,34 @@ function drawWorld(g, time) {
     }
   });
   // ranges
+  const ringColor = type => TOWERS[type].barracks ? '134,215,160' : type === 'bard' ? '200,170,255' : '233,196,106';
   if (sel) {
     const t = S.towers[sel.si], [c, r] = S.L.slots[sel.si];
-    if (t) rangeCircle(g, t.x, t.y, stats(t).range, t.type === 'hunters' ? '134,215,160' : '233,196,106');
-    else if (UI.buildType) rangeCircle(g, c + 0.5, r + 0.5, TOWERS[UI.buildType].levels[0].range, '233,196,106');
+    if (t) rangeCircle(g, t.x, t.y, stats(t).range, ringColor(t.type));
+    else if (UI.buildType && available(UI.buildType, S.li)) rangeCircle(g, c + 0.5, r + 0.5, TOWERS[UI.buildType].levels[0].range, ringColor(UI.buildType));
   }
-  if (UI.rally != null) {
-    const t = S.towers[UI.rally];
-    if (t) { rangeCircle(g, t.x, t.y, stats(t).range, '134,215,160'); }
-  }
+  if (UI.rally != null) { const t = S.towers[UI.rally]; if (t) rangeCircle(g, t.x, t.y, stats(t).range, '134,215,160'); }
   // rally flags
   for (const t of S.towers) if (t && t.rally) {
     const on = (sel && sel.si === t.si) || UI.rally === t.si;
     if (on) { g.beginPath(); g.ellipse(t.rally.x, t.rally.y, 1.25, 0.8, 0, 0, TAU); g.lineWidth = 0.02; g.strokeStyle = 'rgba(134,215,160,.35)'; g.stroke(); }
     drawFlag(g, t.rally.x + 0.32, t.rally.y + 0.22, on ? 1 : 0.55);
   }
+  // songs under buffed towers, shield cover under demons
+  for (const t of S.towers) if (t && t.buff > 1) { g.beginPath(); g.ellipse(t.x, t.y + 0.18, 0.44, 0.2, 0, 0, TAU); g.lineWidth = 0.03; g.strokeStyle = `rgba(200,170,255,${0.45 + 0.2 * Math.sin(time * 3 + t.si)})`; g.stroke(); }
+  for (const e of S.enemies) if (e.D.aura) { g.beginPath(); g.ellipse(e.x, e.y, 1.3, 0.72, 0, 0, TAU); g.lineWidth = 0.025; g.setLineDash([0.1, 0.08]); g.strokeStyle = 'rgba(255,120,80,.4)'; g.stroke(); g.setLineDash([]); }
   for (const f of S.fx) if (f.ground) drawFx(g, f);
   // depth-sorted ground objects
   const list = [];
   for (const t of S.towers) if (t) {
     list.push([t.y + 0.22, 0, t]);
-    if (t.hunters) for (const h of t.hunters) if (h.alive) list.push([h.y, 1, h]);
+    if (t.units) for (const u of t.units) if (u.alive) list.push([u.y, 1, u]);
   }
   for (const e of S.enemies) if (!e.flying) list.push([e.y, 2, e]);
   list.sort((a, b) => a[0] - b[0]);
   for (const [, k, o] of list) {
     if (k === 0) drawTowerObj(g, o, time);
-    else if (k === 1) scaled(g, o, HUNTER_SC, () => drawHunter(g, o, time));
+    else if (k === 1) scaled(g, o, HUNTER_SC, () => drawSquadUnit(g, o, time));
     else scaled(g, o, DEMON_SC, () => drawDemon(g, o, time));
   }
   for (const p of S.projectiles) {
@@ -1310,21 +1850,23 @@ function drawWorld(g, time) {
       poly(g, [0.11, 0, 0.04, -0.03, 0.04, 0.03], '#eef3f5');
       poly(g, [-0.2, 0, -0.25, -0.035, -0.15, 0], '#86d7a0'); poly(g, [-0.2, 0, -0.25, 0.035, -0.15, 0], '#86d7a0');
       g.restore();
+    } else if (p.kind === 'bolt') {
+      const bx = Math.cos(p.ang), by = Math.sin(p.ang);
+      line(g, p.x - bx * 0.55, p.y - by * 0.55, p.x, p.y, 0.06, p.crit ? 'rgba(255,215,120,.35)' : 'rgba(170,215,255,.3)');
+      line(g, p.x - bx * 0.4, p.y - by * 0.4, p.x, p.y, 0.022, p.crit ? '#ffe7a0' : '#e8f4ff');
     } else { glow(g, p.x, p.y, 0.25, 'rgba(160,215,255,.55)'); circ(g, p.x, p.y, 0.07, '#f0f9ff'); }
   }
   const fl = S.enemies.filter(e => e.flying).sort((a, b) => a.y - b.y);
   for (const e of fl) scaled(g, e, DEMON_SC, () => drawDemon(g, e, time));
+  for (const t of S.towers) if (t && t.griffins) for (const b of t.griffins) scaled(g, b, 1.1, () => drawGriffinBird(g, b.x, b.y, b.face, time + t.si, b.state === 'dive'));
   for (const f of S.fx) if (!f.ground) drawFx(g, f);
   // health bars
-  for (const e of S.enemies) if (e.hp < e.maxHp) {
-    const w = e.D.boss ? 1.1 : e.D === DEMONS.brute ? 0.55 : 0.4;
-    hpBar(g, e.x, e.y - e.D.bar * DEMON_SC, w, e.hp / e.maxHp, e.D.boss ? '#ff7a2f' : '#e0475e');
-  }
-  for (const t of S.towers) if (t && t.hunters) {
+  for (const e of S.enemies) if (e.hp < e.maxHp) hpBar(g, e.x, e.y - e.D.bar * DEMON_SC, e.D.barW || 0.4, e.hp / e.maxHp, e.D.boss ? '#ff7a2f' : '#e0475e');
+  for (const t of S.towers) if (t && t.units) {
     let dead = 0, next = Infinity;
-    for (const h of t.hunters) {
-      if (h.alive && h.hp < h.maxHp) hpBar(g, h.x, h.y - 0.36 * HUNTER_SC, 0.26, h.hp / h.maxHp, '#7fd48f');
-      if (!h.alive) { dead++; next = Math.min(next, h.respawn); }
+    for (const u of t.units) {
+      if (u.alive && u.hp < u.maxHp) hpBar(g, u.x, u.y - (u.held ? 1.08 : 0.36) * HUNTER_SC, u.held ? 0.45 : 0.26, u.hp / u.maxHp, '#7fd48f');
+      if (!u.alive) { dead++; next = Math.min(next, u.respawn); }
     }
     if (dead) {
       const bx = t.x + 0.3, by = t.y - 0.62, frac = 1 - next / stats(t).respawn;
@@ -1341,6 +1883,12 @@ function drawTowerObj(g, t, time) {
   if (s !== 1) { g.save(); g.translate(t.x, t.y + 0.25); g.scale(s, s); g.translate(-t.x, -(t.y + 0.25)); }
   drawTower(g, t.type, t.lvl, t.x, t.y, time + t.si * 0.7, t.aim, t.fire);
   if (s !== 1) g.restore();
+  if (t.curse > 0) {
+    const a = Math.min(1, t.curse) * 0.85;
+    glow(g, t.x, t.y - 0.3, 0.62, `rgba(110,30,170,${a * 0.6})`);
+    g.lineWidth = 0.028; g.strokeStyle = `rgba(210,150,255,${a})`;
+    for (let i = 0; i < 2; i++) { g.beginPath(); g.ellipse(t.x, t.y - 0.2 - i * 0.32, 0.32, 0.1, 0, time * 2 + i, time * 2 + i + 4.6); g.stroke(); }
+  }
   for (let i = 0; i <= t.lvl; i++) {
     const px = t.x - t.lvl * 0.09 + i * 0.18, py = t.y + 0.38;
     poly(g, [px, py - 0.055, px + 0.045, py, px, py + 0.055, px - 0.045, py], '#e9c46a');
@@ -1351,11 +1899,29 @@ function updateAmbient(dt, li) {
   for (const p of P.paths) {
     if (Math.random() < dt * 5 && amb.length < 120) {
       const s = portalSpot(p);
-      amb.push({ x: s.x + rand(-0.4, 0.4) * (s.v ? 0.3 : 1), y: s.y + rand(-0.4, 0.4) * (s.v ? 1 : 0.3), vx: rand(-0.15, 0.15) + (s.v ? -0.25 : 0), vy: s.v ? rand(-0.2, 0.2) : rand(0.15, 0.4), t: 0, life: rand(1, 2.2) });
+      amb.push({ x: s.x + rand(-0.4, 0.4) * (s.v ? 0.3 : 1), y: s.y + rand(-0.4, 0.4) * (s.v ? 1 : 0.3), vx: rand(-0.15, 0.15) + s.ix * 0.25, vy: s.v ? rand(-0.2, 0.2) : rand(0.15, 0.4), t: 0, life: rand(1, 2.2) });
     }
   }
   for (const a of amb) { a.t += dt; a.x += a.vx * dt; a.y += a.vy * dt - 0.1 * dt; }
   for (let i = amb.length - 1; i >= 0; i--) if (amb[i].t > amb[i].life) amb.splice(i, 1);
+}
+function drawAir(g, kind, time) {
+  if (kind === 'fireflies') {
+    for (let i = 0; i < 9; i++) {
+      const fx = (i * 1.07 + Math.sin(time * 0.4 + i) * 0.6 + 0.4) % COLS, fy = 10.6 + ((i * 0.53) % 2.8) + Math.sin(time * 0.7 + i * 2) * 0.35;
+      glow(g, fx, fy, 0.09, `rgba(220,255,150,${0.35 + 0.35 * Math.sin(time * 2 + i)})`);
+    }
+  } else if (kind === 'snow') {
+    for (let i = 0; i < 46; i++) {
+      const sp = 0.5 + (i % 7) * 0.08, y = ((i * 2.37 + time * sp) % (ROWS + 1)) - 0.5, x = ((i * 1.93) % COLS) + Math.sin(time * 0.8 + i) * 0.3;
+      circ(g, x, y, 0.025 + (i % 3) * 0.008, 'rgba(255,255,255,.75)');
+    }
+  } else if (kind === 'ash') {
+    for (let i = 0; i < 34; i++) {
+      const sp = 0.25 + (i % 5) * 0.06, y = ROWS + 0.5 - ((i * 2.11 + time * sp) % (ROWS + 1)), x = ((i * 2.71) % COLS) + Math.sin(time * 0.6 + i) * 0.4;
+      circ(g, x, y, 0.022 + (i % 3) * 0.008, i % 4 ? 'rgba(170,160,160,.5)' : 'rgba(255,130,60,.7)');
+    }
+  }
 }
 function render(time) {
   const li = S ? S.li : menuLi;
@@ -1367,11 +1933,7 @@ function render(time) {
   ctx.drawImage(bg, sx * dpr, sy * dpr);
   ctx.setTransform(dpr * ts, 0, 0, dpr * ts, dpr * (offX + sx), dpr * (offY + sy));
   for (const p of PREP[li].paths) drawPortal(ctx, p, time);
-  // fireflies near the city
-  for (let i = 0; i < 9; i++) {
-    const fx = (i * 1.07 + Math.sin(time * 0.4 + i) * 0.6 + 0.4) % COLS, fy = 10.6 + ((i * 0.53) % 2.8) + Math.sin(time * 0.7 + i * 2) * 0.35;
-    glow(ctx, fx, fy, 0.09, `rgba(220,255,150,${0.35 + 0.35 * Math.sin(time * 2 + i)})`);
-  }
+  drawAir(ctx, THEMES[LEVELS[li].theme].air, time);
   if (S) drawWorld(ctx, time);
   for (const a of amb) { const k = a.t / a.life; circ(ctx, a.x, a.y, 0.03, `rgba(255,${140 + (1 - k) * 80 | 0},60,${(1 - k) * 0.9})`); }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1397,13 +1959,14 @@ function render(time) {
 function towerIcon(canvas, type, lvl) {
   const px = 46, r = Math.min(window.devicePixelRatio || 1, 3);
   canvas.width = px * r; canvas.height = px * r;
-  const g = canvas.getContext('2d'), sc = px * r / 1.42;
-  g.setTransform(sc, 0, 0, sc, 0.71 * sc, 1.04 * sc);
+  const g = canvas.getContext('2d'), sc = px * r / 1.55;
+  g.setTransform(sc, 0, 0, sc, 0.775 * sc, 1.13 * sc);
   drawTower(g, type, lvl, 0, 0, 0.6, -Math.PI / 5, 0);
+  if (type === 'griffin') drawGriffinBird(g, 0.02, -0.88, 1, 0.3, false);
 }
 const demonIcons = {};
 for (const type of Object.keys(DEMONS)) {
-  const c = document.createElement('canvas'), px = 60, D = DEMONS[type], span = D.boss ? 2.3 : 1.1, sc = px / span;
+  const c = document.createElement('canvas'), px = 60, D = DEMONS[type], span = D.icon || 1.1, sc = px / span;
   c.width = c.height = px;
   const g = c.getContext('2d');
   g.setTransform(sc, 0, 0, sc, px / 2, px * 0.82);
@@ -1433,7 +1996,8 @@ function banner(title, sub) {
 }
 
 // build cards
-el.cards.innerHTML = ORDER.map(k => `<button class="card" data-type="${k}" aria-pressed="false"><canvas></canvas><span class="nm">${TOWERS[k].name}</span><span class="cost">${COIN}${TOWERS[k].cost}</span></button>`).join('');
+const LOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V8a3 3 0 0 0-6 0z" fill="currentColor"/></svg>';
+el.cards.innerHTML = ORDER.map(k => `<button class="card" data-type="${k}" aria-pressed="false"><canvas></canvas><span class="nm">${TOWERS[k].short}</span><span class="cost">${COIN}${TOWERS[k].cost}</span><span class="lock">${LOCK}город ${TOWERS[k].from + 1}</span></button>`).join('');
 el.cards.querySelectorAll('.card').forEach(b => {
   towerIcon(b.querySelector('canvas'), b.dataset.type, 0);
   b.addEventListener('click', () => selectBuild(b.dataset.type));
@@ -1457,13 +2021,14 @@ function openBuild(si) {
   Snd.play('tap');
 }
 function selectBuild(type) {
-  if (UI.buildType === type && S.gold >= TOWERS[type].cost) { doBuild(); return; }
+  if (UI.buildType === type && available(type, S.li) && S.gold >= TOWERS[type].cost) { doBuild(); return; }
   UI.buildType = type; refreshBuild(); Snd.play('tap');
 }
 function refreshBuild() {
   el.cards.querySelectorAll('.card').forEach(b => {
     const T = TOWERS[b.dataset.type];
     b.setAttribute('aria-pressed', String(UI.buildType === b.dataset.type));
+    b.classList.toggle('locked', !available(b.dataset.type, S.li));
     b.classList.toggle('poor', S.gold < T.cost);
   });
   if (!UI.buildType) {
@@ -1473,13 +2038,14 @@ function refreshBuild() {
   }
   const T = TOWERS[UI.buildType];
   el.buildDesc.textContent = T.desc;
-  if (S.gold < T.cost) { el.buildBtn.disabled = true; el.buildBtn.innerHTML = `Не хватает ${T.cost - S.gold} ${plural(T.cost - S.gold, 'монеты', 'монет', 'монет')}`; }
+  if (!available(UI.buildType, S.li)) { el.buildBtn.disabled = true; el.buildBtn.textContent = `Откроется в городе «${LEVELS[T.from].name}»`; }
+  else if (S.gold < T.cost) { el.buildBtn.disabled = true; el.buildBtn.innerHTML = `Не хватает ${T.cost - S.gold} ${plural(T.cost - S.gold, 'монеты', 'монет', 'монет')}`; }
   else { el.buildBtn.disabled = false; el.buildBtn.innerHTML = `Построить · ${COIN}${T.cost}`; }
 }
 function doBuild() {
   if (!UI.sel || !UI.buildType) return;
   const si = UI.sel.si, T = TOWERS[UI.buildType];
-  if (S.towers[si] || S.gold < T.cost) return;
+  if (S.towers[si] || S.gold < T.cost || !available(UI.buildType, S.li)) return;
   S.gold -= T.cost;
   const t = makeTower(UI.buildType, si);
   t.pop = 0.35; S.towers[si] = t;
@@ -1489,11 +2055,15 @@ function doBuild() {
   closeSheets();
 }
 function statRows(type, st) {
-  const dm = `${st.dmg[0]}–${st.dmg[1]}`;
+  const dm = `${st.dmg ? st.dmg[0] + '–' + st.dmg[1] : ''}`, pc = v => Math.round(v * 100) + '%';
   if (type === 'archer') return [['Урон', dm], ['Дальность', fmt(st.range)], ['Выстрел раз в', fmt(st.cd) + ' с']];
   if (type === 'hunters') return [['Охотников', String(st.count)], ['Здоровье', String(st.hp)], ['Урон', dm], ['Новый через', st.respawn + ' с']];
   if (type === 'mage') return [['Урон по площади', dm], ['Радиус взрыва', fmt(st.splash)], ['Дальность', fmt(st.range)]];
-  return [['Урон', dm], ['Замедление', Math.round(st.slow * 100) + '%'], ['Сковывает', st.stun ? fmt(st.stun) + ' с' : 'нет'], ['Дальность', fmt(st.range)]];
+  if (type === 'druid') return [['Урон', dm], ['Замедление', pc(st.slow)], ['Сковывает', st.stun ? fmt(st.stun) + ' с' : 'нет'], ['Дальность', fmt(st.range)]];
+  if (type === 'ranger') return [['Урон', dm], ['Дальность', fmt(st.range)], ['Выстрел раз в', fmt(st.cd) + ' с'], ['Двойной урон', st.crit ? pc(st.crit) + ' выстрелов' : 'нет']];
+  if (type === 'griffin') return [['Грифонов', String(st.count)], ['Урон', dm], ['По летающим', '×2'], ['Дальность', fmt(st.range)]];
+  if (type === 'ent') return [['Держит демонов', String(st.hold)], ['Здоровье', String(st.hp)], ['Урон по всем', dm], ['Новый через', st.respawn + ' с'], ['Шипы', st.thorns ? String(st.thorns) : 'нет']];
+  return [['Усиление урона', '+' + pc(st.boost)], ['Ускорение', st.haste ? '+' + pc(st.haste) : 'нет'], ['Лечение', st.heal + ' в секунду'], ['Радиус песни', fmt(st.range)]];
 }
 function openTower(si) {
   UI.sel = { si }; UI.buildType = null; UI.sellArm = 0;
@@ -1506,12 +2076,13 @@ function refreshTower() {
   const t = S.towers[UI.sel.si]; if (!t) return;
   const T = TOWERS[t.type], st = T.levels[t.lvl], nx = T.levels[t.lvl + 1];
   towerIcon(el.tIcon, t.type, t.lvl);
-  el.tName.textContent = T.name; el.tLvl.textContent = `Уровень ${t.lvl + 1} из 3`;
+  el.tName.textContent = T.name;
+  el.tLvl.textContent = `Уровень ${t.lvl + 1} из 3` + (t.buff > 1 ? ` · песня +${Math.round((t.buff - 1) * 100)}%` : '') + (t.curse > 0 ? ' · проклят' : '');
   const rows = statRows(t.type, st), nrows = nx ? statRows(t.type, nx) : null;
   el.tStats.innerHTML = rows.map(([k, v], j) => `<span class="k">${k}</span><b>${v}</b><span class="nx">${nrows && nrows[j][1] !== v ? '→ ' + nrows[j][1] : ''}</span>`).join('');
   if (nx) { el.upBtn.disabled = S.gold < nx.up; el.upBtn.innerHTML = S.gold < nx.up ? `Улучшить · ${COIN}${nx.up} — мало монет` : `Улучшить · ${COIN}${nx.up}`; }
   else { el.upBtn.disabled = true; el.upBtn.textContent = 'Максимальный уровень'; }
-  el.rallyBtn.hidden = t.type !== 'hunters';
+  el.rallyBtn.hidden = !T.barracks;
   el.sellBtn.classList.toggle('warn', !!UI.sellArm);
   el.sellBtn.innerHTML = UI.sellArm ? `Точно продать? +${sellValue(t)}` : `Продать · +${sellValue(t)}`;
 }
@@ -1520,7 +2091,8 @@ function upgrade() {
   const nx = TOWERS[t.type].levels[t.lvl + 1];
   if (!nx || S.gold < nx.up) return;
   S.gold -= nx.up; t.spent += nx.up; t.lvl++; t.pop = 0.3;
-  if (t.hunters) syncHunters(t);
+  if (t.units) syncUnits(t);
+  if (t.griffins) syncGriffins(t);
   burst(t.x, t.y - 0.3, 18, '#f3d685', 1.3, 0.7, 0.05, 0.8);
   Snd.play('upgrade');
   UI.sellArm = 0; refreshTower();
@@ -1529,7 +2101,7 @@ function sell() {
   const t = UI.sel && S.towers[UI.sel.si]; if (!t) return;
   if (!UI.sellArm) { UI.sellArm = 1; refreshTower(); setTimeout(() => { if (UI.sellArm && !el.towerSheet.hidden) { UI.sellArm = 0; refreshTower(); } }, 2600); return; }
   S.gold += sellValue(t);
-  if (t.hunters) for (const h of t.hunters) if (h.target && h.target.blocker === h) h.target.blocker = null;
+  if (t.units) for (const u of t.units) dropHold(u);
   S.towers[t.si] = null;
   burst(t.x, t.y, 14, '#f3d685', 1.2, 0.6, 0.05, 0.5);
   Snd.play('coin');
@@ -1553,11 +2125,11 @@ function setRally(wx, wy) {
   const ok = best && Math.sqrt(best.d2) < 0.75 && dist(best.x, best.y, t.x, t.y) <= stats(t).range && best.y > 0.4 && best.y < 14.2 && best.x > 0.25 && best.x < COLS - 0.25;
   if (!ok) { toast('Сюда нельзя. Нажмите на дорогу внутри зелёного круга', 2200, true); return; }
   t.rally = { x: best.x, y: best.y };
-  for (const h of t.hunters) { if (h.target && h.target.blocker === h) h.target.blocker = null; h.target = null; }
+  for (const u of t.units) dropHold(u);
   S.fx.push({ k: 'ring', x: best.x, y: best.y, r0: 0.1, r1: 0.6, t: 0, life: 0.5, color: '134,215,160', ground: true });
   Snd.play('tap');
   cancelRally();
-  toast('Охотники идут на новое место', 1600);
+  toast(t.type === 'ent' ? 'Древень идёт на новое место' : 'Охотники идут на новое место', 1600);
 }
 
 function setFooter() {
@@ -1614,6 +2186,7 @@ function showMenu() {
   menuLi = Math.max(0, Math.min(progress.unlocked - 1, LEVELS.length - 1));
   el.menu.hidden = false; el.pause.hidden = true; el.end.hidden = true;
   el.banner.hidden = true; el.toast.hidden = true;
+  $('app').classList.add('in-menu');
   renderLevels();
 }
 function startLevel(li) {
@@ -1621,8 +2194,11 @@ function startLevel(li) {
   for (const k in hud) delete hud[k];
   UI.paused = false; closeSheets(); cancelRally();
   el.menu.hidden = true; el.pause.hidden = true; el.end.hidden = true;
+  $('app').classList.remove('in-menu');
   setFooter();
   banner(S.L.name, S.L.sub);
+  const fresh = li > 0 ? ORDER.filter(k => TOWERS[k].from === li) : [];
+  if (fresh.length) setTimeout(() => { if (S && S.li === li && !S.waveActive) { const T = TOWERS[fresh[0]]; toast(`Новый защитник — ${T.name}. ${T.desc}`, 6500); } }, 1800);
   setTimeout(() => { if (S && S.li === li && S.wave === 0 && !S.waveActive && S.towers.every(t => !t)) toast('Нажмите на каменную площадку у дороги, чтобы поставить защитника', 5000); }, 1500);
 }
 function finish(win) {
@@ -1732,10 +2308,11 @@ function start(data) {
     S.wave = clamp(data.wave | 0, 0, S.L.waves.length - 1);
     S.gold = data.gold | 0; S.lives = data.lives | 0 || S.maxLives;
     data.towers.forEach((d, i) => {
-      if (!d || !TOWERS[d.type] || i >= S.towers.length) return;
+      if (!d || !TOWERS[d.type] || i >= S.towers.length || !available(d.type, S.li)) return;
       const t = makeTower(d.type, i);
       t.lvl = clamp(d.lvl | 0, 0, 2); t.spent = d.spent | 0;
-      if (t.hunters) { syncHunters(t); if (d.rally) t.rally = d.rally; }
+      if (t.units) { syncUnits(t); if (d.rally) t.rally = d.rally; }
+      if (t.griffins) syncGriffins(t);
       S.towers[i] = t;
     });
     UI.speed = clamp(data.speed | 0, 1, 3) || 1; el.speedBtn.textContent = '×' + UI.speed;
@@ -1747,6 +2324,7 @@ window.__silvenor = {
   get S() { return S; }, startLevel, startWave, update,
   build(si, type) { UI.sel = { si }; UI.buildType = type; doBuild(); return !!S.towers[si]; },
   upgrade(si) { UI.sel = { si }; upgrade(); closeSheets(); },
+  upCost(t) { const nx = TOWERS[t.type].levels[t.lvl + 1]; return nx ? nx.up : 0; },
 };
 const hot = window.claude && window.claude.hot;
 if (hot && typeof hot.snapshot === 'function') hot.snapshot(snapshot);
