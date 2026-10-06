@@ -267,8 +267,37 @@ details.howto li::marker{color:var(--gold)}
 .hero-card .sk{grid-column:1/3;display:flex;align-items:center;gap:10px;margin-top:6px;padding:8px 10px;border-radius:14px;background:rgba(0,0,0,.25);font-size:13.5px;color:#f2f7f4}
 .hero-card .sk canvas{flex:none;width:38px;height:38px;border-radius:12px;background:rgba(0,0,0,.35)}
 .hero-card .sk b{color:#ffe08a}
-.hero-card .pick{position:absolute;top:12px;right:12px;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:800;background:rgba(0,0,0,.35);color:#fff}
-.hero-card.sel .pick{background:linear-gradient(180deg,#ffe68f,#f28a1c);color:var(--ink)}
+.hero-card{cursor:pointer}
+.hc-row{grid-column:1/3;display:flex;gap:8px;margin-top:8px}
+.story-btn{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:12px;border:1px solid rgba(255,209,102,.65);
+  background:rgba(0,0,0,.32);font-weight:800;font-size:13.5px;color:#ffe9b0;white-space:nowrap}
+.story-btn svg{flex:none;width:18px;height:18px;fill:#ffd166}
+.hero-card .pick{flex:none;padding:9px 14px;border-radius:12px;font-size:13.5px;font-weight:800;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.32);color:#fff}
+.hero-card.sel .pick{background:linear-gradient(180deg,#ffe68f,#f28a1c);color:var(--ink);border-color:#ffe9a8}
+.story-btn:active,.hero-card .pick:active{transform:translateY(1px)}
+
+/* Hero story reader */
+.screen.saga{z-index:12;background:radial-gradient(ellipse at 50% -10%,rgba(255,200,120,.22),transparent 55%),linear-gradient(180deg,#120c06,#080604)}
+.saga-h{min-width:0}
+.saga-h .eyebrow{color:#ffd8a0;text-shadow:none;margin-bottom:2px}
+.saga-h h2{font-size:30px;font-size:clamp(26px,7.5vw,38px)}
+.saga-art{display:block;width:100%;height:auto;border-radius:16px;border:1.5px solid rgba(255,209,102,.55);box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.saga-num{margin:0;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#e9c46a}
+.saga-text p{margin:0 0 10px;font-size:16.5px;line-height:1.5;color:#f4ecdc}
+.saga-text p:first-child::first-letter{font-family:var(--font-display);font-weight:700;font-size:2.5em;float:left;line-height:.85;margin:5px 7px 0 0;color:#ffd166}
+.saga-text p.locked{color:#cfc4ac;font-style:italic}
+.saga-text p.locked:first-child::first-letter{font:inherit;float:none;margin:0;color:inherit}
+.saga-nav{display:flex;align-items:center;gap:10px}
+.saga-nav .ghost{flex:none;padding:10px 14px}
+.saga-nav .ghost:disabled{opacity:.35;cursor:default}
+.saga-dots{flex:1;display:flex;justify-content:center;gap:9px}
+.sd{width:14px;height:14px;padding:0;border-radius:50%;border:1.5px solid rgba(255,209,102,.65);background:transparent}
+.sd.open{background:rgba(255,209,102,.5)}
+.sd.cur{background:#ffd166;box-shadow:0 0 10px rgba(255,200,90,.9);transform:scale(1.25)}
+.saga-new{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-radius:16px;border:1.5px solid #ffd166;
+  background:linear-gradient(115deg,#7a4a14,#2a1606);box-shadow:0 4px 0 rgba(0,0,0,.4),0 0 22px rgba(255,190,80,.35);color:#fff;font-family:var(--font-display);font-weight:700;font-size:21px;line-height:1.1}
+.saga-new svg{flex:none;width:32px;height:32px;fill:#ffd166}
+.saga-new small{display:block;margin-bottom:3px;font-family:var(--font-ui);font-weight:800;color:#ffe3a6;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
 
 /* Hero dock in battle */
 .hero-dock{position:absolute;left:8px;bottom:8px;z-index:3;display:flex;align-items:flex-end;gap:8px}
@@ -291,13 +320,10 @@ details.howto li::marker{color:var(--gold)}
 .pill{bottom:76px}
 @media (prefers-reduced-motion:reduce){ .hd-skill.ready{animation:none} }
 .home .eyebrow{padding-right:58px}
-.hero-card .nm,.hero-card .tt{padding-right:62px}
 @media (max-width:359px){
   .hero-card{grid-template-columns:72px 1fr;gap:4px 11px;padding:12px}
   .hero-card .pic{width:72px;height:72px}
   .hero-card .nm{font-size:21px}
-  .hero-card .nm,.hero-card .tt{padding-right:52px}
-  .hero-card .pick{top:9px;right:9px;font-size:11px;padding:2px 8px}
   .hero-card .bars{gap:4px 10px}
 }
 @media (max-height:640px){
@@ -425,7 +451,7 @@ details.howto li::marker{color:var(--gold)}
   <section id="heroes" class="screen" hidden>
     <div class="screen-inner">
       <div class="scr-head"><button class="back-btn" data-back aria-label="Назад">‹</button><h2>Герои</h2></div>
-      <p class="lead">Выберите, кто поведёт эльфов в бой. Герой выходит в каждой битве: в сюжете и в бесконечном режиме.</p>
+      <p class="lead">Выберите, кто поведёт эльфов в бой. У каждого героя своя история из пяти глав: побеждайте вместе с ним в новых городах сюжета, и главы будут открываться одна за другой.</p>
       <div class="hero-list" id="heroList"></div>
     </div>
   </section>
@@ -461,10 +487,21 @@ details.howto li::marker{color:var(--gold)}
       <div class="big-stars" id="endStars"></div>
       <p class="end-text" id="endText"></p>
       <div class="col">
+        <button class="saga-new" id="sagaBtn" hidden></button>
         <button class="primary wide" id="nextBtn">Следующий город</button>
         <button class="ghost" id="retryBtn">Ещё раз</button>
         <button class="ghost" id="endMenuBtn">К выбору города</button>
       </div>
+    </div>
+  </section>
+
+  <section id="saga" class="screen saga" hidden aria-label="История героя">
+    <div class="screen-inner">
+      <div class="scr-head"><button class="back-btn" id="sagaClose" aria-label="Закрыть">‹</button><div class="saga-h"><p class="eyebrow" id="sagaHero"></p><h2 id="sagaTitle"></h2></div></div>
+      <canvas id="sagaArt" class="saga-art"></canvas>
+      <p class="saga-num" id="sagaNum"></p>
+      <div class="saga-text" id="sagaText"></div>
+      <div class="saga-nav"><button class="ghost" id="sagaPrev">‹ Назад</button><div class="saga-dots" id="sagaDots"></div><button class="ghost" id="sagaNext">Дальше ›</button></div>
     </div>
   </section>
 </div>
@@ -2194,29 +2231,30 @@ function hpBar(g, x, y, w, frac, col) {
 /* ---------- heroes: drawing ---------- */
 // Feet at (x, y), facing f (1 = right). h carries the animation state: moving, swing, shot, cast, aim, flash.
 function heroCol(h, col) { return h.flash > 0 ? '#fff6ee' : col; }
+const ELF_PAL = { cloak: '#1d5537', tunic: '#2f8a55', tunic2: '#3aa067', hair: '#f0d070', hair2: '#f6dc80', circlet: true };
 function drawHeroElf(g, h, x, y, f, t) {
-  const c = col => heroCol(h, col), mv = h.moving, b = mv ? Math.abs(Math.sin(t * 10)) * 0.03 : Math.sin(t * 2) * 0.006, l = mv ? Math.sin(t * 10) * 0.05 : 0;
+  const P = h.pal || ELF_PAL, c = col => heroCol(h, col), mv = h.moving, b = mv ? Math.abs(Math.sin(t * 10)) * 0.03 : Math.sin(t * 2) * 0.006, l = mv ? Math.sin(t * 10) * 0.05 : 0;
   const hy = y - 0.15 - b, hx = x + f * 0.01, hd = hy - 0.29;
   shadow(g, x, y + 0.02, 0.15, 0.05);
   line(g, x - 0.035, hy, x - 0.04 + l, y, 0.036, '#3b2a1c'); line(g, x + 0.035, hy, x + 0.04 - l, y, 0.036, '#3b2a1c');
   ell(g, x - 0.04 + l + f * 0.015, y - 0.005, 0.03, 0.016, '#5a3a22'); ell(g, x + 0.04 - l + f * 0.015, y - 0.005, 0.03, 0.016, '#5a3a22');
   const sway = Math.sin(t * 3) * 0.015;
-  poly(g, [x - f * 0.02 - 0.085, hy - 0.2, x - f * 0.02 + 0.085, hy - 0.2, x - f * 0.13 + 0.07 + sway, hy + 0.07, x - f * 0.13 - 0.11 + sway, hy + 0.09], c('#1d5537'));
+  poly(g, [x - f * 0.02 - 0.085, hy - 0.2, x - f * 0.02 + 0.085, hy - 0.2, x - f * 0.13 + 0.07 + sway, hy + 0.07, x - f * 0.13 - 0.11 + sway, hy + 0.09], c(P.cloak));
   line(g, x - f * 0.12, hy - 0.04, x - f * 0.04, hy - 0.27, 0.05, '#7a4e2c');
   for (let i = 0; i < 3; i++) poly(g, [x - f * (0.06 - i * 0.018), hy - 0.27, x - f * (0.045 - i * 0.018), hy - 0.35, x - f * (0.03 - i * 0.018), hy - 0.27], i === 1 ? '#f2f2e6' : '#e85a4a');
-  poly(g, [x - 0.085, hy + 0.03, x + 0.085, hy + 0.03, x + 0.065, hy - 0.2, x - 0.065, hy - 0.2], c('#2f8a55'));
-  poly(g, [x - 0.085, hy + 0.03, x - 0.02, hy + 0.03, x - 0.03, hy - 0.2, x - 0.065, hy - 0.2], c('#3aa067'));
+  poly(g, [x - 0.085, hy + 0.03, x + 0.085, hy + 0.03, x + 0.065, hy - 0.2, x - 0.065, hy - 0.2], c(P.tunic));
+  poly(g, [x - 0.085, hy + 0.03, x - 0.02, hy + 0.03, x - 0.03, hy - 0.2, x - 0.065, hy - 0.2], c(P.tunic2));
   line(g, x - 0.08, hy - 0.04, x + 0.08, hy - 0.04, 0.02, '#d8b45a'); circ(g, x + f * 0.02, hy - 0.04, 0.016, '#66e895');
   line(g, x - 0.06, hy - 0.19, x + 0.06, hy - 0.19, 0.016, '#e9c46a');
-  poly(g, [hx - f * 0.05, hd - 0.05, hx - f * 0.13, hd + 0.17, hx - f * 0.03, hd + 0.13, hx + f * 0.05, hd - 0.02], '#f0d070');
+  poly(g, [hx - f * 0.05, hd - 0.05, hx - f * 0.13, hd + 0.17, hx - f * 0.03, hd + 0.13, hx + f * 0.05, hd - 0.02], P.hair);
   circ(g, hx, hd, 0.064, c('#f2dcbc'));
   poly(g, [hx - f * 0.035, hd, hx - f * 0.11, hd - 0.06, hx - f * 0.045, hd + 0.03], c('#f2dcbc'));
-  g.beginPath(); g.arc(hx, hd - 0.012, 0.07, Math.PI * 1.02, Math.PI * 1.98); g.fillStyle = '#f6dc80'; g.fill();
-  poly(g, [hx + f * 0.06, hd - 0.03, hx + f * 0.075, hd + 0.05, hx + f * 0.04, hd - 0.01], '#f0d070');
-  line(g, hx - 0.064, hd - 0.035, hx + 0.064, hd - 0.035, 0.012, '#e9c46a'); circ(g, hx + f * 0.01, hd - 0.04, 0.014, '#66e895');
+  g.beginPath(); g.arc(hx, hd - 0.012, 0.07, Math.PI * 1.02, Math.PI * 1.98); g.fillStyle = P.hair2; g.fill();
+  poly(g, [hx + f * 0.06, hd - 0.03, hx + f * 0.075, hd + 0.05, hx + f * 0.04, hd - 0.01], P.hair);
+  if (P.circlet) { line(g, hx - 0.064, hd - 0.035, hx + 0.064, hd - 0.035, 0.012, '#e9c46a'); circ(g, hx + f * 0.01, hd - 0.04, 0.014, '#66e895'); }
   circ(g, hx + f * 0.032, hd + 0.005, 0.011, '#2a6a4a');
   const aim = h.aim != null ? h.aim : (f > 0 ? -0.15 : Math.PI + 0.15), bx = x + Math.cos(aim) * 0.11, by = hy - 0.12 + Math.sin(aim) * 0.11;
-  line(g, x + f * 0.03, hy - 0.16, bx, by, 0.028, c('#2f8a55'));
+  line(g, x + f * 0.03, hy - 0.16, bx, by, 0.028, c(P.tunic));
   g.save(); g.translate(bx, by); g.rotate(aim);
   g.beginPath(); g.arc(-0.02, 0, 0.17, -1.25, 1.25); g.lineWidth = 0.03; g.strokeStyle = '#e9d39a'; g.stroke();
   for (const s of [-1, 1]) circ(g, Math.cos(1.25) * 0.17 - 0.02, s * Math.sin(1.25) * 0.17, 0.016, '#e9c46a');
@@ -2262,26 +2300,27 @@ function drawHeroDwarf(g, h, x, y, f, t) {
   g.restore();
   circ(g, px, py, 0.035, c('#e8c09a'));
 }
+const MAGE_PAL = { robe: '#2b3f9a', robe2: '#4a5fd0', hair: '#e6ecf8', hair2: '#f2f6ff' };
 function drawHeroMage(g, h, x, y, f, t) {
-  const c = col => heroCol(h, col), mv = h.moving, b = mv ? Math.abs(Math.sin(t * 9)) * 0.025 : Math.sin(t * 2) * 0.008;
+  const P = h.pal || MAGE_PAL, c = col => heroCol(h, col), mv = h.moving, b = mv ? Math.abs(Math.sin(t * 9)) * 0.025 : Math.sin(t * 2) * 0.008;
   const top = y - 0.31 - b, hx = x + f * 0.01, hd = top - 0.08;
   shadow(g, x, y + 0.02, 0.16, 0.05);
   const sway = mv ? Math.sin(t * 9) * 0.02 : Math.sin(t * 2.4) * 0.012;
-  poly(g, [hx - f * 0.05, hd - 0.04, hx - f * 0.13, hd + 0.24, hx - f * 0.03, hd + 0.2, hx + f * 0.05, hd - 0.02], '#e6ecf8');
-  poly(g, [x - 0.14 + sway, y, x + 0.14 + sway, y, x + 0.065, top + 0.02, x - 0.065, top + 0.02], c('#2b3f9a'));
-  poly(g, [x - 0.05 + sway, y, x + 0.05 + sway, y, x + 0.025, top + 0.06, x - 0.025, top + 0.06], c('#4a5fd0'));
+  poly(g, [hx - f * 0.05, hd - 0.04, hx - f * 0.13, hd + 0.24, hx - f * 0.03, hd + 0.2, hx + f * 0.05, hd - 0.02], P.hair);
+  poly(g, [x - 0.14 + sway, y, x + 0.14 + sway, y, x + 0.065, top + 0.02, x - 0.065, top + 0.02], c(P.robe));
+  poly(g, [x - 0.05 + sway, y, x + 0.05 + sway, y, x + 0.025, top + 0.06, x - 0.025, top + 0.06], c(P.robe2));
   line(g, x - 0.135 + sway, y - 0.012, x + 0.135 + sway, y - 0.012, 0.018, '#e9c46a');
   for (const [dx, dy] of [[-0.08, -0.06], [0.07, -0.1], [-0.04, -0.17], [0.09, -0.03], [0.0, -0.24]]) circ(g, x + dx + sway * (1 + dy * 3), y + dy, 0.01, '#ffe9a0');
   line(g, x - 0.06, top + 0.11, x + 0.06, top + 0.11, 0.02, '#b98cff');
   circ(g, hx, hd, 0.062, c('#f2dcbc'));
-  g.beginPath(); g.arc(hx, hd - 0.01, 0.068, Math.PI * 1.02, Math.PI * 1.98); g.fillStyle = '#f2f6ff'; g.fill();
-  poly(g, [hx + f * 0.055, hd - 0.03, hx + f * 0.07, hd + 0.07, hx + f * 0.035, hd - 0.0], '#e6ecf8');
+  g.beginPath(); g.arc(hx, hd - 0.01, 0.068, Math.PI * 1.02, Math.PI * 1.98); g.fillStyle = P.hair2; g.fill();
+  poly(g, [hx + f * 0.055, hd - 0.03, hx + f * 0.07, hd + 0.07, hx + f * 0.035, hd - 0.0], P.hair);
   line(g, hx - 0.062, hd - 0.033, hx + 0.062, hd - 0.033, 0.011, '#9ad8ff');
   poly(g, [hx + f * 0.005, hd - 0.075, hx + f * 0.02, hd - 0.04, hx + f * 0.005, hd - 0.025, hx - f * 0.01, hd - 0.04], '#cfeeff');
   circ(g, hx + f * 0.03, hd + 0.005, 0.01, '#3a4aa0');
   // star staff
   const cast = h.shot > 0 ? h.shot / 0.25 : 0, sxp = x + f * (0.16 + cast * 0.04), syt = y - 0.6 - cast * 0.04;
-  line(g, x + f * 0.03, top + 0.12, x + f * 0.15, top + 0.16, 0.03, c('#2b3f9a'));
+  line(g, x + f * 0.03, top + 0.12, x + f * 0.15, top + 0.16, 0.03, c(P.robe));
   line(g, sxp - f * 0.01, y - 0.02, sxp, syt, 0.024, '#8a6a44');
   glow(g, sxp, syt - 0.04, 0.17 + cast * 0.12, `rgba(150,200,255,${0.5 + cast * 0.4})`);
   const st = [];
@@ -2400,6 +2439,191 @@ function skillIcon(canvas, key, px) {
     circ(g, 0.5, 0.5, 0.17, '#fff1b8');
   }
   g.lineCap = 'butt';
+}
+
+/* ---------- story pictures ---------- */
+// Drawn on a 1.6 × 0.9 field, horizon near 0.74. Silhouettes take the sky's "ink" colour.
+const SKIES = {
+  sunset: { g: ['#2a1a46', '#8a3a6a', '#ff9a52'], ink: '#1c0f20', ground: '#241420', sun: [0.32, 0.6, 0.12, '#ffd27a'] },
+  night: { g: ['#050918', '#12204a', '#26386a'], ink: '#05080f', ground: '#0a1210', moon: [1.28, 0.17, 0.06], stars: 70 },
+  blood: { g: ['#160206', '#5a0a12', '#d0401c'], ink: '#140405', ground: '#1a0806', glow: 'rgba(255,90,30,.5)', embers: true },
+  dawn: { g: ['#36508a', '#d89aa0', '#ffd890'], ink: '#26283a', ground: '#28321f', sun: [1.2, 0.66, 0.1, '#fff0b0'] },
+  day: { g: ['#3f86d0', '#8cc4f0', '#d6ecff'], ink: '#24402c', ground: '#2e5a34', sun: [0.28, 0.14, 0.06, '#fff6c8'] },
+  void: { g: ['#06020c', '#2a0a3e', '#7a2a9a'], ink: '#0a0410', ground: '#0e0614', glow: 'rgba(190,90,255,.45)', stars: 40 },
+  dusk: { g: ['#16203a', '#4a4a6a', '#c8806a'], ink: '#10141c', ground: '#141a18' },
+};
+function sceneFire(g, r, pts) {
+  for (const [x, y] of pts) {
+    glow(g, x, y, 0.22, 'rgba(255,110,30,.45)');
+    for (let i = 0; i < 3; i++) { const fx = x + (i - 1) * 0.025, h = 0.06 + r() * 0.06; poly(g, [fx - 0.025, y, fx + r() * 0.01, y - h, fx + 0.025, y], i % 2 ? '#ffd24a' : '#ff6a2a'); }
+    for (let i = 0; i < 3; i++) ell(g, x + (r() - 0.5) * 0.08, y - 0.12 - i * 0.07, 0.05 + i * 0.02, 0.03 + i * 0.012, 'rgba(20,10,10,.35)');
+  }
+}
+const LANDS = {
+  river(g, K, sp, r) {
+    g.globalAlpha = 0.8;
+    for (let x = -0.05; x < 1.7; x += 0.075) circ(g, x, 0.6 + r() * 0.03, 0.06 + r() * 0.035, K.ink);
+    g.globalAlpha = 1;
+    const houses = [[0.16, 1], [0.36, 0.9], [1.24, 1], [1.44, 0.85]];
+    for (const [x, k] of houses) {
+      if (sp.ruins) { for (let i = 0; i < 3; i++) line(g, x - 0.04 + i * 0.04, 0.72, x - 0.035 + i * 0.04, 0.66 - r() * 0.04, 0.012, K.ink); continue; }
+      g.fillStyle = K.ink; g.fillRect(x - 0.05 * k, 0.62, 0.1 * k, 0.1);
+      poly(g, [x - 0.07 * k, 0.63, x, 0.55 - 0.02 * k, x + 0.07 * k, 0.63], K.ink);
+      if (!sp.fire && (sp.sky === 'night' || sp.sky === 'sunset' || sp.sky === 'dusk')) circ(g, x + 0.02, 0.66, 0.008, '#ffd27a');
+    }
+    if (!sp.ruins) { g.beginPath(); g.moveTo(0.58, 0.72); g.quadraticCurveTo(0.8, 0.6, 1.02, 0.72); g.lineWidth = 0.022; g.strokeStyle = K.ink; g.stroke(); for (const x of [0.66, 0.8, 0.94]) line(g, x, 0.7 - (x === 0.8 ? 0.06 : 0.035), x, 0.75, 0.01, K.ink); }
+    else for (const x of [0.66, 0.8, 0.94]) line(g, x, 0.69, x, 0.76, 0.014, K.ink);
+    g.fillStyle = K.ground; g.fillRect(0, 0.72, 1.6, 0.18);
+    const wg = g.createLinearGradient(0, 0.74, 0, 0.84); wg.addColorStop(0, sp.fire ? 'rgba(255,110,50,.55)' : 'rgba(150,190,230,.5)'); wg.addColorStop(1, 'rgba(20,40,70,.85)');
+    poly(g, [0, 0.76, 1.6, 0.74, 1.6, 0.83, 0, 0.85], wg);
+    for (let i = 0; i < 8; i++) { const x = r() * 1.5; line(g, x, 0.785 + r() * 0.04, x + 0.08, 0.785 + r() * 0.04, 0.004, 'rgba(255,255,255,.35)'); }
+    if (sp.fire) sceneFire(g, r, houses.map(([x]) => [x, 0.58]));
+  },
+  forest(g, K, sp, r) {
+    g.globalAlpha = 0.7;
+    for (let x = -0.05; x < 1.7; x += 0.09) circ(g, x, 0.56 + r() * 0.05, 0.08 + r() * 0.04, K.ink);
+    g.globalAlpha = 1;
+    for (let x = 0.0; x < 1.7; x += 0.22) { line(g, x, 0.74, x, 0.58, 0.02, K.ink); circ(g, x, 0.55, 0.09 + r() * 0.03, K.ink); }
+    g.fillStyle = K.ground; g.fillRect(0, 0.72, 1.6, 0.18);
+    for (let i = 0; i < 18; i++) circ(g, r() * 1.6, 0.78 + r() * 0.1, 0.008, ['#ffd27a', '#ff9ccf', '#fff'][i % 3]);
+  },
+  mountains(g, K, sp, r) {
+    const range = (base, h, n, a, cap) => {
+      const pts = [0, base];
+      for (let i = 0; i <= n; i++) { const x = i * 1.6 / n; pts.push(x - 0.8 / n, base - h * (0.6 + r() * 0.4), x, base - h * 0.25 * r()); }
+      pts.push(1.6, base);
+      g.globalAlpha = a; poly(g, pts, K.ink); g.globalAlpha = 1;
+      if (cap) for (let i = 2; i < pts.length - 2; i += 4) { const px = pts[i], py = pts[i + 1]; if (py < base - h * 0.75) poly(g, [px - 0.05, py + 0.06, px, py, px + 0.05, py + 0.06, px, py + 0.04], 'rgba(235,245,255,.85)'); }
+    };
+    range(0.62, 0.42, 5, 0.55, sp.snow);
+    range(0.74, 0.32, 4, 1, false);
+    if (sp.forge || sp.cold) {
+      const col = sp.cold ? 'rgba(150,215,255,.75)' : 'rgba(255,150,60,.85)';
+      glow(g, 0.8, 0.66, 0.2, col);
+      g.fillStyle = sp.cold ? '#16304a' : '#3a1a0a'; g.beginPath(); g.moveTo(0.73, 0.74); g.lineTo(0.73, 0.64); g.arc(0.8, 0.64, 0.07, Math.PI, 0); g.lineTo(0.87, 0.74); g.fill();
+      g.beginPath(); g.moveTo(0.71, 0.74); g.lineTo(0.71, 0.64); g.arc(0.8, 0.64, 0.09, Math.PI, 0); g.lineTo(0.89, 0.74); g.lineWidth = 0.014; g.strokeStyle = sp.cold ? '#7ab8e0' : '#c9a24f'; g.stroke();
+    }
+    g.fillStyle = K.ground; g.fillRect(0, 0.73, 1.6, 0.17);
+  },
+  tower(g, K, sp, r) {
+    line(g, 0.38, 0.74, 0.36, 0.42, 0.06, K.ink);
+    for (const [dx, dy, rr] of [[-0.14, 0.38, 0.13], [0.14, 0.4, 0.12], [0, 0.3, 0.16], [-0.06, 0.24, 0.1], [0.1, 0.27, 0.1]]) circ(g, 0.37 + dx, dy, rr, K.ink);
+    for (let i = 0; i < 9; i++) circ(g, 0.22 + r() * 0.3, 0.22 + r() * 0.2, 0.008, ['#8ff0ff', '#ffe08a', '#ffb0de'][i % 3]);
+    poly(g, [1.06, 0.74, 1.08, 0.2, 1.16, 0.2, 1.18, 0.74], K.ink);
+    g.fillStyle = K.ink; g.beginPath(); g.arc(1.12, 0.2, 0.065, Math.PI, 0); g.fill();
+    line(g, 1.12, 0.13, 1.12, 0.07, 0.008, K.ink);
+    line(g, 1.03, 0.34, 1.21, 0.34, 0.012, K.ink);
+    if (!sp.fire) for (const y of [0.28, 0.45, 0.6]) circ(g, 1.12, y, 0.012, '#ffe9a0');
+    g.globalAlpha = 0.75; for (let x = 0.55; x < 1.0; x += 0.08) circ(g, x, 0.66 + r() * 0.02, 0.05, K.ink); g.globalAlpha = 1;
+    g.fillStyle = K.ground; g.fillRect(0, 0.72, 1.6, 0.18);
+    if (sp.fire) sceneFire(g, r, [[1.12, 0.2], [1.13, 0.45], [0.3, 0.3], [0.7, 0.64]]);
+  },
+  crystal(g, K, sp, r) {
+    g.fillStyle = '#07060e'; g.fillRect(0, 0, 1.6, 0.9);
+    const cave = g.createRadialGradient(0.8, 0.5, 0.05, 0.8, 0.5, 0.9); cave.addColorStop(0, '#1e1a3a'); cave.addColorStop(1, '#05040a');
+    g.fillStyle = cave; g.beginPath(); g.ellipse(0.8, 0.62, 0.78, 0.6, 0, Math.PI, 0); g.lineTo(1.58, 0.9); g.lineTo(0.02, 0.9); g.fill();
+    const cr = (x, y, h, w, col) => { glow(g, x, y - h * 0.5, h * 1.1, col.replace(')', ',.35)').replace('rgb', 'rgba')); poly(g, [x - w, y, x - w * 0.6, y - h * 0.7, x, y - h, x + w * 0.6, y - h * 0.7, x + w, y], col); poly(g, [x, y, x, y - h, x + w * 0.6, y - h * 0.7, x + w, y], 'rgba(255,255,255,.25)'); };
+    for (let i = 0; i < 9; i++) cr(0.08 + i * 0.18 + r() * 0.05, 0.76 + r() * 0.04, 0.08 + r() * 0.1, 0.025 + r() * 0.015, i % 2 ? 'rgb(154,216,255)' : 'rgb(201,166,255)');
+    for (let i = 0; i < 6; i++) { const x = 0.15 + i * 0.26 + r() * 0.05; poly(g, [x - 0.03, 0.08 + r() * 0.08, x, 0.2 + r() * 0.06, x + 0.03, 0.08 + r() * 0.08], i % 2 ? '#7ab8e0' : '#a68ad8'); }
+    if (sp.bigCrystal) { glow(g, 1.12, 0.56, 0.38, 'rgba(180,220,255,.6)'); cr(1.12, 0.76, 0.42, 0.09, 'rgb(214,240,255)'); }
+    g.fillStyle = '#100c1c'; g.fillRect(0, 0.75, 1.6, 0.15);
+  },
+  swamp(g, K, sp, r) {
+    g.globalAlpha = 0.65;
+    for (let x = 0; x < 1.7; x += 0.16) { line(g, x, 0.7, x + 0.01, 0.5, 0.02, K.ink); circ(g, x, 0.48, 0.07, K.ink); for (let k = -2; k <= 2; k++) line(g, x + k * 0.03, 0.48, x + k * 0.04, 0.62, 0.006, K.ink); }
+    g.globalAlpha = 1;
+    for (const [x, w] of [[0.22, 0.12], [0.62, 0.1], [1.3, 0.13]]) {
+      for (const dx of [-w * 0.4, 0, w * 0.4]) line(g, x + dx, 0.62, x + dx, 0.8, 0.01, K.ink);
+      g.fillStyle = K.ink; g.fillRect(x - w / 2, 0.55, w, 0.07); poly(g, [x - w * 0.62, 0.56, x, 0.48, x + w * 0.62, 0.56], K.ink);
+      if (sp.sky !== 'day') circ(g, x + 0.02, 0.585, 0.008, '#ffe9a0');
+    }
+    const wg = g.createLinearGradient(0, 0.7, 0, 0.9); wg.addColorStop(0, 'rgba(70,110,110,.7)'); wg.addColorStop(1, '#0a1614');
+    g.fillStyle = wg; g.fillRect(0, 0.7, 1.6, 0.2);
+    g.fillStyle = K.ground; g.fillRect(0, 0.74, 1.6, 0.03);
+    for (let i = 0; i < 7; i++) ell(g, r() * 1.6, 0.66 + r() * 0.12, 0.2 + r() * 0.15, 0.025, 'rgba(220,235,240,.12)');
+    for (let i = 0; i < 6; i++) glow(g, r() * 1.6, 0.6 + r() * 0.15, 0.03, 'rgba(180,255,190,.8)');
+  },
+  camp(g, K, sp, r) {
+    g.globalAlpha = 0.8;
+    for (let x = 0; x < 1.65; x += 0.05) poly(g, [x - 0.02, 0.66, x, 0.56 - r() * 0.04, x + 0.02, 0.66], K.ink);
+    g.globalAlpha = 1;
+    for (const [x, w] of [[0.25, 0.16], [0.95, 0.2], [1.4, 0.15]]) { poly(g, [x - w / 2, 0.73, x, 0.5, x + w / 2, 0.73], '#3a0a10'); poly(g, [x - w / 2, 0.73, x, 0.5, x - 0.02, 0.73], '#260608'); line(g, x, 0.5, x, 0.42, 0.008, K.ink); poly(g, [x, 0.42, x + 0.06, 0.44, x, 0.46], '#a01a1a'); }
+    g.fillStyle = K.ground; g.fillRect(0, 0.72, 1.6, 0.18);
+    sceneFire(g, r, [[0.55, 0.75], [1.2, 0.76]]);
+  },
+  fortress(g, K, sp, r) {
+    g.fillStyle = K.ink; g.fillRect(0, 0.52, 1.6, 0.22);
+    for (let x = 0; x < 1.6; x += 0.08) g.fillRect(x, 0.49, 0.045, 0.04);
+    g.fillRect(1.1, 0.26, 0.18, 0.48);
+    for (let x = 1.1; x < 1.28; x += 0.06) g.fillRect(x, 0.23, 0.035, 0.04);
+    line(g, 1.19, 0.23, 1.19, 0.1, 0.008, K.ink); poly(g, [1.19, 0.1, 1.27, 0.12, 1.19, 0.15], sp.sky === 'void' ? '#4a2a6a' : '#e9c46a');
+    g.fillStyle = 'rgba(0,0,0,.5)'; g.beginPath(); g.moveTo(0.42, 0.74); g.lineTo(0.42, 0.64); g.arc(0.48, 0.64, 0.06, Math.PI, 0); g.lineTo(0.54, 0.74); g.fill();
+    if (!sp.fire) { g.fillStyle = '#ffe9a0'; for (const [x, y] of [[1.16, 0.36], [1.22, 0.36], [0.2, 0.6], [0.8, 0.6]]) g.fillRect(x, y, 0.02, 0.03); }
+    g.fillStyle = K.ground; g.fillRect(0, 0.73, 1.6, 0.17);
+    if (sp.snow) for (let x = 0; x < 1.6; x += 0.08) ell(g, x + 0.02, 0.495, 0.035, 0.01, 'rgba(235,245,255,.9)');
+    if (sp.fire) sceneFire(g, r, [[0.15, 0.5], [0.75, 0.5], [1.19, 0.24], [1.45, 0.5]]);
+  },
+  rift(g, K, sp, r) {
+    const vio = sp.sky !== 'blood', c1 = vio ? '200,110,255' : '255,120,40', c2 = vio ? '120,40,200' : '200,40,20';
+    for (let i = 0; i < 5; i++) { const x = 0.75 + i * 0.2; poly(g, [x - 0.04, 0.74, x - 0.01, 0.35 + r() * 0.15, x + 0.04, 0.74], K.ink); }
+    glow(g, 1.15, 0.45, 0.5, `rgba(${c1},.55)`);
+    for (let i = 0; i < 7; i++) { g.beginPath(); g.ellipse(1.15, 0.45, 0.24 - i * 0.03, 0.3 - i * 0.038, 0.2, i * 0.7, i * 0.7 + 4.6); g.lineWidth = 0.02; g.strokeStyle = `rgba(${i % 2 ? c1 : c2},.85)`; g.stroke(); }
+    circ(g, 1.15, 0.45, 0.04, `rgba(${c1},1)`);
+    g.fillStyle = K.ground; g.fillRect(0, 0.72, 1.6, 0.18);
+    for (let i = 0; i < 6; i++) { let x = 0.7 + r() * 0.8, y = 0.74; g.beginPath(); g.moveTo(x, y); for (let k = 0; k < 4; k++) { x += (r() - 0.5) * 0.12; y += 0.03; g.lineTo(x, y); } g.lineWidth = 0.01; g.strokeStyle = `rgba(${c1},.8)`; g.stroke(); }
+  },
+};
+function drawSceneFig(g, f, heroKey, time) {
+  const [kind, a, b, c, d, e] = f;
+  if (kind === 'demon') {
+    const type = a, x = b, s = c, face = d, D = DEMONS[type];
+    g.save(); g.translate(x, 0.78); const k = s * (D.scale || 1); g.scale(k, k);
+    drawDemon(g, { type, D, v: null, tint: D.tint || null, x: 0, y: 0, face, phase: 0.6, flash: 0, slowT: 0, stunT: 0, atk: 0, phased: 0, skin: 0, flying: !!D.flying }, time);
+    g.restore();
+    return;
+  }
+  const x = a, s = b, face = c, pose = d || {};
+  g.save(); g.translate(x, 0.79); g.scale(s, s);
+  if (pose.halo) glow(g, 0, -0.32, 0.55, pose.halo);
+  {
+    const h = Object.assign(heroPose(kind === 'npc' ? pose.base : heroKey), { face, moving: !!pose.moving, swing: pose.swing || 0, shot: pose.shot || 0, pal: pose.pal || null });
+    if (pose.aim != null) h.aim = face > 0 ? pose.aim : Math.PI - pose.aim;
+    drawHero(g, h, time);
+    if (pose.torch) { line(g, face * 0.12, -0.2, face * 0.16, -0.5, 0.025, '#6a4a2a'); glow(g, face * 0.16, -0.55, 0.25, 'rgba(255,170,60,.8)'); poly(g, [face * 0.16 - 0.03, -0.5, face * 0.16, -0.62, face * 0.16 + 0.03, -0.5], '#ffcf6a'); }
+  }
+  g.restore();
+}
+function drawScene(canvas, heroKey, ci, cssW, locked) {
+  const sp = SAGA[heroKey][ci].s, K = SKIES[sp.sky], r = mulberry32(ci * 97 + heroKey.length * 31 + 5);
+  const dprr = Math.min(window.devicePixelRatio || 1, 3), Wp = Math.round(cssW * dprr), Hp = Math.round(Wp * 0.5625);
+  canvas.width = Wp; canvas.height = Hp;
+  const g = canvas.getContext('2d'), k = Wp / 1.6;
+  g.setTransform(k, 0, 0, k, 0, 0);
+  const sky = g.createLinearGradient(0, 0, 0, 0.74);
+  K.g.forEach((c, i) => sky.addColorStop(i / (K.g.length - 1), c));
+  g.fillStyle = sky; g.fillRect(0, 0, 1.6, 0.9);
+  const ns = sp.stars || K.stars || 0;
+  for (let i = 0; i < ns; i++) circ(g, r() * 1.6, r() * 0.55, 0.002 + r() * 0.004, `rgba(255,255,255,${0.4 + r() * 0.6})`);
+  if (K.moon) { glow(g, K.moon[0], K.moon[1], 0.2, 'rgba(220,235,255,.35)'); circ(g, K.moon[0], K.moon[1], K.moon[2], '#eef4ff'); circ(g, K.moon[0] + 0.02, K.moon[1] - 0.01, K.moon[2] * 0.85, K.g[1]); }
+  if (K.sun) { glow(g, K.sun[0], K.sun[1], K.sun[2] * 3.2, 'rgba(255,230,160,.55)'); circ(g, K.sun[0], K.sun[1], K.sun[2], K.sun[3]); }
+  if (K.glow) glow(g, 0.8, 0.74, 0.9, K.glow);
+  if (sp.meteors) for (let i = 0; i < 4; i++) { const x = 0.3 + i * 0.3, y = 0.1 + r() * 0.15; line(g, x + 0.18, y - 0.12, x, y, 0.012, 'rgba(255,230,150,.7)'); circ(g, x, y, 0.014, '#fff6c8'); }
+  LANDS[sp.land](g, K, sp, r);
+  const time = 1.3;
+  for (const f of sp.figs) drawSceneFig(g, f, heroKey, time);
+  if (sp.snow) for (let i = 0; i < 60; i++) circ(g, r() * 1.6, r() * 0.9, 0.003 + r() * 0.004, 'rgba(255,255,255,.8)');
+  if (K.embers) for (let i = 0; i < 30; i++) circ(g, r() * 1.6, r() * 0.8, 0.003 + r() * 0.004, `rgba(255,${150 + r() * 80 | 0},60,.9)`);
+  const vg = g.createRadialGradient(0.8, 0.45, 0.35, 0.8, 0.45, 1.0);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.6)');
+  g.fillStyle = vg; g.fillRect(0, 0, 1.6, 0.9);
+  if (locked) {
+    g.fillStyle = 'rgba(6,8,12,.82)'; g.fillRect(0, 0, 1.6, 0.9);
+    g.fillStyle = 'rgba(255,214,120,.9)';
+    g.beginPath(); g.arc(0.8, 0.4, 0.06, Math.PI, 0); g.lineWidth = 0.025; g.strokeStyle = 'rgba(255,214,120,.9)'; g.stroke();
+    g.fillRect(0.72, 0.4, 0.16, 0.13);
+    circ(g, 0.8, 0.455, 0.018, '#1a1208');
+  }
+  g.setTransform(1, 0, 0, 1, 0, 0);
 }
 
 /* ---------- map background ---------- */
@@ -2953,7 +3177,7 @@ document.addEventListener('pointerdown', () => Snd.init(), { capture: true });
 /* ================= state ================= */
 let S = null;
 let menuLi = 0;
-const UI = { sel: null, buildType: null, rally: null, heroCmd: null, screen: 'menu', speed: 1, paused: false, sellArm: 0 };
+const UI = { sel: null, buildType: null, rally: null, heroCmd: null, saga: null, screen: 'menu', speed: 1, paused: false, sellArm: 0 };
 let progress = store.get('silvenor.progress', { unlocked: 1, stars: [] });
 if (!progress || typeof progress !== 'object') progress = { unlocked: 1, stars: [] };
 if (!Array.isArray(progress.stars)) progress.stars = [];
@@ -3560,6 +3784,106 @@ function castSkill(h, tx, ty) {
   }
   addText(sk.name, h.x, h.y - 0.95, '#ffe08a', 16);
 }
+
+/* ---------- hero stories ---------- */
+// Five chapters per hero. A chapter opens each time the hero helps win a story city that hero has not won before.
+// Scene: sky, land, extra flags, and figures [kind, x, scale, facing, pose] on a 1.6 × 0.9 picture;
+// 'npc' figures are hero drawings with their own colours (parents, teachers, other elves).
+const SAGA = {
+  elf: [
+    { t: 'Ивовая песня', s: { sky: 'sunset', land: 'river', figs: [['npc', 0.62, 0.62, 1, { base: 'elf', pal: { cloak: '#2a3a2a', tunic: '#4a6a3a', tunic2: '#5a7a44', hair: '#8a6a3a', hair2: '#9a7a48' } }], ['hero', 0.88, 0.36, 1, { aim: -0.25 }]] },
+      p: ['Лириэль родилась в Ивовом Броде — маленькой заставе, где река шепчет под ивами. Её отец был смотрителем моста и лучшим стрелком на всей границе.',
+        'Каждый вечер он вырезал ей стрелы из ивовых прутьев и учил сбивать листья, плывущие по воде. «Лук слушает того, кто умеет ждать», — говорил он. Лириэль ждать не умела, но к десяти годам сбивала каждый третий лист.'] },
+    { t: 'Ночь пепла', s: { sky: 'blood', land: 'river', fire: true, figs: [['demon', 'rogach', 1.22, 0.24, -1], ['hero', 0.5, 0.36, -1, { moving: true }]] },
+      p: ['В ту ночь небо над рекой треснуло, как лёд. Из алой трещины вышел Кровавый Рогач, а за ним — сотни бесов с факелами.',
+        'Отец усадил Лириэль в лодку, вложил ей в руки ивовый лук и оттолкнул от берега. Последнее, что она видела, — его силуэт на горящем мосту. Он стоял, пока не кончились стрелы. Ивовый Брод сгорел до рассвета.'] },
+    { t: 'Лунные лучницы', s: { sky: 'night', land: 'tower', figs: [['npc', 0.5, 0.6, 1, { base: 'elf', pal: { cloak: '#2a3050', tunic: '#4a5a8a', tunic2: '#5a6aa0', hair: '#e8eef8', hair2: '#f4f8ff', circlet: true } }], ['hero', 0.9, 0.55, 1, { aim: -0.12 }]] },
+      p: ['Течение принесло лодку к стенам Аэлина. Лунные лучницы нашли полуживую девочку, которая не выпускала из рук обгоревший лук.',
+        'Восемь лет они учили её стрелять при свете луны, с завязанными глазами, против ветра. Лириэль научилась ждать. И поняла главное: стрела, выпущенная в гневе, летит мимо, а стрела, выпущенная ради кого-то, всегда находит цель.'] },
+    { t: 'Рог над рекой', s: { sky: 'dawn', land: 'river', ruins: true, figs: [['hero', 0.8, 0.55, 1, { halo: 'rgba(255,220,140,.45)' }]] },
+      p: ['Когда демоны вернулись к границе, Лириэль первой вызвалась идти к Ивовому Броду. От заставы остались только обугленные сваи моста.',
+        'В иле у берега она нашла отцовский рог — тот самый, которым он созывал стрелков. Рог был цел. Лириэль протрубила в него, и с того берега впервые за много лет ей ответили: эльфы возвращались домой.'] },
+    { t: 'Стрела для Бездны', s: { sky: 'void', land: 'rift', figs: [['hero', 0.45, 0.55, 1, { aim: -0.18 }], ['demon', 'king', 1.18, 0.22, -1]] },
+      p: ['Лириэль знает, откуда пришёл огонь той ночи. Разлом ведёт к Престолу Бездны, где Ваал’Тор собирает новые армии.',
+        'Она пройдёт весь путь — от Ивового Брода до самого трона. Не ради мести, а ради того, чтобы ни одна девочка больше не уплывала в темноту от горящего дома. Последняя стрела в её колчане — ивовая. Её вырезал отец.'] },
+  ],
+  dwarf: [
+    { t: 'Кузня под перевалом', s: { sky: 'day', land: 'mountains', snow: true, forge: true, figs: [['hero', 0.6, 0.62, 1], ['hero', 0.86, 0.38, -1]] },
+      p: ['Бранн вырос в Каменном Чертоге под Звездопадным перевалом, в кузне своего деда, мастера Хольда. Мальчиком он раздувал мехи и слушал старые песни о Железном Договоре: гномы куют для эльфов, эльфы стерегут для гномов горные тропы.',
+        '«Слово гнома крепче стали, — говорил дед. — Сталь можно перековать, а слово — нет».'] },
+    { t: 'Холодный горн', s: { sky: 'night', land: 'mountains', snow: true, cold: true, figs: [['demon', 'skjolda', 1.12, 0.2, -1], ['hero', 0.5, 0.38, -1, { moving: true }]] },
+      p: ['Однажды зимой с перевала спустилась ледяная виверна Скьольда. От её дыхания горны Чертога покрылись инеем и погасли один за другим.',
+        'Гномы уходили тайными туннелями, а мастер Хольд остался у последнего тёплого горна. Он сунул внуку свой молот: «Неси. Пока молот цел — цел и Чертог». Больше Бранн деда не видел.'] },
+    { t: 'Долг крови', s: { sky: 'dawn', land: 'fortress', snow: true, figs: [['npc', 0.52, 0.6, 1, { base: 'elf', pal: { cloak: '#22384a', tunic: '#3a6a8a', tunic2: '#4a7a9a', hair: '#c8a060', hair2: '#d8b070' } }], ['hero', 0.86, 0.58, -1]] },
+      p: ['Эльфы Звездопада приютили беглецов, хотя им самим не хватало хлеба. Бранн вырос среди них — самый низкий и самый упрямый страж на стенах.',
+        'Он помнил Договор. Эльфы сдержали своё слово, теперь его черёд. Каждую ночь он стоял у ворот так, будто за ними был не чужой город, а родной Чертог.'] },
+    { t: 'Руна в молоте', s: { sky: 'night', land: 'mountains', forge: true, figs: [['hero', 0.8, 0.62, 1, { swing: 0.15, halo: 'rgba(255,190,90,.6)' }]] },
+      p: ['В одном бою молот деда вдруг загудел и засветился. Старый рунный мастер разглядел под копотью на рукояти знак — руну Стража.',
+        'Хольд вковал её в молот в ту последнюю ночь, отдав ей весь жар своего горна. Руна просыпается, когда рядом демоны. Значит, дед всё это время был рядом — в каждом ударе.'] },
+    { t: 'Пока горит горн', s: { sky: 'blood', land: 'rift', figs: [['hero', 0.45, 0.62, 1, { swing: 0.15 }], ['demon', 'colossus', 1.15, 0.19, -1]] },
+      p: ['Бранн идёт к Разлому вместе с эльфами — так велит Договор. Когда падёт последний демон, он вернётся в Каменный Чертог, разожжёт холодный горн и откуёт новый молот — для того, кто встанет у ворот после него.',
+        'Гномы говорят: пока горит хоть один горн, народ жив. Бранн несёт этот огонь в себе.'] },
+  ],
+  mage: [
+    { t: 'Девочка, считавшая звёзды', s: { sky: 'night', land: 'tower', stars: 140, figs: [['npc', 0.62, 0.62, 1, { base: 'mage', pal: { robe: '#4a3a7a', robe2: '#6a5aa0', hair: '#c8ccd8', hair2: '#dde0ea' } }], ['hero', 0.86, 0.36, 1]] },
+      p: ['На верхушке Звёздной башни в Сильвеноре жил звездочёт Элдрин со своей дочерью. Мирэль знала по именам все звёзды над столицей и каждую ночь пересчитывала их, прежде чем уснуть.',
+        '«Звёзды никуда не денутся», — смеялся отец. Но однажды ночью одной звезды не оказалось на месте.'] },
+    { t: 'Погасшая звезда', s: { sky: 'blood', land: 'tower', fire: true, figs: [['demon', 'boss', 1.18, 0.24, -1], ['hero', 0.5, 0.36, -1, { moving: true }]] },
+      p: ['Мирэль первой заметила, что южное небо темнеет, будто кто-то стирает звёзды. Старейшины не поверили девочке. Через три ночи из Разлома вышел архидемон Мал’Гарот.',
+        'Звёздная башня рухнула, а отец, читая последнее заклинание, исчез в ослепительной вспышке. Когда свет погас, на юге снова горели звёзды. Но отца не было нигде.'] },
+    { t: 'Хрустальная тишина', s: { sky: 'night', land: 'crystal', figs: [['hero', 0.8, 0.55, 1, { shot: 0.2, halo: 'rgba(150,200,255,.5)' }]] },
+      p: ['Мирэль ушла в Хрустальные копи, где самоцветы веками впитывают звёздный свет. Отшельница-хранительница учила её слушать кристаллы и тянуть из них сияние, как нить из кудели.',
+        'Годами Мирэль жила в подземной тишине и однажды поняла: если позвать звезду, она придёт.'] },
+    { t: 'Голос в кристалле', s: { sky: 'night', land: 'crystal', bigCrystal: true, figs: [['hero', 0.55, 0.55, 1]] },
+      p: ['В самом глубоком зале копей лежал кристалл, светившийся по-особому. Мирэль коснулась его и услышала голос отца.',
+        'В ту ночь Элдрин не погиб: он стал печатью и своим светом запер половину Разлома. Но печать слабеет. «Звёзды никуда не денутся, — сказал голос. — А ты?»'] },
+    { t: 'Звездопад', s: { sky: 'void', land: 'rift', meteors: true, figs: [['hero', 0.45, 0.55, 1, { shot: 0.2 }], ['demon', 'lord', 1.16, 0.27, -1]] },
+      p: ['Мирэль идёт к Престолу Бездны, чтобы закончить заклинание отца и вернуть его свет на небо. Демоны уже знают её имя: там, где она поднимает посох, падают звёзды.',
+        'А по ночам, перед боем, она по-прежнему пересчитывает их. Все до одной. Теперь их снова столько, сколько нужно.'] },
+  ],
+  shadow: [
+    { t: 'Дитя тумана', s: { sky: 'dusk', land: 'swamp', figs: [['npc', 0.5, 0.36, 1, { base: 'elf', pal: { cloak: '#2a2a3a', tunic: '#5a4a7a', tunic2: '#6a5a8a', hair: '#3a2a4a', hair2: '#4a3a5a' } }], ['hero', 0.95, 0.36, -1]] },
+      p: ['Кайра выросла в Ивенмире — городе на сваях среди серебряных топей. Там эльфы ходят тихо, а дети играют в прятки в тумане.',
+        'Кайра пряталась лучше всех: её не находили ни друзья, ни мать, ни даже болотные огоньки. Старая сказительница говорила, что такие дети рождаются раз в сто лет, и называла их детьми тени.'] },
+    { t: 'Сделка тирана', s: { sky: 'night', land: 'swamp', figs: [['demon', 'tyrant', 1.16, 0.2, -1], ['hero', 0.55, 0.36, 1]] },
+      p: ['Мор’Гул, тиран топей, не стал жечь Ивенмир. Он предложил старейшинам сделку: город уцелеет, если ему отдадут всех детей тени.',
+        'Старейшины спорили всю ночь — и согласились. Утром Кайру и ещё семерых детей увели в туман. Мать не успела даже попрощаться.'] },
+    { t: 'Ученица тьмы', s: { sky: 'blood', land: 'camp', figs: [['demon', 'warlock', 1.12, 0.4, -1], ['hero', 0.6, 0.55, 1, { swing: 0.1 }]] },
+      p: ['В лагере демонов детей тени учили убивать — бесшумно, быстро, без жалости. Из восьми выжила одна Кайра. Наставники-колдуны хвалили её и подарили два клинка — знак лучшей ученицы.',
+        'Кайра молчала, кланялась и запоминала всё: каждый пароль, каждую тропу, каждую слабость тех, кто её учил.'] },
+    { t: 'Побег', s: { sky: 'night', land: 'swamp', figs: [['hero', 0.72, 0.55, 1, { moving: true }], ['demon', 'hound', 1.32, 0.34, -1]] },
+      p: ['В ночь, когда Владыка Разлома созвал армии к последней крепости людей, Кайра исчезла из лагеря. Она унесла клинки наставников и карту тайных демонских троп.',
+        'В Ивенмире её не узнали: у ворот стояла не девочка, а тень с фиолетовыми глазами. Её боялись. Но карта, которую она принесла, спасла город.'] },
+    { t: 'Тень за тенью', s: { sky: 'void', land: 'rift', figs: [['hero', 0.5, 0.55, 1, { swing: 0.1 }], ['demon', 'tyrant', 1.16, 0.19, -1]] },
+      p: ['Кайра больше не прячется. Она идёт впереди эльфийских отрядов и находит демонов раньше, чем те находят эльфов.',
+        'Где-то за Разломом её ждут наставники — и Мор’Гул, который когда-то купил её за мир, которого не было. Кайра научилась у них всему. Теперь она вернёт им этот урок.'] },
+  ],
+  paladin: [
+    { t: 'Сын стражника', s: { sky: 'dawn', land: 'fortress', figs: [['hero', 0.62, 0.6, 1], ['hero', 0.86, 0.38, 1]] },
+      p: ['Айден родился в крепости Последний Рассвет — единственном городе людей среди эльфийских земель. Его отец служил стражником на восточной стене.',
+        'Каждое утро они вдвоём поднимались на башню встречать рассвет. «Пока мы видим солнце, — говорил отец, — ночь проиграла ещё раз».'] },
+    { t: 'Три ночи тьмы', s: { sky: 'void', land: 'fortress', fire: true, figs: [['demon', 'lord', 1.2, 0.26, -1], ['hero', 0.6, 0.38, 1, { torch: true }]] },
+      p: ['Когда Азгорот, Владыка Разлома, впервые подошёл к крепости, он закрыл небо тьмой. Три дня над Последним Рассветом не вставало солнце. Отец Айдена пал у ворот в первую же ночь.',
+        'Мальчик две ночи держал на стене факел, чтобы защитники видели, куда стрелять. На третье утро сквозь тьму пробился первый луч.'] },
+    { t: 'Орден Рассвета', s: { sky: 'dawn', land: 'fortress', figs: [['hero', 0.8, 0.58, 1, { halo: 'rgba(255,220,130,.55)' }]] },
+      p: ['Жрица ордена Рассвета видела мальчика с факелом и взяла его в ученики. Айден получил щит отца — со старым солнцем, почти стёршимся от ударов, — и заново покрыл его золотом.',
+        'Годы службы научили его носить латы, держать строй и молиться солнцу перед каждым боем.'] },
+    { t: 'Свет в ладонях', s: { sky: 'day', land: 'forest', figs: [['npc', 0.6, 0.55, 1, { base: 'elf', pal: { cloak: '#24543a', tunic: '#2f6c46', tunic2: '#3a7a52', hair: '#c8a060', hair2: '#d8b070' } }], ['hero', 0.86, 0.58, -1, { halo: 'rgba(255,235,160,.65)' }]] },
+      p: ['В одном бою Айден склонился над раненым эльфом-охотником и вдруг почувствовал, как ладони наполняются теплом. Рана затянулась.',
+        'Жрица сказала, что так свет выбирает своих: не тех, кто сильнее бьёт, а тех, кто не может пройти мимо. С тех пор Айден знает: его свет — не только оружие, но и щит для других.'] },
+    { t: 'Последний рассвет', s: { sky: 'dawn', land: 'rift', figs: [['hero', 0.45, 0.6, 1, { swing: 0.1, halo: 'rgba(255,220,130,.5)' }], ['demon', 'king', 1.18, 0.22, -1]] },
+      p: ['Айден поклялся, что над эльфийскими землями больше не будет ночи без рассвета. Он дойдёт до Престола Бездны, где во тьме прячется Ваал’Тор, и встретит там утро — первое утро в мире, где Разлом закрыт.',
+        'А потом вернётся на восточную стену. Отец ведь говорил: встречать рассвет надо вдвоём.'] },
+  ],
+};
+// how many chapters a hero has opened, and which story cities that hero has already won
+function sagaState(key) {
+  progress.saga = progress.saga || {};
+  const s = progress.saga[key] || (progress.saga[key] = { won: [] });
+  if (!Array.isArray(s.won)) s.won = [];
+  return s;
+}
+const sagaOpen = key => Math.min(SAGA[key].length, sagaState(key).won.length);
 
 /* ---------- projectiles & effects ---------- */
 function updateProj(p, dt) {
@@ -4217,7 +4541,7 @@ function renderLevels() {
   el.levels.querySelectorAll('.lvl').forEach(b => b.addEventListener('click', () => startLevel(+b.dataset.li)));
 }
 function showMenu(screen = 'menu') {
-  S = null; UI.paused = false; closeSheets(); cancelRally(); clearResume();
+  S = null; UI.paused = false; closeSheets(); cancelRally(); clearResume(); closeSaga();
   menuLi = Math.max(0, Math.min(progress.unlocked - 1, LEVELS.length - 1));
   el.pause.hidden = true; el.end.hidden = true; heroDock.hidden = true;
   showScreen(screen);
@@ -4228,6 +4552,7 @@ function showMenu(screen = 'menu') {
 function startLevel(li, mode = 'story') {
   S = newState(li, mode); amb.length = 0;
   S.hero = makeHero(heroKey);
+  closeSaga();
   for (const k in hud) delete hud[k];
   UI.paused = false; closeSheets(); cancelRally();
   hideScreens(); el.pause.hidden = true; el.end.hidden = true;
@@ -4248,7 +4573,7 @@ function finish(win) {
   S.over = true; S.waveActive = false; clearResume();
   closeSheets(); cancelRally(); setFooter();
   const li = S.li;
-  let stars = 0, best = 0, record = false;
+  let stars = 0, best = 0, record = false, chapter = null;
   if (S.L.endless) {
     progress.endless = progress.endless || {};
     best = progress.endless[li] || 0;
@@ -4257,14 +4582,23 @@ function finish(win) {
     stars = S.lives >= S.maxLives * 0.9 ? 3 : S.lives >= S.maxLives * 0.5 ? 2 : 1;
     progress.stars[li] = Math.max(progress.stars[li] || 0, stars);
     progress.unlocked = Math.max(progress.unlocked, Math.min(LEVELS.length, li + 2));
+    if (S.hero) chapter = sagaWin(S.hero.key, li);
     store.set('silvenor.progress', progress);
   }
-  const snap = { win, li, stars, kills: S.kills, lives: S.lives, max: S.maxLives, wave: S.wave, total: S.L.waves.length, name: S.L.name, bossIn: S.bossIn, endless: !!S.L.endless, best, record };
+  const snap = { win, li, stars, kills: S.kills, lives: S.lives, max: S.maxLives, wave: S.wave, total: S.L.waves.length, name: S.L.name, bossIn: S.bossIn, endless: !!S.L.endless, best, record, chapter, heroKey: S.hero ? S.hero.key : null };
   setTimeout(() => showEnd(snap), 1100);
 }
 function showEnd(r) {
   if (!S || S.li !== r.li) return;
   $('endStars').hidden = r.endless;
+  const sb = $('sagaBtn');
+  sb.hidden = r.chapter == null;
+  if (r.chapter != null) {
+    const H = HEROES[r.heroKey];
+    sb.dataset.k = r.heroKey; sb.dataset.i = r.chapter;
+    sb.innerHTML = `${BOOK}<span><small>${H.name}: открыта глава ${r.chapter + 1} из ${SAGA[r.heroKey].length}</small>${SAGA[r.heroKey][r.chapter].t}</span>`;
+    setTimeout(() => { if (S && S.over && !el.end.hidden && !UI.saga) openSaga(r.heroKey, r.chapter); }, 1000);
+  }
   $('endMenuBtn').textContent = r.endless ? 'К выбору карты' : 'К выбору города';
   if (r.endless) {
     $('endEyebrow').textContent = 'Бесконечный режим';
@@ -4319,24 +4653,27 @@ function renderEndless() {
   box.querySelectorAll('.lvl').forEach(b => b.addEventListener('click', () => startLevel(+b.dataset.li, 'endless')));
 }
 const BAR_NAMES = ['Атака', 'Защита', 'Дальность', 'Скорость'];
+const BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h12a2 2 0 0 1 2 2v14H7.5a1.5 1.5 0 0 0 0 3H20v1H7.5A3.5 3.5 0 0 1 4 18.5V4a2 2 0 0 1 2-2zm2 4v2h8V6zm0 4v2h6v-2z"/></svg>';
 function renderHeroes() {
   const box = $('heroList');
   box.innerHTML = HERO_KEYS.map(k => {
-    const H = HEROES[k], sel = k === heroKey;
+    const H = HEROES[k], sel = k === heroKey, open = sagaOpen(k);
     const bars = H.bars.map((v, i) => `<span class="bar-row">${BAR_NAMES[i]}<span class="pips">${'<i class="on"></i>'.repeat(v)}${'<i></i>'.repeat(5 - v)}</span></span>`).join('');
-    return `<button class="hero-card${sel ? ' sel' : ''}" data-k="${k}" style="--h1:${H.c1};--h2:${H.c2}" aria-pressed="${sel}">
+    return `<div class="hero-card${sel ? ' sel' : ''}" data-k="${k}" style="--h1:${H.c1};--h2:${H.c2}">
       <canvas class="pic"></canvas><span class="nm">${H.name}</span><span class="tt">${H.title}</span><span class="ds">${H.desc}</span>
       <span class="bars">${bars}</span>
       <span class="sk"><canvas></canvas><span><b>${H.skill.name}</b> — ${H.skill.desc}. Перезарядка ${H.skill.cd} с.</span></span>
-      <span class="pick">${sel ? 'Выбран' : 'Выбрать'}</span></button>`;
+      <span class="hc-row"><button class="story-btn" aria-label="История героя: открыто глав ${open} из ${SAGA[k].length}">${BOOK}История · ${open} из ${SAGA[k].length}</button><button class="pick" aria-pressed="${sel}">${sel ? 'Выбран' : 'Выбрать'}</button></span></div>`;
   }).join('');
   box.querySelectorAll('.hero-card').forEach(b => {
-    heroPortrait(b.querySelector('.pic'), b.dataset.k, 92, false);
-    skillIcon(b.querySelector('.sk canvas'), b.dataset.k, 38);
-    b.addEventListener('click', () => {
-      if (heroKey === b.dataset.k) return;
-      heroKey = b.dataset.k; store.set('silvenor.hero', heroKey); Snd.play('upgrade');
-      box.querySelectorAll('.hero-card').forEach(o => { const on = o.dataset.k === heroKey; o.classList.toggle('sel', on); o.setAttribute('aria-pressed', on); o.querySelector('.pick').textContent = on ? 'Выбран' : 'Выбрать'; });
+    const k = b.dataset.k;
+    heroPortrait(b.querySelector('.pic'), k, 92, false);
+    skillIcon(b.querySelector('.sk canvas'), k, 38);
+    b.querySelector('.story-btn').addEventListener('click', () => { openSaga(k, Math.max(0, sagaOpen(k) - 1)); Snd.play('tap'); });
+    b.addEventListener('click', ev => {
+      if (ev.target.closest('.story-btn') || heroKey === k) return;
+      heroKey = k; store.set('silvenor.hero', heroKey); Snd.play('upgrade');
+      box.querySelectorAll('.hero-card').forEach(o => { const on = o.dataset.k === heroKey; o.classList.toggle('sel', on); const pk = o.querySelector('.pick'); pk.setAttribute('aria-pressed', on); pk.textContent = on ? 'Выбран' : 'Выбрать'; });
     });
   });
 }
@@ -4411,6 +4748,41 @@ function heroOrder(wx, wy) {
 }
 heroFace.addEventListener('click', startHeroMove);
 heroSkillBtn.addEventListener('click', useHeroSkill);
+
+/* ---------- hero story reader ---------- */
+const sagaEl = $('saga');
+function openSaga(key, ci) {
+  UI.saga = { key, ci: clamp(ci, 0, SAGA[key].length - 1) };
+  sagaEl.hidden = false; sagaEl.scrollTop = 0;
+  renderSaga();
+}
+function closeSaga() { if (!UI.saga) return; UI.saga = null; sagaEl.hidden = true; if (UI.screen === 'heroes') renderHeroes(); }
+function renderSaga() {
+  const { key, ci } = UI.saga, H = HEROES[key], ch = SAGA[key][ci], open = sagaOpen(key), locked = ci >= open;
+  $('sagaHero').textContent = `История: ${H.name}`;
+  $('sagaTitle').textContent = locked ? `Глава ${ci + 1}` : ch.t;
+  $('sagaNum').textContent = `Глава ${ci + 1} из ${SAGA[key].length}`;
+  const art = $('sagaArt');
+  drawScene(art, key, ci, Math.min(440, sagaEl.clientWidth - 32), locked);
+  $('sagaText').innerHTML = locked
+    ? `<p class="locked">Эта глава ещё скрыта. Победите в новом городе сюжета вместе с героем — ${H.name} — и она откроется.</p><p class="locked">Открыто глав: ${open} из ${SAGA[key].length}.</p>`
+    : ch.p.map(t => `<p>${t}</p>`).join('');
+  $('sagaDots').innerHTML = SAGA[key].map((_, i) => `<button class="sd${i === ci ? ' cur' : ''}${i < open ? ' open' : ''}" data-i="${i}" aria-label="Глава ${i + 1}${i < open ? '' : ' (закрыта)'}"></button>`).join('');
+  $('sagaDots').querySelectorAll('.sd').forEach(b => b.addEventListener('click', () => { UI.saga.ci = +b.dataset.i; renderSaga(); Snd.play('tap'); }));
+  $('sagaPrev').disabled = ci === 0;
+  $('sagaNext').disabled = ci >= SAGA[key].length - 1;
+}
+$('sagaClose').addEventListener('click', () => { closeSaga(); Snd.play('tap'); });
+$('sagaPrev').addEventListener('click', () => { if (UI.saga && UI.saga.ci > 0) { UI.saga.ci--; renderSaga(); Snd.play('tap'); } });
+$('sagaNext').addEventListener('click', () => { if (UI.saga && UI.saga.ci < SAGA[UI.saga.key].length - 1) { UI.saga.ci++; renderSaga(); Snd.play('tap'); } });
+$('sagaBtn').addEventListener('click', () => { const b = $('sagaBtn'); openSaga(b.dataset.k, +b.dataset.i); Snd.play('tap'); });
+// a story win with the hero opens the next chapter once per city
+function sagaWin(key, li) {
+  const s = sagaState(key);
+  if (s.won.includes(li) || s.won.length >= SAGA[key].length) return null;
+  s.won.push(li);
+  return s.won.length - 1;
+}
 
 /* ---------- input ---------- */
 let down = null;
@@ -4489,7 +4861,7 @@ function syncAwake() {
   try { window.SilvenorAndroid.keepAwake(want); } catch (e) { /* bridge unavailable */ }
 }
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { if (UI.rally != null || UI.heroCmd) cancelRally(); else if (UI.sel) closeSheets(); else if (S && !S.over) setPaused(!UI.paused); else if (!S && UI.screen && UI.screen !== 'menu') showScreen('menu'); }
+  if (e.key === 'Escape') { if (UI.saga) closeSaga(); else if (UI.rally != null || UI.heroCmd) cancelRally(); else if (UI.sel) closeSheets(); else if (S && !S.over) setPaused(!UI.paused); else if (!S && UI.screen && UI.screen !== 'menu') showScreen('menu'); }
   if ((e.key === ' ' || e.key === 'Enter') && e.target === document.body && S && !S.waveActive && !UI.paused) { e.preventDefault(); startWave(); }
 });
 
@@ -4547,13 +4919,14 @@ function start(data) {
 }
 window.__silvenor = {
   get S() { return S; }, startLevel, startWave, update, drawTower, drawDemon, drawHero, render, DEMONS, HEROES, showScreen, castSkill, heroOrder, useHeroSkill, startHeroMove,
-  setHero(k) { if (HEROES[k]) { heroKey = k; store.set('silvenor.hero', k); } },
+  setHero(k) { if (HEROES[k]) { heroKey = k; store.set('silvenor.hero', k); } }, openSaga, closeSaga, SAGA,
   heroCmd(cmd, x, y) { UI.heroCmd = cmd; heroOrder(x, y); },
   build(si, type) { UI.sel = { si }; UI.buildType = type; doBuild(); return !!S.towers[si]; },
   upgrade(si) { UI.sel = { si }; upgrade(); closeSheets(); },
   upCost(t) { const nx = TOWERS[t.type].levels[t.lvl + 1]; return nx ? nx.up : 0; },
   // Android back button: returns false only on the city list, so the app can close
   back() {
+    if (UI.saga) { closeSaga(); return true; }
     if (UI.rally != null || UI.heroCmd) { cancelRally(); return true; }
     if (UI.sel) { closeSheets(); return true; }
     if (!el.end.hidden || (S && S.over)) { showMenu(S && S.L.endless ? 'endless' : 'story'); return true; }
