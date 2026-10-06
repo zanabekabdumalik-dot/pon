@@ -55,10 +55,11 @@ const frac = x => x - Math.floor(x);
 // ---------- дрожащие линии (boil) ----------
 // каждый вызов фигуры получает свой номер NID; шум зависит от номера, точки и «кадра рисовки» STEP (8 раз в секунду)
 let NID = 0, STEP = 0;
+const BOIL = 0;   // 0 — ровные чистые линии (дрожание выключено)
 const jn = i => (hash(NID * 17.13 + i * 3.71 + STEP * 101.9) - 0.5) * 2;
 function pxScale() { const m = ctx.getTransform(); return Math.hypot(m.a, m.b) || 1; }
 function wob(pts, amp = 2.4) {
-  NID++; const s = pxScale(), a = amp / s;
+  NID++; if (!BOIL) return pts; const s = pxScale(), a = amp / s;
   return pts.map((p, i) => [p[0] + jn(i * 2) * a, p[1] + jn(i * 2 + 1) * a]);
 }
 function smoothPath(q, closed) {
@@ -76,9 +77,27 @@ function smoothPath(q, closed) {
 }
 function inkW(lw = 7) { ctx.lineWidth = lw / pxScale(); ctx.strokeStyle = C.ink; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; }
 // закрашенная фигура с контуром
+function shadeOf(c) {
+  if (typeof c !== 'string' || c[0] !== '#' || c.length !== 7) return null;
+  if (c.toUpperCase() === '#FFFFFF') return '#DDE2EA';
+  if (c === C.ink || c === '#111' || c === '#222') return null;
+  const n = parseInt(c.slice(1), 16), k = 0.8;
+  return `rgb(${Math.round((n >> 16 & 255) * k)},${Math.round((n >> 8 & 255) * k)},${Math.round((n & 255) * k)})`;
+}
+// заливка с мягкой тенью снизу-справа и бликом сверху-слева
+function celFill(path, fill) {
+  ctx.fillStyle = fill; path(); ctx.fill();
+  const sh = shadeOf(fill); if (!sh) return;
+  const s = pxScale(), d = 14 / s;
+  ctx.save(); path(); ctx.clip();
+  ctx.fillStyle = sh; ctx.fillRect(-5000, -5000, 10000, 10000);
+  ctx.translate(-d, -d * 1.1); ctx.fillStyle = fill; path(); ctx.fill();
+  ctx.restore();
+}
 function shape(pts, fill, lw = 7, closed = true, amp = 2.4) {
-  const q = wob(pts, amp); smoothPath(q, closed);
-  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  const q = wob(pts, amp);
+  if (fill) celFill(() => smoothPath(q, closed), fill); else smoothPath(q, closed);
+  smoothPath(q, closed);
   if (lw) { inkW(lw); ctx.stroke(); }
 }
 function polyPts(pts, per = 3) {   // ломаная с промежуточными точками: острые углы, но дрожат и стороны
@@ -88,8 +107,9 @@ function polyPts(pts, per = 3) {   // ломаная с промежуточны
 }
 function poly(pts, fill, lw = 7) {   // многоугольник с острыми углами
   const q = wob(polyPts(pts), 2.2);
-  ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
-  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  const path = () => { ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); };
+  if (fill) celFill(path, fill);
+  path();
   if (lw) { inkW(lw); ctx.stroke(); }
 }
 function ellPts(x, y, rx, ry, n = 28, a0 = 0, a1 = TAU) {
@@ -109,7 +129,7 @@ function line(pts, lw = 7, color = C.ink, amp = 2) {
   const q = wob(pts.length === 2 ? [pts[0], [lerp(pts[0][0], pts[1][0], 0.5), lerp(pts[0][1], pts[1][1], 0.5)], pts[1]] : pts, amp);
   smoothPath(q, false); ctx.lineWidth = lw / pxScale(); ctx.strokeStyle = color; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke();
 }
-function dot(x, y, r, c = C.ink) { NID++; ctx.beginPath(); ctx.arc(x + jn(1) * 1.2 / pxScale(), y + jn(2) * 1.2 / pxScale(), r, 0, TAU); ctx.fillStyle = c; ctx.fill(); }
+function dot(x, y, r, c = C.ink, hl = false) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fillStyle = c; ctx.fill(); if (hl) { ctx.beginPath(); ctx.arc(x - r * 0.35, y - r * 0.38, r * 0.32, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill(); } }
 
 function setFont(size, weight = 700) { ctx.font = `${weight} ${size}px ${FONT}`; }
 function text(str, x, y, size, o = {}) {
@@ -118,7 +138,7 @@ function text(str, x, y, size, o = {}) {
   if (maxW) { const w = ctx.measureText(str).width; if (w > maxW) { size *= maxW / w; setFont(size); } }
   ctx.textAlign = align; ctx.textBaseline = 'middle';
   NID++;
-  const jx = jn(1) * 1.2, jy = jn(2) * 1.2;
+  const jx = 0, jy = 0;
   if (stroke) { ctx.lineJoin = 'round'; ctx.lineWidth = stroke; ctx.strokeStyle = strokeC; ctx.strokeText(str, x + jx, y + jy); }
   ctx.fillStyle = fill; ctx.fillText(str, x + jx, y + jy);
 }
@@ -150,6 +170,7 @@ function arm(d, pose, t, wave) {
 function fig(t, o) {
   const F = Object.assign({ x: 540, y: GROUND, s: 1.1, look: LOOK.guy, armL: 'down', armR: 'down', leg: 'stand', mouth: 'smile', eyes: 'dot', lookX: 0, lookY: 0, flip: 1, rot: 0 }, o);
   const hands = {};
+  if (!F.noShadow) { ctx.fillStyle = 'rgba(0,0,0,0.13)'; ctx.beginPath(); ctx.ellipse(F.x, F.y + 6, 115 * F.s, 18 * F.s, 0, 0, TAU); ctx.fill(); }
   withT(F.x, F.y, F.rot, F.s, () => {
     ctx.scale(F.flip, 1);
     // ноги
@@ -175,11 +196,11 @@ function fig(t, o) {
     const ex = F.lookX * 12, ey = F.lookY * 10;
     for (const d of [-1, 1]) {
       const x = d * 36 + ex, y = -455 + ey;
-      if (F.eyes === 'big') { circ(x, y, 24, '#fff', 6); dot(x + F.lookX * 6, y + 2, 10); }
+      if (F.eyes === 'big') { circ(x, y, 25, '#fff', 6); dot(x + F.lookX * 6, y + 2, 11, C.ink, true); }
       else if (F.eyes === 'happy') line([[x - 16, y + 6], [x, y - 8], [x + 16, y + 6]], 7);
       else if (F.eyes === 'closed') line([[x - 16, y], [x + 16, y]], 7);
       else if (F.eyes === 'angry') { dot(x, y, 10); line([[x - 20 * d * -1, y - 30], [x + 18 * d * -1, y - 18]], 7); }
-      else dot(x, y, 11);
+      else dot(x, y, 12, C.ink, true);
     }
     if (F.eyes === 'worry') for (const d of [-1, 1]) line([[d * 18 + ex, -495], [d * 54 + ex, -485]], 7);
     if (F.blush) for (const d of [-1, 1]) { ctx.fillStyle = 'rgba(240,120,130,0.45)'; ctx.beginPath(); ctx.ellipse(d * 68, -418, 18, 10, 0, 0, TAU); ctx.fill(); }
@@ -206,7 +227,7 @@ function hair(F, t) {
   } else if (h === 'bob') {
     shape([...ellPts(0, -455, 108, 108, 12, Math.PI * 1.02, Math.PI * 1.98), [80, -500], [40, -478], [0, -500], [-40, -478], [-80, -500]], '#4A3328', 7);
   } else if (h === 'spiky') {
-    const pts = []; for (let i = 0; i <= 14; i++) { const a = Math.PI * (1.0 + i / 14); const r = i % 2 ? 135 - Math.abs(i - 7) * 2 : 103; pts.push([Math.cos(a) * r, -448 + Math.sin(a) * r]); }
+    const pts = []; for (let i = 0; i <= 14; i++) { const a = Math.PI * (1.0 + i / 14); const r = i % 2 ? 135 - Math.abs(i - 7) * 2 : 103; pts.push([Math.cos(a) * r, -462 + Math.sin(a) * r]); }
     poly(pts, '#222', 6);
   } else if (h === 'shaggy') {
     const pts = []; for (let i = 0; i <= 12; i++) { const a = Math.PI * (0.95 + i * 0.092); const r = i % 2 ? 128 : 108; pts.push([Math.cos(a) * r, -440 + Math.sin(a) * r]); }
@@ -243,6 +264,7 @@ function monster(t, o = {}) {   // фиолетовое чудище из фил
 }
 function dog(t, o = {}) {   // (0,0) — земля
   const { scared = false, bark = false, jump = 0 } = o;
+  ctx.fillStyle = 'rgba(0,0,0,0.13)'; ctx.beginPath(); ctx.ellipse(0, 6, 150, 18, 0, 0, TAU); ctx.fill();
   withT(0, -jump, 0, 1, () => {
     line(ellPts(-125, -150, 26, 26, 10, 0, Math.PI * 1.6 + Math.sin(t * 14) * 0.3), 10);
     for (const x of [-70, -30, 40, 80]) line([[x, -100], [x, -4]], 10);
@@ -744,6 +766,9 @@ function renderFrame(t) {
   let i = 0; SHOTS.forEach((s, n) => { if (t >= s.t) i = n; });
   const sh = SHOTS[i], t1 = i + 1 < SHOTS.length ? SHOTS[i + 1].t : TL.total;
   CUR_BG = sh.bg; ctx.fillStyle = sh.bg; ctx.fillRect(0, 0, W, H);
+  // пол: чуть темнее фона, мягкий переход
+  const sd = shadeOf(sh.bg);
+  if (sd) { ctx.save(); ctx.globalAlpha = 0.35; ctx.fillStyle = sd; ctx.fillRect(0, GROUND - 10, W, H); ctx.restore(); }
   sh.draw(t, sh.t, t1);
   NID = 5000;
   drawLabel(sh, t);
