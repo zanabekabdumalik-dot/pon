@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  /** "artifact" for the embedded single-page build, otherwise the normal web build. */
+  /** "artifact" (embedded single page), "android" or "desktop" (apps); unset for the normal web build. */
   readonly VITE_TARGET?: string;
 }
 

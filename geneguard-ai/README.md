@@ -31,6 +31,19 @@
 версии с сервером (раздел 1). Ссылка приватная: чтобы её открыли другие (например, учитель), поделитесь
 ею через меню **Share** на странице.
 
+**Приложения для Android и Windows:** <https://github.com/zanabekabdumalik-dot/pon/releases/latest>
+
+| Файл | Устройство | Как установить |
+|---|---|---|
+| `GeneGuard-AI-1.0.0.apk` | Android 7.0+ | Скачайте на телефон, откройте файл, разрешите «Установка из этого источника». |
+| `GeneGuard-AI-Setup-1.0.0.exe` | Windows 10/11, 64‑bit | Запустите установщик; ярлык «GeneGuard AI» появится в меню «Пуск» и на рабочем столе. |
+| `GeneGuard-AI-Portable-1.0.0.exe` | Windows 10/11, 64‑bit | Запускается без установки (например, с флешки). |
+
+Приложения работают **без интернета**, как режим браузера: демо, OCR фото и PDF, VCF, анализ, отчёт и
+встроенный чат. Данные остаются в памяти приложения и стираются при его закрытии. Файлы не подписаны
+сертификатом разработчика, поэтому Windows SmartScreen может предупредить: «Подробнее» →
+«Выполнить в любом случае». Как устроена сборка — в разделе 7.
+
 ---
 
 ## 1. Быстрый старт
@@ -66,6 +79,8 @@ npm run dev
 | `npm run dev` | режим разработки: сервер и фронтенд на одном порту (5173), горячая перезагрузка |
 | `npm run build` | сборка фронтенда в `dist/` (её можно выложить и на статический хостинг, см. раздел 7) |
 | `npm run build:artifact` | сборка онлайн‑версии в `dist-artifact/`: одна HTML‑страница со встроенным кодом и файлы OCR/образцов в виде скриптов |
+| `npm run build:android` / `npm run build:desktop` | веб‑часть для Android‑ и Windows‑приложений (раздел 7) |
+| `npm run app-icons` | перерисовать иконки приложений и заставку Android (нужен Chromium для Playwright) |
 | `npm start` | продакшен‑сервер (раздаёт `dist/` и API), порт из `PORT` |
 | `npm test` | 25 юнит‑тестов (парсеры, движок риска, безопасность, чат, реальный OCR‑вывод) |
 | `npm run typecheck` | проверка типов TypeScript |
@@ -123,11 +138,17 @@ geneguard-ai/
 ├── tsconfig.json
 ├── .env.example               # все переменные окружения с пояснениями
 ├── Dockerfile / .dockerignore # продакшен‑образ
+├── capacitor.config.json      # настройки Android‑приложения (Capacitor)
+├── android/                   # Android‑проект (Gradle); иконки и заставка — в app/src/main/res
+├── desktop/                   # Windows‑приложение: Electron (main.cjs) + electron-builder, иконки в build/
 ├── public/
 │   ├── favicon.svg
 │   └── samples/               # синтетические образцы: фото, PDF, скан‑PDF, VCF, raw data, «не генетическое» фото
 ├── scripts/
-│   └── generate-samples.mjs   # генерация образцов (Playwright)
+│   ├── generate-samples.mjs   # генерация образцов (Playwright)
+│   ├── generate-app-icons.mjs # иконки Android/Windows и заставка из favicon.svg
+│   ├── build-app.mjs          # сборка веб‑части для приложений (dist-android/, dist-desktop/)
+│   └── build-artifact.mjs     # онлайн‑версия одной страницей
 ├── shared/                    # общий код браузера и сервера (чистый TypeScript)
 │   ├── types.ts               # модели данных: варианты, находки, PRS, отчёт
 │   ├── messages.ts            # дисклеймеры и обязательные фразы безопасности
@@ -290,6 +311,38 @@ Cloudflare Pages или просто школьный веб‑сервер. П�
 `…/#/analysis`, поэтому дополнительная настройка не нужна. Если API сервера нет, приложение само
 переходит в **режим браузера**: демо, OCR, PDF/VCF, анализ, отчёт и встроенный чат работают на
 устройстве пользователя. Claude и ClinVar требуют сервера, потому что ключи нельзя класть во фронтенд.
+
+### Приложения: Android (APK) и Windows (.exe)
+
+Это та же веб‑часть в окне приложения. Она сразу запускается в режиме «на этом устройстве», без сервера.
+**В приложения не попадают API‑ключи**, поэтому функций Claude в них нет: объяснения и чат дают
+встроенные правила.
+
+| | Android | Windows |
+|---|---|---|
+| Технология | [Capacitor](https://capacitorjs.com) (WebView) | [Electron](https://www.electronjs.org) + electron-builder |
+| Веб‑сборка | `npm run build:android` → `dist-android/`, затем `cap sync` | `npm run build:desktop` → `dist-desktop/` |
+| Пакет | `cd android && ./gradlew assembleDebug` → `app/build/outputs/apk/debug/app-debug.apk` | `cd desktop && npm ci && npm run dist` → `desktop/release/*.exe` |
+| Что нужно локально | JDK 21 и Android SDK (проще всего через Android Studio) | Windows с Node.js 22 (на Linux/macOS для NSIS нужен Wine) |
+
+**Автоматическая сборка.** Workflow `.github/workflows/apps.yml` собирает APK и оба .exe на серверах
+GitHub при каждом изменении `geneguard-ai/`. Готовые файлы лежат во вкладке **Actions** → нужный запуск →
+**Artifacts**. Чтобы выпустить версию со ссылками для скачивания, поднимите `version` в `package.json`,
+`desktop/package.json` и `versionName`/`versionCode` в `android/app/build.gradle`, затем создайте тег:
+
+```bash
+git tag v1.0.1 && git push origin v1.0.1
+```
+
+Workflow сам создаст релиз на странице **Releases**.
+
+**Особенности.** На Android нет печати и скачивания файлов из WebView, поэтому в отчёте остаётся кнопка
+**Copy report text**. Кнопка «Take a photo with the camera» открывает камеру. Системная кнопка «Назад»
+ведёт по истории приложения, а на главном экране закрывает его. В Windows работают печать и сохранение
+отчёта, а ссылки на источники (ClinVar, MedlinePlus и т. д.) открываются в обычном браузере.
+APK собирается в варианте *debug*, его можно сразу установить. Для Google Play нужна подписанная
+release‑сборка (Android Studio → *Build → Generate Signed App Bundle / APK*); ключ подписи нельзя
+хранить в репозитории. Иконки перерисовываются из `public/favicon.svg` командой `npm run app-icons`.
 
 ---
 

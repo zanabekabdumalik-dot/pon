@@ -4,7 +4,7 @@ import type { AnalysisReport, Category } from '../../shared/types';
 import { MESSAGES, SYNTHETIC_NOTICE } from '../../shared/messages';
 import { ordinal } from '../../shared/text';
 import { EmptyState, PageHeader, RISK_META } from '../components/ui';
-import { EMBEDDED, asset } from '../lib/env';
+import { CAN_SAVE_FILES, ON_DEVICE, asset } from '../lib/env';
 import { useSession } from '../state/session';
 
 const CAT_LABEL: Record<Category, string> = { chromosomal: 'Chromosomal', monogenic: 'Monogenic', multifactorial: 'Multifactorial' };
@@ -68,7 +68,7 @@ export function ReportPage() {
         title="Your GeneGuard report"
         actions={
           <>
-            {!EMBEDDED && (
+            {CAN_SAVE_FILES && (
               <>
                 <button type="button" className="btn-primary" onClick={() => window.print()}>
                   <Printer className="size-4" /> Print / save as PDF
@@ -78,13 +78,13 @@ export function ReportPage() {
                 </button>
               </>
             )}
-            <button type="button" className={EMBEDDED ? 'btn-primary' : 'btn-secondary'} onClick={copy}>
+            <button type="button" className={CAN_SAVE_FILES ? 'btn-secondary' : 'btn-primary'} onClick={copy}>
               {copied === 'done' ? <Check className="size-4" /> : <Copy className="size-4" />} {copied === 'done' ? 'Copied' : 'Copy report text'}
             </button>
           </>
         }
       >
-        A one-page summary to read calmly or to take to a doctor or genetic counselor. It is created in your browser.
+        A one-page summary to read calmly or to take to a doctor or genetic counselor. It is created {ON_DEVICE}.
         {copied === 'failed' && <span className="mt-1 block text-amber-700 dark:text-amber-300">Copying is blocked here — select the report text and copy it manually.</span>}
       </PageHeader>
 

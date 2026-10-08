@@ -1,5 +1,6 @@
 import { FileUp, Lock } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { ON_DEVICE } from '../lib/env';
 import { usePipeline } from '../state/pipeline';
 
 export const ACCEPT_ALL = 'image/*,.pdf,application/pdf,.vcf,.vcf.gz,.gz,.txt,.csv,.tsv,text/plain';
@@ -43,7 +44,7 @@ export function Dropzone({ accept = ACCEPT_ALL, title, hint, compact = false }: 
         <p className="mt-1 text-sm text-muted">{hint ?? 'Photo / screenshot (JPG, PNG), PDF, VCF, 23andMe-style raw data (TXT, CSV) — or click to choose'}</p>
       </div>
       <p className="flex items-center gap-1.5 text-xs text-muted">
-        <Lock className="size-3.5" /> Read in your browser · nothing is uploaded until you confirm
+        <Lock className="size-3.5" /> Read {ON_DEVICE} · nothing is uploaded until you confirm
       </p>
       <input ref={input} type="file" accept={accept} className="hidden" onChange={(e) => pick(e.target.files)} onClick={(e) => ((e.target as HTMLInputElement).value = '')} />
     </div>

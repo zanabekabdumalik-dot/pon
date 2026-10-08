@@ -1,0 +1,121 @@
+# Builds the GeneGuard AI apps: Android (APK) and Windows (installer + portable .exe).
+# Every push that changes geneguard-ai/ builds both and keeps them as run artifacts.
+# Pushing a tag like v1.0.0 also publishes them as a GitHub release with download links.
+
+name: Build apps (Android + Windows)
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+    paths:
+      - 'geneguard-ai/**'
+      - '.github/workflows/apps.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apps-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: geneguard-ai
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: geneguard-ai/package-lock.json
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - name: Build the web app and copy it into the Android project
+        run: npm run build:android
+      - name: Build the APK
+        working-directory: geneguard-ai/android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Name the APK
+        run: |
+          version=$(node -p "require('./package.json').version")
+          mkdir -p ../apps-out
+          cp android/app/build/outputs/apk/debug/app-debug.apk "../apps-out/GeneGuard-AI-${version}.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GeneGuard-AI-Android
+          path: apps-out/*.apk
+          if-no-files-found: error
+
+  windows:
+    name: Windows app
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: geneguard-ai
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            geneguard-ai/package-lock.json
+            geneguard-ai/desktop/package-lock.json
+      - run: npm ci
+      - name: Build the web app for the desktop app
+        run: npm run build:desktop
+      - name: Install Electron
+        working-directory: geneguard-ai/desktop
+        run: npm ci
+      - name: Package the installer and the portable .exe
+        working-directory: geneguard-ai/desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm run dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GeneGuard-AI-Windows
+          path: geneguard-ai/desktop/release/*.exe
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [android, windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: apps
+          merge-multiple: true
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > notes.md <<'NOTES'
+          **GeneGuard AI** — школьный научный проект: объясняет результаты генетических тестов простым языком.
+          Работает офлайн, на самом устройстве: демо, распознавание фото и PDF (OCR), VCF, анализ, отчёт и встроенный чат.
+
+          | Файл | Для чего |
+          |---|---|
+          | `GeneGuard-AI-*.apk` | Android 7.0 и новее. Откройте файл на телефоне и разрешите установку из этого источника. |
+          | `GeneGuard-AI-Setup-*.exe` | Windows 10/11 (64‑bit), установщик. |
+          | `GeneGuard-AI-Portable-*.exe` | Windows 10/11 (64‑bit), запуск без установки. |
+
+          Приложения не подписаны сертификатом разработчика, поэтому Windows SmartScreen может предупредить:
+          «Подробнее» → «Выполнить в любом случае».
+
+          > GeneGuard AI is an educational decision-support prototype. It does not diagnose diseases, predict an individual's future with certainty, prescribe treatment, or replace a doctor or genetic counselor.
+          NOTES
+          gh release create "$GITHUB_REF_NAME" apps/* --repo "$GITHUB_REPOSITORY" --title "GeneGuard AI $GITHUB_REF_NAME" --notes-file notes.md

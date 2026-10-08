@@ -17,7 +17,7 @@ import {
 import { useEffect, useState, type ReactNode } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import { CLINICAL_CONTEXT, DISCLAIMER } from '../../shared/messages';
-import { asset } from '../lib/env';
+import { ON_DEVICE, asset } from '../lib/env';
 import { usePipeline } from '../state/pipeline';
 import { useSession } from '../state/session';
 import { ConfirmAction } from './ConfirmAction';
@@ -107,7 +107,7 @@ function StatusCard() {
         <p>Starting…</p>
       ) : mode === 'browser' ? (
         <p>
-          Built-in engine, in your browser <span className="block text-nav-ink/60">Works offline · no data leaves this device</span>
+          Built-in engine, {ON_DEVICE} <span className="block text-nav-ink/60">Works offline · no data leaves this device</span>
         </p>
       ) : status?.ai.enabled ? (
         <p>

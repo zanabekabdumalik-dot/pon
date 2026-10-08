@@ -6,7 +6,7 @@ import { SYNTHETIC_NOTICE } from '../../shared/messages';
 import { Dropzone } from '../components/Dropzone';
 import { ManualEntry } from '../components/ManualEntry';
 import { Callout, PageHeader } from '../components/ui';
-import { EMBEDDED, asset } from '../lib/env';
+import { CAN_SAVE_FILES, NATIVE_APP, ON_DEVICE, asset } from '../lib/env';
 import { sampleFile } from '../lib/files';
 import { usePipeline } from '../state/pipeline';
 import { useSession } from '../state/session';
@@ -22,7 +22,7 @@ const MODES = [
 type Mode = (typeof MODES)[number]['key'];
 
 export const SAMPLES = [
-  { path: asset('samples/sample-lab-report.png'), name: 'sample-lab-report.png', type: 'image/png', title: 'Lab report photo', text: 'Full synthetic panel report — real OCR runs in your browser', icon: FileImage },
+  { path: asset('samples/sample-lab-report.png'), name: 'sample-lab-report.png', type: 'image/png', title: 'Lab report photo', text: `Full synthetic panel report — real OCR runs ${ON_DEVICE}`, icon: FileImage },
   { path: asset('samples/sample-partial-screenshot.png'), name: 'sample-partial-screenshot.png', type: 'image/png', title: 'Partial screenshot', text: 'Shows the “only partial information” warning', icon: FileImage },
   { path: asset('samples/sample-lab-report.pdf'), name: 'sample-lab-report.pdf', type: 'application/pdf', title: 'Digital PDF report', text: 'Text layer extracted with pdf.js', icon: FileText },
   { path: asset('samples/sample-scanned-report.pdf'), name: 'sample-scanned-report.pdf', type: 'application/pdf', title: 'Scanned PDF', text: 'Image-only PDF — OCR is applied page by page', icon: FileScan },
@@ -52,7 +52,7 @@ export function UploadPage() {
   return (
     <div>
       <PageHeader eyebrow="Step 1" title="Upload genetic data">
-        Choose how to provide your genetic result. Files are read in your browser; you will review everything GeneGuard extracts before anything is analysed.
+        Choose how to provide your genetic result. Files are read {ON_DEVICE}; you will review everything GeneGuard extracts before anything is analysed.
       </PageHeader>
 
       <div className="no-print mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1" role="tablist">
@@ -80,7 +80,7 @@ export function UploadPage() {
       {mode === 'photo' && (
         <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
           <div className="space-y-3">
-            <Dropzone accept="image/*" title="Drop a photo or screenshot of your report" hint="JPG, PNG or WEBP. Text is recognised with OCR directly in your browser." />
+            <Dropzone accept="image/*" title="Drop a photo or screenshot of your report" hint={`JPG, PNG or WEBP. Text is recognised with OCR directly ${ON_DEVICE}.`} />
             <button type="button" className="btn-secondary w-full sm:hidden" onClick={() => camera.current?.click()}>
               <Camera className="size-4" /> Take a photo with the camera
             </button>
@@ -167,7 +167,7 @@ export function UploadPage() {
                     <button type="button" className="btn-secondary flex-1 py-2 text-xs" onClick={() => void loadSample(s)}>
                       Analyze
                     </button>
-                    {!EMBEDDED && (
+                    {CAN_SAVE_FILES && (
                       <a className="btn-ghost py-2 text-xs" href={s.path} download>
                         Download
                       </a>
@@ -181,7 +181,7 @@ export function UploadPage() {
       )}
 
       <p className="mt-8 flex items-center gap-2 text-xs text-muted">
-        <Lock className="size-3.5" /> GeneGuard keeps data only in this browser tab. See the Privacy page for details.
+        <Lock className="size-3.5" /> GeneGuard keeps data only in {NATIVE_APP ? 'the app’s memory' : 'this browser tab'}. See the Privacy page for details.
       </p>
     </div>
   );

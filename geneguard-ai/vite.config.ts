@@ -50,16 +50,29 @@ function ocrVendorFiles(): Plugin {
   };
 }
 
+const target = process.env.VITE_TARGET;
+
+/**
+ * Android app: without viewport-fit=cover the app window sits between the status bar and the
+ * navigation bar, so no page content ends up underneath them.
+ */
+function androidViewport(): Plugin {
+  return {
+    name: 'geneguard-android-viewport',
+    transformIndexHtml: (html) => (target === 'android' ? html.replace(', viewport-fit=cover', '') : html),
+  };
+}
+
 export default defineConfig({
   // Relative asset paths: the build works from any folder, sub-path or static host.
   base: './',
-  plugins: [react(), tailwindcss(), ocrVendorFiles()],
+  plugins: [react(), tailwindcss(), ocrVendorFiles(), androidViewport()],
   // Pre-bundle lazily imported libraries so the first dev visit doesn't reload mid-analysis.
   optimizeDeps: {
     include: ['react', 'react-dom/client', 'react-router', 'lucide-react', 'tesseract.js', 'pdfjs-dist/legacy/build/pdf.mjs'],
   },
   build:
-    process.env.VITE_TARGET === 'artifact'
+    target === 'artifact'
       ? {
           // Embedded build: one classic script (no ES modules, no lazy chunks) so it can be
           // inlined into a single page by scripts/build-artifact.mjs.
@@ -70,7 +83,8 @@ export default defineConfig({
           rollupOptions: { output: { format: 'iife', inlineDynamicImports: true } },
         }
       : {
-          outDir: 'dist',
+          // dist/ for the web and server, dist-android/ and dist-desktop/ for the apps.
+          outDir: target === 'android' || target === 'desktop' ? `dist-${target}` : 'dist',
           chunkSizeWarningLimit: 1500,
         },
 });

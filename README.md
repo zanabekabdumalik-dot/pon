@@ -59,3 +59,4 @@ pip install piper-tts numpy scipy
 
 - [**GeneGuard AI**](geneguard-ai/README.md) — школьный научный проект: веб‑прототип, который объясняет
   результаты генетического тестирования с помощью ИИ (React + TypeScript + Tailwind, Node.js, Claude API, OCR).
+  Приложения для Android (APK) и Windows: [Releases](https://github.com/zanabekabdumalik-dot/pon/releases/latest).

@@ -9,6 +9,9 @@ import './index.css';
 // The embedded build keeps navigation in memory because it cannot change its own URL.
 const Router = EMBEDDED ? MemoryRouter : HashRouter;
 
+// Compared with the raw build variable so other builds drop this code entirely.
+if (import.meta.env.VITE_TARGET === 'android') void import('./lib/android').then((m) => m.setupAndroid());
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Router>

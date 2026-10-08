@@ -1,6 +1,6 @@
 import type { ParsedInput } from '../../shared/types';
 import { parseTextInput } from '../../shared/parsing';
-import { EMBEDDED, asset } from './env';
+import { EMBEDDED, NATIVE_APP, asset } from './env';
 import { createOcrSession, prepareImage } from './ocr';
 import { readPdf } from './pdf';
 
@@ -61,7 +61,7 @@ export async function processFile(file: File, onProgress: (u: ProgressUpdate) =>
     try {
       const res = await session.recognize(canvas);
       onProgress({ step: 'extract', message: 'Looking for genetic variants…' });
-      return parseTextInput(res.text, { kind: 'photo', fileName: file.name, ocrConfidence: res.confidence, ocrEngine: 'Tesseract.js (in your browser)' });
+      return parseTextInput(res.text, { kind: 'photo', fileName: file.name, ocrConfidence: res.confidence, ocrEngine: NATIVE_APP ? 'Tesseract.js (on this device)' : 'Tesseract.js (in your browser)' });
     } finally {
       await session.terminate();
     }

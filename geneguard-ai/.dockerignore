@@ -6,3 +6,6 @@ dist
 docs
 tests
 *.log
+dist-*
+android
+desktop

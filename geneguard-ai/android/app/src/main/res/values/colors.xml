@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- GeneGuard colours: the app background (behind the status and navigation bars) and the splash screen. -->
+    <color name="geneguard_background">#F3F6FB</color>
+    <color name="geneguard_navy">#0B1730</color>
+</resources>

@@ -21,6 +21,10 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@capacitor/android": "8.5.2",
+    "@capacitor/app": "8.1.1",
+    "@capacitor/cli": "8.5.2",
+    "@capacitor/core": "8.5.2",
     "@tailwindcss/vite": "^4.3.3",
     "@types/express": "^5.0.6",
     "@types/node": "^22.20.4",
@@ -40,6 +44,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "samples": "node scripts/generate-samples.mjs",
-    "build:artifact": "node scripts/build-artifact.mjs"
+    "build:artifact": "node scripts/build-artifact.mjs",
+    "build:android": "node scripts/build-app.mjs android",
+    "build:desktop": "node scripts/build-app.mjs desktop",
+    "app-icons": "node scripts/generate-app-icons.mjs"
   }
 }

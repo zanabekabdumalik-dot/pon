@@ -1,9 +1,10 @@
 import { Check, Loader2 } from 'lucide-react';
+import { ON_DEVICE } from '../lib/env';
 import { DnaHelix } from './DnaHelix';
 
 export const PIPELINE_STEPS = [
   { title: 'User data', detail: 'Your file, photo or entered data' },
-  { title: 'File / Photo / PDF', detail: 'Reading the document in your browser' },
+  { title: 'File / Photo / PDF', detail: `Reading the document ${ON_DEVICE}` },
   { title: 'OCR / Document parsing', detail: 'Recognising text and structure' },
   { title: 'Genetic variant extraction', detail: 'Genes, variants, rsIDs, genotypes' },
   { title: 'Variant validation', detail: 'Format, alleles and data quality checks' },

@@ -1,0 +1,59 @@
+{
+  "name": "geneguard-ai-desktop",
+  "productName": "GeneGuard AI",
+  "version": "1.0.0",
+  "description": "GeneGuard AI — educational genetics prototype (Windows app)",
+  "author": "GeneGuard AI school project",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "44.4.5",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "io.github.zanabekabdumalikdot.geneguard",
+    "productName": "GeneGuard AI",
+    "copyright": "GeneGuard AI — school science project",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.cjs",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../dist-desktop",
+        "to": "web"
+      },
+      {
+        "from": "build/icon.png",
+        "to": "icon.png"
+      }
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "GeneGuard AI",
+      "artifactName": "GeneGuard-AI-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "GeneGuard-AI-Portable-${version}.${ext}"
+    },
+    "publish": null
+  }
+}

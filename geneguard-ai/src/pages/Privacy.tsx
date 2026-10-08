@@ -1,6 +1,7 @@
 import { CloudOff, Cpu, Eye, HardDrive, KeyRound, Server, ShieldCheck, Trash2, Users } from 'lucide-react';
 import { useSearchParams } from 'react-router';
 import { ConfirmAction } from '../components/ConfirmAction';
+import { NATIVE_APP, ON_DEVICE } from '../lib/env';
 import { Callout, PageHeader } from '../components/ui';
 import { useSession } from '../state/session';
 
@@ -11,13 +12,17 @@ export function PrivacyPage() {
   const nothing = !uploaded && !parsed && !report && chat.length === 0;
 
   const principles = [
-    { icon: Cpu, title: 'Processed in your browser', text: 'Photos, PDFs and genotype files are read and OCR’d on your device. The file itself is never uploaded to the GeneGuard server.' },
-    { icon: HardDrive, title: 'Current session only', text: 'Data lives only in this tab’s memory — no database, no cookies, no local storage. Refreshing or closing the tab erases it.' },
+    { icon: Cpu, title: `Processed ${ON_DEVICE}`, text: 'Photos, PDFs and genotype files are read and OCR’d on your device. The file itself is never uploaded to the GeneGuard server.' },
+    NATIVE_APP
+      ? { icon: HardDrive, title: 'Current session only', text: 'Data lives only in the app’s memory — no database, no files saved, no account. Closing the app erases it.' }
+      : { icon: HardDrive, title: 'Current session only', text: 'Data lives only in this tab’s memory — no database, no cookies, no local storage. Refreshing or closing the tab erases it.' },
     mode === 'browser'
-      ? { icon: Server, title: 'No server in this copy', text: 'This copy of GeneGuard runs entirely in your browser. The analysis, chat and report are computed on this device.' }
+      ? { icon: Server, title: 'No server in this copy', text: `This copy of GeneGuard runs entirely ${ON_DEVICE}. The analysis, chat and report are computed on this device.` }
       : { icon: Server, title: 'Stateless server', text: 'For interpretation the server receives the extracted variant list, answers, and forgets it. Request contents are never logged.' },
     { icon: Users, title: 'Never shared with other users', text: 'There are no accounts and no shared storage, so no other user can see your genetic information.' },
-    { icon: KeyRound, title: 'Keys stay on the server', text: 'API keys are environment variables on the server and are never sent to the browser.' },
+    NATIVE_APP
+      ? { icon: KeyRound, title: 'No keys inside the app', text: 'The app contains no API keys or other secrets. AI features need the server version, where keys stay in its environment variables.' }
+      : { icon: KeyRound, title: 'Keys stay on the server', text: 'API keys are environment variables on the server and are never sent to the browser.' },
     { icon: Trash2, title: 'Delete at any time', text: 'Remove the uploaded file or all session data with one click below.' },
   ];
 
@@ -45,7 +50,7 @@ export function PrivacyPage() {
 
       <section className="card p-5">
         <h2 className="flex items-center gap-2 font-bold text-ink">
-          <Eye className="size-5 text-indigo-500" /> External services used by this server
+          <Eye className="size-5 text-indigo-500" /> {mode === 'browser' ? 'External services' : 'External services used by this server'}
         </h2>
         <ul className="mt-3 space-y-3 text-sm text-ink-2">
           <li className="flex gap-3">
@@ -100,7 +105,7 @@ export function PrivacyPage() {
             {uploaded && (
               <Row
                 title={`Uploaded file: ${uploaded.name}`}
-                sub={`${uploaded.type || 'file'} · ${(uploaded.size / 1024).toFixed(0)} KB · held in browser memory`}
+                sub={`${uploaded.type || 'file'} · ${(uploaded.size / 1024).toFixed(0)} KB · held in ${NATIVE_APP ? 'app' : 'browser'} memory`}
                 onDelete={() => {
                   removeFile();
                 }}

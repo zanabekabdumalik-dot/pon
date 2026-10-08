@@ -5,6 +5,7 @@ import { answerLocally } from '../../shared/chat';
 import { MESSAGES } from '../../shared/messages';
 import { Callout, PageHeader, RichText, SourceLinks, Toggle } from '../components/ui';
 import { api, ApiUnavailable } from '../lib/api';
+import { ON_DEVICE } from '../lib/env';
 import { useSession, type ChatEntry } from '../state/session';
 
 const SUGGESTED = [
@@ -93,7 +94,7 @@ export function ChatPage() {
           ) : (
             <span>
               Answering with the <strong className="text-ink">built-in rule-based geneticist</strong> —{' '}
-              {mode === 'browser' ? 'it runs in your browser, nothing leaves this device.' : 'nothing leaves this server.'}
+              {mode === 'browser' ? `it runs ${ON_DEVICE}, nothing leaves this device.` : 'nothing leaves this server.'}
             </span>
           )}
         </p>
