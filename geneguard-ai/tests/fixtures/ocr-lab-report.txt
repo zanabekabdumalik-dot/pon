@@ -1,0 +1,31 @@
+DemoGen Genetics Laboratory
+Hereditary Disease Panel — Laboratory Report
+Patient: Sample Patient (synthetic) Sex: Female DOB: 1996-01-01
+Specimen: Peripheral blood Report date: 2026-09-15 Report ID: DEMO-0001
+Test: Hereditary disease panel (next-generation sequencing), 12 genes
+Genes analyzed: BRCAL, BRCA2, CFTR, HBB, FBN1, LDLR, APOB, PCSK9, HFE, F5, F2, APOE
+RESULT: POSITIVE — 2 clinically significant variants detected
+Variant details
+Variant 1
+Gene: BRCAL Variant: ¢.5266dupC (p.GIn1756Profs*74)  rsID: rs80357906
+Chromosome: 17 ~~ Zygosity: Heterozygous Classification: Pathogenic
+Condition: Hereditary breast and ovarian cancer syndrome
+Interpretation: Associated with increased inherited susceptibility to breast and ovarian cancer.
+Variant 2
+Gene: CFTR Variant: ¢.1521_1523delCTT (p.Phe508del)  rsID: rs113993960
+Chromosome: 7 Zygosity: Heterozygous Classification: Pathogenic
+Condition: Cystic fibrosis (autosomal recessive)
+Interpretation: Carrier of a pathogenic CFTR variant.
+Additional genotypes
+Gene                                rsiD                                          Genotype
+APOE                                rs429358                                     CIT
+APOE                                rs7412                                        cic
+TCF7L2                             rs7903146                                   CIT
+FTO                                  rs9939609                                   AIT
+F5                                    $6025                                       cic
+No pathogenic variants were detected in BRCA2, HBB, FBN1, LDLR, APOB, PCSK9, HFE or F2.
+Methodology and limitations
+Methodology: sequencing of coding regions and splice junctions of the genes listed above. Limitations: this test does not detect all types of
+genetic changes and does not assess chromosome number or structure. This document is a synthetic example created for an educational
+school project and does not describe any real person.
+

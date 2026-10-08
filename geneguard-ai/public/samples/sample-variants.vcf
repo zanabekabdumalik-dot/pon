@@ -1,0 +1,23 @@
+##fileformat=VCFv4.2
+##source=GeneGuardSyntheticSample
+##reference=GRCh38
+##INFO=<ID=GENE,Number=1,Type=String,Description="Gene symbol">
+##INFO=<ID=CLNSIG,Number=.,Type=String,Description="Clinical significance (annotation)">
+##FILTER=<ID=LowQual,Description="Low quality call">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype quality">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth">
+##comment=SYNTHETIC SAMPLE FOR EDUCATION - NOT A REAL PERSON
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE
+chr10	112998590	rs7903146	C	T	99	PASS	GENE=TCF7L2	GT:GQ:DP	0/1:99:41
+chr16	53786615	rs9939609	T	A	99	PASS	GENE=FTO	GT:GQ:DP	1/1:99:37
+chr9	22125504	rs1333049	G	C	99	PASS	GENE=CDKN2B-AS1	GT:GQ:DP	0/1:99:44
+chr19	44908684	rs429358	T	C	99	PASS	GENE=APOE	GT:GQ:DP	0/0:99:39
+chr19	44908822	rs7412	C	T	99	PASS	GENE=APOE	GT:GQ:DP	0/1:99:36
+chr11	5227002	rs334	T	A	88	PASS	GENE=HBB;CLNSIG=Pathogenic	GT:GQ:DP	0/1:88:33
+chr6	26092913	rs1800562	G	A	95	PASS	GENE=HFE	GT:GQ:DP	0/0:95:40
+chr1	169549811	.	C	T	14	LowQual	GENE=F5	GT:GQ:DP	0/1:11:6
+chr13	32340300	.	G	A	73	PASS	GENE=BRCA2;CLNSIG=Uncertain_significance	GT:GQ:DP	0/1:73:52
+chr2	1500000	.	A	G	60	PASS	.	GT:GQ:DP	0/1:60:30
+this line is not a VCF record and must be ignored
+chrUn_KI270742v1	5000	.	A	C	50	PASS	.	GT	0/1

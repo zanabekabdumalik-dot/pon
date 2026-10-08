@@ -52,3 +52,10 @@ pip install piper-tts numpy scipy
 `ru_RU-ruslan-medium` звучит низко и красиво, но его лицензия (CC BY-NC-SA) запрещает монетизацию.
 
 Для следующего выпуска достаточно скопировать `ep01`, переписать `script.json` и сцены в `anim.html`.
+
+---
+
+## Другие проекты в репозитории
+
+- [**GeneGuard AI**](geneguard-ai/README.md) — школьный научный проект: веб‑прототип, который объясняет
+  результаты генетического тестирования с помощью ИИ (React + TypeScript + Tailwind, Node.js, Claude API, OCR).
