@@ -1,5 +1,6 @@
 import type { ParsedInput } from '../../shared/types';
 import { parseTextInput } from '../../shared/parsing';
+import { EMBEDDED, asset } from './env';
 import { createOcrSession, prepareImage } from './ocr';
 import { readPdf } from './pdf';
 
@@ -95,7 +96,40 @@ export async function processFile(file: File, onProgress: (u: ProgressUpdate) =>
 
 /** Loads one of the bundled sample files as if the user had picked it. */
 export async function sampleFile(path: string, name: string, type: string): Promise<File> {
-  const res = await fetch(path);
+  if (EMBEDDED) {
+    const data = (await embeddedSamples())[name];
+    if (!data) throw new Error('Sample file not found.');
+    const bin = atob(data);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new File([bytes], name, { type });
+  }
+  let res: Response;
+  try {
+    res = await fetch(path);
+  } catch {
+    throw new Error('The sample file could not be loaded here. You can still upload your own file or run the demo.');
+  }
   if (!res.ok) throw new Error('Sample file not found. Run "npm run samples" to generate the sample files.');
   return new File([await res.blob()], name, { type });
+}
+
+/**
+ * The embedded build ships its samples as one script (samples/samples.js) because a classic
+ * <script> loads from any host without CORS, unlike fetch().
+ */
+let samplesPromise: Promise<Record<string, string>> | undefined;
+function embeddedSamples(): Promise<Record<string, string>> {
+  const w = window as unknown as { GG_SAMPLES?: Record<string, string> };
+  samplesPromise ??= new Promise((resolve, reject) => {
+    const el = document.createElement('script');
+    el.src = asset('samples/samples.js');
+    el.onload = () => (w.GG_SAMPLES ? resolve(w.GG_SAMPLES) : reject(new Error('Sample data is missing.')));
+    el.onerror = () => {
+      samplesPromise = undefined;
+      reject(new Error('The sample files could not be loaded here. You can still upload your own file or run the demo.'));
+    };
+    document.head.appendChild(el);
+  });
+  return samplesPromise;
 }

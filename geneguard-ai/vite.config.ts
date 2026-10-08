@@ -58,8 +58,19 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom/client', 'react-router', 'lucide-react', 'tesseract.js', 'pdfjs-dist/legacy/build/pdf.mjs'],
   },
-  build: {
-    outDir: process.env.VITE_TARGET === 'artifact' ? 'dist-artifact' : 'dist',
-    chunkSizeWarningLimit: 1500,
-  },
+  build:
+    process.env.VITE_TARGET === 'artifact'
+      ? {
+          // Embedded build: one classic script (no ES modules, no lazy chunks) so it can be
+          // inlined into a single page by scripts/build-artifact.mjs.
+          outDir: 'dist-artifact',
+          modulePreload: false,
+          cssCodeSplit: false,
+          chunkSizeWarningLimit: 4000,
+          rollupOptions: { output: { format: 'iife', inlineDynamicImports: true } },
+        }
+      : {
+          outDir: 'dist',
+          chunkSizeWarningLimit: 1500,
+        },
 });

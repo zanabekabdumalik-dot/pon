@@ -6,29 +6,31 @@ import type { Worker } from 'tesseract.js';
 import { EMBEDDED, absoluteUrl } from './env';
 
 /**
- * The embedded build can only publish text-like files, so its language model is stored
- * as base64 text (eng.traineddata.gz.b64.txt). This tiny worker loader redirects
- * Tesseract's request for "eng.traineddata.gz" to that file and decodes it, then starts
- * the real Tesseract worker.
+ * In the embedded build the OCR language model ships as a script file
+ * (vendor/tessdata/eng-traineddata.js, base64 inside) because classic scripts load from any
+ * host without CORS. This worker prelude answers Tesseract's request for
+ * "eng.traineddata.gz" from that script; the Tesseract worker code follows in the same blob.
  */
 let shimUrl: string | undefined;
-function embeddedWorkerUrl(): string {
+async function embeddedWorkerUrl(): Promise<string> {
   if (shimUrl) return shimUrl;
-  const code = `
+  // The Tesseract worker itself is bundled into the page; only its large WebAssembly core
+  // and the language model are loaded as separate files, and only when OCR is used.
+  const { default: workerCode } = await import('tesseract.js/dist/worker.min.js?raw');
+  const langScript = absoluteUrl('vendor/tessdata/eng-traineddata.js');
+  const code = `(() => {
     const realFetch = self.fetch.bind(self);
     self.fetch = async (input, init) => {
       const url = String(input && input.url ? input.url : input);
       if (!url.endsWith('.traineddata.gz')) return realFetch(input, init);
-      const res = await realFetch(url + '.b64.txt', init);
-      if (!res.ok) return res;
-      const bin = atob((await res.text()).trim());
+      if (!self.GG_ENG_TRAINEDDATA) importScripts(${JSON.stringify(langScript)});
+      const bin = atob(self.GG_ENG_TRAINEDDATA);
       const bytes = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
       return new Response(bytes, { status: 200 });
     };
-    importScripts(${JSON.stringify(absoluteUrl('vendor/tesseract/worker.min.js'))});
-  `;
-  shimUrl = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+  })();`;
+  shimUrl = URL.createObjectURL(new Blob([code, '\n', workerCode], { type: 'text/javascript' }));
   return shimUrl;
 }
 
@@ -54,7 +56,7 @@ export async function createOcrSession(onProgress?: (fraction: number) => void):
 async function startOcr(onProgress?: (fraction: number) => void): Promise<OcrSession> {
   const { createWorker } = await import('tesseract.js');
   const worker: Worker = await createWorker('eng', 1, {
-    workerPath: EMBEDDED ? embeddedWorkerUrl() : absoluteUrl('vendor/tesseract/worker.min.js'),
+    workerPath: EMBEDDED ? await embeddedWorkerUrl() : absoluteUrl('vendor/tesseract/worker.min.js'),
     workerBlobURL: !EMBEDDED,
     corePath: absoluteUrl('vendor/tesseract-core'),
     langPath: absoluteUrl('vendor/tessdata'),

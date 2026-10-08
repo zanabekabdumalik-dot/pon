@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { AnalysisReport, ChatReply, ParsedInput, ServerStatus } from '../../shared/types';
 import { api } from '../lib/api';
+import { EMBEDDED } from '../lib/env';
 
 // All session data lives only in memory (React state). Nothing is written to
 // localStorage, cookies or a database; refreshing or closing the tab erases it.
@@ -54,7 +55,7 @@ const Ctx = createContext<SessionApi | null>(null);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<ServerStatus | null>(null);
-  const [mode, setMode] = useState<RunMode>('checking');
+  const [mode, setMode] = useState<RunMode>(EMBEDDED ? 'browser' : 'checking');
   const [uploaded, setUploaded] = useState<UploadedFileInfo | null>(null);
   const [parsed, setParsed] = useState<ParsedInput | null>(null);
   const [report, setReport] = useState<AnalysisReport | null>(null);
@@ -63,6 +64,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [consentClinvar, setConsentClinvar] = useState(false);
 
   useEffect(() => {
+    if (EMBEDDED) return; // the embedded page never has a GeneGuard server behind it
     api
       .health()
       .then((s) => {

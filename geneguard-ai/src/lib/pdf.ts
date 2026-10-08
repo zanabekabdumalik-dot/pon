@@ -2,7 +2,19 @@
 // scanned pages (images only) are rendered to a canvas and passed to OCR.
 
 import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
+import { EMBEDDED } from './env';
 import { createOcrSession } from './ocr';
+
+/** The embedded build carries the pdf.js worker inside the page and starts it from a blob: URL. */
+let embeddedWorkerSrc: string | undefined;
+async function workerSrc(): Promise<string> {
+  if (!EMBEDDED) return workerUrl;
+  if (!embeddedWorkerSrc) {
+    const { default: code } = await import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?raw');
+    embeddedWorkerSrc = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+  }
+  return embeddedWorkerSrc;
+}
 
 interface TextItemLike {
   str: string;
@@ -44,7 +56,7 @@ function itemsToText(items: TextItemLike[]): string {
 
 export async function readPdf(file: Blob, onStage: (stage: 'text' | 'ocr', progress?: number) => void): Promise<PdfReadResult> {
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-  pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+  pdfjs.GlobalWorkerOptions.workerSrc = await workerSrc();
   const doc = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
   const pages: string[] = [];
   const scanned: number[] = [];
