@@ -22,9 +22,10 @@ on:
 permissions:
   contents: read
 
+# A newer push cancels an older build of the same branch; release runs are never cancelled by pushes.
 concurrency:
-  group: apps-${{ github.ref }}
-  cancel-in-progress: true
+  group: apps-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   android:
