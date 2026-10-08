@@ -1,0 +1,9 @@
+{
+  "name": "gappo-android",
+  "private": true,
+  "description": "Шрифты игры для офлайн-сборки APK",
+  "dependencies": {
+    "@fontsource/nunito": "5.2.7",
+    "@fontsource/unbounded": "5.2.7"
+  }
+}
