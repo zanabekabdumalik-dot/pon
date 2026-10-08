@@ -1,11 +1,12 @@
 import { Camera, CirclePlay, FileImage, FileScan, FileText, FileUp, Keyboard, Lock, Sparkles } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { DEMO_PROFILES } from '../../shared/demo';
 import { SYNTHETIC_NOTICE } from '../../shared/messages';
 import { Dropzone } from '../components/Dropzone';
 import { ManualEntry } from '../components/ManualEntry';
 import { Callout, PageHeader } from '../components/ui';
+import { EMBEDDED, asset } from '../lib/env';
 import { sampleFile } from '../lib/files';
 import { usePipeline } from '../state/pipeline';
 import { useSession } from '../state/session';
@@ -21,14 +22,14 @@ const MODES = [
 type Mode = (typeof MODES)[number]['key'];
 
 export const SAMPLES = [
-  { path: '/samples/sample-lab-report.png', name: 'sample-lab-report.png', type: 'image/png', title: 'Lab report photo', text: 'Full synthetic panel report — real OCR runs in your browser', icon: FileImage },
-  { path: '/samples/sample-partial-screenshot.png', name: 'sample-partial-screenshot.png', type: 'image/png', title: 'Partial screenshot', text: 'Shows the “only partial information” warning', icon: FileImage },
-  { path: '/samples/sample-lab-report.pdf', name: 'sample-lab-report.pdf', type: 'application/pdf', title: 'Digital PDF report', text: 'Text layer extracted with pdf.js', icon: FileText },
-  { path: '/samples/sample-scanned-report.pdf', name: 'sample-scanned-report.pdf', type: 'application/pdf', title: 'Scanned PDF', text: 'Image-only PDF — OCR is applied page by page', icon: FileScan },
-  { path: '/samples/sample-karyotype-report.png', name: 'sample-karyotype-report.png', type: 'image/png', title: 'Chromosome report photo', text: 'Karyotype 47,XY,+21 (chromosomal category)', icon: FileImage },
-  { path: '/samples/sample-variants.vcf', name: 'sample-variants.vcf', type: 'text/plain', title: 'VCF file', text: 'Includes a low-quality call and an invalid line', icon: FileText },
-  { path: '/samples/sample-raw-data.txt', name: 'sample-raw-data.txt', type: 'text/plain', title: 'Raw genotype data', text: '23andMe-style rsID / genotype file', icon: FileText },
-  { path: '/samples/not-genetic-photo.png', name: 'not-genetic-photo.png', type: 'image/png', title: 'Non-genetic photo', text: 'Shows “Unable to identify genetic information”', icon: FileImage },
+  { path: asset('samples/sample-lab-report.png'), name: 'sample-lab-report.png', type: 'image/png', title: 'Lab report photo', text: 'Full synthetic panel report — real OCR runs in your browser', icon: FileImage },
+  { path: asset('samples/sample-partial-screenshot.png'), name: 'sample-partial-screenshot.png', type: 'image/png', title: 'Partial screenshot', text: 'Shows the “only partial information” warning', icon: FileImage },
+  { path: asset('samples/sample-lab-report.pdf'), name: 'sample-lab-report.pdf', type: 'application/pdf', title: 'Digital PDF report', text: 'Text layer extracted with pdf.js', icon: FileText },
+  { path: asset('samples/sample-scanned-report.pdf'), name: 'sample-scanned-report.pdf', type: 'application/pdf', title: 'Scanned PDF', text: 'Image-only PDF — OCR is applied page by page', icon: FileScan },
+  { path: asset('samples/sample-karyotype-report.png'), name: 'sample-karyotype-report.png', type: 'image/png', title: 'Chromosome report photo', text: 'Karyotype 47,XY,+21 (chromosomal category)', icon: FileImage },
+  { path: asset('samples/sample-variants.vcf'), name: 'sample-variants.vcf', type: 'text/plain', title: 'VCF file', text: 'Includes a low-quality call and an invalid line', icon: FileText },
+  { path: asset('samples/sample-raw-data.txt'), name: 'sample-raw-data.txt', type: 'text/plain', title: 'Raw genotype data', text: '23andMe-style rsID / genotype file', icon: FileText },
+  { path: asset('samples/not-genetic-photo.png'), name: 'not-genetic-photo.png', type: 'image/png', title: 'Non-genetic photo', text: 'Shows “Unable to identify genetic information”', icon: FileImage },
 ];
 
 export function UploadPage() {
@@ -37,12 +38,14 @@ export function UploadPage() {
   const { runFile, runAnalysis } = usePipeline();
   const { aiAvailable } = useSession();
   const camera = useRef<HTMLInputElement>(null);
+  const [sampleError, setSampleError] = useState<string | null>(null);
 
   const loadSample = async (s: (typeof SAMPLES)[number]) => {
+    setSampleError(null);
     try {
       await runFile(await sampleFile(s.path, s.name, s.type));
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Could not load the sample.');
+      setSampleError(e instanceof Error ? e.message : 'Could not load the sample.');
     }
   };
 
@@ -149,6 +152,11 @@ export function UploadPage() {
           <section>
             <h2 className="text-lg font-bold text-ink">Sample files — run the real pipeline</h2>
             <p className="mt-1 text-sm text-muted">These synthetic documents go through the same OCR, parsing and review steps as your own files.</p>
+            {sampleError && (
+              <Callout tone="danger" className="mt-3">
+                {sampleError}
+              </Callout>
+            )}
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {SAMPLES.map((s) => (
                 <div key={s.path} className="card flex flex-col gap-2 p-4">
@@ -159,9 +167,11 @@ export function UploadPage() {
                     <button type="button" className="btn-secondary flex-1 py-2 text-xs" onClick={() => void loadSample(s)}>
                       Analyze
                     </button>
-                    <a className="btn-ghost py-2 text-xs" href={s.path} download>
-                      Download
-                    </a>
+                    {!EMBEDDED && (
+                      <a className="btn-ghost py-2 text-xs" href={s.path} download>
+                        Download
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}

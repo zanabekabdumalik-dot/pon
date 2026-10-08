@@ -1,10 +1,36 @@
 // Text recognition (OCR) in the browser with Tesseract.js. The engine, its
-// WebAssembly core and the English language model are served by our own server
-// (/vendor/...), so photos never leave the device during OCR.
+// WebAssembly core and the English language model ship with the app (vendor/…),
+// so OCR needs no CDN and photos never leave the device.
 
 import type { Worker } from 'tesseract.js';
+import { EMBEDDED, absoluteUrl } from './env';
 
-const abs = (p: string) => new URL(p, window.location.origin).href;
+/**
+ * The embedded build can only publish text-like files, so its language model is stored
+ * as base64 text (eng.traineddata.gz.b64.txt). This tiny worker loader redirects
+ * Tesseract's request for "eng.traineddata.gz" to that file and decodes it, then starts
+ * the real Tesseract worker.
+ */
+let shimUrl: string | undefined;
+function embeddedWorkerUrl(): string {
+  if (shimUrl) return shimUrl;
+  const code = `
+    const realFetch = self.fetch.bind(self);
+    self.fetch = async (input, init) => {
+      const url = String(input && input.url ? input.url : input);
+      if (!url.endsWith('.traineddata.gz')) return realFetch(input, init);
+      const res = await realFetch(url + '.b64.txt', init);
+      if (!res.ok) return res;
+      const bin = atob((await res.text()).trim());
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new Response(bytes, { status: 200 });
+    };
+    importScripts(${JSON.stringify(absoluteUrl('vendor/tesseract/worker.min.js'))});
+  `;
+  shimUrl = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+  return shimUrl;
+}
 
 export interface OcrResult {
   text: string;
@@ -17,11 +43,21 @@ export interface OcrSession {
 }
 
 export async function createOcrSession(onProgress?: (fraction: number) => void): Promise<OcrSession> {
+  try {
+    return await startOcr(onProgress);
+  } catch (e) {
+    console.error(e);
+    throw new Error('Text recognition (OCR) could not start in this browser. Try another browser, use the PDF or VCF version of the report, or enter the values manually.');
+  }
+}
+
+async function startOcr(onProgress?: (fraction: number) => void): Promise<OcrSession> {
   const { createWorker } = await import('tesseract.js');
   const worker: Worker = await createWorker('eng', 1, {
-    workerPath: abs('/vendor/tesseract/worker.min.js'),
-    corePath: abs('/vendor/tesseract-core'),
-    langPath: abs('/vendor/tessdata'),
+    workerPath: EMBEDDED ? embeddedWorkerUrl() : absoluteUrl('vendor/tesseract/worker.min.js'),
+    workerBlobURL: !EMBEDDED,
+    corePath: absoluteUrl('vendor/tesseract-core'),
+    langPath: absoluteUrl('vendor/tessdata'),
     logger: (m: { status: string; progress: number }) => {
       if (m.status === 'recognizing text') onProgress?.(m.progress);
     },

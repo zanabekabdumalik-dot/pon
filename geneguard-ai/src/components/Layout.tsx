@@ -17,8 +17,10 @@ import {
 import { useEffect, useState, type ReactNode } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import { CLINICAL_CONTEXT, DISCLAIMER } from '../../shared/messages';
+import { asset } from '../lib/env';
 import { usePipeline } from '../state/pipeline';
 import { useSession } from '../state/session';
+import { ConfirmAction } from './ConfirmAction';
 import { Callout } from './ui';
 
 const NAV = [
@@ -35,7 +37,7 @@ const NAV = [
 export function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <span className="flex items-center gap-2.5">
-      <img src="/favicon.svg" alt="" className="size-9 rounded-xl shadow-lg shadow-teal-500/20" />
+      <img src={asset('favicon.svg')} alt="" className="size-9 rounded-xl shadow-lg shadow-teal-500/20" />
       {!compact && (
         <span className="leading-tight">
           <span className="block text-[15px] font-bold tracking-tight text-white">
@@ -95,17 +97,19 @@ function NavItems({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function StatusCard() {
-  const { status, statusError } = useSession();
+  const { status, mode } = useSession();
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-nav-ink">
       <p className="mb-1.5 flex items-center gap-1.5 font-semibold text-white">
         <Bot className="size-3.5 text-teal-300" /> Interpreter
       </p>
-      {statusError ? (
-        <p className="text-rose-300">Server offline</p>
-      ) : !status ? (
-        <p>Connecting…</p>
-      ) : status.ai.enabled ? (
+      {mode === 'checking' ? (
+        <p>Starting…</p>
+      ) : mode === 'browser' ? (
+        <p>
+          Built-in engine, in your browser <span className="block text-nav-ink/60">Works offline · no data leaves this device</span>
+        </p>
+      ) : status?.ai.enabled ? (
         <p>
           Claude AI available <span className="block text-nav-ink/60">{status.ai.model}</span>
         </p>
@@ -136,20 +140,20 @@ function DeleteDataButton() {
   const navigate = useNavigate();
   if (!report && !parsed && !uploaded && chat.length === 0) return null;
   return (
-    <button
-      type="button"
+    <ConfirmAction
       className="btn-ghost px-2.5 text-rose-600 dark:text-rose-400"
-      onClick={() => {
-        if (window.confirm('Delete all genetic data from this session? This cannot be undone.')) {
-          clearAll();
-          navigate('/privacy?deleted=1');
-        }
-      }}
+      align="right"
       title="Delete all data from this session"
+      question="Delete all genetic data from this session? This cannot be undone."
+      confirmLabel="Yes, delete everything"
+      onConfirm={() => {
+        clearAll();
+        navigate('/privacy?deleted=1');
+      }}
     >
       <Trash2 className="size-4" />
       <span className="hidden sm:inline">Delete my data</span>
-    </button>
+    </ConfirmAction>
   );
 }
 
@@ -157,7 +161,6 @@ export function Layout({ children }: { children?: ReactNode }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const { error, clearError } = usePipeline();
-  const { statusError } = useSession();
 
   useEffect(() => {
     setOpen(false);
@@ -180,7 +183,7 @@ export function Layout({ children }: { children?: ReactNode }) {
       )}
 
       <div className="lg:pl-64">
-        <header className="no-print sticky top-0 z-20 border-b border-line bg-bg/85 backdrop-blur">
+        <header className="no-print sticky top-[env(safe-area-inset-top,0px)] z-20 border-b border-line bg-bg/85 backdrop-blur">
           <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 sm:px-6">
             <button type="button" className="btn-ghost -ml-2 px-2 lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
               {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -199,11 +202,6 @@ export function Layout({ children }: { children?: ReactNode }) {
         </header>
 
         <main className="print-full mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
-          {statusError && (
-            <Callout tone="danger" title="Server not reachable" className="no-print mb-4">
-              {statusError}
-            </Callout>
-          )}
           {error && (
             <div className="no-print mb-4">
               <Callout tone="danger" title="Something went wrong">

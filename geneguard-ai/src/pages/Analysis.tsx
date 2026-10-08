@@ -108,7 +108,7 @@ export function AnalysisPage() {
         {report.overview}
       </div>
 
-      <div className="no-print sticky top-14 z-10 -mx-4 mt-6 bg-bg/90 px-4 py-2 backdrop-blur sm:mx-0 sm:px-0">
+      <div className="no-print sticky top-[calc(3.5rem+env(safe-area-inset-top,0px))] z-10 -mx-4 mt-6 bg-bg/90 px-4 py-2 backdrop-blur sm:mx-0 sm:px-0">
         <div className="flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1">
           {(['all', 'chromosomal', 'monogenic', 'multifactorial'] as const).map((t) => (
             <button

@@ -1,10 +1,11 @@
 import { CloudOff, Cpu, Eye, HardDrive, KeyRound, Server, ShieldCheck, Trash2, Users } from 'lucide-react';
 import { useSearchParams } from 'react-router';
+import { ConfirmAction } from '../components/ConfirmAction';
 import { Callout, PageHeader } from '../components/ui';
 import { useSession } from '../state/session';
 
 export function PrivacyPage() {
-  const { status, uploaded, parsed, report, chat, removeFile, clearAll, setParsed, setReport, setChat, consentAi } = useSession();
+  const { status, mode, uploaded, parsed, report, chat, removeFile, clearAll, setParsed, setReport, setChat, consentAi } = useSession();
   const [params] = useSearchParams();
   const ai = status?.ai.enabled;
   const nothing = !uploaded && !parsed && !report && chat.length === 0;
@@ -12,7 +13,9 @@ export function PrivacyPage() {
   const principles = [
     { icon: Cpu, title: 'Processed in your browser', text: 'Photos, PDFs and genotype files are read and OCR’d on your device. The file itself is never uploaded to the GeneGuard server.' },
     { icon: HardDrive, title: 'Current session only', text: 'Data lives only in this tab’s memory — no database, no cookies, no local storage. Refreshing or closing the tab erases it.' },
-    { icon: Server, title: 'Stateless server', text: 'For interpretation the server receives the extracted variant list, answers, and forgets it. Request contents are never logged.' },
+    mode === 'browser'
+      ? { icon: Server, title: 'No server in this copy', text: 'This copy of GeneGuard runs entirely in your browser. The analysis, chat and report are computed on this device.' }
+      : { icon: Server, title: 'Stateless server', text: 'For interpretation the server receives the extracted variant list, answers, and forgets it. Request contents are never logged.' },
     { icon: Users, title: 'Never shared with other users', text: 'There are no accounts and no shared storage, so no other user can see your genetic information.' },
     { icon: KeyRound, title: 'Keys stay on the server', text: 'API keys are environment variables on the server and are never sent to the browser.' },
     { icon: Trash2, title: 'Delete at any time', text: 'Remove the uploaded file or all session data with one click below.' },
@@ -46,8 +49,13 @@ export function PrivacyPage() {
         </h2>
         <ul className="mt-3 space-y-3 text-sm text-ink-2">
           <li className="flex gap-3">
-            <span className={`mt-1 size-2.5 shrink-0 rounded-full ${ai ? 'bg-amber-500' : 'bg-emerald-500'}`} />
-            {ai ? (
+            <span className={`mt-1 size-2.5 shrink-0 rounded-full ${ai && mode === 'server' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+            {mode === 'browser' ? (
+              <span>
+                <strong className="text-ink">No external AI in this copy.</strong> It runs without a GeneGuard server, so explanations and chat answers come from the built-in
+                rule engine and nothing is sent to an AI provider. Claude features are available when the app is started with its server (see README).
+              </span>
+            ) : ai ? (
               <span>
                 <strong className="text-ink">Anthropic Claude API is configured ({status?.ai.model}).</strong> Data is sent to it <em>only</em> when you switch on AI explanations or the
                 Claude chat, or press “Re-read with AI Vision”. What is sent: the extracted variant list and the analysis summary (genes, variants, genotypes, risk categories) — not your file
@@ -76,7 +84,7 @@ export function PrivacyPage() {
           </li>
           <li className="flex gap-3">
             <CloudOff className="mt-0.5 size-4 shrink-0 text-emerald-600" />
-            <span>OCR (Tesseract.js), PDF reading (pdf.js) and the language model for OCR are served by this server itself — no third-party CDN, fonts or analytics.</span>
+            <span>OCR (Tesseract.js), PDF reading (pdf.js) and the OCR language model ship with the app itself — no third-party CDN, fonts or analytics.</span>
           </li>
         </ul>
       </section>
@@ -103,9 +111,17 @@ export function PrivacyPage() {
             {chat.length > 0 && <Row title={`Chat history: ${chat.length} message(s)`} onDelete={() => setChat([])} />}
           </ul>
         )}
-        <button type="button" className="btn-danger mt-4" disabled={nothing} onClick={() => window.confirm('Delete all genetic data from this session?') && clearAll()}>
-          <Trash2 className="size-4" /> Delete all my data
-        </button>
+        <div className="mt-4">
+          <ConfirmAction
+            className="btn-danger"
+            disabled={nothing}
+            question="Delete all genetic data from this session? This cannot be undone."
+            confirmLabel="Yes, delete everything"
+            onConfirm={clearAll}
+          >
+            <Trash2 className="size-4" /> Delete all my data
+          </ConfirmAction>
+        </div>
       </section>
 
       <Callout tone="neutral" title="Before using real genetic data">

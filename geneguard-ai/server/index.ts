@@ -1,13 +1,11 @@
 import express, { type NextFunction, type Request, type Response } from 'express';
-import { createRequire } from 'node:module';
+import { networkInterfaces } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './config';
 import { api } from './routes';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const require = createRequire(import.meta.url);
-const pkgDir = (name: string) => path.dirname(require.resolve(`${name}/package.json`));
 
 const app = express();
 app.disable('x-powered-by');
@@ -42,12 +40,8 @@ app.use('/api', (err: Error & { status?: number; type?: string }, _req: Request,
   res.status(tooLarge ? 413 : (err.status ?? 500)).json({ error: tooLarge ? 'The data is too large.' : 'Server error.' });
 });
 
-// OCR engine files are served locally so text recognition works offline and
-// images never have to leave the browser.
-const long = { maxAge: '30d', immutable: true };
-app.use('/vendor/tesseract', express.static(path.join(pkgDir('tesseract.js'), 'dist'), long));
-app.use('/vendor/tesseract-core', express.static(pkgDir('tesseract.js-core'), long));
-app.use('/vendor/tessdata', express.static(path.join(pkgDir('@tesseract.js-data/eng'), '4.0.0_best_int'), long));
+// OCR engine files (vendor/…) are served by the Vite plugin in development and are
+// part of dist/ in production — see vite.config.ts.
 
 if (config.isProd) {
   const dist = path.join(root, 'dist');
@@ -59,8 +53,27 @@ if (config.isProd) {
   app.use(vite.middlewares);
 }
 
-app.listen(config.port, config.host, () => {
-  console.log(`\n  GeneGuard AI running at http://localhost:${config.port} (${config.isProd ? 'production' : 'development'})`);
+/** Addresses other devices on the same Wi-Fi can use (e.g. a phone): http://192.168.x.x:5173 */
+function lanUrls(): string[] {
+  return Object.values(networkInterfaces())
+    .flat()
+    .filter((n) => n && n.family === 'IPv4' && !n.internal)
+    .map((n) => `http://${n!.address}:${config.port}`);
+}
+
+const server = app.listen(config.port, config.host, () => {
+  console.log(`\n  GeneGuard AI running (${config.isProd ? 'production' : 'development'})`);
+  console.log(`  On this computer:      http://localhost:${config.port}`);
+  for (const url of lanUrls()) console.log(`  From a phone (same Wi-Fi): ${url}`);
   console.log(`  External AI: ${config.ai.enabled ? `enabled (${config.ai.model})` : 'not configured — built-in explanations and chat'}`);
   console.log(`  Live ClinVar lookup: ${config.clinvar.enabled ? 'enabled (opt-in per analysis)' : 'disabled'}\n`);
+});
+
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n  Port ${config.port} is already in use. Stop the other program or start with another port, e.g.:  PORT=5174 npm run dev\n`);
+  } else {
+    console.error(err);
+  }
+  process.exit(1);
 });

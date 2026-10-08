@@ -8,10 +8,23 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>GeneGuard AI</title>
     <script>
-      try {
-        var t = localStorage.getItem('gg-theme');
-        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
-      } catch (e) {}
+      // Theme: an explicit data-theme on <html> (set by an embedding viewer) wins, then the
+      // user's own toggle, then the system setting.
+      (function () {
+        var root = document.documentElement;
+        function saved() {
+          try { return localStorage.getItem('gg-theme'); } catch (e) { return null; }
+        }
+        function apply() {
+          var t = root.getAttribute('data-theme');
+          var s = saved();
+          var dark = t ? t === 'dark' : s ? s === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          root.classList.toggle('dark', dark);
+        }
+        apply();
+        try { new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ['data-theme'] }); } catch (e) {}
+        try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', apply); } catch (e) {}
+      })();
     </script>
   </head>
   <body>

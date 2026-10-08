@@ -1,9 +1,10 @@
 import { Bot, Loader2, Send, Trash2, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
+import { answerLocally } from '../../shared/chat';
 import { MESSAGES } from '../../shared/messages';
 import { Callout, PageHeader, RichText, SourceLinks, Toggle } from '../components/ui';
-import { api } from '../lib/api';
+import { api, ApiUnavailable } from '../lib/api';
 import { useSession, type ChatEntry } from '../state/session';
 
 const SUGGESTED = [
@@ -16,7 +17,7 @@ const SUGGESTED = [
 ];
 
 export function ChatPage() {
-  const { report, chat, setChat, aiAvailable, consentAi, setConsentAi, status } = useSession();
+  const { report, chat, setChat, aiAvailable, consentAi, setConsentAi, status, mode } = useSession();
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
@@ -36,11 +37,14 @@ export function ChatPage() {
     setText('');
     setBusy(true);
     try {
-      const reply = await api.chat(
-        report,
-        next.map((m) => ({ role: m.role, content: m.content })),
-        useAI,
-      );
+      // Without a server the built-in geneticist answers right here in the browser.
+      const reply =
+        mode === 'server'
+          ? await api.chat(report, next.map((m) => ({ role: m.role, content: m.content })), useAI).catch((e) => {
+              if (e instanceof ApiUnavailable) return answerLocally(geneQuestion, report);
+              throw e;
+            })
+          : answerLocally(geneQuestion, report);
       setChat((c) => [...c, { role: 'assistant', content: reply.reply, engine: reply.engine, note: reply.note, sources: reply.sources }]);
     } catch (e) {
       setChat((c) => [...c, { role: 'assistant', content: `${MESSAGES.noInfo} (${e instanceof Error ? e.message : 'The server could not answer.'})`, engine: 'built-in' }]);
@@ -88,7 +92,8 @@ export function ChatPage() {
             </span>
           ) : (
             <span>
-              Answering with the <strong className="text-ink">built-in rule-based geneticist</strong> — nothing leaves this server.
+              Answering with the <strong className="text-ink">built-in rule-based geneticist</strong> —{' '}
+              {mode === 'browser' ? 'it runs in your browser, nothing leaves this device.' : 'nothing leaves this server.'}
             </span>
           )}
         </p>

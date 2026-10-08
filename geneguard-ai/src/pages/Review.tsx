@@ -7,6 +7,7 @@ import { isRecognisedGene } from '../../shared/knowledge/genes';
 import { MESSAGES } from '../../shared/messages';
 import { makeId, variantIsIncomplete } from '../../shared/parsing';
 import { DATA_SCOPE_LABEL } from '../../shared/engine/analyze';
+import { ConfirmAction } from '../components/ConfirmAction';
 import { Callout, EmptyState, PageHeader, Toggle } from '../components/ui';
 import { fileKind } from '../lib/files';
 import { usePipeline } from '../state/pipeline';
@@ -158,15 +159,15 @@ export function ReviewPage() {
           <p className="flex-1 text-sm text-ink-2">
             <strong className="text-ink">Recognition looks wrong?</strong> Re-read the image with Claude Vision. <span className="text-muted">This sends the image to Anthropic’s API for transcription only.</span>
           </p>
-          <button
-            type="button"
+          <ConfirmAction
             className="btn-secondary"
-            onClick={() => {
-              if (window.confirm('Send this image to Anthropic (Claude) for text transcription? The image is not stored by GeneGuard.')) void runVision(uploaded!.file!);
-            }}
+            align="right"
+            question="Send this image to Anthropic (Claude) for text transcription? GeneGuard does not store it."
+            confirmLabel="Send image"
+            onConfirm={() => void runVision(uploaded!.file!)}
           >
             <ScanLine className="size-4" /> Re-read with AI Vision
-          </button>
+          </ConfirmAction>
         </div>
       )}
 
@@ -205,7 +206,7 @@ export function ReviewPage() {
           checked={consentAi && aiAvailable}
           disabled={!aiAvailable}
           onChange={setConsentAi}
-          label={aiAvailable ? `Use Claude AI (${status?.ai.model}) to write plain-language explanations` : 'AI explanations (not configured on this server)'}
+          label={aiAvailable ? `Use Claude AI (${status?.ai.model}) to write plain-language explanations` : 'AI explanations (need the GeneGuard server with an API key)'}
           description={
             aiAvailable
               ? 'The extracted variant list (genes, variants, genotypes — not your file, name or document text) is sent to Anthropic’s API. Risk levels are always decided by GeneGuard’s rules, not by the AI.'

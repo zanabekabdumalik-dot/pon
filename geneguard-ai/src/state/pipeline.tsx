@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import type { ParsedInput } from '../../shared/types';
+import { analyze } from '../../shared/engine/analyze';
 import { parseTextInput } from '../../shared/parsing';
-import { api } from '../lib/api';
+import { api, ApiUnavailable } from '../lib/api';
 import { processFile } from '../lib/files';
 import { imageToDataUrl } from '../lib/ocr';
 import { PipelineLoader, type PipelineView } from '../components/PipelineLoader';
@@ -111,7 +112,19 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
           await step(2, 'Structured demo data (no OCR needed)', 260);
           await step(3, `${input.variants.length} demonstration variants`, 320);
         }
-        const request = api.analyze(input, { useAI, clinvar });
+        // Without a reachable server the same rule engine runs right here in the browser.
+        const local = (note: string) => {
+          const report = analyze(input);
+          report.ai.note = note;
+          return { report };
+        };
+        const request =
+          session.mode === 'server'
+            ? api.analyze(input, { useAI, clinvar }).catch((e) => {
+                if (e instanceof ApiUnavailable) return local('The GeneGuard server could not be reached, so the analysis ran in your browser with the built-in engine.');
+                throw e;
+              })
+            : Promise.resolve(local('Browser mode: the analysis ran entirely on this device with the built-in engine (no server, no external AI).'));
         await step(4, 'Checking formats, alleles and data quality…');
         await step(5, clinvar ? 'Matching the knowledge base and looking up ClinVar…' : 'Matching the curated knowledge base…');
         setView({ active: 6, detail: useAI ? 'Claude is writing plain-language explanations…' : 'Built-in interpreter (no external AI used)…' });

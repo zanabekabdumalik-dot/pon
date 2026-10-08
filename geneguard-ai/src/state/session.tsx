@@ -20,9 +20,16 @@ export interface UploadedFileInfo {
   file?: File; // kept in memory only for the optional AI Vision re-read
 }
 
+/**
+ * "server": the GeneGuard API is reachable (AI and ClinVar may be available).
+ * "browser": no API at this address (static hosting, embedded page, server stopped) —
+ * everything runs on this device with the built-in engine.
+ */
+export type RunMode = 'checking' | 'server' | 'browser';
+
 interface SessionState {
   status: ServerStatus | null;
-  statusError: string | null;
+  mode: RunMode;
   uploaded: UploadedFileInfo | null;
   parsed: ParsedInput | null;
   report: AnalysisReport | null;
@@ -47,7 +54,7 @@ const Ctx = createContext<SessionApi | null>(null);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<ServerStatus | null>(null);
-  const [statusError, setStatusError] = useState<string | null>(null);
+  const [mode, setMode] = useState<RunMode>('checking');
   const [uploaded, setUploaded] = useState<UploadedFileInfo | null>(null);
   const [parsed, setParsed] = useState<ParsedInput | null>(null);
   const [report, setReport] = useState<AnalysisReport | null>(null);
@@ -58,8 +65,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     api
       .health()
-      .then(setStatus)
-      .catch(() => setStatusError('The GeneGuard server is not reachable. Start it with "npm run dev".'));
+      .then((s) => {
+        setStatus(s);
+        setMode('server');
+      })
+      .catch(() => setMode('browser'));
   }, []);
 
   const removeFile = useCallback(() => {
@@ -79,7 +89,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const value = useMemo<SessionApi>(
     () => ({
       status,
-      statusError,
+      mode,
       uploaded,
       parsed,
       report,
@@ -94,9 +104,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setConsentClinvar,
       removeFile,
       clearAll,
-      aiAvailable: Boolean(status?.ai.enabled),
+      aiAvailable: mode === 'server' && Boolean(status?.ai.enabled),
     }),
-    [status, statusError, uploaded, parsed, report, chat, consentAi, consentClinvar, removeFile, clearAll],
+    [status, mode, uploaded, parsed, report, chat, consentAi, consentClinvar, removeFile, clearAll],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

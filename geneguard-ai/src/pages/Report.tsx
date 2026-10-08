@@ -1,8 +1,10 @@
-import { Download, Printer } from 'lucide-react';
+import { Check, Copy, Download, Printer } from 'lucide-react';
+import { useState } from 'react';
 import type { AnalysisReport, Category } from '../../shared/types';
 import { MESSAGES, SYNTHETIC_NOTICE } from '../../shared/messages';
 import { ordinal } from '../../shared/text';
 import { EmptyState, PageHeader, RISK_META } from '../components/ui';
+import { EMBEDDED, asset } from '../lib/env';
 import { useSession } from '../state/session';
 
 const CAT_LABEL: Record<Category, string> = { chromosomal: 'Chromosomal', monogenic: 'Monogenic', multifactorial: 'Multifactorial' };
@@ -35,6 +37,7 @@ function reportAsText(r: AnalysisReport): string {
 
 export function ReportPage() {
   const { report } = useSession();
+  const [copied, setCopied] = useState<'idle' | 'done' | 'failed'>('idle');
   if (!report) return <EmptyState />;
   const important = [...report.findings].sort((a, b) => {
     const order = ['high', 'elevated', 'average', 'low', 'not-assessable'];
@@ -51,6 +54,13 @@ export function ReportPage() {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
 
+  const copy = () => {
+    navigator.clipboard
+      .writeText(reportAsText(report))
+      .then(() => setCopied('done'))
+      .catch(() => setCopied('failed'));
+  };
+
   return (
     <div>
       <PageHeader
@@ -58,22 +68,30 @@ export function ReportPage() {
         title="Your GeneGuard report"
         actions={
           <>
-            <button type="button" className="btn-primary" onClick={() => window.print()}>
-              <Printer className="size-4" /> Print / save as PDF
-            </button>
-            <button type="button" className="btn-secondary" onClick={download}>
-              <Download className="size-4" /> Download .txt
+            {!EMBEDDED && (
+              <>
+                <button type="button" className="btn-primary" onClick={() => window.print()}>
+                  <Printer className="size-4" /> Print / save as PDF
+                </button>
+                <button type="button" className="btn-secondary" onClick={download}>
+                  <Download className="size-4" /> Download .txt
+                </button>
+              </>
+            )}
+            <button type="button" className={EMBEDDED ? 'btn-primary' : 'btn-secondary'} onClick={copy}>
+              {copied === 'done' ? <Check className="size-4" /> : <Copy className="size-4" />} {copied === 'done' ? 'Copied' : 'Copy report text'}
             </button>
           </>
         }
       >
-        A one-page summary to read calmly or to take to a doctor or genetic counselor. The file is created in your browser.
+        A one-page summary to read calmly or to take to a doctor or genetic counselor. It is created in your browser.
+        {copied === 'failed' && <span className="mt-1 block text-amber-700 dark:text-amber-300">Copying is blocked here — select the report text and copy it manually.</span>}
       </PageHeader>
 
       <article className="card mx-auto max-w-4xl overflow-hidden">
         <header className="flex flex-wrap items-center justify-between gap-4 bg-nav px-6 py-5 text-white sm:px-8">
           <div className="flex items-center gap-3">
-            <img src="/favicon.svg" alt="" className="size-10 rounded-xl" />
+            <img src={asset('favicon.svg')} alt="" className="size-10 rounded-xl" />
             <div>
               <p className="text-xs font-semibold tracking-[0.2em] text-teal-200 uppercase">GeneGuard AI Report</p>
               <p className="text-lg font-bold">Educational genetic risk interpretation</p>

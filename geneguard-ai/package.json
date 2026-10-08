@@ -39,6 +39,7 @@
     "start": "tsx server/index.ts --prod",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "samples": "node scripts/generate-samples.mjs"
+    "samples": "node scripts/generate-samples.mjs",
+    "build:artifact": "node scripts/build-artifact.mjs"
   }
 }
