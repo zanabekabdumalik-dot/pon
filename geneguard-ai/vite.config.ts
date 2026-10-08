@@ -1,8 +1,9 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import { copyFileSync, createReadStream, existsSync, mkdirSync } from 'node:fs';
+import { copyFileSync, createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { gunzipSync } from 'node:zlib';
 import { defineConfig, type Plugin } from 'vite';
 
 const require = createRequire(import.meta.url);
@@ -44,7 +45,10 @@ function ocrVendorFiles(): Plugin {
         if (!existsSync(src)) throw new Error(`OCR vendor file missing: ${src} — run npm install`);
         const dest = path.join(outDir, rel);
         mkdirSync(path.dirname(dest), { recursive: true });
-        copyFileSync(src, dest);
+        // Android packaging silently unpacks .gz assets and drops the extension, so the Android
+        // build ships the language model unpacked under its final name (src/lib/ocr.ts matches).
+        if (process.env.VITE_TARGET === 'android' && rel.endsWith('.gz')) writeFileSync(dest.slice(0, -3), gunzipSync(readFileSync(src)));
+        else copyFileSync(src, dest);
       }
     },
   };

@@ -1,6 +1,6 @@
 {
   "name": "geneguard-ai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "description": "GeneGuard AI — educational prototype that explains genetic test results with AI",

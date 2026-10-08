@@ -60,6 +60,7 @@ async function startOcr(onProgress?: (fraction: number) => void): Promise<OcrSes
     workerBlobURL: !EMBEDDED,
     corePath: absoluteUrl('vendor/tesseract-core'),
     langPath: absoluteUrl('vendor/tessdata'),
+    gzip: import.meta.env.VITE_TARGET !== 'android', // the Android build ships eng.traineddata unpacked (vite.config.ts)
     logger: (m: { status: string; progress: number }) => {
       if (m.status === 'recognizing text') onProgress?.(m.progress);
     },
