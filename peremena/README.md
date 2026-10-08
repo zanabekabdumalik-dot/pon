@@ -44,7 +44,7 @@
 | Платформа | Как устроено | Сборка |
 |---|---|---|
 | Android 7.0+ (`Peremena.apk`, ~110 КБ) | Окно WebView на весь экран (`apps/android/smali/…/MainActivity.smali`), экран не гаснет, пока открыт таймер. Подпись APK v2 | `apps/android/build.sh <папка с apktool.jar и apksig.jar> <куда положить>` |
-| Windows 10/11 x64 (`Peremena-1.0.0-portable.exe`, ~100 МБ) | Electron, один переносной файл без установки | `apps/windows/build.sh <куда положить>` |
+| Windows 10/11 x64 (`Peremena.exe`, ~2,6 МБ) | Neutralino: окно на встроенном в Windows движке Edge (WebView2), один файл без установки. Страница отдаётся с постоянного адреса `127.0.0.1:47823`, поэтому баллы сохраняются | `apps/windows/build.sh <куда положить>` |
 
 Иконки рисует `apps/make_icons.py`. Ключ подписи APK создаётся при первой сборке; если собрать
 заново с новым ключом, старую версию на телефоне нужно сначала удалить.

@@ -1,32 +1,9 @@
 {
-  "name": "peremena",
+  "name": "peremena-windows",
   "version": "1.0.0",
-  "description": "Перемена — фокус-таймер с разминкой на перемене",
-  "author": "11 класс, школьный проект",
-  "license": "UNLICENSED",
   "private": true,
-  "main": "main.js",
-  "scripts": {
-    "dist": "electron-builder --win portable --x64"
-  },
+  "description": "Перемена для Windows: Neutralino + системный WebView2",
   "devDependencies": {
-    "electron": "43.7.3",
-    "electron-builder": "26.16.1",
-    "pe-library": "2.0.1",
-    "resedit": "3.1.0"
-  },
-  "build": {
-    "appId": "app.peremena",
-    "productName": "Peremena",
-    "electronVersion": "43.7.3",
-    "directories": { "output": "dist" },
-    "files": ["main.js", "index.html", "icon.png", "package.json"],
-    "afterPack": "./afterPack.js",
-    "win": {
-      "icon": "icon.ico",
-      "signAndEditExecutable": false,
-      "target": [{ "target": "portable", "arch": ["x64"] }]
-    },
-    "portable": { "artifactName": "Peremena-${version}-portable.exe" }
+    "@neutralinojs/neu": "11.7.2"
   }
 }

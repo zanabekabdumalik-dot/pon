@@ -1,3 +1,6 @@
 node_modules/
+bin/
 dist/
-index.html
+resources/index.html
+resources/icon.png
+resources/js/
