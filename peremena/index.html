@@ -1,0 +1,1223 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Перемена</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Onest:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one narrow sheet of squared school-notebook paper (light) or a chalkboard (dark);
+   blue ballpoint ink for lessons, green for breaks, red teacher's pen for marks; section tabs at the bottom. */
+:root {
+  --bg: #F5F7FB;
+  --grid: rgba(43, 88, 176, 0.09);
+  --surface: #FFFFFF;
+  --line: #D7DFEC;
+  --text: #17203A;
+  --muted: #5A6480;
+  --ink: #2347B0;
+  --ink-soft: #E7ECFA;
+  --on-ink: #FFFFFF;
+  --rest: #1B7F51;
+  --rest-soft: #E0F2E8;
+  --on-rest: #FFFFFF;
+  --red: #D2382D;
+  --red-soft: #FBE6E4;
+  --shadow: 0 1px 2px rgba(23, 32, 58, 0.05), 0 8px 24px rgba(23, 32, 58, 0.06);
+  --scrim: rgba(12, 18, 36, 0.45);
+  --font-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  --font-body: "Onest", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --r: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16211C; --grid: rgba(226, 238, 231, 0.045); --surface: #1E2C26; --line: #31453C;
+    --text: #EDF2EE; --muted: #A2B4AA; --ink: #96B6FF; --ink-soft: rgba(150, 182, 255, 0.14); --on-ink: #0F1730;
+    --rest: #7DD7A5; --rest-soft: rgba(125, 215, 165, 0.14); --on-rest: #0D2418;
+    --red: #FF8F80; --red-soft: rgba(255, 143, 128, 0.15); --shadow: none; --scrim: rgba(0, 0, 0, 0.55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16211C; --grid: rgba(226, 238, 231, 0.045); --surface: #1E2C26; --line: #31453C;
+  --text: #EDF2EE; --muted: #A2B4AA; --ink: #96B6FF; --ink-soft: rgba(150, 182, 255, 0.14); --on-ink: #0F1730;
+  --rest: #7DD7A5; --rest-soft: rgba(125, 215, 165, 0.14); --on-rest: #0D2418;
+  --red: #FF8F80; --red-soft: rgba(255, 143, 128, 0.15); --shadow: none; --scrim: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.app {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 14px calc(96px + env(safe-area-inset-bottom, 0px));
+}
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.wordmark { font-family: var(--font-hand); font-weight: 700; font-size: 2.4rem; line-height: 1; color: var(--ink); }
+.demo-pill {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--red);
+  border: 1.5px solid var(--red); border-radius: 6px; padding: 1px 6px; transform: rotate(-4deg);
+}
+.top-actions { display: flex; gap: 8px; }
+.icon-btn {
+  inline-size: 44px; block-size: 44px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--surface); display: grid; place-items: center; font-weight: 600; font-size: 0.85rem;
+}
+.icon-btn svg { width: 22px; height: 22px; }
+
+.view { display: flex; flex-direction: column; gap: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; box-shadow: var(--shadow); }
+.panel > * + * { margin-top: 10px; }
+h2 { font-size: 1.15rem; font-weight: 650; margin: 0; text-wrap: balance; line-height: 1.25; }
+p { margin: 0; }
+.label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 0.85rem; }
+
+.btn {
+  min-height: 52px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface);
+  font-weight: 600; font-size: 1rem; padding: 0 18px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn svg { width: 20px; height: 20px; flex: none; }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+.btn.rest { background: var(--rest); border-color: var(--rest); color: var(--on-rest); }
+.btn.ghost { background: transparent; }
+.btn.danger { color: var(--red); border-color: var(--red); background: transparent; }
+.btn.block { width: 100%; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ---------- Timer ---------- */
+.status { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; background: var(--ink-soft); color: var(--ink); font-weight: 600; font-size: 0.9rem; }
+[data-phase="break"] .chip { background: var(--rest-soft); color: var(--rest); }
+.status .muted { font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+
+.dial { position: relative; width: min(100%, 300px); aspect-ratio: 1; margin: 0 auto; }
+.dial svg { width: 100%; height: 100%; display: block; }
+.dial .track { stroke: var(--line); }
+.dial .prog { stroke: var(--ink); transition: stroke-dashoffset 0.25s linear, stroke 0.3s; }
+[data-phase="break"] .dial .prog { stroke: var(--rest); }
+.dial .ticks line { stroke: var(--muted); opacity: 0.45; }
+.dial-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2px; }
+.phase { font-family: var(--font-hand); font-weight: 700; font-size: 2.2rem; line-height: 1; color: var(--ink); }
+[data-phase="break"] .phase { color: var(--rest); }
+.time { font-size: clamp(3rem, 16vw, 4.3rem); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; line-height: 1.05; }
+.sub { color: var(--muted); font-size: 0.9rem; }
+.stamp {
+  position: absolute; top: 6%; right: 2%; font-family: var(--font-hand); font-weight: 700; color: var(--red);
+  font-size: 2.8rem; line-height: 1; opacity: 0; pointer-events: none; transform: rotate(-12deg);
+}
+.stamp.show { animation: stamp 2.4s ease-out; }
+@keyframes stamp {
+  0% { opacity: 0; transform: rotate(-12deg) scale(1.7); }
+  12% { opacity: 1; transform: rotate(-12deg) scale(1); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.preset { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 8px 4px; text-align: center; min-width: 0; }
+.preset b { display: block; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.preset span { display: block; font-size: 0.72rem; color: var(--muted); }
+.preset[aria-pressed="true"] { border-color: var(--ink); background: var(--ink-soft); color: var(--ink); }
+.preset[aria-pressed="true"] span { color: var(--ink); }
+.preset:disabled { opacity: 0.5; cursor: not-allowed; }
+.custom-note { font-size: 0.85rem; color: var(--muted); text-align: center; }
+
+.controls { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; }
+[data-phase="break"] .controls .primary { background: var(--rest); border-color: var(--rest); color: var(--on-rest); }
+.controls .btn:not(.primary) { padding: 0 14px; }
+
+.breakcard { background: var(--rest-soft); border-color: transparent; }
+.breakcard h2 { color: var(--rest); }
+.hint { display: flex; gap: 12px; align-items: flex-start; }
+.hint > * + * { margin-top: 0; }
+.hint svg { width: 22px; height: 22px; flex: none; color: var(--ink); margin-top: 1px; }
+
+.tt { list-style: none; margin: 0; padding: 0; }
+.tt li { display: grid; grid-template-columns: 2.2rem 1fr auto; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px dashed var(--line); }
+.tt li:first-child { border-top: 0; }
+.tt .n { font-family: var(--font-hand); font-weight: 700; font-size: 1.6rem; line-height: 1; color: var(--ink); text-align: center; }
+.tt .when { font-variant-numeric: tabular-nums; min-width: 0; }
+.tt .when small { display: block; color: var(--muted); font-size: 0.8rem; }
+.pill { font-size: 0.75rem; padding: 3px 9px; border-radius: 999px; background: var(--rest-soft); color: var(--rest); font-weight: 600; white-space: nowrap; }
+.pill.off { background: var(--red-soft); color: var(--red); }
+
+/* ---------- Warm-up ---------- */
+.dots { display: flex; gap: 6px; }
+.dots i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+.dots i.done { background: var(--rest); }
+.dots i.skip { background: var(--red-soft); }
+.dots i.cur { background: var(--ink); }
+.player-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.cat { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink); background: var(--ink-soft); padding: 3px 10px; border-radius: 999px; }
+.doodle { width: min(100%, 210px); aspect-ratio: 1; margin: 4px auto 0; color: var(--ink); background: var(--ink-soft); border-radius: 50%; display: grid; place-items: center; }
+.doodle svg { width: 78%; height: 78%; overflow: visible; }
+.doodle svg * { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.doodle svg .fill { fill: currentColor; stroke: none; }
+.doodle svg .faint { opacity: 0.35; }
+.doodle.paused * { animation-play-state: paused !important; }
+.ex-name { font-size: 1.45rem; font-weight: 650; text-align: center; text-wrap: balance; }
+.ex-how { color: var(--muted); max-width: 62ch; }
+.ex-clock { display: flex; align-items: baseline; justify-content: center; gap: 10px; }
+.ex-time { font-size: 2.4rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
+.breath-phase { font-family: var(--font-hand); font-weight: 700; font-size: 1.8rem; color: var(--ink); min-width: 6ch; }
+.bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--ink); width: 0; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.safety { font-size: 0.8rem; color: var(--muted); }
+.finish { text-align: center; }
+.finish .mark { font-family: var(--font-hand); font-weight: 700; font-size: 3.4rem; line-height: 1; color: var(--red); transform: rotate(-6deg); display: inline-block; }
+
+.lib { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.ex-card { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 12px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ex-card .label { color: var(--ink); }
+.ex-card b { font-weight: 600; line-height: 1.25; }
+.ex-card span { font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ex-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+/* doodle motions */
+.a-tilt { transform-box: view-box; transform-origin: 60px 46px; animation: tilt 10s ease-in-out infinite; }
+@keyframes tilt { 0%, 8% { transform: rotate(0); } 18%, 42% { transform: rotate(-20deg); } 50%, 58% { transform: rotate(0); } 68%, 92% { transform: rotate(20deg); } 100% { transform: rotate(0); } }
+.a-chin { animation: chin 3.6s ease-in-out infinite; }
+@keyframes chin { 0%, 15% { transform: translateX(0); } 40%, 70% { transform: translateX(-7px); } 95%, 100% { transform: translateX(0); } }
+.a-shrug { animation: shrug 2.4s ease-in-out infinite; }
+@keyframes shrug { 0% { transform: translate(0, 0); } 25% { transform: translate(2px, -7px); } 50% { transform: translate(0, -9px); } 75% { transform: translate(-2px, -4px); } 100% { transform: translate(0, 0); } }
+.a-armL { transform-box: view-box; transform-origin: 42px 52px; animation: armL 5s ease-in-out infinite; }
+.a-armR { transform-box: view-box; transform-origin: 78px 52px; animation: armR 5s ease-in-out infinite; }
+@keyframes armL { 0%, 12% { transform: rotate(0); } 40%, 78% { transform: rotate(150deg); } 100% { transform: rotate(0); } }
+@keyframes armR { 0%, 12% { transform: rotate(0); } 40%, 78% { transform: rotate(-150deg); } 100% { transform: rotate(0); } }
+.a-legL { transform-box: view-box; transform-origin: 60px 82px; animation: swing 1s ease-in-out infinite alternate; }
+.a-legR { transform-box: view-box; transform-origin: 60px 82px; animation: swing 1s ease-in-out infinite alternate-reverse; }
+@keyframes swing { from { transform: rotate(-18deg); } to { transform: rotate(18deg); } }
+.a-arm1 { transform-box: view-box; transform-origin: 42px 52px; animation: swing 1s ease-in-out infinite alternate-reverse; }
+.a-arm2 { transform-box: view-box; transform-origin: 78px 52px; animation: swing 1s ease-in-out infinite alternate; }
+.a-blink { transform-box: view-box; transform-origin: 60px 60px; animation: blink 0.9s ease-in-out infinite; }
+@keyframes blink { 0%, 40% { transform: scaleY(1); } 50% { transform: scaleY(0.08); } 60%, 100% { transform: scaleY(1); } }
+.a-dash { stroke-dasharray: 4 7; animation: dash 1.2s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -22; } }
+.a-near { animation: near 6s steps(1) infinite; }
+.a-far { animation: near 6s steps(1) infinite reverse; }
+@keyframes near { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+.a-dot { animation: square calc(16s / var(--k, 1)) linear infinite; }
+@keyframes square { 0% { transform: translate(0, 0); } 25% { transform: translate(80px, 0); } 50% { transform: translate(80px, 80px); } 75% { transform: translate(0, 80px); } 100% { transform: translate(0, 0); } }
+.a-lung { transform-box: view-box; transform-origin: 60px 60px; animation: lung calc(16s / var(--k, 1)) linear infinite; }
+@keyframes lung { 0% { transform: scale(0.55); } 25%, 50% { transform: scale(1.2); } 75%, 100% { transform: scale(0.55); } }
+
+/* ---------- Sleep ---------- */
+.wake { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.wake input {
+  font-size: 1.8rem; font-weight: 600; font-variant-numeric: tabular-nums; padding: 4px 10px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--bg); min-width: 0; max-width: 100%;
+}
+.err { color: var(--red); font-size: 0.85rem; }
+.beds { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.beds li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); }
+.beds li.best { border-color: var(--ink); background: var(--ink-soft); }
+.beds .bt { font-size: 1.9rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; grid-row: span 2; }
+.beds .hrs { font-weight: 600; }
+.beds .tag { font-size: 0.8rem; color: var(--muted); }
+.beds li.best .tag { color: var(--ink); font-weight: 600; }
+.tips { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+.src { font-size: 0.8rem; color: var(--muted); }
+.src a { color: var(--ink); }
+
+/* ---------- Progress ---------- */
+.sample-banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-radius: 12px; border: 1.5px dashed var(--red); color: var(--red); font-weight: 600; font-size: 0.9rem; }
+.sample-banner button { border: 0; background: none; color: var(--red); text-decoration: underline; font-weight: 600; padding: 4px 0; }
+.level { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; }
+.grade {
+  inline-size: 74px; block-size: 74px; border-radius: 50%; border: 2.5px solid var(--red); color: var(--red);
+  display: grid; place-items: center; font-family: var(--font-hand); font-weight: 700; font-size: 2.8rem; line-height: 1; transform: rotate(-8deg);
+}
+.level-name { font-size: 1.25rem; font-weight: 650; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px; text-align: center; min-width: 0; }
+.stat b { display: block; font-size: 1.6rem; font-weight: 650; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stat span { font-size: 0.75rem; color: var(--muted); }
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; align-items: end; height: 170px; }
+.wcol { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; min-width: 0; }
+.wcol .v { font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.wcol .b { width: 100%; max-width: 30px; background: var(--ink-soft); border-radius: 6px 6px 2px 2px; min-height: 2px; }
+.wcol.today .b { background: var(--ink); }
+.wcol.today .v, .wcol.today .d { color: var(--ink); font-weight: 700; }
+.wcol .d { font-size: 0.75rem; color: var(--muted); }
+.badges { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.badges li { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px dashed var(--line); }
+.badges li:first-child { border-top: 0; }
+.bicon { inline-size: 44px; block-size: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--red-soft); color: var(--red); }
+.bicon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.badges li.locked .bicon { background: var(--bg); color: var(--muted); }
+.badges li.locked b { color: var(--muted); }
+.badges small { display: block; color: var(--muted); font-size: 0.8rem; }
+.badges .st { font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.badges li:not(.locked) .st { color: var(--rest); font-weight: 600; }
+.empty { text-align: center; padding-block: 24px; }
+.empty .doodle { width: 120px; margin-bottom: 8px; }
+
+/* ---------- Tabs, toast, settings ---------- */
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.tabs-inner { max-width: 30rem; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); }
+.tab { min-height: 62px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: 0; color: var(--muted); font-size: 0.75rem; font-weight: 500; }
+.tab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tab[aria-selected="true"] { color: var(--ink); font-weight: 650; }
+.toast {
+  position: fixed; left: 50%; top: calc(12px + env(safe-area-inset-top, 0px)); z-index: 20;
+  transform: translate(-50%, -16px); opacity: 0; transition: opacity 0.25s, transform 0.25s; pointer-events: none;
+  background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-weight: 600; max-width: calc(100% - 32px); text-align: center;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+dialog { border: 0; border-radius: 18px; padding: 0; width: min(28rem, calc(100% - 32px)); max-height: calc(100% - 32px); background: var(--surface); color: var(--text); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25); }
+dialog::backdrop { background: var(--scrim); }
+.sheet { padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-weight: 600; font-size: 0.95rem; }
+.field input[type="number"] { font-size: 1.1rem; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); width: 100%; font-variant-numeric: tabular-nums; }
+.field input[aria-invalid="true"] { border-color: var(--red); }
+.fields2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.switch { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center; }
+.switch small { grid-column: 1; color: var(--muted); font-size: 0.82rem; }
+.switch input { grid-row: 1 / span 2; grid-column: 2; appearance: none; width: 48px; height: 28px; border-radius: 14px; background: var(--line); position: relative; cursor: pointer; transition: background 0.2s; margin: 0; }
+.switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); transition: transform 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
+.switch input:checked { background: var(--ink); }
+.switch input:checked::after { transform: translateX(20px); }
+.confirm { border: 1.5px solid var(--red); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.about { font-size: 0.8rem; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="app" id="app" data-phase="focus">
+  <header class="top">
+    <div class="brand">
+      <span class="wordmark" data-i18n="brand">Перемена</span>
+      <span class="demo-pill" id="demoPill" data-i18n="demoBadge" hidden>ДЕМО</span>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="langBtn" type="button">EN</button>
+      <button class="icon-btn" id="settingsBtn" type="button" data-i18n-aria="settings" aria-label="Настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- TIMER -->
+    <section class="view" id="view-timer" aria-labelledby="tab-timer">
+      <div class="status">
+        <span class="chip" id="lessonChip">Урок 1</span>
+        <span class="muted" id="todayMin">Сегодня 0 мин</span>
+      </div>
+
+      <div class="dial">
+        <svg viewBox="0 0 260 260" aria-hidden="true">
+          <g class="ticks" id="ticks"></g>
+          <circle class="track" cx="130" cy="130" r="112" fill="none" stroke-width="10"/>
+          <circle class="prog" id="ring" cx="130" cy="130" r="112" fill="none" stroke-width="10" stroke-linecap="round" transform="rotate(-90 130 130)"/>
+        </svg>
+        <div class="dial-center">
+          <span class="phase" id="phaseLabel">Урок</span>
+          <span class="time" id="timeLabel" role="timer">25:00</span>
+          <span class="sub" id="subLabel">до звонка</span>
+        </div>
+        <span class="stamp" id="stamp" aria-hidden="true">+10</span>
+      </div>
+
+      <div class="controls">
+        <button class="btn primary" id="startBtn" type="button">Начать урок</button>
+        <button class="btn" id="resetBtn" type="button" data-i18n-aria="reset" aria-label="Сброс">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
+        <button class="btn" id="skipBtn" type="button" data-i18n-aria="skipPhase" aria-label="Пропустить">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4l10 8-10 8z"/><path d="M19 5v14"/></svg>
+        </button>
+      </div>
+
+      <div class="presets" id="presets" role="group" data-i18n-aria="presetsLabel" aria-label="Длина урока и перемены"></div>
+      <p class="custom-note" id="customNote" hidden></p>
+
+      <div class="panel breakcard" id="breakCard" hidden>
+        <h2 data-i18n="breakTitle">Перемена — время размяться</h2>
+        <p data-i18n="breakText">4 упражнения, 2–3 минуты: глаза, шея, спина и дыхание. За разминку — до +30 баллов.</p>
+        <button class="btn rest block" id="breakWarmBtn" type="button" data-i18n="startWarm">Начать разминку</button>
+      </div>
+
+      <div class="panel hint" id="focusHint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/><path d="M3 3l18 18"/></svg>
+        <p data-i18n="focusHint">Убери телефон подальше. Когда прозвенит звонок, «Перемена» предложит короткую разминку.</p>
+      </div>
+
+      <div class="panel">
+        <h2 data-i18n="ttTitle">Расписание на сегодня</h2>
+        <ul class="tt" id="timetable"></ul>
+        <p class="muted small" id="ttEmpty" data-i18n="ttEmpty">Здесь появятся твои уроки: во сколько, сколько минут и была ли разминка.</p>
+      </div>
+    </section>
+
+    <!-- WARM-UP -->
+    <section class="view" id="view-warmup" aria-labelledby="tab-warmup" hidden>
+      <div id="playerBox" hidden></div>
+      <div id="warmHome" class="view">
+        <div class="panel">
+          <span class="label" data-i18n="quickLabel">На перемену</span>
+          <h2 data-i18n="quickTitle">Быстрая разминка</h2>
+          <p class="muted" data-i18n="quickSub">4 упражнения, 2–3 минуты: глаза, шея, спина и дыхание. Каждый раз новый набор.</p>
+          <button class="btn primary block" id="quickBtn" type="button" data-i18n="startWarm">Начать разминку</button>
+        </div>
+        <div>
+          <h2 data-i18n="libTitle" style="margin-bottom:10px">Все упражнения</h2>
+          <div class="lib" id="library"></div>
+        </div>
+        <p class="safety" data-i18n="safety">Если во время упражнения больно или кружится голова, остановись.</p>
+      </div>
+    </section>
+
+    <!-- SLEEP -->
+    <section class="view" id="view-sleep" aria-labelledby="tab-sleep" hidden>
+      <div class="panel">
+        <h2 data-i18n="sleepTitle">Во сколько лечь спать?</h2>
+        <div class="wake">
+          <label for="wakeInput" data-i18n="wakeLabel">Мне вставать в</label>
+          <input type="time" id="wakeInput" value="07:00" step="300">
+        </div>
+        <p class="err" id="wakeErr" hidden></p>
+        <ul class="beds" id="beds"></ul>
+        <p class="src"><span data-i18n="sleepNote">Учтено 15 минут, чтобы уснуть. Подросткам 13–18 лет нужно 8–10 часов сна.</span>
+          <a href="https://aasm.org/resources/pdf/pressroom/teen-sleep-duration-recommendation.pdf" target="_blank" rel="noopener" data-i18n="sleepSrc">Источник: AASM</a></p>
+      </div>
+      <div class="panel">
+        <h2 data-i18n="nowTitle">Если лечь прямо сейчас</h2>
+        <p id="nowText"></p>
+      </div>
+      <div class="panel">
+        <h2 data-i18n="tipsTitle">Чтобы засыпать быстрее</h2>
+        <ul class="tips" id="tips"></ul>
+      </div>
+    </section>
+
+    <!-- PROGRESS -->
+    <section class="view" id="view-progress" aria-labelledby="tab-progress" hidden>
+      <div id="progressBox" class="view"></div>
+    </section>
+  </main>
+</div>
+
+<nav class="tabs" aria-label="Разделы">
+  <div class="tabs-inner" role="tablist">
+    <button class="tab" role="tab" id="tab-timer" data-tab="timer" aria-controls="view-timer" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg>
+      <span data-i18n="tabTimer">Таймер</span>
+    </button>
+    <button class="tab" role="tab" id="tab-warmup" data-tab="warmup" aria-controls="view-warmup" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.5" r="2"/><path d="M5 8l7 1.5L19 8"/><path d="M12 9.5V15l-3 6"/><path d="M12 15l3 6"/></svg>
+      <span data-i18n="tabWarm">Разминка</span>
+    </button>
+    <button class="tab" role="tab" id="tab-sleep" data-tab="sleep" aria-controls="view-sleep" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+      <span data-i18n="tabSleep">Сон</span>
+    </button>
+    <button class="tab" role="tab" id="tab-progress" data-tab="progress" aria-controls="view-progress" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>
+      <span data-i18n="tabProgress">Прогресс</span>
+    </button>
+  </div>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="settings" aria-labelledby="settingsTitle">
+  <form class="sheet" id="settingsForm" novalidate>
+    <div class="sheet-head">
+      <h2 id="settingsTitle" data-i18n="settings">Настройки</h2>
+      <button class="icon-btn" type="button" id="closeSettings" data-i18n-aria="close" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="fields2">
+      <div class="field">
+        <label for="focusInput" data-i18n="focusLen">Урок, мин</label>
+        <input type="number" id="focusInput" inputmode="numeric" min="1" max="120" step="1">
+        <span class="err" id="focusErr" hidden></span>
+      </div>
+      <div class="field">
+        <label for="breakInput" data-i18n="breakLen">Перемена, мин</label>
+        <input type="number" id="breakInput" inputmode="numeric" min="1" max="30" step="1">
+        <span class="err" id="breakErr" hidden></span>
+      </div>
+    </div>
+    <p class="muted small" id="runningNote" data-i18n="runningNote" hidden>Новая длина начнётся со следующего урока.</p>
+    <label class="switch" for="soundInput">
+      <span data-i18n="sound">Звонок со звуком</span>
+      <input type="checkbox" id="soundInput">
+      <small data-i18n="soundHint">Короткий школьный звонок в конце урока и перемены.</small>
+    </label>
+    <label class="switch" for="demoInput">
+      <span data-i18n="demo">Демо-режим</span>
+      <input type="checkbox" id="demoInput">
+      <small data-i18n="demoHint">Минута урока идёт за секунду, упражнения — в 5 раз быстрее. Для показа на защите проекта.</small>
+    </label>
+    <button class="btn primary block" type="submit" data-i18n="save">Сохранить</button>
+    <button class="btn danger block" type="button" id="resetAllBtn" data-i18n="resetAll">Удалить все данные</button>
+    <div class="confirm" id="confirmBox" hidden>
+      <p data-i18n="resetAsk">Удалить очки, расписание и награды? Это нельзя отменить.</p>
+      <div class="row2">
+        <button class="btn danger" type="button" id="confirmYes" data-i18n="resetYes">Да, удалить</button>
+        <button class="btn" type="button" id="confirmNo" data-i18n="cancel">Отмена</button>
+      </div>
+    </div>
+    <p class="about" data-i18n="about">«Перемена» — школьный проект, 11 класс. Прототип. Все данные хранятся только на этом устройстве и никуда не отправляются.</p>
+  </form>
+</dialog>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ================= Text ================= */
+  const I18N = {
+    ru: {
+      brand: 'Перемена', demoBadge: 'ДЕМО', settings: 'Настройки', close: 'Закрыть', reset: 'Начать заново', skipPhase: 'Пропустить',
+      tabTimer: 'Таймер', tabWarm: 'Разминка', tabSleep: 'Сон', tabProgress: 'Прогресс', tabsLabel: 'Разделы',
+      lessonN: 'Урок {n}', breakN: 'Перемена после урока {n}', todayMin: 'Сегодня {m} мин',
+      phaseFocus: 'Урок', phaseBreak: 'Перемена!', subFocus: 'до звонка', subBreak: 'до урока',
+      start: 'Начать урок', pause: 'Пауза', resume: 'Продолжить', startBreak: 'Начать перемену',
+      presetsLabel: 'Длина урока и перемены', p45: 'как в школе', p25: 'помодоро', p15: 'лёгкий старт',
+      customNote: 'Свой режим: урок {f} мин, перемена {b} мин',
+      breakTitle: 'Перемена — время размяться',
+      breakText: '4 упражнения, 2–3 минуты: глаза, шея, спина и дыхание. За разминку — до +30 баллов.',
+      startWarm: 'Начать разминку',
+      focusHint: 'Убери телефон подальше. Когда прозвенит звонок, «Перемена» предложит короткую разминку.',
+      ttTitle: 'Расписание на сегодня',
+      ttEmpty: 'Здесь появятся твои уроки: во сколько, сколько минут и была ли разминка.',
+      ttMin: '{m} мин', warmYes: 'разминка', warmNo: 'без разминки',
+      quickLabel: 'На перемену', quickTitle: 'Быстрая разминка',
+      quickSub: '4 упражнения, 2–3 минуты: глаза, шея, спина и дыхание. Каждый раз новый набор.',
+      libTitle: 'Все упражнения', sec: '{s} сек',
+      safety: 'Если во время упражнения больно или кружится голова, остановись.',
+      stepOf: '{i} из {n}', skip: 'Пропустить', finishTitle: 'Разминка готова!',
+      finishText: 'Глаза отдохнули, спина размялась. Можно возвращаться к уроку.',
+      finishSingle: 'Упражнение сделано. Так держать!', toTimer: 'К таймеру', again: 'Ещё одну',
+      inhale: 'Вдох', hold: 'Пауза', exhale: 'Выдох',
+      cats: { eyes: 'Глаза', neck: 'Шея', back: 'Спина', move: 'Движение', breath: 'Дыхание' },
+      sleepTitle: 'Во сколько лечь спать?', wakeLabel: 'Мне вставать в', wakeErr: 'Укажи время подъёма, например 07:00.',
+      hrs: '{h} ч сна', bedAt: 'лечь в', best: 'оптимально', minNorm: 'нижняя граница нормы', maxNorm: 'верхняя граница нормы',
+      sleepNote: 'Учтено 15 минут, чтобы уснуть. Подросткам 13–18 лет нужно 8–10 часов сна.', sleepSrc: 'Источник: AASM',
+      nowTitle: 'Если лечь прямо сейчас', nowText: 'Ставь будильник на {t9}, чтобы поспать 9 часов, или хотя бы на {t8} — это 8 часов.',
+      tipsTitle: 'Чтобы засыпать быстрее',
+      tips: ['За 30–60 минут до сна отложи телефон и ноутбук.', 'Ложись и вставай в одно и то же время, даже в выходные.', 'Кофе, чай и энергетики — не позже обеда.', 'В спальне должно быть темно, тихо и прохладно.'],
+      lvl: 'Уровень {n}', pts: '{p} баллов', toNext: 'ещё {r} до уровня {n}',
+      levels: ['Первоклашка', 'Ученик', 'Хорошист', 'Отличник', 'Медалист', 'Профессор'],
+      streak: 'дней подряд', sessions: 'уроков', warmups: 'разминок',
+      week: 'Минуты учёбы за 7 дней', badgesTitle: 'Награды', got: 'получена', of: '{a} из {b}',
+      emptyTitle: 'Пока пусто', emptyText: 'Заверши первый урок — и здесь появятся твоя неделя, очки и награды.',
+      showSample: 'Показать пример', sampleBanner: 'Это пример, а не твои данные', hideSample: 'Скрыть пример',
+      days: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+      focusLen: 'Урок, мин', breakLen: 'Перемена, мин', errRange: 'Целое число от {a} до {b}',
+      runningNote: 'Новая длина начнётся со следующего урока.', sound: 'Звонок со звуком', soundHint: 'Короткий школьный звонок в конце урока и перемены.',
+      demo: 'Демо-режим', demoHint: 'Минута урока идёт за секунду, упражнения — в 5 раз быстрее. Для показа на защите проекта.',
+      save: 'Сохранить', saved: 'Сохранено', resetAll: 'Удалить все данные', resetAsk: 'Удалить очки, расписание и награды? Это нельзя отменить.',
+      resetYes: 'Да, удалить', cancel: 'Отмена', wiped: 'Данные удалены',
+      about: '«Перемена» — школьный проект, 11 класс. Прототип. Все данные хранятся только на этом устройстве и никуда не отправляются.',
+      tBreak: 'Звонок! Перемена', tLesson: 'Звонок на урок', tWarm: 'Разминка: +{p}', tBadge: 'Новая награда: {b}',
+      langBtn: 'EN', langAria: 'Switch to English',
+      badges: {
+        first: ['Первый звонок', 'Заверши первый урок'],
+        eyes: ['Зоркий глаз', '10 упражнений для глаз'],
+        back: ['Прямая спина', '10 упражнений для шеи и спины'],
+        streak: ['Три дня подряд', 'Учись 3 дня подряд'],
+        marathon: ['Марафон', '4 урока за один день'],
+      },
+    },
+    en: {
+      brand: 'Peremena', demoBadge: 'DEMO', settings: 'Settings', close: 'Close', reset: 'Start over', skipPhase: 'Skip',
+      tabTimer: 'Timer', tabWarm: 'Warm-up', tabSleep: 'Sleep', tabProgress: 'Progress', tabsLabel: 'Sections',
+      lessonN: 'Lesson {n}', breakN: 'Break after lesson {n}', todayMin: 'Today {m} min',
+      phaseFocus: 'Lesson', phaseBreak: 'Break!', subFocus: 'until the bell', subBreak: 'until class',
+      start: 'Start lesson', pause: 'Pause', resume: 'Resume', startBreak: 'Start break',
+      presetsLabel: 'Lesson and break length', p45: 'like school', p25: 'pomodoro', p15: 'easy start',
+      customNote: 'Custom: {f} min lesson, {b} min break',
+      breakTitle: 'Break time. Move a little',
+      breakText: '4 exercises, 2–3 minutes: eyes, neck, back and breathing. Up to +30 points.',
+      startWarm: 'Start warm-up',
+      focusHint: 'Put your phone away. When the bell rings, Peremena will suggest a short warm-up.',
+      ttTitle: "Today's timetable",
+      ttEmpty: 'Your lessons will show up here: when, how long, and whether you warmed up.',
+      ttMin: '{m} min', warmYes: 'warm-up', warmNo: 'no warm-up',
+      quickLabel: 'For your break', quickTitle: 'Quick warm-up',
+      quickSub: '4 exercises, 2–3 minutes: eyes, neck, back and breathing. A new set every time.',
+      libTitle: 'All exercises', sec: '{s} s',
+      safety: 'If an exercise hurts or you feel dizzy, stop.',
+      stepOf: '{i} of {n}', skip: 'Skip', finishTitle: 'Warm-up done!',
+      finishText: 'Eyes rested, back stretched. Ready for the next lesson.',
+      finishSingle: 'Exercise done. Keep it up!', toTimer: 'Back to timer', again: 'One more',
+      inhale: 'In', hold: 'Hold', exhale: 'Out',
+      cats: { eyes: 'Eyes', neck: 'Neck', back: 'Back', move: 'Move', breath: 'Breathing' },
+      sleepTitle: 'When should I go to bed?', wakeLabel: 'I wake up at', wakeErr: 'Enter your wake-up time, for example 07:00.',
+      hrs: '{h} h of sleep', bedAt: 'go to bed at', best: 'best', minNorm: 'lower limit', maxNorm: 'upper limit',
+      sleepNote: 'Includes 15 minutes to fall asleep. Teens aged 13–18 need 8–10 hours of sleep.', sleepSrc: 'Source: AASM',
+      nowTitle: 'If you go to bed right now', nowText: 'Set your alarm for {t9} to sleep 9 hours, or at least {t8} for 8 hours.',
+      tipsTitle: 'To fall asleep faster',
+      tips: ['Put your phone and laptop away 30–60 minutes before bed.', 'Go to bed and wake up at the same time, even on weekends.', 'No coffee, strong tea or energy drinks after lunch.', 'Keep your bedroom dark, quiet and cool.'],
+      lvl: 'Level {n}', pts: '{p} points', toNext: '{r} more to level {n}',
+      levels: ['Rookie', 'Student', 'Good student', 'Top student', 'Medalist', 'Professor'],
+      streak: 'day streak', sessions: 'lessons', warmups: 'warm-ups',
+      week: 'Study minutes, last 7 days', badgesTitle: 'Badges', got: 'earned', of: '{a} of {b}',
+      emptyTitle: 'Nothing here yet', emptyText: 'Finish your first lesson to see your week, points and badges.',
+      showSample: 'Show an example', sampleBanner: 'This is an example, not your data', hideSample: 'Hide example',
+      days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      focusLen: 'Lesson, min', breakLen: 'Break, min', errRange: 'Whole number from {a} to {b}',
+      runningNote: 'The new length starts with the next lesson.', sound: 'Bell sound', soundHint: 'A short school bell at the end of each lesson and break.',
+      demo: 'Demo mode', demoHint: 'A lesson minute runs in one second, exercises 5× faster. For presenting the project.',
+      save: 'Save', saved: 'Saved', resetAll: 'Delete all data', resetAsk: 'Delete points, timetable and badges? This cannot be undone.',
+      resetYes: 'Yes, delete', cancel: 'Cancel', wiped: 'Data deleted',
+      about: 'Peremena ("school break" in Russian) is an 11th-grade school project. Prototype. All data stays on this device and is never sent anywhere.',
+      tBreak: 'Bell! Break time', tLesson: 'Bell! Back to class', tWarm: 'Warm-up: +{p}', tBadge: 'New badge: {b}',
+      langBtn: 'RU', langAria: 'Переключить на русский',
+      badges: {
+        first: ['First bell', 'Finish your first lesson'],
+        eyes: ['Eagle eye', '10 eye exercises'],
+        back: ['Straight back', '10 neck and back exercises'],
+        streak: ['Three in a row', 'Study 3 days in a row'],
+        marathon: ['Marathon', '4 lessons in one day'],
+      },
+    },
+  };
+
+  /* ================= Exercises ================= */
+  const FIG = {
+    head: '<circle cx="60" cy="30" r="13"/>',
+    body: '<path d="M60 43V82"/>',
+    shoulders: '<path d="M42 52H78"/>',
+    armsDown: '<path d="M42 52L36 78M78 52L84 78"/>',
+    legs: '<path d="M60 82L48 108M60 82L72 108"/>',
+  };
+  const DOODLES = {
+    far: '<path d="M8 60Q28 42 48 60Q28 78 8 60Z"/><circle class="fill" cx="28" cy="60" r="5"/><path class="a-dash" d="M54 60H90"/><path d="M90 76L102 54L114 76Z"/><circle cx="108" cy="40" r="5" class="faint"/>',
+    blink: '<g class="a-blink"><path d="M14 60Q60 22 106 60Q60 98 14 60Z"/><circle cx="60" cy="60" r="15"/><circle class="fill" cx="60" cy="60" r="6"/></g>',
+    nearfar: '<path d="M6 60Q20 48 34 60Q20 72 6 60Z"/><circle class="fill" cx="20" cy="60" r="4"/><path d="M50 74V50" style="stroke-width:6"/><path d="M88 76L100 56L112 76Z"/><circle class="a-near" cx="50" cy="62" r="16"/><circle class="a-far" cx="100" cy="66" r="18"/>',
+    tilt: '<g class="a-tilt">' + FIG.head + '</g>' + FIG.body + FIG.shoulders + FIG.armsDown + FIG.legs,
+    chin: '<g class="a-chin">' + FIG.head + '<path d="M70 31h5"/></g>' + FIG.body + FIG.shoulders + FIG.armsDown + FIG.legs,
+    shoulders: FIG.head + FIG.body + '<g class="a-shrug">' + FIG.shoulders + FIG.armsDown + '</g>' + FIG.legs,
+    stretch: FIG.head + FIG.body + FIG.shoulders + '<path class="a-armL" d="M42 52L36 78"/><path class="a-armR" d="M78 52L84 78"/>' + FIG.legs,
+    walk: FIG.head + FIG.body + FIG.shoulders + '<path class="a-arm1" d="M42 52L36 78"/><path class="a-arm2" d="M78 52L84 78"/>' + '<path class="a-legL" d="M60 82L54 108"/><path class="a-legR" d="M60 82L66 108"/>',
+    box: '<rect x="20" y="20" width="80" height="80" rx="4" class="faint"/><circle class="a-lung" cx="60" cy="60" r="16"/><circle class="fill a-dot" cx="20" cy="20" r="6"/>',
+  };
+  const EX = {
+    far: { cat: 'eyes', sec: 20,
+      ru: ['Взгляд вдаль', 'Найди предмет хотя бы в 6 метрах: окно, дальнюю стену, дерево на улице. Смотри на него 20 секунд. Это правило 20-20-20: каждые 20 минут — 20 секунд вдаль.'],
+      en: ['Look far away', 'Find something at least 6 m (20 ft) away: a window, the far wall, a tree outside. Look at it for 20 seconds. That is the 20-20-20 rule.'] },
+    blink: { cat: 'eyes', sec: 15,
+      ru: ['Частое моргание', 'Легко и часто моргай 15 секунд. Перед экраном мы моргаем примерно вдвое реже, и глаза пересыхают.'],
+      en: ['Quick blinking', 'Blink lightly and often for 15 seconds. In front of a screen we blink about half as often, and our eyes dry out.'] },
+    nearfar: { cat: 'eyes', sec: 30,
+      ru: ['Ближе и дальше', 'Вытяни палец перед лицом. 3 секунды смотри на палец, потом 3 секунды на дальний предмет. Повторяй до конца таймера.'],
+      en: ['Near and far', 'Hold a finger in front of your face. Look at it for 3 seconds, then at something far away for 3 seconds. Repeat until the timer ends.'] },
+    tilt: { cat: 'neck', sec: 30,
+      ru: ['Наклоны головы', 'Медленно наклони голову к правому плечу и задержись на 5 секунд, потом к левому. Плечи опущены, без рывков.'],
+      en: ['Head tilts', 'Slowly tilt your head toward your right shoulder and hold for 5 seconds, then to the left. Shoulders down, no jerks.'] },
+    chin: { cat: 'neck', sec: 30,
+      ru: ['Подбородок назад', 'Сядь ровно. Плавно отведи подбородок назад, как будто делаешь «двойной подбородок», и задержись на 3 секунды. Повтори 6–8 раз. Помогает, если долго смотришь вниз в тетрадь или телефон.'],
+      en: ['Chin tucks', 'Sit up straight. Gently pull your chin back, like making a double chin, and hold for 3 seconds. Repeat 6–8 times. Helps after looking down at a notebook or phone.'] },
+    shoulders: { cat: 'back', sec: 30,
+      ru: ['Круги плечами', 'Сделай 10 медленных кругов плечами назад, потом 10 вперёд. Руки свободно висят.'],
+      en: ['Shoulder rolls', 'Make 10 slow shoulder rolls backward, then 10 forward. Let your arms hang loose.'] },
+    stretch: { cat: 'back', sec: 20,
+      ru: ['Потягивание вверх', 'Встань, сцепи пальцы в замок и вытяни руки над головой. Потянись вверх, как после сна, и задержись.'],
+      en: ['Reach up', 'Stand up, lace your fingers and stretch your arms overhead. Reach up like you just woke up, and hold.'] },
+    walk: { cat: 'move', sec: 60,
+      ru: ['Пройдись', 'Встань и походи по комнате минуту. Можно налить стакан воды и выпить его.'],
+      en: ['Take a walk', 'Stand up and walk around the room for a minute. Pour a glass of water and drink it.'] },
+    box: { cat: 'breath', sec: 48,
+      ru: ['Дыхание по квадрату', 'Вдох на 4 счёта, пауза на 4, выдох на 4, пауза на 4. Три круга. Успокаивает и помогает собраться перед следующим уроком.'],
+      en: ['Box breathing', 'Breathe in for 4, hold for 4, breathe out for 4, hold for 4. Three rounds. Calms you down before the next lesson.'] },
+  };
+  const WARM_SLOTS = [['far', 'blink', 'nearfar'], ['tilt', 'chin'], ['shoulders', 'stretch', 'walk'], ['box']];
+
+  const BADGES = [
+    { id: 'first', icon: '<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/>', need: 1, val: () => S.totals.sessions },
+    { id: 'eyes', icon: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', need: 10, val: () => S.ex.eyes },
+    { id: 'back', icon: '<circle cx="12" cy="4" r="2"/><path d="M12 7v9M7 10h10M12 16l-3 6M12 16l3 6"/>', need: 10, val: () => S.ex.neck + S.ex.back },
+    { id: 'streak', icon: '<path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4-1-6 1-9z"/>', need: 3, val: () => streak() },
+    { id: 'marathon', icon: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>', need: 4, val: () => Math.max(0, ...Object.values(S.days).map(d => d.sessions)) },
+  ];
+  const PRESETS = [[45, 10, 'p45'], [25, 5, 'p25'], [15, 3, 'p15']];
+
+  /* ================= Helpers ================= */
+  const $ = (s, r = document) => r.querySelector(s);
+  const pad = n => String(n).padStart(2, '0');
+  const dayKey = (d = new Date()) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const clock = ts => { const d = new Date(ts); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+  const mmss = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return pad(Math.floor(s / 60)) + ':' + pad(s % 60); };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const L = () => I18N[S.settings.lang] || I18N.ru;
+  function tr(key, vars) {
+    let s = L()[key];
+    if (s == null) s = I18N.ru[key] ?? key;
+    if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
+  /* ================= State ================= */
+  const KEY = 'peremena.v1';
+  function fresh() {
+    return {
+      v: 1,
+      settings: { focus: 25, brk: 5, sound: true, demo: false, lang: 'ru', wake: '07:00' },
+      points: 0, days: {}, today: { date: dayKey(), list: [] },
+      ex: { eyes: 0, neck: 0, back: 0, move: 0, breath: 0 },
+      totals: { sessions: 0, warmups: 0 }, badges: {}, lastWarm: [], timer: null,
+    };
+  }
+  function load() {
+    const base = fresh();
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return base;
+      const s = JSON.parse(raw);
+      return {
+        ...base, ...s,
+        settings: { ...base.settings, ...(s.settings || {}) },
+        ex: { ...base.ex, ...(s.ex || {}) },
+        totals: { ...base.totals, ...(s.totals || {}) },
+        today: s.today && Array.isArray(s.today.list) ? s.today : base.today,
+        days: s.days || {}, badges: s.badges || {},
+      };
+    } catch (e) { return base; }
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage blocked: keep working in memory */ } }
+  let S = load();
+
+  function rollDay() {
+    const k = dayKey();
+    if (S.today.date !== k) S.today = { date: k, list: [] };
+  }
+  function dayRec(k) { return S.days[k] || (S.days[k] = { focus: 0, sessions: 0, warmups: 0 }); }
+  function streak() {
+    const d = new Date();
+    if (!(S.days[dayKey(d)] && S.days[dayKey(d)].sessions)) d.setDate(d.getDate() - 1);
+    let n = 0;
+    while (S.days[dayKey(d)] && S.days[dayKey(d)].sessions > 0) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  function addPoints(p) { S.points += p; }
+  function checkBadges() {
+    for (const b of BADGES) {
+      if (!S.badges[b.id] && b.val() >= b.need) {
+        S.badges[b.id] = Date.now();
+        toast(tr('tBadge', { b: L().badges[b.id][0] }));
+      }
+    }
+  }
+
+  /* ================= Sound ================= */
+  let actx = null;
+  function unlockAudio() {
+    try {
+      if (!actx) { const C = window.AudioContext || window.webkitAudioContext; if (C) actx = new C(); }
+      if (actx && actx.state === 'suspended') actx.resume();
+    } catch (e) { actx = null; }
+  }
+  function bell(kind) {
+    try { if (navigator.vibrate) navigator.vibrate(kind === 'tick' ? 60 : [200, 100, 200]); } catch (e) { /* not supported */ }
+    if (!S.settings.sound || !actx) return;
+    try {
+      const n = kind === 'long' ? 14 : kind === 'short' ? 6 : 1;
+      const t0 = actx.currentTime + 0.02;
+      for (let i = 0; i < n; i++) {
+        const o = actx.createOscillator(), g = actx.createGain(), t = t0 + i * 0.085;
+        o.type = 'triangle';
+        o.frequency.value = kind === 'tick' ? 880 : (i % 2 ? 1320 : 1050);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.22, t + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + (kind === 'tick' ? 0.25 : 0.08));
+        o.connect(g).connect(actx.destination);
+        o.start(t); o.stop(t + 0.3);
+      }
+    } catch (e) { /* audio unavailable */ }
+  }
+  let wakeLock = null;
+  function holdScreen(on) {
+    try {
+      if (on && !wakeLock && navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { wakeLock = l; }).catch(() => {});
+      if (!on && wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+    } catch (e) { wakeLock = null; }
+  }
+
+  /* ================= Timer ================= */
+  const unit = () => (S.settings.demo ? 1000 : 60000);
+  const minsOf = phase => (phase === 'focus' ? S.settings.focus : S.settings.brk);
+  function setPhase(phase, run) {
+    const u = unit(), dur = minsOf(phase) * u;
+    const now = Date.now();
+    S.timer = { phase, running: !!run, dur, unit: u, remain: dur, endAt: run ? now + dur : 0, mins: minsOf(phase), startedAt: run ? now : 0 };
+    holdScreen(!!run);
+    save();
+  }
+  function validTimer() {
+    const t = S.timer;
+    return t && (t.phase === 'focus' || t.phase === 'break') && t.dur > 0 && isFinite(t.remain);
+  }
+  if (!validTimer()) setPhase('focus', false);
+  const remaining = () => (S.timer.running ? Math.max(0, S.timer.endAt - Date.now()) : S.timer.remain);
+  // In demo mode a lesson minute lasts one real second; show it as lesson time so 25:00 still reads 25:00.
+  const shown = r => r * (60000 / (S.timer.unit || unit()));
+
+  function startPause() {
+    unlockAudio();
+    const t = S.timer, now = Date.now();
+    if (t.running) {
+      t.remain = Math.max(0, t.endAt - now);
+      t.running = false;
+      holdScreen(false);
+    } else {
+      if (!t.startedAt) t.startedAt = now;
+      t.endAt = now + t.remain;
+      t.running = true;
+      holdScreen(true);
+    }
+    save(); renderTimer();
+  }
+  function resetPhase() { setPhase(S.timer.phase, false); renderTimer(); }
+  function skipPhase() { unlockAudio(); setPhase(S.timer.phase === 'focus' ? 'break' : 'focus', false); renderTimer(); }
+
+  function complete() {
+    const t = S.timer, now = Date.now();
+    if (t.phase === 'focus') {
+      recordSession(t.startedAt || t.endAt - t.dur, t.endAt, t.mins);
+      const late = now - t.endAt > minsOf('break') * unit();
+      if (late) { setPhase('focus', false); }
+      else {
+        bell('long'); stamp('+10'); toast(tr('tBreak'));
+        setPhase('break', true);
+      }
+    } else {
+      if (now - t.endAt < 60000) { bell('short'); toast(tr('tLesson')); }
+      setPhase('focus', false);
+    }
+    renderTimer(); renderProgress();
+  }
+  function recordSession(start, end, mins) {
+    rollDay();
+    const d = dayRec(dayKey(new Date(end)));
+    d.focus += mins; d.sessions += 1;
+    S.totals.sessions += 1;
+    S.today.list.push({ s: start, e: end, m: mins, w: false });
+    addPoints(10);
+    checkBadges();
+    save();
+  }
+
+  /* ================= Warm-up player ================= */
+  let P = null;
+  function pickWarmup() {
+    const last = S.lastWarm || [];
+    const ids = WARM_SLOTS.map(slot => {
+      const pool = slot.length > 1 ? slot.filter(id => !last.includes(id)) : slot;
+      const from = pool.length ? pool : slot;
+      return from[Math.floor(Math.random() * from.length)];
+    });
+    S.lastWarm = ids;
+    return ids;
+  }
+  function startWarmup(ids, single) {
+    unlockAudio();
+    P = { ids, i: 0, marks: [], gained: 0, single: !!single, finished: false };
+    beginExercise();
+    go('warmup');
+  }
+  function beginExercise() {
+    const ex = EX[P.ids[P.i]];
+    P.scale = S.settings.demo ? 5 : 1;
+    P.dur = ex.sec * 1000 / P.scale; P.remain = P.dur; P.endAt = Date.now() + P.dur; P.running = true;
+    renderPlayer();
+  }
+  function exRemaining() { return P.running ? Math.max(0, P.endAt - Date.now()) : P.remain; }
+  function playerPause() {
+    if (P.running) { P.remain = exRemaining(); P.running = false; }
+    else { P.endAt = Date.now() + P.remain; P.running = true; }
+    renderPlayer();
+  }
+  function finishExercise(done) {
+    const id = P.ids[P.i];
+    P.marks[P.i] = done ? 'done' : 'skip';
+    if (done) { S.ex[EX[id].cat] += 1; addPoints(5); P.gained += 5; bell('tick'); }
+    P.i += 1;
+    if (P.i >= P.ids.length) endWarmup(); else beginExercise();
+    save();
+  }
+  function endWarmup() {
+    P.running = false; P.finished = true;
+    const done = P.marks.filter(m => m === 'done').length;
+    if (!P.single && done === P.ids.length) { addPoints(10); P.gained += 10; }
+    if (!P.single && done > 0) {
+      rollDay();
+      S.totals.warmups += 1;
+      dayRec(dayKey()).warmups += 1;
+      const last = S.today.list[S.today.list.length - 1];
+      if (last) last.w = true;
+    }
+    if (P.gained) toast(tr('tWarm', { p: P.gained }));
+    checkBadges();
+    save();
+    renderPlayer(); renderTimer(); renderProgress();
+  }
+  function closePlayer() { P = null; renderWarmup(); }
+
+  /* ================= Rendering ================= */
+  const RING_C = 2 * Math.PI * 112;
+  function buildTicks() {
+    let s = '';
+    for (let i = 0; i < 60; i++) {
+      const a = (i / 60) * 2 * Math.PI, long = i % 5 === 0;
+      const r1 = 124, r2 = long ? 117 : 121;
+      s += '<line x1="' + (130 + r1 * Math.sin(a)).toFixed(1) + '" y1="' + (130 - r1 * Math.cos(a)).toFixed(1) +
+        '" x2="' + (130 + r2 * Math.sin(a)).toFixed(1) + '" y2="' + (130 - r2 * Math.cos(a)).toFixed(1) +
+        '" stroke-width="' + (long ? 2 : 1) + '"/>';
+    }
+    $('#ticks').innerHTML = s;
+    const ring = $('#ring');
+    ring.style.strokeDasharray = RING_C.toFixed(1);
+  }
+
+  function renderStatic() {
+    const l = S.settings.lang;
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = tr(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', tr(el.dataset.i18nAria)); });
+    $('.tabs').setAttribute('aria-label', tr('tabsLabel'));
+    const lb = $('#langBtn');
+    lb.textContent = tr('langBtn');
+    lb.setAttribute('aria-label', tr('langAria'));
+    $('#demoPill').hidden = !S.settings.demo;
+  }
+
+  function renderTimer() {
+    rollDay();
+    const t = S.timer, focus = t.phase === 'focus';
+    $('#app').dataset.phase = t.phase;
+    const n = S.today.list.length;
+    $('#lessonChip').textContent = focus ? tr('lessonN', { n: n + 1 }) : tr('breakN', { n: Math.max(1, n) });
+    $('#todayMin').textContent = tr('todayMin', { m: S.today.list.reduce((a, x) => a + x.m, 0) });
+    $('#phaseLabel').textContent = focus ? tr('phaseFocus') : tr('phaseBreak');
+    $('#subLabel').textContent = focus ? tr('subFocus') : tr('subBreak');
+    const untouched = !t.running && t.remain === t.dur;
+    $('#startBtn').textContent = t.running ? tr('pause') : untouched ? (focus ? tr('start') : tr('startBreak')) : tr('resume');
+    $('#breakCard').hidden = focus;
+    $('#focusHint').hidden = !(focus && n === 0);
+
+    const custom = !PRESETS.some(([f, b]) => f === S.settings.focus && b === S.settings.brk);
+    $('#presets').innerHTML = PRESETS.map(([f, b, k]) =>
+      '<button class="preset" type="button" data-f="' + f + '" data-b="' + b + '" aria-pressed="' + (f === S.settings.focus && b === S.settings.brk) + '"' +
+      (t.running ? ' disabled' : '') + '><b>' + f + ' / ' + b + '</b><span>' + esc(tr(k)) + '</span></button>').join('');
+    const note = $('#customNote');
+    note.hidden = !custom;
+    if (custom) note.textContent = tr('customNote', { f: S.settings.focus, b: S.settings.brk });
+
+    const list = S.today.list;
+    $('#ttEmpty').hidden = list.length > 0;
+    $('#timetable').innerHTML = list.map((x, i) =>
+      '<li><span class="n">' + (i + 1) + '</span><span class="when">' + clock(x.s) + '–' + clock(x.e) +
+      '<small>' + esc(tr('ttMin', { m: x.m })) + '</small></span><span class="pill' + (x.w ? '' : ' off') + '">' +
+      esc(x.w ? tr('warmYes') : tr('warmNo')) + '</span></li>').join('');
+    renderTimerLive();
+  }
+  function renderTimerLive() {
+    const t = S.timer, r = remaining();
+    $('#timeLabel').textContent = mmss(shown(r));
+    const frac = t.dur ? 1 - r / t.dur : 0;
+    $('#ring').style.strokeDashoffset = (RING_C * (1 - frac)).toFixed(1);
+    document.title = t.running ? mmss(shown(r)) + ' · ' + (t.phase === 'focus' ? tr('phaseFocus') : tr('phaseBreak').replace('!', '')) + ' — ' + tr('brand') : tr('brand');
+  }
+
+  function doodle(id, paused, k) {
+    return '<div class="doodle' + (paused ? ' paused' : '') + '"' + (k > 1 ? ' style="--k:' + k + '"' : '') + ' aria-hidden="true"><svg viewBox="0 0 120 120">' + DOODLES[id] + '</svg></div>';
+  }
+  function renderWarmup() {
+    $('#playerBox').hidden = !P;
+    $('#warmHome').hidden = !!P;
+    if (P) { renderPlayer(); return; }
+    $('#library').innerHTML = Object.keys(EX).map(id => {
+      const ex = EX[id], txt = ex[S.settings.lang] || ex.ru;
+      return '<button class="ex-card" type="button" data-ex="' + id + '"><span class="label">' + esc(L().cats[ex.cat]) +
+        '</span><b>' + esc(txt[0]) + '</b><span>' + esc(tr('sec', { s: ex.sec })) + '</span></button>';
+    }).join('');
+  }
+  function renderPlayer() {
+    if (!P) return;
+    const box = $('#playerBox');
+    box.hidden = false; $('#warmHome').hidden = true;
+    const dots = P.ids.length > 1 ? '<div class="dots" aria-hidden="true">' + P.ids.map((_, i) =>
+      '<i class="' + (P.marks[i] || (i === P.i && !P.finished ? 'cur' : '')) + '"></i>').join('') + '</div>' : '';
+    if (P.finished) {
+      box.innerHTML = '<div class="panel finish">' + dots +
+        '<span class="mark">+' + P.gained + '</span><h2>' + esc(P.single ? tr('finishSingle') : tr('finishTitle')) + '</h2>' +
+        (P.single ? '' : '<p class="muted">' + esc(tr('finishText')) + '</p>') +
+        '<div class="row2"><button class="btn primary" type="button" id="pToTimer">' + esc(tr('toTimer')) + '</button>' +
+        '<button class="btn" type="button" id="pAgain">' + esc(tr('again')) + '</button></div></div>';
+      return;
+    }
+    const id = P.ids[P.i], ex = EX[id], txt = ex[S.settings.lang] || ex.ru;
+    box.innerHTML = '<div class="panel">' + dots +
+      '<div class="player-head"><span class="cat">' + esc(L().cats[ex.cat]) + '</span>' +
+      (P.ids.length > 1 ? '<span class="muted small">' + esc(tr('stepOf', { i: P.i + 1, n: P.ids.length })) + '</span>' : '') + '</div>' +
+      doodle(id, !P.running, P.scale) +
+      '<p class="ex-name">' + esc(txt[0]) + '</p>' +
+      '<div class="ex-clock"><span class="ex-time" id="exTime">' + mmss(exRemaining() * P.scale) + '</span>' +
+      (id === 'box' ? '<span class="breath-phase" id="breathPhase"></span>' : '') + '</div>' +
+      '<div class="bar"><i id="exBar"></i></div>' +
+      '<p class="ex-how">' + esc(txt[1]) + '</p>' +
+      '<div class="row2"><button class="btn" type="button" id="pPause">' + esc(P.running ? tr('pause') : tr('resume')) + '</button>' +
+      '<button class="btn" type="button" id="pSkip">' + esc(tr('skip')) + '</button></div>' +
+      '<p class="safety">' + esc(tr('safety')) + '</p></div>';
+    updatePlayerLive();
+  }
+  function updatePlayerLive() {
+    if (!P || P.finished) return;
+    const r = exRemaining(), el = $('#exTime');
+    if (!el) return;
+    el.textContent = mmss(r * P.scale);
+    $('#exBar').style.width = ((1 - r / P.dur) * 100).toFixed(1) + '%';
+    const bp = $('#breathPhase');
+    if (bp) {
+      const step = Math.floor(((P.dur - r) * P.scale / 1000) % 16 / 4);
+      bp.textContent = [tr('inhale'), tr('hold'), tr('exhale'), tr('hold')][step];
+    }
+  }
+
+  function renderSleep() {
+    const input = $('#wakeInput');
+    if (document.activeElement !== input) input.value = S.settings.wake;
+    const v = input.value, err = $('#wakeErr');
+    const ok = /^\d{2}:\d{2}$/.test(v);
+    err.hidden = ok;
+    if (!ok) { err.textContent = tr('wakeErr'); $('#beds').innerHTML = ''; }
+    else {
+      const [h, m] = v.split(':').map(Number), wake = h * 60 + m;
+      const rows = [[9, 'best'], [8, 'minNorm'], [10, 'maxNorm']];
+      $('#beds').innerHTML = rows.map(([hrs, tag]) => {
+        const b = (((wake - hrs * 60 - 15) % 1440) + 1440) % 1440;
+        return '<li class="' + (tag === 'best' ? 'best' : '') + '"><span class="bt">' + pad(Math.floor(b / 60)) + ':' + pad(b % 60) + '</span>' +
+          '<span class="hrs">' + esc(tr('bedAt')) + ' · ' + esc(tr('hrs', { h: hrs })) + '</span><span class="tag">' + esc(tr(tag)) + '</span></li>';
+      }).join('');
+    }
+    const now = Date.now();
+    $('#nowText').textContent = tr('nowText', { t9: clock(now + (15 + 540) * 60000), t8: clock(now + (15 + 480) * 60000) });
+    $('#tips').innerHTML = L().tips.map(t => '<li>' + esc(t) + '</li>').join('');
+  }
+
+  let showSample = false;
+  const SAMPLE = { points: 245, streak: 4, sessions: 17, warmups: 12, week: [50, 75, 0, 100, 125, 70, 45], badges: ['first', 'eyes', 'streak', 'marathon'], prog: { first: 1, eyes: 10, back: 7, streak: 4, marathon: 5 } };
+  function renderProgress() {
+    const box = $('#progressBox');
+    const real = S.totals.sessions > 0 || S.points > 0;
+    if (!real && !showSample) {
+      box.innerHTML = '<div class="panel empty">' + doodle('stretch', false) + '<h2>' + esc(tr('emptyTitle')) + '</h2><p class="muted">' +
+        esc(tr('emptyText')) + '</p><button class="btn block" type="button" id="sampleBtn" style="margin-top:14px">' + esc(tr('showSample')) + '</button></div>';
+      return;
+    }
+    const smp = showSample && !real;
+    const points = smp ? SAMPLE.points : S.points;
+    const lvl = Math.floor(points / 100) + 1, into = points % 100;
+    const names = L().levels, lname = names[Math.min(lvl, names.length) - 1];
+    const today = new Date(), keys = [];
+    for (let i = 6; i >= 0; i--) { const d = new Date(today); d.setDate(d.getDate() - i); keys.push(d); }
+    const vals = smp ? SAMPLE.week : keys.map(d => (S.days[dayKey(d)] || {}).focus || 0);
+    const max = Math.max(60, ...vals);
+    const week = keys.map((d, i) =>
+      '<div class="wcol' + (i === 6 ? ' today' : '') + '"><span class="v">' + vals[i] + '</span><span class="b" style="height:' +
+      Math.round((vals[i] / max) * 120) + 'px"></span><span class="d">' + esc(L().days[d.getDay()]) + '</span></div>').join('');
+    const badges = BADGES.map(b => {
+      const have = smp ? SAMPLE.badges.includes(b.id) : !!S.badges[b.id];
+      const v = Math.min(b.need, smp ? SAMPLE.prog[b.id] : b.val());
+      const [name, desc] = L().badges[b.id];
+      return '<li class="' + (have ? '' : 'locked') + '"><span class="bicon"><svg viewBox="0 0 24 24" aria-hidden="true">' + b.icon + '</svg></span>' +
+        '<span><b>' + esc(name) + '</b><small>' + esc(desc) + '</small></span><span class="st">' + esc(have ? tr('got') : tr('of', { a: v, b: b.need })) + '</span></li>';
+    }).join('');
+    box.innerHTML =
+      (smp ? '<div class="sample-banner"><span>' + esc(tr('sampleBanner')) + '</span><button type="button" id="hideSampleBtn">' + esc(tr('hideSample')) + '</button></div>' : '') +
+      '<div class="panel"><div class="level"><span class="grade" aria-hidden="true">' + lvl + '</span><div>' +
+      '<span class="label">' + esc(tr('lvl', { n: lvl })) + '</span><div class="level-name">' + esc(lname) + '</div>' +
+      '<div class="muted small">' + esc(tr('pts', { p: points })) + ' · ' + esc(tr('toNext', { r: 100 - into, n: lvl + 1 })) + '</div></div></div>' +
+      '<div class="bar" style="margin-top:12px"><i style="width:' + into + '%"></i></div></div>' +
+      '<div class="stats"><div class="stat"><b>' + (smp ? SAMPLE.streak : streak()) + '</b><span>' + esc(tr('streak')) + '</span></div>' +
+      '<div class="stat"><b>' + (smp ? SAMPLE.sessions : S.totals.sessions) + '</b><span>' + esc(tr('sessions')) + '</span></div>' +
+      '<div class="stat"><b>' + (smp ? SAMPLE.warmups : S.totals.warmups) + '</b><span>' + esc(tr('warmups')) + '</span></div></div>' +
+      '<div class="panel"><h2>' + esc(tr('week')) + '</h2><div class="week">' + week + '</div></div>' +
+      '<div class="panel"><h2>' + esc(tr('badgesTitle')) + '</h2><ul class="badges">' + badges + '</ul></div>';
+  }
+
+  /* ================= Navigation ================= */
+  const TABS = ['timer', 'warmup', 'sleep', 'progress'];
+  let tab = 'timer';
+  function go(name) {
+    tab = TABS.includes(name) ? name : 'timer';
+    TABS.forEach(t => {
+      $('#view-' + t).hidden = t !== tab;
+      const b = $('#tab-' + t);
+      b.setAttribute('aria-selected', String(t === tab));
+      b.tabIndex = t === tab ? 0 : -1;
+    });
+    if (tab === 'warmup') renderWarmup();
+    if (tab === 'sleep') renderSleep();
+    if (tab === 'progress') renderProgress();
+    try { history.replaceState(null, '', '#' + tab); } catch (e) { /* sandboxed */ }
+    window.scrollTo(0, 0);
+  }
+
+  /* ================= Toast & stamp ================= */
+  const queue = [];
+  let toasting = false;
+  function toast(msg) { queue.push(msg); if (!toasting) nextToast(); }
+  function nextToast() {
+    const el = $('#toast'), msg = queue.shift();
+    if (!msg) { toasting = false; el.classList.remove('show'); return; }
+    toasting = true;
+    el.textContent = msg; el.classList.add('show');
+    setTimeout(() => { el.classList.remove('show'); setTimeout(nextToast, 300); }, 2600);
+  }
+  function stamp(txt) {
+    const el = $('#stamp');
+    el.textContent = txt;
+    el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  }
+
+  /* ================= Settings ================= */
+  const dlg = $('#settings');
+  function openSettings() {
+    $('#focusInput').value = S.settings.focus;
+    $('#breakInput').value = S.settings.brk;
+    $('#soundInput').checked = S.settings.sound;
+    $('#demoInput').checked = S.settings.demo;
+    $('#runningNote').hidden = !S.timer.running;
+    ['focus', 'break'].forEach(k => { $('#' + k + 'Err').hidden = true; $('#' + k + 'Input').removeAttribute('aria-invalid'); });
+    $('#confirmBox').hidden = true;
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  }
+  function closeSettings() { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
+  function readInt(id, lo, hi, errId) {
+    const el = $('#' + id), raw = String(el.value).trim(), err = $('#' + errId);
+    const ok = /^\d+$/.test(raw) && +raw >= lo && +raw <= hi;
+    err.hidden = ok;
+    if (ok) el.removeAttribute('aria-invalid');
+    else { err.textContent = tr('errRange', { a: lo, b: hi }); el.setAttribute('aria-invalid', 'true'); }
+    return ok ? +raw : null;
+  }
+  function applyDurations(f, b) {
+    S.settings.focus = f; S.settings.brk = b;
+    if (!S.timer.running && S.timer.remain === S.timer.dur) setPhase(S.timer.phase, false);
+  }
+
+  /* ================= Events ================= */
+  $('#startBtn').addEventListener('click', startPause);
+  $('#resetBtn').addEventListener('click', resetPhase);
+  $('#skipBtn').addEventListener('click', skipPhase);
+  $('#presets').addEventListener('click', e => {
+    const b = e.target.closest('.preset');
+    if (!b || b.disabled) return;
+    S.settings.focus = +b.dataset.f; S.settings.brk = +b.dataset.b;
+    setPhase(S.timer.phase, false);
+    renderTimer();
+  });
+  $('#breakWarmBtn').addEventListener('click', () => startWarmup(pickWarmup(), false));
+  $('#quickBtn').addEventListener('click', () => startWarmup(pickWarmup(), false));
+  $('#library').addEventListener('click', e => { const c = e.target.closest('.ex-card'); if (c) startWarmup([c.dataset.ex], true); });
+  $('#playerBox').addEventListener('click', e => {
+    const id = e.target.closest('button') && e.target.closest('button').id;
+    if (id === 'pPause') playerPause();
+    else if (id === 'pSkip') finishExercise(false);
+    else if (id === 'pToTimer') { closePlayer(); go('timer'); }
+    else if (id === 'pAgain') { const single = P.single, ids = P.ids; P = null; startWarmup(single ? ids : pickWarmup(), single); }
+  });
+  $('#wakeInput').addEventListener('input', e => {
+    if (/^\d{2}:\d{2}$/.test(e.target.value)) { S.settings.wake = e.target.value; save(); }
+    renderSleep();
+  });
+  $('#progressBox').addEventListener('click', e => {
+    if (e.target.id === 'sampleBtn') { showSample = true; renderProgress(); }
+    if (e.target.id === 'hideSampleBtn') { showSample = false; renderProgress(); }
+  });
+  document.querySelector('.tabs-inner').addEventListener('click', e => { const b = e.target.closest('.tab'); if (b) go(b.dataset.tab); });
+  document.querySelector('.tabs-inner').addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const i = TABS.indexOf(tab), n = TABS[(i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length];
+    go(n); $('#tab-' + n).focus();
+  });
+  $('#langBtn').addEventListener('click', () => {
+    S.settings.lang = S.settings.lang === 'ru' ? 'en' : 'ru';
+    save(); renderAll();
+  });
+  $('#settingsBtn').addEventListener('click', openSettings);
+  $('#closeSettings').addEventListener('click', closeSettings);
+  $('#settingsForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = readInt('focusInput', 1, 120, 'focusErr');
+    const b = readInt('breakInput', 1, 30, 'breakErr');
+    if (f == null || b == null) return;
+    const demoChanged = S.settings.demo !== $('#demoInput').checked;
+    S.settings.sound = $('#soundInput').checked;
+    S.settings.demo = $('#demoInput').checked;
+    applyDurations(f, b);
+    if (demoChanged && !S.timer.running) setPhase(S.timer.phase, false);
+    save(); closeSettings(); renderAll(); toast(tr('saved'));
+  });
+  $('#resetAllBtn').addEventListener('click', () => { $('#confirmBox').hidden = false; $('#confirmYes').focus(); });
+  $('#confirmNo').addEventListener('click', () => { $('#confirmBox').hidden = true; });
+  $('#confirmYes').addEventListener('click', () => {
+    const keep = { lang: S.settings.lang, sound: S.settings.sound, demo: S.settings.demo };
+    S = fresh(); Object.assign(S.settings, keep);
+    setPhase('focus', false); P = null; showSample = false;
+    save(); closeSettings(); renderAll(); toast(tr('wiped'));
+  });
+
+  function tick() {
+    rollDay();
+    if (S.timer.running && Date.now() >= S.timer.endAt) complete();
+    renderTimerLive();
+    if (P && P.running && !P.finished) {
+      if (Date.now() >= P.endAt) finishExercise(true);
+      else updatePlayerLive();
+    }
+  }
+  function renderAll() { renderStatic(); renderTimer(); renderWarmup(); renderSleep(); renderProgress(); }
+
+  buildTicks();
+  renderAll();
+  const start = (location.hash || '').slice(1);
+  go(TABS.includes(start) ? start : 'timer');
+  tick();
+  setInterval(tick, 250);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+})();
+</script>
+
+</body>
+</html>
