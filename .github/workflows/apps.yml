@@ -1,6 +1,7 @@
 # Builds the GeneGuard AI apps: Android (APK) and Windows (installer + portable .exe).
 # Every push that changes geneguard-ai/ builds both and keeps them as run artifacts.
-# Pushing a tag like v1.0.0 also publishes them as a GitHub release with download links.
+# Pushing a tag like v1.0.0, or running the workflow by hand with "Publish a release" ticked,
+# also publishes them as a GitHub release with download links.
 
 name: Build apps (Android + Windows)
 
@@ -12,6 +13,11 @@ on:
       - 'geneguard-ai/**'
       - '.github/workflows/apps.yml'
   workflow_dispatch:
+    inputs:
+      release:
+        description: Publish a release (tag v + version from geneguard-ai/package.json)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -89,12 +95,13 @@ jobs:
 
   release:
     name: Publish release
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.release
     needs: [android, windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v5
       - uses: actions/download-artifact@v4
         with:
           path: apps
@@ -118,4 +125,9 @@ jobs:
 
           > GeneGuard AI is an educational decision-support prototype. It does not diagnose diseases, predict an individual's future with certainty, prescribe treatment, or replace a doctor or genetic counselor.
           NOTES
-          gh release create "$GITHUB_REF_NAME" apps/* --repo "$GITHUB_REPOSITORY" --title "GeneGuard AI $GITHUB_REF_NAME" --notes-file notes.md
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            tag="v$(node -p "require('./geneguard-ai/package.json').version")"
+          fi
+          gh release create "$tag" apps/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "GeneGuard AI $tag" --notes-file notes.md

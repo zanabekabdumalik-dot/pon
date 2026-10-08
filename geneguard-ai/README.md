@@ -334,7 +334,8 @@ GitHub при каждом изменении `geneguard-ai/`. Готовые ф
 git tag v1.0.1 && git push origin v1.0.1
 ```
 
-Workflow сам создаст релиз на странице **Releases**.
+Второй способ, без командной строки: **Actions** → **Build apps (Android + Windows)** → **Run workflow**,
+отметьте **Publish a release**. В обоих случаях workflow сам создаст релиз на странице **Releases**.
 
 **Особенности.** На Android нет печати и скачивания файлов из WebView, поэтому в отчёте остаётся кнопка
 **Copy report text**. Кнопка «Take a photo with the camera» открывает камеру. Системная кнопка «Назад»
