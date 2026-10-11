@@ -1,7 +1,7 @@
 {
   "title": "Фобия №2 из 100 — Талассофобия",
-  "voice": "ru_RU-denis-medium",
-  "length_scale": 0.95,
+  "voice": "ru_RU-ruslan-medium",
+  "length_scale": 1.07,
   "noise_scale": 0.6,
   "noise_w": 0.7,
   "voice_fx": "volume=-3dB,highpass=f=60,equalizer=f=140:t=q:w=1.0:g=3,equalizer=f=3000:t=q:w=1.5:g=-2,deesser=i=0.5,treble=g=-3:f=7000,acompressor=threshold=-20dB:ratio=2.5:attack=15:release=200:makeup=2",
