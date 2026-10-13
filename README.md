@@ -96,3 +96,31 @@ cd kosmos/video
 ```
 
 Нужны node, python3 с numpy, ffmpeg и Chromium (путь можно задать через `CHROMIUM=/path/to/chrome`).
+
+## Английская версия и хостинг (Event Horizon)
+
+Папка [`docs/`](docs/) — английская версия сайта, готовая для GitHub Pages: `index.html`, ролики с английскими
+титрами в `docs/video/` и пустой `.nojekyll`. Её собирает скрипт из русской страницы, так что правки вносятся
+в `kosmos/index.html`, а потом:
+
+```bash
+python3 kosmos/translate_en.py   # kosmos/index.html → docs/index.html (+ копирует ролики из kosmos/video/web/en)
+cd kosmos/video && ./build.sh --en   # пересобрать ролики с английскими титрами (out/en, web/en)
+```
+
+Полные английские ролики 1080×1920 для Shorts: `kosmos/video/out/en/`.
+
+### Как включить сайт
+
+1. GitHub → репозиторий `pon` → **Settings → Pages**.
+2. **Source: Deploy from a branch**, ветка `claude/gracious-carson-gyng1g`, папка **`/docs`** → **Save**.
+3. Через минуту-две сайт откроется по адресу `https://zanabekabdumalik-dot.github.io/pon/`.
+
+### Свой домен
+
+1. Купите домен у регистратора (Namecheap, Porkbun, Cloudflare Registrar и т. п.).
+2. В DNS домена добавьте четыре записи `A` для корня домена: `185.199.108.153`, `185.199.109.153`,
+   `185.199.110.153`, `185.199.111.153` и запись `CNAME` для `www` → `zanabekabdumalik-dot.github.io`.
+3. В **Settings → Pages → Custom domain** впишите домен, нажмите **Save**, после проверки DNS включите
+   **Enforce HTTPS**. GitHub сам добавит в `docs/` файл `CNAME`.
+

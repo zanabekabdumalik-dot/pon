@@ -3,7 +3,7 @@
 Вход:  build/v<N>.json — длительность и метки звуков, которые записал render.js
 Выход: build/v<N>-mix.wav (стерео, 44.1 кГц)
 
-    python3 audio.py 1
+    python3 audio.py 1        # для английской версии: python3 audio.py 1 en
 """
 import json
 import sys
@@ -211,8 +211,9 @@ def sparkle(mix, chords, total, every, level, start=1.0, stop=None):
         t += every * rng.uniform(0.8, 1.25)
 
 
-def build(vid):
-    info = json.loads((BUILD / f"v{vid}.json").read_text())
+def build(vid, lang="ru"):
+    tag = f"v{vid}" + ("" if lang == "ru" else f"-{lang}")
+    info = json.loads((BUILD / f"{tag}.json").read_text())
     total = info["dur"]
     n = int(total * SR)
     mix = np.zeros((2, n))
@@ -256,13 +257,13 @@ def build(vid):
     peak = np.max(np.abs(mix)) or 1
     mix = mix / peak * 0.89
     out = (np.clip(mix, -1, 1) * 32767).astype(np.int16).T
-    with wave.open(str(BUILD / f"v{vid}-mix.wav"), "wb") as w:
+    with wave.open(str(BUILD / f"{tag}-mix.wav"), "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
         w.setframerate(SR)
         w.writeframes(out.tobytes())
-    print(f"v{vid}-mix.wav: {total:.1f} с, {len(info['cues'])} меток")
+    print(f"{tag}-mix.wav: {total:.1f} с, {len(info['cues'])} меток")
 
 
 if __name__ == "__main__":
-    build(int(sys.argv[1]))
+    build(int(sys.argv[1]), sys.argv[2] if len(sys.argv) > 2 else "ru")

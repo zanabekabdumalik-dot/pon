@@ -1,7 +1,7 @@
 """Финальная сборка ролика: видео + звук, громкость −16 LUFS.
 Кроме полной версии 1080×1920 для YouTube Shorts делает лёгкую версию 720×1280 и обложку для сайта.
 
-    python3 mux.py 1
+    python3 mux.py 1        # английская версия: python3 mux.py 1 en → out/en/, web/en/
 """
 import json
 import re
@@ -29,23 +29,27 @@ def run(*args):
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *map(str, args)], check=True)
 
 
-def main(vid):
-    info = json.loads((BUILD / f"v{vid}.json").read_text())
-    name = f"kosmos-{vid:02d}-{info['slug']}"
-    OUT.mkdir(exist_ok=True)
-    WEB.mkdir(exist_ok=True)
-    i = loudness(BUILD / f"v{vid}-mix.wav")
+def main(vid, lang="ru"):
+    tag = f"v{vid}" + ("" if lang == "ru" else f"-{lang}")
+    info = json.loads((BUILD / f"{tag}.json").read_text())
+    prefix = "kosmos" if lang == "ru" else "event-horizon"
+    name = f"{prefix}-{vid:02d}-{info['slug']}"
+    out = OUT if lang == "ru" else OUT / lang
+    webdir = WEB if lang == "ru" else WEB / lang
+    out.mkdir(parents=True, exist_ok=True)
+    webdir.mkdir(parents=True, exist_ok=True)
+    i = loudness(BUILD / f"{tag}-mix.wav")
     af = f"volume={TARGET - i:.2f}dB,alimiter=limit=0.89:attack=2:release=60:level=false,aresample=48000"
-    full = OUT / f"{name}.mp4"
-    run("-i", BUILD / f"v{vid}.mp4", "-i", BUILD / f"v{vid}-mix.wav", "-map", "0:v", "-map", "1:a", "-c:v", "copy",
+    full = out / f"{name}.mp4"
+    run("-i", BUILD / f"{tag}.mp4", "-i", BUILD / f"{tag}-mix.wav", "-map", "0:v", "-map", "1:a", "-c:v", "copy",
         "-af", af, "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", full)
-    web = WEB / f"kosmos-{vid:02d}.mp4"
+    web = webdir / f"{prefix}-{vid:02d}.mp4"
     run("-i", full, "-vf", "scale=720:1280:flags=lanczos", "-c:v", "libx264", "-preset", "slow", "-crf", "26",
         "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", web)
-    run("-ss", POSTER_T[vid], "-i", full, "-frames:v", "1", "-vf", "scale=720:1280:flags=lanczos", "-q:v", "4", WEB / f"kosmos-{vid:02d}.jpg")
+    run("-ss", POSTER_T[vid], "-i", full, "-frames:v", "1", "-vf", "scale=720:1280:flags=lanczos", "-q:v", "4", webdir / f"{prefix}-{vid:02d}.jpg")
     print(f"{full.relative_to(HERE)}: {loudness(full):.1f} LUFS, {full.stat().st_size / 1e6:.1f} МБ; "
           f"{web.relative_to(HERE)}: {web.stat().st_size / 1e6:.1f} МБ")
 
 
 if __name__ == "__main__":
-    main(int(sys.argv[1]))
+    main(int(sys.argv[1]), sys.argv[2] if len(sys.argv) > 2 else "ru")

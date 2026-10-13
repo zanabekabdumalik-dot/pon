@@ -24,7 +24,7 @@
 // Три вертикальных ролика про космос (1080×1920, 30 к/с).
 // Кадр — функция времени: renderFrame(t) рисует момент t. Кадры рендерятся по порядку,
 // поэтому следы частиц (затухание прошлого кадра) получаются одинаковыми при каждой сборке.
-// Посмотреть в браузере: anim.html?v=1 (или 2, 3) через локальный сервер.
+// Посмотреть в браузере: anim.html?v=1 (или 2, 3; &lang=en — английские титры) через локальный сервер.
 const W = 1080, H = 1920, TAU = Math.PI * 2;
 const cv = document.getElementById('c');
 const ctx = cv.getContext('2d');
@@ -58,7 +58,8 @@ const PAL = (() => {
   }
   return out;
 })();
-let CUES = [];
+let CUES = [], LANG = 'ru';
+const L = (ru, en) => (LANG === 'en' ? en : ru);
 const cue = (t, type, v = 1) => CUES.push({ t: +t.toFixed(3), type, v });
 
 /* ---------- текст ---------- */
@@ -121,14 +122,14 @@ function captions(t, list) {
   for (const c of list) {
     if (t < c.a || t > c.b) continue;
     const kin = easeOut(inv(c.a, c.a + 0.35, t)), kout = inv(c.b - 0.3, c.b, t);
-    drawRich(c.s, 540, (c.y || 1330) + (1 - kin) * 26 - kout * 14, c.size || 62, kin * (1 - kout), c);
+    drawRich(Array.isArray(c.s) ? L(c.s[0], c.s[1]) : c.s, 540, (c.y || 1330) + (1 - kin) * 26 - kout * 14, c.size || 62, kin * (1 - kout), c);
   }
 }
 function brand(a = 0.6) {
   ctx.save();
   ctx.globalAlpha = a; ctx.font = `500 26px ${FM}`; ctx.letterSpacing = '6px';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = C.star;
-  ctx.fillText('ГОРИЗОНТ СОБЫТИЙ', 540, 150);
+  ctx.fillText(L('ГОРИЗОНТ СОБЫТИЙ', 'EVENT HORIZON'), 540, 150);
   ctx.restore();
 }
 function endCard(t, a) {
@@ -142,11 +143,11 @@ function endCard(t, a) {
   ctx.strokeStyle = C.disk; ctx.lineWidth = 3; circle(ctx, 540, 660, 64); ctx.stroke();
   glow(ctx, 540, 660, 110, '255,160,74', 0.25);
   ctx.font = `800 104px ${FD}`; ctx.letterSpacing = '-3px'; ctx.fillStyle = C.star;
-  ctx.fillText('ГОРИЗОНТ', 540, 900);
+  ctx.fillText(L('ГОРИЗОНТ', 'EVENT'), 540, 900);
   ctx.font = `italic 300 124px ${FL}`; ctx.letterSpacing = '0px'; ctx.fillStyle = C.hot;
-  ctx.fillText('событий', 540, 1030);
+  ctx.fillText(L('событий', 'horizon'), 540, 1030);
   ctx.font = `500 30px ${FM}`; ctx.letterSpacing = '3px'; ctx.fillStyle = C.dust;
-  ctx.fillText('чёрные дыры · кванты · космос', 540, 1140);
+  ctx.fillText(L('чёрные дыры · кванты · космос', 'black holes · quantum · cosmos'), 540, 1140);
   ctx.restore();
 }
 
@@ -277,15 +278,15 @@ function makeBH(seed, N, NS) {
 const V1 = (() => {
   let bh, lastTick;
   const CAPS = [
-    { a: 0.15, b: 3.9, s: 'Что будет, если [упасть] в чёрную дыру?', size: 76 },
-    { a: 4.0, b: 7.2, s: '[Sgr A*] — чёрная дыра в центре нашей Галактики' },
-    { a: 7.2, b: 10.4, s: 'Она в [4 миллиона] раз тяжелее Солнца' },
-    { a: 10.4, b: 13.4, s: 'Свет огибает её, поэтому диск виден [сверху и снизу]' },
-    { a: 13.4, b: 16.4, s: 'У горизонта [время замедляется]' },
-    { a: 16.4, b: 19.4, s: 'Час рядом с ней — это [7 лет] на Земле' },
-    { a: 19.4, b: 22.6, s: 'Маленькая дыра растянула бы тебя [в спагетти]' },
-    { a: 22.6, b: 25.4, s: 'А горизонт гиганта пересечёшь [и не заметишь]' },
-    { a: 25.7, b: 28.0, s: 'Но назад [дороги нет]', y: 960, size: 72, band: false }
+    { a: 0.15, b: 3.9, s: ['Что будет, если [упасть] в чёрную дыру?', 'What happens if you [fall] into a black hole?'], size: 76 },
+    { a: 4.0, b: 7.2, s: ['[Sgr A*] — чёрная дыра в центре нашей Галактики', '[Sgr A*] is the black hole at the center of our galaxy'] },
+    { a: 7.2, b: 10.4, s: ['Она в [4 миллиона] раз тяжелее Солнца', 'It is [4 million] times heavier than the Sun'] },
+    { a: 10.4, b: 13.4, s: ['Свет огибает её, поэтому диск виден [сверху и снизу]', 'Light bends around it, so the disk shows [above and below]'] },
+    { a: 13.4, b: 16.4, s: ['У горизонта [время замедляется]', 'Near the horizon, [time slows down]'] },
+    { a: 16.4, b: 19.4, s: ['Час рядом с ней — это [7 лет] на Земле', 'One hour next to it is [7 years] on Earth'] },
+    { a: 19.4, b: 22.6, s: ['Маленькая дыра растянула бы тебя [в спагетти]', 'A small black hole would stretch you [into spaghetti]'] },
+    { a: 22.6, b: 25.4, s: ['А горизонт гиганта пересечёшь [и не заметишь]', 'A giant one you could cross [without noticing]'] },
+    { a: 25.7, b: 28.0, s: ['Но назад [дороги нет]', 'But there is [no way back]'], y: 960, size: 72, band: false }
   ];
   const uAt = t => {
     if (t < 4) return lerp(21, 24, t / 4);
@@ -319,12 +320,12 @@ const V1 = (() => {
     if (f <= 0) { hand(760, 10 / 12 * TAU, 58, 8, C.star); hand(760, 0, 88, 5, C.quant); }
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.font = `500 28px ${FM}`;
-    ctx.fillStyle = C.disk; ctx.fillText('у горизонта', 320, 535);
-    ctx.fillStyle = C.quant; ctx.fillText('на Земле', 760, 535);
+    ctx.fillStyle = C.disk; ctx.fillText(L('у горизонта', 'near the horizon'), 320, 535);
+    ctx.fillStyle = C.quant; ctx.fillText(L('на Земле', 'on Earth'), 760, 535);
     ctx.font = `700 40px ${FD}`; ctx.fillStyle = C.star;
-    ctx.fillText(Math.floor(f * 60) + ' мин', 320, 578);
+    ctx.fillText(Math.floor(f * 60) + L(' мин', ' min'), 320, 578);
     const y = f * 7;
-    ctx.fillText(y < 0.95 ? Math.round(y * 365) + ' дн.' : y >= 6.95 ? '7 лет' : y.toFixed(1).replace('.', ',') + ' года', 760, 578);
+    ctx.fillText(y < 0.95 ? Math.round(y * 365) + L(' дн.', ' days') : y >= 6.95 ? L('7 лет', '7 years') : L(y.toFixed(1).replace('.', ',') + ' года', y.toFixed(1) + ' years'), 760, 578);
     ctx.restore();
     if (f > 0 && f < 1) { const tick = Math.floor(f * 30); if (tick !== lastTick) { lastTick = tick; cue(t, 'tick', 0.6); } }
   }
@@ -345,7 +346,7 @@ const V1 = (() => {
     run(22.7, 25.3, false);
   }
   return {
-    slug: 'chernaya-dyra', dur: 30, title: 'Что будет, если упасть в чёрную дыру',
+    slug: 'chernaya-dyra', slugEn: 'falling-into-a-black-hole', dur: 30, title: 'Что будет, если упасть в чёрную дыру', titleEn: 'What happens if you fall into a black hole',
     setup() { bh = makeBH(11, 6000, 1100); lastTick = -1; cue(0.1, 'pad'); cue(0.15, 'swell'); cue(4.0, 'whoosh', 0.5); cue(13.4, 'whoosh', 0.4); cue(19.4, 'whoosh', 0.5); cue(25.4, 'fall'); cue(27.5, 'boom'); cue(28.1, 'chime'); },
     frame(t, dt) {
       const k = inv(25.4, 27.6, t);
@@ -376,14 +377,14 @@ const V2 = (() => {
   const CI = cdf(u => { const c = Math.cos(Math.PI * u / 0.19); const e = sinc(u / 0.95); return c * c * e * e; });
   const CD = cdf(u => Math.exp(-0.5 * ((u - 0.42) / 0.13) ** 2) + Math.exp(-0.5 * ((u + 0.42) / 0.13) ** 2));
   const CAPS = [
-    { a: 0.15, b: 3.2, s: 'Самый [странный] опыт в физике', y: 330, size: 76 },
-    { a: 3.2, b: 6.5, s: 'Стреляем электронами [по одному]', y: 330 },
-    { a: 6.5, b: 10.0, s: 'Каждый оставляет на экране [одну точку]', y: 330 },
-    { a: 10.0, b: 14.0, s: 'Но вместе они рисуют [полосы]', y: 330 },
-    { a: 14.0, b: 18.0, s: 'Как волна, прошедшая через [обе щели сразу]', y: 330 },
-    { a: 18.0, b: 21.0, s: 'Поставим у щелей [детектор]…', y: 330 },
-    { a: 21.0, b: 24.4, s: 'Полосы [исчезли]', y: 330, size: 72 },
-    { a: 24.4, b: 27.0, s: '[Наблюдение] меняет результат', y: 330, size: 68 }
+    { a: 0.15, b: 3.2, s: ['Самый [странный] опыт в физике', 'The [weirdest] experiment in physics'], y: 330, size: 76 },
+    { a: 3.2, b: 6.5, s: ['Стреляем электронами [по одному]', 'We fire electrons [one at a time]'], y: 330 },
+    { a: 6.5, b: 10.0, s: ['Каждый оставляет на экране [одну точку]', 'Each one leaves [a single dot]'], y: 330 },
+    { a: 10.0, b: 14.0, s: ['Но вместе они рисуют [полосы]', 'But together they draw [stripes]'], y: 330 },
+    { a: 14.0, b: 18.0, s: ['Как волна, прошедшая через [обе щели сразу]', 'Like a wave passing through [both slits at once]'], y: 330 },
+    { a: 18.0, b: 21.0, s: ['Поставим у щелей [детектор]…', 'Now put a [detector] at the slits…'], y: 330 },
+    { a: 21.0, b: 24.4, s: ['Полосы [исчезли]', 'The stripes [are gone]'], y: 330, size: 72 },
+    { a: 24.4, b: 27.0, s: ['[Наблюдение] меняет результат', '[Watching] changes the result'], y: 330, size: 68 }
   ];
   let R, hits, fly, acc, stars, flash, cueN;
   const rate = t => {
@@ -406,7 +407,7 @@ const V2 = (() => {
     ctx.restore();
   }
   return {
-    slug: 'dvuhshchelevoy-opyt', dur: 29, title: 'Самый странный опыт в физике',
+    slug: 'dvuhshchelevoy-opyt', slugEn: 'double-slit-experiment', dur: 29, title: 'Самый странный опыт в физике', titleEn: 'The weirdest experiment in physics',
     setup() { R = rng(5); hits = []; fly = []; acc = 0; stars = makeStars(21, 260); flash = [0, 0]; cueN = 0; cue(0.1, 'pad2'); cue(0.15, 'swell'); cue(18.1, 'beep'); cue(18.5, 'sweep'); cue(21.0, 'whoosh', 0.4); cue(27.0, 'chime'); },
     frame(t, dt) {
       const det = t >= 18.6;
@@ -463,9 +464,9 @@ const V2 = (() => {
       ctx.fillStyle = '#0d1020'; ctx.strokeStyle = C.line; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.roundRect(PL.x0, PL.y0, PL.x1 - PL.x0, PL.y1 - PL.y0, 18); ctx.fill(); ctx.stroke();
       ctx.font = `500 26px ${FM}`; ctx.textBaseline = 'middle';
-      ctx.fillStyle = C.dust; ctx.textAlign = 'left'; ctx.fillText('источник электронов', SRC.x + 70, SRC.y - 62);
-      ctx.textAlign = 'right'; ctx.fillText('две щели', W - 40, BY - 40);
-      ctx.textAlign = 'left'; ctx.fillText('экран', PL.x0 + 4, PL.y1 + 36);
+      ctx.fillStyle = C.dust; ctx.textAlign = 'left'; ctx.fillText(L('источник электронов', 'electron source'), SRC.x + 70, SRC.y - 62);
+      ctx.textAlign = 'right'; ctx.fillText(L('две щели', 'two slits'), W - 40, BY - 40);
+      ctx.textAlign = 'left'; ctx.fillText(L('экран', 'screen'), PL.x0 + 4, PL.y1 + 36);
       /* детектор */
       const dk = easeOut(inv(18.1, 18.6, t));
       if (dk > 0) { eye(SL[0] - 100, BY - 70, dk, flash[0]); eye(SL[1] + 100, BY - 70, dk, flash[1]); }
@@ -500,7 +501,7 @@ const V2 = (() => {
       }
       ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
       ctx.font = `500 30px ${FM}`; ctx.textAlign = 'right'; ctx.fillStyle = C.star;
-      ctx.fillText(hits.length + ' электр.', PL.x1 - 4, PL.y1 + 36);
+      ctx.fillText(hits.length + L(' электр.', ' electrons'), PL.x1 - 4, PL.y1 + 36);
       brand();
       captions(t, CAPS);
       endCard(t, 27.0);
@@ -514,39 +515,40 @@ const V2 = (() => {
 const V3 = (() => {
   const AGE = 13.8e9, YS = 365 * 86400;
   const KF = [[0, AGE], [5.8, AGE], [7.4, 13.6e9], [9.2, 13.6e9], [11.9, 4.57e9], [14.6, 4.57e9], [15.2, 3.8e9], [16.7, 3.8e9], [18.0, 2.3e8], [20.3, 2.3e8], [21.2, 6.6e7], [22.9, 6.6e7], [24.4, 3e5], [25.9, 3e5], [27.0, 4500], [27.9, 4500], [29.0, 65], [30.0, 65], [31.0, 0]];
-  const L = x => Math.log10(x + 1);
+  const LG = x => Math.log10(x + 1);
   function agoAt(t) {
     if (t <= KF[0][0]) return KF[0][1];
     for (let i = 1; i < KF.length; i++) {
-      if (t <= KF[i][0]) { const [t0, a0] = KF[i - 1], [t1, a1] = KF[i]; return Math.pow(10, lerp(L(a0), L(a1), easeInOut(inv(t0, t1, t)))) - 1; }
+      if (t <= KF[i][0]) { const [t0, a0] = KF[i - 1], [t1, a1] = KF[i]; return Math.pow(10, lerp(LG(a0), LG(a1), easeInOut(inv(t0, t1, t)))) - 1; }
     }
     return 0;
   }
+  const MON_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const MON = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
   const MD = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   function dateOf(ago) {
     const left = ago / AGE * YS;
-    if (left < 0.004) return { d: '31 декабря', tm: '24:00:00', sec: YS };
+    if (left < 0.004) return { d: L('31 декабря', 'December 31'), tm: '24:00:00', sec: YS };
     const sec = YS - left;
     let day = Math.floor(sec / 86400), m = 0; while (day >= MD[m]) { day -= MD[m]; m++; }
     const s = sec % 86400, hh = Math.floor(s / 3600), mm = Math.floor(s % 3600 / 60), ss = s % 60;
     const p2 = v => String(v).padStart(2, '0');
-    const tm = left < 60 ? `${p2(hh)}:${p2(mm)}:${ss.toFixed(2).padStart(5, '0').replace('.', ',')}` : `${p2(hh)}:${p2(mm)}:${p2(Math.floor(ss))}`;
-    return { d: `${day + 1} ${MON[m]}`, tm, sec };
+    const tm = left < 60 ? `${p2(hh)}:${p2(mm)}:${L(ss.toFixed(2).padStart(5, '0').replace('.', ','), ss.toFixed(2).padStart(5, '0'))}` : `${p2(hh)}:${p2(mm)}:${p2(Math.floor(ss))}`;
+    return { d: L(`${day + 1} ${MON[m]}`, `${MON_EN[m]} ${day + 1}`), tm, sec };
   }
   const CAPS = [
-    { a: 0.15, b: 3.1, s: 'Вся история Вселенной [за один год]', size: 74 },
-    { a: 3.2, b: 5.7, s: '[1 января] — Большой взрыв' },
-    { a: 5.9, b: 9.0, s: '[6 января] — зажигаются первые звёзды' },
-    { a: 9.2, b: 11.9, s: 'Миллиарды лет растут [галактики]' },
-    { a: 12.0, b: 14.6, s: '[2 сентября] — рождаются Солнце и Земля' },
-    { a: 14.8, b: 16.7, s: '[22 сентября] — первая жизнь' },
-    { a: 16.9, b: 20.3, s: '[25 декабря] — появляются динозавры' },
-    { a: 20.5, b: 22.9, s: '[30 декабря] — астероид их уничтожает' },
-    { a: 23.0, b: 25.9, s: '[31 декабря, 23:48] — появляются люди' },
-    { a: 26.0, b: 27.9, s: '[23:59:50] — строятся пирамиды' },
-    { a: 28.0, b: 30.0, s: '[23:59:59,85] — Гагарин летит в космос' },
-    { a: 30.2, b: 32.6, s: 'Вся история людей — [последние 30 секунд] года', size: 64 }
+    { a: 0.15, b: 3.1, s: ['Вся история Вселенной [за один год]', 'The whole history of the Universe [in one year]'], size: 74 },
+    { a: 3.2, b: 5.7, s: ['[1 января] — Большой взрыв', '[January 1]: the Big Bang'] },
+    { a: 5.9, b: 9.0, s: ['[6 января] — зажигаются первые звёзды', '[January 6]: the first stars light up'] },
+    { a: 9.2, b: 11.9, s: ['Миллиарды лет растут [галактики]', 'For billions of years, [galaxies] grow'] },
+    { a: 12.0, b: 14.6, s: ['[2 сентября] — рождаются Солнце и Земля', '[September 2]: the Sun and Earth are born'] },
+    { a: 14.8, b: 16.7, s: ['[22 сентября] — первая жизнь', '[September 22]: first life'] },
+    { a: 16.9, b: 20.3, s: ['[25 декабря] — появляются динозавры', '[December 25]: dinosaurs appear'] },
+    { a: 20.5, b: 22.9, s: ['[30 декабря] — астероид их уничтожает', '[December 30]: an asteroid wipes them out'] },
+    { a: 23.0, b: 25.9, s: ['[31 декабря, 23:48] — появляются люди', '[December 31, 23:48]: humans appear'] },
+    { a: 26.0, b: 27.9, s: ['[23:59:50] — строятся пирамиды', '[23:59:50]: the pyramids are built'] },
+    { a: 28.0, b: 30.0, s: ['[23:59:59,85] — Гагарин летит в космос', '[23:59:59.85]: Gagarin flies to space'] },
+    { a: 30.2, b: 32.6, s: ['Вся история людей — [последние 30 секунд] года', 'All of human history is [the last 30 seconds] of the year'], size: 64 }
   ];
   let stars, boom, cells, spiral;
   const SX = 540, SY = 900;
@@ -558,9 +560,9 @@ const V3 = (() => {
     ctx.save();
     ctx.font = `500 24px ${FM}`; ctx.letterSpacing = '3px'; ctx.textBaseline = 'middle';
     ctx.fillStyle = C.dust; ctx.textAlign = 'left';
-    ctx.fillText(['ВЕСЬ ГОД', '31 ДЕКАБРЯ', 'ПОСЛЕДНЯЯ МИНУТА'][mode], x0, y - 44);
+    ctx.fillText(L(['ВЕСЬ ГОД', '31 ДЕКАБРЯ', 'ПОСЛЕДНЯЯ МИНУТА'], ['WHOLE YEAR', 'DECEMBER 31', 'LAST MINUTE'])[mode], x0, y - 44);
     ctx.textAlign = 'right';
-    ctx.fillText(['янв → дек', '00:00 → 24:00', '23:59 → 24:00'][mode], x1, y - 44);
+    ctx.fillText([L('янв → дек', 'Jan → Dec'), '00:00 → 24:00', '23:59 → 24:00'][mode], x1, y - 44);
     ctx.letterSpacing = '0px';
     ctx.fillStyle = '#121522'; ctx.strokeStyle = C.line; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.roundRect(x0, y - 14, x1 - x0, 28, 14); ctx.fill(); ctx.stroke();
@@ -744,7 +746,7 @@ const V3 = (() => {
     ctx.restore();
   }
   return {
-    slug: 'istoriya-vselennoy-za-god', dur: 34.5, title: 'Вся история Вселенной за один год',
+    slug: 'istoriya-vselennoy-za-god', slugEn: 'universe-in-one-year', dur: 34.5, title: 'Вся история Вселенной за один год', titleEn: 'The whole history of the Universe in one year',
     setup() {
       const R = rng(3);
       stars = makeStars(33, 420);
@@ -786,7 +788,7 @@ const V3 = (() => {
       }
       brand();
       captions(t, CAPS);
-      if (t < 3.1) drawRich('1 секунда = [437 лет]', 540, 1500, 40, win(t, 0.9, 3.1), { family: FM, weight: 500, band: false, accent: C.hot, color: C.dust });
+      if (t < 3.1) drawRich(L('1 секунда = [437 лет]', '1 second = [437 years]'), 540, 1500, 40, win(t, 0.9, 3.1), { family: FM, weight: 500, band: false, accent: C.hot, color: C.dust });
       endCard(t, 32.6);
     }
   };
@@ -795,11 +797,11 @@ const V3 = (() => {
 /* ---------- API для рендера ---------- */
 const VIDEOS = { 1: V1, 2: V2, 3: V3 };
 let cur = null, lastT = -1;
-function setup(id) {
-  cur = VIDEOS[id]; CUES = []; lastT = -1;
+function setup(id, lang = 'ru') {
+  cur = VIDEOS[id]; CUES = []; lastT = -1; LANG = lang;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   cur.setup();
-  return { dur: cur.dur, slug: cur.slug, title: cur.title };
+  return { dur: cur.dur, slug: L(cur.slug, cur.slugEn), title: L(cur.title, cur.titleEn), lang: LANG };
 }
 function renderFrame(t) {
   const dt = lastT < 0 ? 1 / 30 : Math.max(0, t - lastT);
@@ -818,8 +820,8 @@ const qs = new URLSearchParams(location.search);
 if (qs.has('v')) {
   document.body.classList.add('preview');
   (async () => {
-    await ready(); const info = setup(+qs.get('v')); const t0 = performance.now();
-    const loop = () => { const t = ((performance.now() - t0) / 1000) % info.dur; if (t < lastT) setup(+qs.get('v')); renderFrame(t); requestAnimationFrame(loop); };
+    await ready(); const lang = qs.get('lang') || 'ru'; const info = setup(+qs.get('v'), lang); const t0 = performance.now();
+    const loop = () => { const t = ((performance.now() - t0) / 1000) % info.dur; if (t < lastT) setup(+qs.get('v'), lang); renderFrame(t); requestAnimationFrame(loop); };
     loop();
   })();
 }
