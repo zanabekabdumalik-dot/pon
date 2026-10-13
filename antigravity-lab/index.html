@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AntiGravity Lab — Gravitational Research Division</title>
+<meta name="description" content="AntiGravity Lab — a research and concept site on antigravity technology, levitation physics and zero-gravity engineering.">
+<meta name="theme-color" content="#03050d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='15' r='7' fill='%2300D4FF'/%3E%3Cellipse cx='16' cy='15' rx='14' ry='4.5' fill='none' stroke='%237B2FFF' stroke-width='2' transform='rotate(-18 16 15)'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* ==========================================================================
+   Tokens
+   ========================================================================== */
+:root{
+  --bg:#03050d;
+  --cyan:#00D4FF;
+  --violet:#7B2FFF;
+  --mint:#00FF9F;
+  --amber:#FFB300;
+  --orange:#FF8A3D;
+  --surface:rgba(255,255,255,0.04);
+  --line:rgba(255,255,255,0.08);
+  --line-cyan:rgba(0,212,255,0.2);
+  --text:#fff;
+  --muted:rgba(255,255,255,0.6);
+  --dim:rgba(255,255,255,0.4);
+  --radius:16px;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --mono:ui-monospace,"SFMono-Regular","JetBrains Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+body::before{ /* faint lab grid behind everything */
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,212,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,255,.035) 1px,transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 10%,transparent 75%);
+          mask-image:radial-gradient(ellipse at 50% 30%,#000 10%,transparent 75%);
+}
+a{color:inherit}
+img,svg,canvas{display:block}
+::selection{background:rgba(0,212,255,.35);color:#fff}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
+
+.container{width:min(1200px,100% - 32px);margin-inline:auto}
+.container.wide{width:min(1400px,100% - 32px)}
+
+/* ==========================================================================
+   Zone labels — one colour per measurement zone, used everywhere on the page
+   ========================================================================== */
+.zone{color:var(--zc);border-bottom:2px solid var(--zc);font-weight:700;padding-bottom:1px;white-space:nowrap}
+.za{--zc:#00D4FF}
+.zb{--zc:#7B2FFF}
+.zc{--zc:#00FF9F}
+.zd{--zc:#FFB300}
+.ze{--zc:rgba(200,220,255,0.6)}
+
+/* ==========================================================================
+   Shared bits
+   ========================================================================== */
+.blink{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:blink 1.6s ease-in-out infinite;display:inline-block;flex:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+.kicker{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--cyan)}
+.kicker::before{content:"";width:28px;height:1px;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+
+.block{padding-top:clamp(84px,11vw,136px)}
+.sec-head{max-width:740px;margin-bottom:clamp(32px,5vw,52px)}
+.sec-head h2{font-size:clamp(30px,4.6vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:14px 0 12px}
+.sec-head p{margin:0;color:var(--muted);font-size:clamp(15px,1.6vw,17px)}
+
+.status{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:6px;border:1px solid;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;line-height:1}
+.status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:blink 1.8s ease-in-out infinite}
+.st-op{color:var(--mint);border-color:rgba(0,255,159,.35);background:rgba(0,255,159,.08)}
+.st-test{color:var(--amber);border-color:rgba(255,179,0,.35);background:rgba(255,179,0,.08)}
+.st-res{color:#A47BFF;border-color:rgba(123,47,255,.5);background:rgba(123,47,255,.14)}
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+.nav{
+  position:fixed;inset:0 0 auto 0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  padding:14px clamp(16px,4vw,40px);
+  background:rgba(3,5,13,.55);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;letter-spacing:-.01em;font-size:16px}
+.brand svg{filter:drop-shadow(0 0 8px rgba(0,212,255,.6))}
+.nav-links{display:flex;gap:30px;list-style:none;margin:0;padding:0}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-status{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:1px solid rgba(0,255,159,.25);background:rgba(0,255,159,.06);color:var(--mint);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;white-space:nowrap}
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+.hero{
+  position:relative;isolation:isolate;overflow:hidden;
+  min-height:100vh;min-height:100svh;
+  display:flex;align-items:center;justify-content:center;
+  padding:120px 16px 170px;
+  background:
+    radial-gradient(55% 50% at 82% 42%,rgba(0,212,255,.11),transparent 70%),
+    radial-gradient(50% 50% at 8% 92%,rgba(123,47,255,.16),transparent 70%),
+    var(--bg);
+}
+#starfield{position:absolute;inset:0;width:100%;height:100%;z-index:-2}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:220px;z-index:-1;pointer-events:none;background:linear-gradient(transparent,var(--bg))}
+
+.hero-inner{position:relative;z-index:2;max-width:780px;text-align:center}
+.tag{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:8px 16px;border-radius:999px;
+  border:1px solid rgba(0,212,255,.32);background:rgba(0,212,255,.07);
+  box-shadow:inset 0 0 22px rgba(0,212,255,.12),0 0 24px rgba(0,212,255,.12);
+  color:var(--cyan);font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;
+}
+.hero h1{
+  margin:26px 0 18px;
+  font-size:clamp(44px,10vw,64px);font-weight:900;line-height:1.02;letter-spacing:-.035em;color:#fff;
+  text-shadow:0 0 42px rgba(0,212,255,.35),0 4px 40px rgba(3,5,13,.9);
+}
+.lead{margin:0 auto 38px;max-width:620px;color:var(--muted);font-size:clamp(16px,2.1vw,19px);text-shadow:0 2px 20px rgba(3,5,13,.95)}
+.hero-cta{display:flex;flex-wrap:wrap;justify-content:center;gap:16px}
+
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:15px 28px;border-radius:12px;
+  font-size:15px;font-weight:700;letter-spacing:.01em;text-decoration:none;
+  transition:transform .25s var(--ease),box-shadow .25s,background .25s,border-color .25s,color .25s;
+}
+.btn-primary{
+  color:#02121b;background:linear-gradient(135deg,#7befff,var(--cyan) 45%,#00a9e4);
+  box-shadow:0 0 0 1px rgba(0,212,255,.7),0 0 26px rgba(0,212,255,.55),0 12px 40px -12px rgba(0,212,255,.8);
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 0 0 1px rgba(150,240,255,.9),0 0 44px rgba(0,212,255,.85),0 18px 50px -12px rgba(0,212,255,.95)}
+.btn-ghost{
+  color:var(--cyan);background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.6);
+  box-shadow:0 0 22px rgba(0,212,255,.28),inset 0 0 22px rgba(0,212,255,.12);
+}
+.btn-ghost:hover{transform:translateY(-3px);color:#fff;background:rgba(0,212,255,.16);box-shadow:0 0 38px rgba(0,212,255,.6),inset 0 0 26px rgba(0,212,255,.25)}
+
+.hero-meta{margin-top:46px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 22px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
+.hero-meta b{color:var(--mint);font-weight:600}
+
+/* ---- CSS levitation sphere ---- */
+.orb-scene{
+  position:absolute;z-index:1;top:50%;
+  right:max(-150px,calc(50% - 760px));
+  width:500px;height:500px;margin-top:-250px;
+  pointer-events:none;
+}
+.orb-float{position:absolute;inset:0;perspective:1400px;animation:bob 8s ease-in-out infinite}
+.orb-halo{position:absolute;inset:40px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.3) 0%,rgba(123,47,255,.14) 42%,transparent 68%);filter:blur(10px);animation:halo 6s ease-in-out infinite}
+.orb-glow{position:absolute;inset:120px;border-radius:50%;box-shadow:0 0 60px rgba(0,212,255,.55),0 0 140px rgba(0,212,255,.25),0 0 220px rgba(123,47,255,.25)}
+.orb-3d{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(-10deg) rotateZ(-8deg)}
+.orb-core{
+  position:absolute;inset:120px;border-radius:50%;
+  background:radial-gradient(circle at 34% 28%,#fff 0,#c4f6ff 4%,#41dcff 16%,#0a8fd0 34%,#123a8c 56%,#1d0d55 76%,#05071a 100%);
+  box-shadow:inset -26px -34px 70px rgba(3,5,13,.85),inset 14px 16px 40px rgba(120,235,255,.35);
+}
+.globe{position:absolute;inset:120px;transform-style:preserve-3d;animation:spinY 26s linear infinite}
+.globe i{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(140,238,255,.3);transform:rotateY(var(--r))}
+.globe b{position:absolute;left:50%;top:50%;width:calc(var(--s) * 100%);height:calc(var(--s) * 100%);border-radius:50%;border:1px solid rgba(140,238,255,.22);transform:translate(-50%,-50%) rotateX(90deg) translateZ(var(--z))}
+.ring-tilt{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateZ(var(--tz)) rotateX(var(--tx))}
+.ring{
+  position:absolute;inset:var(--in);border-radius:50%;
+  border:1.5px solid rgba(0,212,255,.2);border-top-color:rgba(150,242,255,1);border-left-color:rgba(0,212,255,.55);
+  box-shadow:0 0 16px rgba(0,212,255,.38),inset 0 0 16px rgba(0,212,255,.22);
+  animation:spinZ var(--dur) linear infinite;animation-direction:var(--dir,normal);
+}
+.ring::before{content:"";position:absolute;top:-6px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#eafdff;box-shadow:0 0 10px 3px var(--cyan),0 0 26px 8px rgba(0,212,255,.45)}
+.orb-pad{position:absolute;left:50%;bottom:-6px;width:300px;height:56px;margin-left:-150px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,212,255,.5),rgba(0,212,255,.12) 45%,transparent 70%);filter:blur(3px);animation:pad 8s ease-in-out infinite}
+.orb-pad::before,.orb-pad::after{content:"";position:absolute;inset:6px 30px;border-radius:50%;border:1px solid rgba(0,212,255,.55);animation:padRing 3s ease-out infinite}
+.orb-pad::after{animation-delay:1.5s}
+
+@keyframes bob{0%,100%{transform:translateY(-16px)}50%{transform:translateY(16px)}}
+@keyframes pad{0%,100%{transform:scale(.82);opacity:.55}50%{transform:scale(1.06);opacity:1}}
+@keyframes padRing{0%{transform:scale(.5);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+@keyframes halo{0%,100%{opacity:.75;transform:scale(.96)}50%{opacity:1;transform:scale(1.04)}}
+@keyframes spinY{to{transform:rotateY(360deg)}}
+@keyframes spinZ{to{transform:rotate(360deg)}}
+
+/* ==========================================================================
+   Stats
+   ========================================================================== */
+.stats{position:relative;z-index:3;margin-top:-96px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.glass{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.stat{position:relative;overflow:hidden;padding:26px 22px 20px;background:linear-gradient(180deg,rgba(0,212,255,.06),rgba(255,255,255,.03) 40%,rgba(255,255,255,.02))}
+.stat::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan) 18%,var(--cyan) 82%,transparent);box-shadow:0 0 12px 1px rgba(0,212,255,.85),0 0 32px 4px rgba(0,212,255,.3)}
+.stat:hover{transform:translateY(-8px);border-color:rgba(0,212,255,.3);box-shadow:0 22px 50px -22px rgba(0,212,255,.6),0 0 30px rgba(0,212,255,.12)}
+.stat-ico{position:absolute;top:18px;right:18px;font-size:18px;opacity:.75}
+.stat-val{font-size:clamp(30px,3.8vw,40px);font-weight:800;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(0,212,255,.35)}
+.stat-val small{margin-left:3px;font-size:.5em;font-weight:700;color:var(--cyan);letter-spacing:0}
+.stat-label{margin-top:10px;font-size:12.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.stat-sub{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(255,255,255,.09);font-size:12.5px;color:var(--dim);line-height:1.7}
+
+/* ==========================================================================
+   Core technologies
+   ========================================================================== */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.tech-card{
+  position:relative;overflow:hidden;display:flex;flex-direction:column;
+  padding:32px 28px 26px;border-radius:20px;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));
+  border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+}
+.tech-card::before{ /* animated gradient border, shown on hover */
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;
+  background:linear-gradient(110deg,var(--cyan),var(--violet),var(--mint),var(--cyan),var(--violet));
+  background-size:300% 100%;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .45s;animation:borderflow 4s linear infinite;
+}
+.tech-card::after{content:"";position:absolute;width:280px;height:280px;right:-110px;top:-130px;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 65%);opacity:.45;transition:opacity .45s;pointer-events:none}
+.tech-card:hover{transform:translateY(-10px);border-color:transparent;box-shadow:0 30px 60px -24px rgba(0,212,255,.55),0 0 46px rgba(0,212,255,.2)}
+.tech-card:hover::before{opacity:1}
+.tech-card:hover::after{opacity:.9}
+@keyframes borderflow{to{background-position:300% 0}}
+.tech-icon{width:58px;height:58px;display:grid;place-items:center;margin-bottom:24px;border-radius:16px;font-size:28px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);box-shadow:inset 0 0 20px rgba(0,212,255,.15),0 0 22px rgba(0,212,255,.15)}
+.tech-card h3{margin:0 0 12px;font-size:21px;font-weight:700;letter-spacing:-.01em}
+.tech-card p{margin:0 0 22px;color:var(--muted);font-size:15px}
+.spec{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.spec span{padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+.spec b{color:#fff;font-weight:600}
+.trl{display:flex;align-items:center;gap:10px;margin-top:auto;margin-bottom:18px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--dim)}
+.trl-bar{display:flex;gap:3px}
+.trl-bar i{width:13px;height:5px;border-radius:2px;background:rgba(255,255,255,.1)}
+.trl-bar i.on{background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+.tech-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07)}
+.site{font-size:13px;color:var(--dim)}
+
+/* ==========================================================================
+   Live data panel
+   ========================================================================== */
+.panel{
+  position:relative;overflow:hidden;border-radius:20px;
+  background:linear-gradient(180deg,rgba(10,16,34,.92),rgba(5,8,20,.92));
+  border:1px solid var(--line-cyan);
+  box-shadow:0 30px 80px -30px rgba(0,212,255,.28),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.panel:hover{transform:translateY(-8px);box-shadow:0 36px 90px -30px rgba(0,212,255,.42),0 0 40px rgba(0,212,255,.1),inset 0 1px 0 rgba(255,255,255,.05)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 18px;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.06);font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.ph-live{display:flex;align-items:center;gap:9px;color:var(--mint);font-weight:700}
+#utcClock{color:#fff;font-variant-numeric:tabular-nums}
+.data-rows{padding:6px 24px}
+.drow{display:grid;grid-template-columns:minmax(210px,1.1fr) 2fr 150px 32px;align-items:center;gap:24px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.drow:last-child{border-bottom:0}
+.d-label{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.14em;color:#fff}
+.d-src{display:block;margin-top:6px;font-family:Inter,system-ui,sans-serif;font-size:12.5px;font-weight:400;letter-spacing:0;color:var(--dim)}
+.bar{position:relative;height:14px;border-radius:4px;background:rgba(255,255,255,.05);overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(255,255,255,.08),var(--c) 35%);box-shadow:0 0 16px var(--c);transition:width 1.8s var(--ease)}
+.bar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 3px),#070b19 calc(10% - 3px) 10%)}
+.d-val{text-align:right;font-size:20px;font-weight:700;color:var(--ct);font-variant-numeric:tabular-nums;white-space:nowrap;text-shadow:0 0 18px var(--c);transition:filter .3s}
+.d-val small{margin-left:6px;font-size:12px;font-weight:600;color:var(--muted);text-shadow:none}
+.d-trend{font-size:18px;font-weight:700;color:var(--ct);text-align:center;text-shadow:0 0 12px var(--c)}
+.d-trend.up{animation:nudgeUp 2s ease-in-out infinite}
+.d-trend.down{animation:nudgeDown 2s ease-in-out infinite}
+.d-trend.side{animation:nudgeSide 2s ease-in-out infinite}
+@keyframes nudgeUp{0%,100%{transform:translateY(2px)}50%{transform:translateY(-3px)}}
+@keyframes nudgeDown{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
+@keyframes nudgeSide{0%,100%{transform:translateX(-2px)}50%{transform:translateX(3px)}}
+.drow.flash .d-val{animation:flash .7s ease-out}
+@keyframes flash{0%{filter:brightness(1.9)}100%{filter:brightness(1)}}
+.scope{border-top:1px solid rgba(255,255,255,.06);padding:14px 24px 18px}
+.scope-cap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;margin-bottom:10px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+#scope{width:100%;height:72px}
+
+/* ==========================================================================
+   Physics visualizer
+   ========================================================================== */
+.viz{
+  position:relative;overflow:hidden;height:clamp(400px,52vw,560px);border-radius:20px;
+  border:1px solid var(--line-cyan);
+  background:radial-gradient(60% 60% at 50% 42%,rgba(0,212,255,.09),transparent 70%),linear-gradient(180deg,#050916,#03050d);
+  box-shadow:0 30px 80px -30px rgba(0,212,255,.25);
+}
+.viz:hover{transform:translateY(-8px);box-shadow:0 36px 90px -30px rgba(0,212,255,.4),0 0 40px rgba(0,212,255,.1)}
+#vizCanvas{position:absolute;inset:0;width:100%;height:100%}
+.hud{position:absolute;inset:0;pointer-events:none;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.corner{position:absolute;width:22px;height:22px;border:2px solid rgba(0,212,255,.65)}
+.c-tl{top:14px;left:14px;border-right:0;border-bottom:0}
+.c-tr{top:14px;right:14px;border-left:0;border-bottom:0}
+.c-bl{bottom:14px;left:14px;border-right:0;border-top:0}
+.c-br{bottom:14px;right:14px;border-left:0;border-top:0}
+.hud-title{position:absolute;top:24px;left:48px;display:grid;gap:4px}
+.hud-title strong{font-family:Inter,system-ui,sans-serif;font-size:16px;font-weight:700;letter-spacing:-.01em;text-transform:none;color:#fff}
+.hud-read{position:absolute;top:24px;right:48px;display:grid;gap:5px;text-align:right}
+.hud-read b{display:inline-block;min-width:84px;color:var(--cyan);font-weight:600;font-variant-numeric:tabular-nums}
+.hud-foot{position:absolute;left:48px;right:48px;bottom:24px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px}
+.hud-foot span{display:inline-flex;align-items:center;gap:8px}
+.hud-foot .t{margin-left:auto;color:#fff;font-variant-numeric:tabular-nums}
+.lg{display:inline-block;flex:none}
+.lg-line{width:20px;border-top:2px dashed var(--cyan)}
+.lg-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+.lg-ring{width:16px;height:7px;border-radius:50%;border:1.5px solid var(--cyan)}
+
+/* ==========================================================================
+   Field map
+   ========================================================================== */
+.map-wrap{position:relative}
+#map{
+  position:relative;z-index:0;isolation:isolate;
+  width:100%;height:480px;border-radius:16px;overflow:hidden;
+  border:1px solid rgba(0,212,255,0.2);
+  box-shadow:0 0 40px rgba(0,212,255,0.08);
+  background:#0b0f1a;
+}
+.map-fallback{display:grid;place-items:center;height:100%;padding:24px;text-align:center;color:var(--dim);font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.legend{
+  position:absolute;right:16px;bottom:16px;z-index:5;min-width:236px;
+  padding:16px 18px 14px;border-radius:14px;
+  background:rgba(6,10,22,.8);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border:1px solid rgba(0,212,255,.22);box-shadow:0 12px 40px rgba(0,0,0,.55);
+}
+.legend h4{margin:0 0 10px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.22em;color:var(--muted)}
+.legend ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.legend li{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,.85)}
+.sw{width:10px;height:10px;border-radius:50%;flex:none;background:var(--zc);box-shadow:0 0 8px var(--zc)}
+
+.zm-icon{background:none;border:0}
+.zm{
+  position:relative;width:36px;height:36px;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;
+  border:2.5px solid var(--zc);background:var(--zbg);
+  box-shadow:0 0 10px var(--zc),0 0 22px -4px var(--zc),inset 0 0 10px var(--zbg);
+  transition:transform .25s var(--ease),box-shadow .25s;
+}
+.zm::after{content:"";position:absolute;inset:-2.5px;border-radius:50%;border:2px solid var(--zc);opacity:0;animation:ping 2.6s ease-out infinite;pointer-events:none}
+.zm-dot{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--zc);box-shadow:0 0 6px 1px var(--zc),0 0 14px 3px var(--zc)}
+.zm b{position:relative;z-index:1;font-size:14px;font-weight:800;line-height:1;color:#fff;text-shadow:0 0 3px #000,0 0 6px rgba(0,0,0,.9),0 1px 2px #000}
+.zm:hover,.leaflet-marker-icon:focus .zm{transform:scale(1.2);box-shadow:0 0 18px 3px var(--zc),0 0 44px 8px var(--zc),inset 0 0 16px var(--zbg)}
+@keyframes ping{0%{transform:scale(1);opacity:.75}100%{transform:scale(2.2);opacity:0}}
+.field-link{animation:flow 1.8s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-28}}
+
+.leaflet-container{font-family:Inter,system-ui,sans-serif;background:#0b0f1a}
+.leaflet-bar{border:1px solid rgba(0,212,255,.25)!important;box-shadow:0 6px 20px rgba(0,0,0,.4)!important}
+.leaflet-bar a,.leaflet-bar a:hover{background:rgba(6,10,22,.88);color:#fff;border-bottom-color:rgba(255,255,255,.08)}
+.leaflet-bar a:hover{background:rgba(0,212,255,.18)}
+.leaflet-control-attribution{background:rgba(3,5,13,.72)!important;color:rgba(255,255,255,.45)!important;border-radius:0 6px 0 0}
+.leaflet-control-attribution a{color:rgba(0,212,255,.85)!important}
+.leaflet-popup-content-wrapper{background:rgba(6,10,22,.94);color:#fff;border:1px solid rgba(0,212,255,.3);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 30px rgba(0,212,255,.15)}
+.leaflet-popup-tip{background:rgba(6,10,22,.94);border:1px solid rgba(0,212,255,.3)}
+.leaflet-popup-content{margin:14px 18px;font-size:13.5px;line-height:1.6}
+.leaflet-container a.leaflet-popup-close-button{color:rgba(255,255,255,.55)}
+.leaflet-container a.leaflet-popup-close-button:hover{color:#fff}
+.pp-t{font-weight:600}
+.pp-b{color:var(--muted)}
+.pp-c{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--dim)}
+.leaflet-tooltip.zone-tip{padding:5px 10px;border-radius:8px;background:rgba(6,10,22,.86);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 18px rgba(0,0,0,.5);color:#fff;font-size:12px;font-weight:500;white-space:nowrap}
+.leaflet-tooltip-left.zone-tip::before{border-left-color:rgba(6,10,22,.86)}
+.leaflet-tooltip-right.zone-tip::before{border-right-color:rgba(6,10,22,.86)}
+
+.strip-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:22px 0 12px;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.reset{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:rgba(0,212,255,.07);color:var(--cyan);font:600 12px/1 Inter,system-ui,sans-serif;letter-spacing:.04em;cursor:pointer;transition:background .2s,box-shadow .2s}
+.reset:hover{background:rgba(0,212,255,.16);box-shadow:0 0 20px rgba(0,212,255,.35)}
+.zone-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.zchip{
+  appearance:none;text-align:left;cursor:pointer;color:#fff;font:inherit;
+  padding:14px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--line);
+}
+.zchip:hover{transform:translateY(-8px);border-color:var(--zc);box-shadow:0 18px 40px -20px var(--zc),0 0 22px -6px var(--zc)}
+.zc-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:13px}
+.zc-name{color:var(--muted);font-size:12px}
+.zc-units{display:block;margin-top:8px;font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.zc-units small{margin-left:5px;font-size:12px;font-weight:500;color:var(--dim);letter-spacing:0}
+.zc-bar{display:block;height:4px;margin-top:10px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden}
+.zc-bar i{display:block;height:100%;width:0;background:var(--zc);box-shadow:0 0 8px var(--zc);transition:width 1.6s var(--ease) .2s}
+.zchip.in .zc-bar i{width:var(--p)}
+
+/* ==========================================================================
+   Timeline
+   ========================================================================== */
+.tl-layout{display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(32px,5vw,64px);align-items:start}
+.timeline{position:relative;list-style:none;margin:0;padding:0 0 0 46px}
+.timeline::before{
+  content:"";position:absolute;left:11px;top:8px;bottom:12px;width:2px;
+  background:linear-gradient(180deg,var(--cyan),var(--violet) 75%,rgba(123,47,255,.15));
+  box-shadow:0 0 12px rgba(0,212,255,.5);
+  transform-origin:top;transform:scaleY(0);transition:transform 1.8s var(--ease);
+}
+.timeline.in::before,.no-io .timeline::before{transform:scaleY(1)}
+.tl-item{position:relative;padding-bottom:30px}
+.tl-item:last-child{padding-bottom:0}
+.tl-dot{position:absolute;left:-46px;top:2px;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:var(--bg);border:2px solid var(--cyan);box-shadow:0 0 16px rgba(0,212,255,.85),inset 0 0 6px rgba(0,212,255,.6)}
+.tl-dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.tl-item.now .tl-dot::before{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--cyan);animation:ping 2.2s ease-out infinite}
+.tl-year{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.12em;color:var(--cyan);text-shadow:0 0 12px rgba(0,212,255,.6)}
+.now-badge{padding:3px 7px;border-radius:5px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.4);font-size:10px;letter-spacing:.18em;text-shadow:none}
+.tl-card{margin-top:10px;padding:18px 20px;border-radius:14px;background:var(--surface);border:1px solid var(--line);transition:transform .35s var(--ease),box-shadow .35s,border-color .35s}
+.tl-card:hover{transform:translateY(-8px);border-color:rgba(0,212,255,.3);box-shadow:0 20px 44px -22px rgba(0,212,255,.55),0 0 26px rgba(0,212,255,.1)}
+.tl-card h3{margin:0;font-size:17px;font-weight:600;color:#fff}
+.tl-card p{margin:6px 0 0;font-size:14px;color:var(--muted)}
+
+.program{position:sticky;top:96px;padding:26px 26px 22px;border-radius:20px;background:linear-gradient(180deg,rgba(123,47,255,.1),rgba(255,255,255,.03) 45%);border:1px solid rgba(123,47,255,.3);box-shadow:0 30px 70px -30px rgba(123,47,255,.45)}
+.program:hover{transform:translateY(-8px);box-shadow:0 36px 80px -30px rgba(123,47,255,.6),0 0 30px rgba(0,212,255,.1)}
+.pg-head{display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim)}
+.program h3{margin:16px 0 8px;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.program>p{margin:0 0 20px;color:var(--muted);font-size:14.5px}
+.pg-meta{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.pg-meta b{color:#fff;font-variant-numeric:tabular-nums}
+.pg-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden}
+.pg-bar i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--violet),var(--cyan));box-shadow:0 0 14px rgba(0,212,255,.6);transition:width 1.8s var(--ease) .3s}
+.program.in .pg-bar i,.no-io .pg-bar i{width:var(--p)}
+.pg-list{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:12px;font-size:14px;color:var(--muted)}
+.pg-list li{position:relative;padding-left:28px}
+.pg-list li::before{content:"";position:absolute;left:0;top:3px;width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(255,255,255,.25)}
+.pg-list li.done{color:#fff}
+.pg-list li.done::before{border-color:var(--mint);background:radial-gradient(circle,var(--mint) 0 3.5px,transparent 4.5px);box-shadow:0 0 10px rgba(0,255,159,.5)}
+.pg-list li.active{color:#fff}
+.pg-list li.active::before{border-color:var(--cyan);border-top-color:transparent;animation:spinZ 1.2s linear infinite}
+.pg-foot{display:flex;justify-content:space-between;margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.pg-foot b{color:var(--cyan);font-weight:600}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.footer{margin-top:clamp(100px,12vw,150px);padding:64px 16px 48px;text-align:center;border-top:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(0,212,255,.03),transparent 60%)}
+.f-brand{font-size:18px;font-weight:800;letter-spacing:-.01em}
+.f-icons{display:flex;justify-content:center;gap:14px;margin:26px 0}
+.f-icons a{width:50px;height:50px;display:grid;place-items:center;border-radius:14px;font-size:22px;text-decoration:none;background:var(--surface);border:1px solid var(--line);transition:transform .3s var(--ease),border-color .3s,box-shadow .3s}
+.f-icons a:hover{transform:translateY(-8px);border-color:rgba(0,212,255,.5);box-shadow:0 0 26px rgba(0,212,255,.35)}
+.f-note{margin:0;color:var(--muted);font-size:14px}
+.f-copy{margin:10px 0 0;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+
+/* ==========================================================================
+   Card motion (hover lift + fade-in-up on scroll)
+   ========================================================================== */
+.stat,.tech-card,.panel,.viz,.zchip,.program{transition:transform .45s var(--ease),box-shadow .45s,border-color .45s}
+.js .reveal{
+  opacity:0;translate:0 38px;
+  transition:opacity .9s var(--ease) var(--d,0s),translate .9s var(--ease) var(--d,0s),transform .45s var(--ease),box-shadow .45s,border-color .45s;
+}
+.js .reveal.in,.js.no-io .reveal{opacity:1;translate:0 0}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width:1100px){
+  .orb-scene{right:-190px;top:40%;opacity:.55}
+}
+@media (max-width:980px){
+  .tech-grid{grid-template-columns:repeat(2,1fr)}
+  .tech-card:last-child{grid-column:1/-1}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .tl-layout{grid-template-columns:1fr}
+  .program{position:relative;top:0}
+  .zone-strip{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:860px){
+  .nav-links{display:none}
+}
+@media (max-width:760px){
+  .drow{grid-template-columns:1fr auto 24px;grid-template-areas:"label label label" "bar val trend";gap:12px 16px;padding:18px 0}
+  .d-label{grid-area:label}
+  .bar{grid-area:bar}
+  .d-val{grid-area:val;font-size:17px}
+  .d-trend{grid-area:trend}
+  .data-rows,.scope{padding-left:18px;padding-right:18px}
+  .panel-head{padding:14px 18px}
+  .ph-rig{display:none}
+  .hud-read{display:none}
+  .hud-title{left:30px;top:22px}
+  .hud-foot{left:30px;right:30px;bottom:22px;gap:6px 14px;font-size:10px}
+}
+@media (max-width:720px){
+  .orb-scene{right:50%;margin-right:-250px;top:30%;opacity:.4;transform:scale(.72)}
+  .tech-grid{grid-template-columns:1fr}
+  .tech-card:last-child{grid-column:auto}
+  .legend{position:relative;right:auto;bottom:auto;margin-top:12px;min-width:0}
+  .zone-strip{grid-template-columns:repeat(2,1fr)}
+  .zchip:last-child{grid-column:1/-1}
+}
+@media (max-width:380px){
+  .stats{grid-template-columns:1fr}
+  .btn{width:100%;justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;transition-delay:0s!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ======================= NAV ======================= -->
+<header class="nav">
+  <a class="brand" href="#top" aria-label="AntiGravity Lab — back to top">
+    <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
+      <defs><radialGradient id="bm" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#00D4FF"/><stop offset="1" stop-color="#7B2FFF"/></radialGradient></defs>
+      <circle cx="16" cy="14" r="7" fill="url(#bm)"/>
+      <ellipse cx="16" cy="14" rx="14" ry="4.5" fill="none" stroke="#00D4FF" stroke-width="1.4" transform="rotate(-18 16 14)" opacity=".9"/>
+      <ellipse cx="16" cy="28.5" rx="6.5" ry="1.6" fill="#00D4FF" opacity=".4"/>
+    </svg>
+    AntiGravity Lab
+  </a>
+  <ul class="nav-links">
+    <li><a href="#tech">Technologies</a></li>
+    <li><a href="#live">Live Data</a></li>
+    <li><a href="#viz">Visualizer</a></li>
+    <li><a href="#zones">Zones</a></li>
+    <li><a href="#timeline">Timeline</a></li>
+  </ul>
+  <span class="nav-status"><i class="blink"></i>FIELD ONLINE</span>
+</header>
+
+<main>
+<!-- ======================= HERO ======================= -->
+<section class="hero" id="top">
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <div class="orb-scene" aria-hidden="true">
+    <div class="orb-float">
+      <div class="orb-halo"></div>
+      <div class="orb-glow"></div>
+      <div class="orb-3d">
+        <div class="orb-core"></div>
+        <div class="globe">
+          <i style="--r:0deg"></i><i style="--r:30deg"></i><i style="--r:60deg"></i>
+          <i style="--r:90deg"></i><i style="--r:120deg"></i><i style="--r:150deg"></i>
+          <b style="--s:1;--z:0px"></b>
+          <b style="--s:.866;--z:65px"></b><b style="--s:.866;--z:-65px"></b>
+          <b style="--s:.508;--z:112px"></b><b style="--s:.508;--z:-112px"></b>
+        </div>
+        <div class="ring-tilt" style="--tz:-16deg;--tx:74deg"><div class="ring" style="--in:30px;--dur:14s"></div></div>
+        <div class="ring-tilt" style="--tz:28deg;--tx:70deg"><div class="ring" style="--in:0px;--dur:22s;--dir:reverse"></div></div>
+        <div class="ring-tilt" style="--tz:-62deg;--tx:66deg"><div class="ring" style="--in:62px;--dur:11s"></div></div>
+      </div>
+    </div>
+    <div class="orb-pad"></div>
+  </div>
+
+  <div class="hero-inner">
+    <span class="tag"><i class="blink"></i>Gravitational Research Division</span>
+    <h1>AntiGravity Lab</h1>
+    <p class="lead">Exploring the boundaries of gravitational physics and electromagnetic levitation technology</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#tech">🔬 Research Papers</a>
+      <a class="btn btn-ghost" href="#live">⚡ Live Experiments</a>
+    </div>
+    <div class="hero-meta">
+      <span>LAT 44.893° N</span><span>LNG 78.248° E</span><span>Field status: <b>Nominal</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= STATS ======================= -->
+<div class="container">
+  <div class="stats" id="stats">
+    <article class="stat glass reveal">
+      <span class="stat-ico" aria-hidden="true">🧪</span>
+      <div class="stat-val"><span data-count="12">12</span></div>
+      <div class="stat-label">Experiments</div>
+      <div class="stat-sub">Logged across 5 measurement zones</div>
+    </article>
+    <article class="stat glass reveal" style="--d:.08s">
+      <span class="stat-ico" aria-hidden="true">🧲</span>
+      <div class="stat-val"><span data-count="3">3</span></div>
+      <div class="stat-label">Active Fields</div>
+      <div class="stat-sub"><span class="zone za">Zone A</span> · <span class="zone zb">Zone B</span> · <span class="zone zc">Zone C</span></div>
+    </article>
+    <article class="stat glass reveal" style="--d:.16s">
+      <span class="stat-ico" aria-hidden="true">🎯</span>
+      <div class="stat-val"><span data-count="99.7" data-dec="1">99.7</span><small>%</small></div>
+      <div class="stat-label">Accuracy</div>
+      <div class="stat-sub">Calibrated against <span class="zone ze">Zone E</span></div>
+    </article>
+    <article class="stat glass reveal" style="--d:.24s">
+      <span class="stat-ico" aria-hidden="true">🛰️</span>
+      <div class="stat-val"><span data-count="0" data-from="1" data-dec="2">0.00</span><small>g</small></div>
+      <div class="stat-label">Zero-G Zone</div>
+      <div class="stat-sub">Sustained at the <span class="zone za">Zone A</span> core</div>
+    </article>
+  </div>
+</div>
+
+<!-- ======================= CORE TECHNOLOGIES ======================= -->
+<section class="block" id="tech">
+  <div class="container">
+    <header class="sec-head reveal">
+      <div class="kicker">01 · Research Programs</div>
+      <h2>Core Technologies</h2>
+      <p>Three parallel programs, each attacking gravity from a different direction — from proven magnetics to open questions in quantum physics.</p>
+    </header>
+
+    <div class="tech-grid">
+      <article class="tech-card reveal" style="--glow:rgba(0,212,255,.35)">
+        <div class="tech-icon" aria-hidden="true">⚡</div>
+        <h3>Electromagnetic Levitation</h3>
+        <p>Using opposing magnetic fields to suspend objects without physical contact. Stable levitation achieved at 340 gauss.</p>
+        <div class="spec"><span>FIELD <b>340 G</b></span><span>GAP <b>12 mm</b></span></div>
+        <div class="trl" data-trl="6"></div>
+        <div class="tech-foot">
+          <span class="status st-op">OPERATIONAL</span>
+          <span class="site">Site: <span class="zone za">Zone A</span></span>
+        </div>
+      </article>
+
+      <article class="tech-card reveal" style="--glow:rgba(255,179,0,.25);--d:.1s">
+        <div class="tech-icon" aria-hidden="true">🔊</div>
+        <h3>Acoustic Levitation</h3>
+        <p>Standing wave nodes trap particles in mid-air using ultrasonic frequencies between 22–40 kHz.</p>
+        <div class="spec"><span>FREQ <b>22–40 kHz</b></span><span>TRAP <b>0.3 mm</b></span></div>
+        <div class="trl" data-trl="4"></div>
+        <div class="tech-foot">
+          <span class="status st-test">TESTING</span>
+          <span class="site">Site: <span class="zone zc">Zone C</span></span>
+        </div>
+      </article>
+
+      <article class="tech-card reveal" style="--glow:rgba(123,47,255,.4);--d:.2s">
+        <div class="tech-icon" aria-hidden="true">🌀</div>
+        <h3>Quantum Field Manipulation</h3>
+        <p>Theoretical framework for gravity shielding using quantum vacuum fluctuation modulation.</p>
+        <div class="spec"><span>STAGE <b>Theory</b></span><span>START <b>2026</b></span></div>
+        <div class="trl" data-trl="2"></div>
+        <div class="tech-foot">
+          <span class="status st-res">RESEARCH</span>
+          <span class="site">Baseline: <span class="zone ze">Zone E</span></span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= LIVE DATA ======================= -->
+<section class="block" id="live">
+  <div class="container">
+    <header class="sec-head reveal">
+      <div class="kicker">02 · Telemetry</div>
+      <h2>Field Readings — Live</h2>
+      <p>Sensor telemetry from the levitation rig. Values refresh as the field array reports in.</p>
+    </header>
+
+    <div class="panel reveal" id="livePanel">
+      <div class="panel-head">
+        <span class="ph-live"><i class="blink"></i>Live stream</span>
+        <span class="ph-rig">Rig-07 · 1.2 kHz sampling</span>
+        <span id="utcClock">--:--:-- UTC</span>
+      </div>
+
+      <div class="data-rows">
+        <div class="drow" style="--c:#00D4FF;--ct:#5fe3ff" data-to="3420" data-dec="0" data-jit="24" data-max="3500" data-pct="80" data-pj="2.5">
+          <div class="d-label">MAGNETIC FLUX DENSITY<span class="d-src">Hall probe array · <span class="zone za">Zone A</span></span></div>
+          <div class="bar" aria-hidden="true"><i></i></div>
+          <div class="d-val"><span class="d-num">3,420</span><small>Gauss</small></div>
+          <div class="d-trend up" aria-label="rising">↑</div>
+        </div>
+        <div class="drow" style="--c:#00FF9F;--ct:#00FF9F" data-to="99.7" data-dec="1" data-jit="0.1" data-max="99.9" data-pct="100" data-pj="0">
+          <div class="d-label">LEVITATION STABILITY<span class="d-src">Optical tracker · <span class="zone za">Zone A</span></span></div>
+          <div class="bar" aria-hidden="true"><i></i></div>
+          <div class="d-val"><span class="d-num">99.7</span><small>%</small></div>
+          <div class="d-trend" aria-label="stable">✓</div>
+        </div>
+        <div class="drow" style="--c:#7B2FFF;--ct:#A47BFF" data-to="28.4" data-dec="1" data-jit="0.15" data-max="40" data-pct="70" data-pj="1.5">
+          <div class="d-label">FIELD FREQUENCY<span class="d-src">Transducer bank · <span class="zone zc">Zone C</span></span></div>
+          <div class="bar" aria-hidden="true"><i></i></div>
+          <div class="d-val"><span class="d-num">28.4</span><small>kHz</small></div>
+          <div class="d-trend side" aria-label="steady">→</div>
+        </div>
+        <div class="drow" style="--c:#FF8A3D;--ct:#FF9F5E" data-to="4.2" data-dec="1" data-jit="0.1" data-max="10" data-pct="50" data-pj="2">
+          <div class="d-label">POWER CONSUMPTION<span class="d-src">Power bus · <span class="zone zb">Zone B</span></span></div>
+          <div class="bar" aria-hidden="true"><i></i></div>
+          <div class="d-val"><span class="d-num">4.2</span><small>kW</small></div>
+          <div class="d-trend down" aria-label="falling">↓</div>
+        </div>
+      </div>
+
+      <div class="scope">
+        <div class="scope-cap"><span>Field oscilloscope · CH-1</span><span>28.4 kHz carrier · 2 ms/div</span></div>
+        <canvas id="scope" aria-hidden="true"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= PHYSICS VISUALIZER ======================= -->
+<section class="block" id="viz">
+  <div class="container">
+    <header class="sec-head reveal">
+      <div class="kicker">03 · Simulation</div>
+      <h2>Physics Visualizer</h2>
+      <p>A real-time model of a body suspended above a superconducting coil: dipole field lines, orbiting test particles and the repulsion field beneath.</p>
+    </header>
+
+    <div class="viz reveal">
+      <canvas id="vizCanvas" role="img" aria-label="Animated model of a glowing sphere levitating inside curved magnetic field lines, with particles orbiting it and a pulsing repulsion ring below"></canvas>
+      <div class="hud" aria-hidden="true">
+        <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+        <div class="hud-title"><strong>Electromagnetic Levitation Model</strong><span>Model 01 · Stable dipole configuration</span></div>
+        <div class="hud-read">
+          <div>ALT <b id="hAlt">12.40 mm</b></div>
+          <div>B₀ <b id="hB">340 G</b></div>
+          <div>STABILITY <b>99.7%</b></div>
+        </div>
+        <div class="hud-foot">
+          <span><i class="lg lg-line"></i>B-field lines</span>
+          <span><i class="lg lg-dot"></i>Test particles</span>
+          <span><i class="lg lg-ring"></i>Repulsion field</span>
+          <span class="t" id="hT">T+ 00:00:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FIELD MAP ======================= -->
+<section class="block" id="zones">
+  <div class="container">
+    <header class="sec-head reveal">
+      <div class="kicker">04 · Field Map</div>
+      <h2>Field Experiment Zones</h2>
+      <p>Active antigravity measurement points · Balpyk Bi, Kazakhstan</p>
+    </header>
+  </div>
+  <div class="container wide">
+
+    <div class="map-wrap reveal">
+      <div id="map" role="region" aria-label="Map of the five field experiment zones near Balpyk Bi, Kazakhstan"></div>
+      <div class="legend">
+        <h4>MEASUREMENT ZONES</h4>
+        <ul>
+          <li><i class="sw za"></i><span><span class="zone za">Zone A</span> — Primary Field</span></li>
+          <li><i class="sw zb"></i><span><span class="zone zb">Zone B</span> — Secondary Array</span></li>
+          <li><i class="sw zc"></i><span><span class="zone zc">Zone C</span> — Acoustic Node</span></li>
+          <li><i class="sw zd"></i><span><span class="zone zd">Zone D</span> — Peripheral Edge</span></li>
+          <li><i class="sw ze"></i><span><span class="zone ze">Zone E</span> — Background</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="strip-head">
+      <span>Zone readings · units recorded</span>
+      <button class="reset" type="button" id="mapReset">⟲ Reset view</button>
+    </div>
+    <div class="zone-strip" id="zoneStrip"></div>
+  </div>
+</section>
+
+<!-- ======================= TIMELINE ======================= -->
+<section class="block" id="timeline">
+  <div class="container">
+    <header class="sec-head reveal">
+      <div class="kicker">05 · Milestones</div>
+      <h2>Research Timeline</h2>
+      <p>Seven years from the first floating gram to quantum vacuum experiments.</p>
+    </header>
+
+    <div class="tl-layout">
+      <ol class="timeline js-observe">
+        <li class="tl-item reveal">
+          <span class="tl-dot"></span>
+          <div class="tl-year">2019</div>
+          <div class="tl-card"><h3>First stable levitation (12g object)</h3><p>Superconducting coil pair at the <span class="zone za">Zone A</span> core, held at 340 gauss.</p></div>
+        </li>
+        <li class="tl-item reveal">
+          <span class="tl-dot"></span>
+          <div class="tl-year">2021</div>
+          <div class="tl-card"><h3>Acoustic trap achieved (0.3mm particle)</h3><p>Ultrasonic standing wave locked at the <span class="zone zc">Zone C</span> acoustic node.</p></div>
+        </li>
+        <li class="tl-item reveal">
+          <span class="tl-dot"></span>
+          <div class="tl-year">2023</div>
+          <div class="tl-card"><h3>Field duration record: 72 continuous hours</h3><p>Uninterrupted electromagnetic suspension in <span class="zone za">Zone A</span>.</p></div>
+        </li>
+        <li class="tl-item reveal">
+          <span class="tl-dot"></span>
+          <div class="tl-year">2024</div>
+          <div class="tl-card"><h3>Multi-object simultaneous levitation</h3><p>Synchronized arrays across <span class="zone za">Zone A</span> and <span class="zone zb">Zone B</span>.</p></div>
+        </li>
+        <li class="tl-item now reveal">
+          <span class="tl-dot"></span>
+          <div class="tl-year">2026 <span class="now-badge">NOW</span></div>
+          <div class="tl-card"><h3>Quantum field experiments begin</h3><p>Vacuum baseline mapped at <span class="zone ze">Zone E</span>, shielding perimeter set at <span class="zone zd">Zone D</span>.</p></div>
+        </li>
+      </ol>
+
+      <aside class="program reveal" style="--d:.15s">
+        <div class="pg-head"><span>CURRENT PROGRAM</span><span class="status st-res">PHASE V</span></div>
+        <h3>Quantum Field Experiments</h3>
+        <p>Testing whether modulated vacuum fluctuations can produce a measurable gravitational shielding effect.</p>
+        <div class="pg-meta"><span>Program progress</span><b>34%</b></div>
+        <div class="pg-bar"><i style="--p:34%"></i></div>
+        <ul class="pg-list">
+          <li class="done">Vacuum chamber commissioning</li>
+          <li class="done">Baseline survey at <span class="zone ze">Zone E</span></li>
+          <li class="active">Casimir cavity array at <span class="zone za">Zone A</span></li>
+          <li>Shielding trials at <span class="zone zd">Zone D</span></li>
+        </ul>
+        <div class="pg-foot"><span>Next review</span><b>Q4 2026</b></div>
+      </aside>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ======================= FOOTER ======================= -->
+<footer class="footer">
+  <div class="f-brand">AntiGravity Lab · Gravitational Physics Research</div>
+  <nav class="f-icons" aria-label="Lab sections">
+    <a href="#tech" aria-label="Research">🔬</a>
+    <a href="#live" aria-label="Telemetry">📡</a>
+    <a href="#viz" aria-label="Physics model">⚛️</a>
+    <a href="#timeline" aria-label="Missions">🚀</a>
+  </nav>
+  <p class="f-note">All experiments conducted under standard laboratory conditions</p>
+  <p class="f-copy">© 2026 AntiGravity Lab · Concept research site</p>
+</footer>
+
+<script>
+(() => {
+'use strict';
+
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HAS_IO = 'IntersectionObserver' in window;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const TAU = Math.PI * 2;
+const fmt = (v, dec) => v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+const zl = id => `<span class="zone z${id.toLowerCase()}">Zone ${id}</span>`;
+if (!HAS_IO) document.documentElement.classList.add('no-io');
+
+/* ---------- canvas helpers ---------- */
+// Keeps a canvas sized to its CSS box at device pixel ratio; `st` receives ctx/w/h.
+function fitCanvas(canvas, st, onResize) {
+  st.ctx = canvas.getContext('2d');
+  const fit = () => {
+    const r = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    st.w = Math.max(1, r.width);
+    st.h = Math.max(1, r.height);
+    canvas.width = Math.round(st.w * dpr);
+    canvas.height = Math.round(st.h * dpr);
+    st.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (onResize) onResize();
+  };
+  fit();
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(canvas);
+  else window.addEventListener('resize', fit);
+}
+
+// Runs draw(t, dt) only while `el` is on screen; a single still frame when motion is reduced.
+function animate(el, draw) {
+  if (REDUCED) { draw(4, 0); return; }
+  let raf = 0, running = false, last = 0, t = 0;
+  const frame = now => {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now; t += dt;
+    draw(t, dt);
+    raf = requestAnimationFrame(frame);
+  };
+  const start = () => { if (running) return; running = true; last = performance.now(); raf = requestAnimationFrame(frame); };
+  const stop = () => { running = false; cancelAnimationFrame(raf); };
+  if (HAS_IO) new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()), { rootMargin: '120px' }).observe(el);
+  else start();
+}
+
+/* ---------- count-up ---------- */
+function countUp(el, to, dec, from, dur, done) {
+  if (REDUCED) { el.textContent = fmt(to, dec); if (done) done(); return; }
+  const t0 = performance.now();
+  const step = now => {
+    const p = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(from + (to - from) * e, dec);
+    if (p < 1) requestAnimationFrame(step);
+    else if (done) done();
+  };
+  el.textContent = fmt(from, dec);
+  requestAnimationFrame(step);
+}
+
+/* ==========================================================================
+   Hero star field — slow drift upward, slight mouse parallax
+   ========================================================================== */
+const sf = $('#starfield');
+const S = {};
+let stars = [];
+const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+
+function seedStars() {
+  const n = Math.min(460, Math.round((S.w * S.h) / 4000));
+  stars = Array.from({ length: n }, () => {
+    const z = Math.pow(Math.random(), 1.7);
+    const k = Math.random();
+    return {
+      x: Math.random() * S.w, y: Math.random() * S.h, z,
+      r: 0.35 + z * 1.5,
+      vx: (Math.random() - 0.5) * 3,
+      vy: -(3 + z * 15),
+      tw: Math.random() * TAU, ts: 0.6 + Math.random() * 1.8,
+      c: k < 0.1 ? '0,212,255' : k < 0.16 ? '164,123,255' : k < 0.19 ? '0,255,159' : '255,255,255'
+    };
+  });
+  if (REDUCED) drawStars(4, 0);
+}
+
+function drawStars(t, dt) {
+  const { ctx, w, h } = S;
+  ctx.clearRect(0, 0, w, h);
+  mouse.x += (mouse.tx - mouse.x) * 0.04;
+  mouse.y += (mouse.ty - mouse.y) * 0.04;
+  for (const s of stars) {
+    s.x += s.vx * dt;
+    s.y += s.vy * dt;
+    if (s.y < -6) { s.y = h + 6; s.x = Math.random() * w; }
+    if (s.x < -6) s.x = w + 6; else if (s.x > w + 6) s.x = -6;
+    const px = s.x + mouse.x * s.z * 22;
+    const py = s.y + mouse.y * s.z * 22;
+    const a = (0.25 + 0.75 * s.z) * (0.6 + 0.4 * Math.sin(t * s.ts + s.tw));
+    if (s.r > 1.3) {
+      ctx.fillStyle = `rgba(${s.c},${a * 0.14})`;
+      ctx.beginPath(); ctx.arc(px, py, s.r * 3.4, 0, TAU); ctx.fill();
+    }
+    ctx.fillStyle = `rgba(${s.c},${a})`;
+    ctx.beginPath(); ctx.arc(px, py, s.r, 0, TAU); ctx.fill();
+  }
+}
+
+fitCanvas(sf, S, seedStars);
+animate(sf, drawStars);
+$('.hero').addEventListener('pointermove', e => {
+  mouse.tx = -(e.clientX / window.innerWidth - 0.5);
+  mouse.ty = -(e.clientY / window.innerHeight - 0.5);
+});
+
+/* ==========================================================================
+   Scroll reveal + stat counters
+   ========================================================================== */
+// Technology readiness meters
+$$('[data-trl]').forEach(el => {
+  const n = +el.dataset.trl;
+  el.innerHTML = `TRL ${n}/9 <span class="trl-bar">${Array.from({ length: 9 }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</span>`;
+});
+
+function startCount(el) {
+  countUp(el, parseFloat(el.dataset.count), +(el.dataset.dec || 0), parseFloat(el.dataset.from || 0), +(el.dataset.dur || 1800));
+}
+
+const onVisible = (els, fn, opts) => {
+  if (!HAS_IO) { els.forEach(fn); return; }
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); fn(e.target); } });
+  }, opts);
+  els.forEach(el => io.observe(el));
+};
+
+onVisible($$('.reveal, .js-observe'), el => el.classList.add('in'), { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+onVisible($$('[data-count]'), startCount, { threshold: 0.4 });
+
+/* ==========================================================================
+   Live data panel
+   ========================================================================== */
+const rows = $$('#livePanel .drow').map(row => ({
+  row,
+  num: $('.d-num', row),
+  bar: $('.bar i', row),
+  to: parseFloat(row.dataset.to),
+  dec: +row.dataset.dec,
+  jit: parseFloat(row.dataset.jit),
+  max: parseFloat(row.dataset.max),
+  pct: parseFloat(row.dataset.pct),
+  pj: parseFloat(row.dataset.pj)
+}));
+
+function startLive() {
+  rows.forEach(r => {
+    r.bar.style.width = r.pct + '%';
+    countUp(r.num, r.to, r.dec, 0, 2000);
+  });
+  if (REDUCED) return;
+  setTimeout(() => {
+    setInterval(() => {
+      rows.forEach(r => {
+        if (Math.random() < 0.3) return;
+        const v = clamp(r.to + (Math.random() * 2 - 1) * r.jit, 0, r.max);
+        r.num.textContent = fmt(v, r.dec);
+        r.bar.style.width = clamp(r.pct + (Math.random() * 2 - 1) * r.pj, 0, 100) + '%';
+        r.row.classList.remove('flash');
+        void r.row.offsetWidth;
+        r.row.classList.add('flash');
+      });
+    }, 1400);
+  }, 2300);
+}
+onVisible([$('#livePanel')], startLive, { threshold: 0.3 });
+
+const clock = $('#utcClock');
+const tick = () => { clock.textContent = new Date().toISOString().slice(11, 19) + ' UTC'; };
+tick();
+setInterval(tick, 1000);
+
+// Oscilloscope strip
+const scopeEl = $('#scope');
+const SC = {};
+function drawScope(t) {
+  const { ctx, w, h } = SC;
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = 'rgba(255,255,255,.05)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let x = 0; x <= w; x += 40) { ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, h); }
+  ctx.moveTo(0, h / 2 + 0.5); ctx.lineTo(w, h / 2 + 0.5);
+  ctx.stroke();
+
+  const mid = h / 2, amp = h * 0.32;
+  const trace = (fn, color, width, blur) => {
+    ctx.beginPath();
+    for (let x = 0; x <= w; x += 2) {
+      const y = mid + fn(x);
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = color; ctx.lineWidth = width;
+    ctx.shadowColor = color; ctx.shadowBlur = blur;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  };
+  trace(x => Math.sin(x * 0.045 - t * 2.2 + 1) * amp * 0.55, 'rgba(123,47,255,.55)', 1.2, 0);
+  trace(x => Math.sin(x * 0.06 - t * 5) * amp * (0.78 + 0.22 * Math.sin(x * 0.008 + t * 0.7)) + Math.sin(x * 0.31 + t * 13) * amp * 0.06, 'rgba(0,212,255,.95)', 1.6, 10);
+}
+fitCanvas(scopeEl, SC, () => { if (REDUCED) drawScope(4); });
+animate(scopeEl, drawScope);
+
+/* ==========================================================================
+   Physics visualizer — levitating sphere, dipole field lines, orbiters
+   ========================================================================== */
+const vizEl = $('#vizCanvas');
+const VZ = {};
+const orbiters = Array.from({ length: 46 }, () => ({
+  a: 1.4 + Math.random() * 1.3,
+  ph: Math.random() * TAU,
+  sp: 0.22 + Math.random() * 0.38,
+  tilt: (Math.random() - 0.5) * 0.5,
+  flat: 0.2 + Math.random() * 0.16,
+  r: 0.8 + Math.random() * 1.7,
+  c: Math.random() < 0.72 ? '0,212,255' : Math.random() < 0.5 ? '164,123,255' : '0,255,159'
+}));
+const risers = Array.from({ length: 30 }, () => ({ x: Math.random() * 2 - 1, p: Math.random(), sp: 0.12 + Math.random() * 0.25 }));
+const hAlt = $('#hAlt'), hB = $('#hB'), hT = $('#hT');
+let hudTick = 0;
+
+function drawViz(t, dt) {
+  const { ctx, w, h } = VZ;
+  ctx.clearRect(0, 0, w, h);
+  const R = Math.max(26, Math.min(w * 0.075, h * 0.11));
+  const cx = w / 2;
+  const baseY = h * 0.8;
+  const bob = Math.sin(t * 1.1);
+  const sy = h * 0.45 + bob * R * 0.12;
+
+  // perspective floor grid
+  const horizon = h * 0.6;
+  ctx.save();
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let i = -12; i <= 12; i++) { ctx.moveTo(cx + i * 14, horizon); ctx.lineTo(cx + i * w * 0.14, h); }
+  for (let i = 1; i <= 9; i++) { const y = horizon + (h - horizon) * Math.pow(i / 9, 1.8); ctx.moveTo(0, y); ctx.lineTo(w, y); }
+  const fg = ctx.createLinearGradient(0, horizon, 0, h);
+  fg.addColorStop(0, 'rgba(0,212,255,0)'); fg.addColorStop(1, 'rgba(0,212,255,.12)');
+  ctx.strokeStyle = fg;
+  ctx.stroke();
+  ctx.restore();
+
+  // repulsion column between coil and sphere
+  const col = ctx.createLinearGradient(0, sy, 0, baseY);
+  col.addColorStop(0, 'rgba(0,212,255,0)'); col.addColorStop(1, 'rgba(0,212,255,.17)');
+  ctx.fillStyle = col;
+  ctx.beginPath();
+  ctx.moveTo(cx - R * 0.5, sy + R * 0.6); ctx.lineTo(cx + R * 0.5, sy + R * 0.6);
+  ctx.lineTo(cx + R * 1.5, baseY); ctx.lineTo(cx - R * 1.5, baseY);
+  ctx.closePath(); ctx.fill();
+
+  // particles lifted by the field
+  for (const p of risers) {
+    p.p += p.sp * dt;
+    if (p.p > 1) { p.p -= 1; p.x = Math.random() * 2 - 1; }
+    const y = baseY - p.p * (baseY - sy - R * 0.9);
+    const x = cx + p.x * R * (1.4 - p.p * 0.9);
+    ctx.fillStyle = `rgba(150,240,255,${Math.sin(p.p * Math.PI) * 0.8})`;
+    ctx.beginPath(); ctx.arc(x, y, 1.2, 0, TAU); ctx.fill();
+  }
+
+  // pulsing repulsion rings under the sphere
+  const pulse = 0.6 + 0.4 * Math.sin(t * 2.2);
+  ctx.save();
+  ctx.translate(cx, baseY); ctx.scale(1, 0.22);
+  const pg = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 2.4);
+  pg.addColorStop(0, `rgba(0,212,255,${0.6 * pulse})`);
+  pg.addColorStop(0.5, `rgba(0,212,255,${0.18 * pulse})`);
+  pg.addColorStop(1, 'rgba(0,212,255,0)');
+  ctx.fillStyle = pg;
+  ctx.beginPath(); ctx.arc(0, 0, R * 2.4, 0, TAU); ctx.fill();
+  ctx.restore();
+  for (let i = 0; i < 3; i++) {
+    const p = (t * 0.45 + i / 3) % 1;
+    const rx = R * (1 + p * 2.4);
+    ctx.strokeStyle = `rgba(0,212,255,${(1 - p) * 0.6})`;
+    ctx.lineWidth = 2 * (1 - p) + 0.4;
+    ctx.beginPath(); ctx.ellipse(cx, baseY, rx, rx * 0.2, 0, 0, TAU); ctx.stroke();
+  }
+  // coil
+  ctx.fillStyle = 'rgba(8,16,36,.95)';
+  ctx.beginPath(); ctx.ellipse(cx, baseY + R * 0.14, R * 1.25, R * 0.27, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = `rgba(0,212,255,${0.5 + 0.3 * pulse})`; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.strokeStyle = 'rgba(0,212,255,.35)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.ellipse(cx, baseY + R * 0.14, R * 0.7, R * 0.14, 0, 0, TAU); ctx.stroke();
+
+  // dipole field lines r = L·sin²θ, with a travelling sine ripple
+  for (let k = 0; k < 6; k++) {
+    const L = R * (2.1 + k * 0.62) * (1 + 0.035 * Math.sin(t * 1.3 + k * 0.9));
+    const alpha = 0.6 - k * 0.075;
+    for (const side of [-1, 1]) {
+      ctx.beginPath();
+      for (let i = 0; i <= 96; i++) {
+        const th = 0.05 * Math.PI + (i / 96) * 0.9 * Math.PI;
+        const s = Math.sin(th);
+        const r = L * s * s * (1 + 0.03 * Math.sin(th * 9 - t * 3 + k));
+        const x = cx + side * r * s, y = sy - r * Math.cos(th);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.setLineDash([]);
+      ctx.strokeStyle = `rgba(0,212,255,${alpha * 0.25})`; ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.setLineDash([5, 9]);
+      ctx.lineDashOffset = -t * (24 + k * 5) * side;
+      ctx.strokeStyle = `rgba(0,212,255,${alpha})`; ctx.lineWidth = 1.4;
+      ctx.stroke();
+    }
+  }
+  ctx.setLineDash([]);
+
+  // orbit guides (back halves) + particles behind the sphere
+  const orbitGuide = (front) => {
+    ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1;
+    [[1.8, 0.27, -0.12], [2.4, 0.3, 0.14]].forEach(([a, f, tilt]) => {
+      ctx.beginPath();
+      ctx.ellipse(cx, sy, R * a, R * a * f, tilt, front ? 0 : Math.PI, front ? Math.PI : TAU);
+      ctx.stroke();
+    });
+  };
+  const pts = orbiters.map(o => {
+    const ang = o.ph + t * o.sp;
+    const x = Math.cos(ang) * o.a * R, yv = Math.sin(ang) * o.a * R * o.flat;
+    const ct = Math.cos(o.tilt), st = Math.sin(o.tilt);
+    return { X: cx + x * ct - yv * st, Y: sy + x * st + yv * ct, d: Math.sin(ang), o };
+  });
+  const drawPts = front => {
+    for (const p of pts) {
+      if ((p.d > 0) !== front) continue;
+      const a = 0.35 + 0.55 * (p.d + 1) / 2;
+      const r = p.o.r * (1 + 0.35 * p.d);
+      ctx.fillStyle = `rgba(${p.o.c},${a * 0.22})`;
+      ctx.beginPath(); ctx.arc(p.X, p.Y, r * 3, 0, TAU); ctx.fill();
+      ctx.fillStyle = `rgba(${p.o.c},${a})`;
+      ctx.beginPath(); ctx.arc(p.X, p.Y, r, 0, TAU); ctx.fill();
+    }
+  };
+  orbitGuide(false);
+  drawPts(false);
+
+  // the sphere
+  const glow = ctx.createRadialGradient(cx, sy, R * 0.6, cx, sy, R * 3.2);
+  glow.addColorStop(0, 'rgba(0,212,255,.38)');
+  glow.addColorStop(0.4, 'rgba(0,212,255,.08)');
+  glow.addColorStop(1, 'rgba(0,212,255,0)');
+  ctx.fillStyle = glow;
+  ctx.beginPath(); ctx.arc(cx, sy, R * 3.2, 0, TAU); ctx.fill();
+
+  const body = ctx.createRadialGradient(cx - R * 0.35, sy - R * 0.4, R * 0.05, cx, sy, R);
+  body.addColorStop(0, '#ffffff');
+  body.addColorStop(0.12, '#bdf5ff');
+  body.addColorStop(0.42, '#19c6f2');
+  body.addColorStop(0.76, '#0b4c9a');
+  body.addColorStop(1, '#1b0c4e');
+  ctx.fillStyle = body;
+  ctx.beginPath(); ctx.arc(cx, sy, R, 0, TAU); ctx.fill();
+  ctx.strokeStyle = 'rgba(170,242,255,.75)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx, sy, R, 0, TAU); ctx.clip();
+  ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 1;
+  for (let i = 0; i < 4; i++) {
+    const ph = (t * 0.6 + (i / 4) * Math.PI) % Math.PI;
+    ctx.beginPath(); ctx.ellipse(cx, sy, Math.abs(Math.cos(ph)) * R, R, 0, 0, TAU); ctx.stroke();
+  }
+  ctx.beginPath(); ctx.ellipse(cx, sy, R, R * 0.18, 0, 0, TAU); ctx.stroke();
+  ctx.restore();
+
+  orbitGuide(true);
+  drawPts(true);
+
+  // HUD readouts (throttled DOM writes)
+  hudTick += dt;
+  if (hudTick > 0.12 || dt === 0) {
+    hudTick = 0;
+    hAlt.textContent = (12.4 + bob * 0.42).toFixed(2) + ' mm';
+    hB.textContent = Math.round(340 + Math.sin(t * 2.2) * 3) + ' G';
+    const s = Math.floor(t);
+    hT.textContent = 'T+ ' + [s / 3600, (s / 60) % 60, s % 60].map(v => String(Math.floor(v)).padStart(2, '0')).join(':');
+  }
+}
+fitCanvas(vizEl, VZ, () => { if (REDUCED) drawViz(4, 0); });
+animate(vizEl, drawViz);
+
+/* ==========================================================================
+   Field map (Leaflet)
+   ========================================================================== */
+const CENTER = [44.893, 78.248];
+const ZONES = [
+  { id: 'A', lat: 44.90739, lng: 78.23628, color: '#00D4FF', bg: 'rgba(0,212,255,0.2)', label: 'Primary Field', legend: 'Primary Field', icon: '⚡', head: 'Maximum field intensity', body: 'Electromagnetic core · 48 units', units: 48, dir: 'left' },
+  { id: 'B', lat: 44.88131, lng: 78.26044, color: '#7B2FFF', bg: 'rgba(123,47,255,0.2)', label: 'Secondary Array', legend: 'Secondary Array', icon: '🔊', head: 'Secondary resonance point', body: '31 units recorded', units: 31, dir: 'right' },
+  { id: 'C', lat: 44.89544, lng: 78.23869, color: '#00FF9F', bg: 'rgba(0,255,159,0.2)', label: 'Acoustic Node', legend: 'Acoustic Node', icon: '🌀', head: 'Acoustic levitation zone', body: '18 units recorded', units: 18, dir: 'left' },
+  { id: 'D', lat: 44.88425, lng: 78.24853, color: '#FFB300', bg: 'rgba(255,179,0,0.2)', label: 'Peripheral', legend: 'Peripheral Edge', icon: '📡', head: 'Peripheral field edge', body: '9 units recorded', units: 9, dir: 'left' },
+  { id: 'E', lat: 44.89847, lng: 78.24744, color: 'rgba(200,220,255,0.6)', bg: 'rgba(200,220,255,0.12)', label: 'Background', legend: 'Background', icon: '🔬', head: 'Background baseline', body: '3 units · No field detected', units: 3, dir: 'right' }
+];
+const maxUnits = Math.max(...ZONES.map(z => z.units));
+
+// Zone reading chips under the map
+const strip = $('#zoneStrip');
+strip.innerHTML = ZONES.map((z, i) => `
+  <button class="zchip reveal" type="button" data-zone="${z.id}" style="--zc:${z.color};--p:${(z.units / maxUnits * 100).toFixed(1)}%;--d:${(i * 0.06).toFixed(2)}s">
+    <span class="zc-top">${zl(z.id)}<span class="zc-name">${z.legend}</span></span>
+    <span class="zc-units"><span data-count="${z.units}">${z.units}</span><small>units</small></span>
+    <span class="zc-bar"><i></i></span>
+  </button>`).join('');
+onVisible($$('.zchip', strip), el => el.classList.add('in'), { threshold: 0.2 });
+onVisible($$('[data-count]', strip), startCount, { threshold: 0.4 });
+
+function initMap() {
+  const el = $('#map');
+  if (!window.L) {
+    el.innerHTML = '<div class="map-fallback">Map library could not be loaded — check your connection</div>';
+    return;
+  }
+  const map = L.map(el, { center: CENTER, zoom: 13, scrollWheelZoom: false, attributionControl: false });
+  L.control.attribution({ position: 'bottomleft', prefix: '<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>' }).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd',
+    maxZoom: 20,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'
+  }).addTo(map);
+
+  // field measurement network: every zone linked to every other zone
+  for (let i = 0; i < ZONES.length; i++) {
+    for (let j = i + 1; j < ZONES.length; j++) {
+      L.polyline([[ZONES[i].lat, ZONES[i].lng], [ZONES[j].lat, ZONES[j].lng]], {
+        color: '#00D4FF', opacity: 0.35, weight: 2, dashArray: '6 8', className: 'field-link', interactive: false
+      }).addTo(map);
+    }
+  }
+
+  const moveTo = (latlng, zoom) => (REDUCED ? map.setView(latlng, zoom, { animate: false }) : map.flyTo(latlng, zoom, { duration: 1.2 }));
+  const permanentLabels = window.matchMedia('(min-width: 721px)').matches;
+  const markers = {};
+  ZONES.forEach(z => {
+    const icon = L.divIcon({
+      className: 'zm-icon',
+      html: `<div class="zm" style="--zc:${z.color};--zbg:${z.bg}"><span class="zm-dot"></span><b>${z.id}</b></div>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -20],
+      tooltipAnchor: [z.dir === 'left' ? -22 : 22, 0]
+    });
+    const m = L.marker([z.lat, z.lng], { icon, riseOnHover: true }).addTo(map);
+    m.getElement().setAttribute('aria-label', `Zone ${z.id} · ${z.label}`);
+    m.bindTooltip(`${zl(z.id)} · ${z.label}`, { permanent: permanentLabels, direction: z.dir, className: 'zone-tip', opacity: 1 });
+    m.bindPopup(
+      `<div class="pp-t">${z.icon} ${zl(z.id)} — ${z.head}</div>` +
+      `<div class="pp-b">${z.body}</div>` +
+      `<div class="pp-c">${z.lat.toFixed(5)}° N · ${z.lng.toFixed(5)}° E</div>`,
+      { maxWidth: 280 }
+    );
+    markers[z.id] = m;
+  });
+
+  strip.addEventListener('click', e => {
+    const chip = e.target.closest('.zchip');
+    if (!chip) return;
+    const z = ZONES.find(q => q.id === chip.dataset.zone);
+    map.closePopup();
+    map.once('moveend', () => markers[z.id].openPopup());
+    moveTo([z.lat, z.lng], 15);
+  });
+  $('#mapReset').addEventListener('click', () => {
+    map.closePopup();
+    moveTo(CENTER, 13);
+  });
+
+  if ('ResizeObserver' in window) new ResizeObserver(() => map.invalidateSize()).observe(el);
+}
+
+// Leaflet is loaded with `defer`, so it is ready by DOMContentLoaded.
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMap);
+else initMap();
+})();
+</script>
+</body>
+</html>
