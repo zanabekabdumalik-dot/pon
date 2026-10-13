@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Горизонт событий — ролики</title>
+<style>
+  @font-face { font-family: 'UnbC'; font-weight: 700; src: url('node_modules/@fontsource/unbounded/files/unbounded-cyrillic-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'UnbL'; font-weight: 700; src: url('node_modules/@fontsource/unbounded/files/unbounded-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'UnbC'; font-weight: 800; src: url('node_modules/@fontsource/unbounded/files/unbounded-cyrillic-800-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'UnbL'; font-weight: 800; src: url('node_modules/@fontsource/unbounded/files/unbounded-latin-800-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'MonoC'; font-weight: 500; src: url('node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-cyrillic-500-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'MonoL'; font-weight: 500; src: url('node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'LitC'; font-weight: 300; font-style: italic; src: url('node_modules/@fontsource/literata/files/literata-cyrillic-300-italic.woff2') format('woff2'); }
+  @font-face { font-family: 'LitL'; font-weight: 300; font-style: italic; src: url('node_modules/@fontsource/literata/files/literata-latin-300-italic.woff2') format('woff2'); }
+  html, body { margin: 0; background: #000; }
+  canvas { display: block; }
+  body.preview canvas { height: 96vh; width: auto; margin: 2vh auto; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+'use strict';
+// Три вертикальных ролика про космос (1080×1920, 30 к/с).
+// Кадр — функция времени: renderFrame(t) рисует момент t. Кадры рендерятся по порядку,
+// поэтому следы частиц (затухание прошлого кадра) получаются одинаковыми при каждой сборке.
+// Посмотреть в браузере: anim.html?v=1 (или 2, 3) через локальный сервер.
+const W = 1080, H = 1920, TAU = Math.PI * 2;
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+const FD = 'UnbC, UnbL, sans-serif', FM = 'MonoC, MonoL, monospace', FL = 'LitC, LitL, serif';
+const C = { void: '#05060b', panel: '#0b0d16', line: '#2a2e42', star: '#ece6da', dust: '#a3a0b6', disk: '#ffa04a', hot: '#ffe1b4', quant: '#86d4ff' };
+
+/* ---------- утилиты ---------- */
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const inv = (a, b, x) => clamp((x - a) / (b - a));
+const easeOut = k => 1 - Math.pow(1 - k, 3);
+const easeIn = k => k * k * k;
+const easeInOut = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const win = (t, a, b, fi = 0.4, fo = 0.4) => easeOut(inv(a, a + fi, t)) * (1 - inv(b - fo, b, t));
+function rng(seed) {
+  let a = seed >>> 0;
+  return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+function circle(g, x, y, r) { g.beginPath(); g.arc(x, y, Math.max(0, r), 0, TAU); }
+function glow(g, x, y, r, rgb, a) {
+  const gr = g.createRadialGradient(x, y, 0, x, y, r);
+  gr.addColorStop(0, `rgba(${rgb},${a})`); gr.addColorStop(1, `rgba(${rgb},0)`);
+  g.fillStyle = gr; circle(g, x, y, r); g.fill();
+}
+const PAL = (() => {
+  const st = [[70, 14, 6], [170, 48, 14], [240, 110, 34], [255, 170, 80], [255, 214, 150], [255, 240, 215], [226, 236, 255]];
+  const out = [];
+  for (let i = 0; i < 64; i++) {
+    const t = i / 63 * (st.length - 1), k = Math.min(st.length - 2, Math.floor(t)), f = t - k, a = st[k], b = st[k + 1];
+    out.push(`rgb(${Math.round(lerp(a[0], b[0], f))},${Math.round(lerp(a[1], b[1], f))},${Math.round(lerp(a[2], b[2], f))})`);
+  }
+  return out;
+})();
+let CUES = [];
+const cue = (t, type, v = 1) => CUES.push({ t: +t.toFixed(3), type, v });
+
+/* ---------- текст ---------- */
+// [слово] — акцентный цвет
+function parseRich(s) {
+  const segs = []; let acc = false, buf = '';
+  for (const ch of s) {
+    if (ch === '[' || ch === ']') { if (buf) segs.push({ t: buf, a: acc }); buf = ''; acc = ch === '['; }
+    else buf += ch;
+  }
+  if (buf) segs.push({ t: buf, a: acc });
+  const toks = [];
+  for (const sg of segs) for (const p of sg.t.split(/(\s+)/)) { if (!p) continue; toks.push(/^\s+$/.test(p) ? { sp: true } : { w: p, a: sg.a }); }
+  return toks;
+}
+function layout(s, font, maxW) {
+  ctx.font = font;
+  const groups = []; let cur = null;
+  for (const tk of parseRich(s)) {
+    if (tk.sp) { cur = null; continue; }
+    if (!cur) { cur = { pieces: [], w: 0 }; groups.push(cur); }
+    cur.pieces.push(tk); cur.w += ctx.measureText(tk.w).width;
+  }
+  const spW = ctx.measureText(' ').width, lines = [];
+  let line = { gs: [], w: 0 };
+  for (const g of groups) {
+    const add = line.gs.length ? spW + g.w : g.w;
+    if (line.gs.length && line.w + add > maxW) { lines.push(line); line = { gs: [g], w: g.w }; }
+    else { line.gs.push(g); line.w += add; }
+  }
+  if (line.gs.length) lines.push(line);
+  return { lines, spW };
+}
+function drawRich(s, x, y, size, alpha, o = {}) {
+  if (alpha <= 0) return;
+  const font = `${o.weight || 700} ${size}px ${o.family || FD}`;
+  const { lines, spW } = layout(s, font, o.maxW || 860);
+  const lh = size * (o.lh || 1.24), total = lines.length * lh;
+  if (o.band !== false) {
+    const top = y - total / 2 - size * 0.9, bot = y + total / 2 + size * 0.9;
+    const gr = ctx.createLinearGradient(0, top, 0, bot);
+    gr.addColorStop(0, 'rgba(5,6,11,0)'); gr.addColorStop(0.3, `rgba(5,6,11,${0.62 * alpha})`); gr.addColorStop(0.7, `rgba(5,6,11,${0.62 * alpha})`); gr.addColorStop(1, 'rgba(5,6,11,0)');
+    ctx.fillStyle = gr; ctx.fillRect(0, top, W, bot - top);
+  }
+  ctx.save();
+  ctx.font = font; ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.globalAlpha = alpha;
+  ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = size * 0.45;
+  let yy = y - total / 2 + lh / 2;
+  for (const ln of lines) {
+    let xx = x - ln.w / 2;
+    for (const g of ln.gs) {
+      for (const p of g.pieces) { ctx.fillStyle = p.a ? (o.accent || C.disk) : (o.color || C.star); ctx.fillText(p.w, xx, yy); xx += ctx.measureText(p.w).width; }
+      xx += spW;
+    }
+    yy += lh;
+  }
+  ctx.restore();
+}
+function captions(t, list) {
+  for (const c of list) {
+    if (t < c.a || t > c.b) continue;
+    const kin = easeOut(inv(c.a, c.a + 0.35, t)), kout = inv(c.b - 0.3, c.b, t);
+    drawRich(c.s, 540, (c.y || 1330) + (1 - kin) * 26 - kout * 14, c.size || 62, kin * (1 - kout), c);
+  }
+}
+function brand(a = 0.6) {
+  ctx.save();
+  ctx.globalAlpha = a; ctx.font = `500 26px ${FM}`; ctx.letterSpacing = '6px';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = C.star;
+  ctx.fillText('ГОРИЗОНТ СОБЫТИЙ', 540, 150);
+  ctx.restore();
+}
+function endCard(t, a) {
+  const k = easeOut(inv(a, a + 0.7, t));
+  if (k <= 0) return;
+  ctx.fillStyle = `rgba(5,6,11,${0.92 * k})`; ctx.fillRect(0, 0, W, H);
+  ctx.save();
+  ctx.globalAlpha = k; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  glow(ctx, 540, 900, 420, '255,160,74', 0.12 * k);
+  ctx.fillStyle = '#000'; circle(ctx, 540, 660, 64); ctx.fill();
+  ctx.strokeStyle = C.disk; ctx.lineWidth = 3; circle(ctx, 540, 660, 64); ctx.stroke();
+  glow(ctx, 540, 660, 110, '255,160,74', 0.25);
+  ctx.font = `800 104px ${FD}`; ctx.letterSpacing = '-3px'; ctx.fillStyle = C.star;
+  ctx.fillText('ГОРИЗОНТ', 540, 900);
+  ctx.font = `italic 300 124px ${FL}`; ctx.letterSpacing = '0px'; ctx.fillStyle = C.hot;
+  ctx.fillText('событий', 540, 1030);
+  ctx.font = `500 30px ${FM}`; ctx.letterSpacing = '3px'; ctx.fillStyle = C.dust;
+  ctx.fillText('чёрные дыры · кванты · космос', 540, 1140);
+  ctx.restore();
+}
+
+/* ---------- фон: звёзды ---------- */
+function makeStars(seed, n) {
+  const R = rng(seed), s = [];
+  for (let i = 0; i < n; i++) s.push({ x: R() * W, y: R() * H, m: Math.pow(R(), 3), tw: R() * TAU, born: R() });
+  return s;
+}
+function drawStars(stars, t, a = 1, bornBy = 1) {
+  ctx.fillStyle = C.star;
+  for (const s of stars) {
+    if (s.born > bornBy) continue;
+    const fade = clamp((bornBy - s.born) * 12);
+    ctx.globalAlpha = a * fade * (0.18 + 0.75 * s.m) * (0.75 + 0.25 * Math.sin(t * 1.6 + s.tw));
+    const z = 1.2 + s.m * 2.6;
+    ctx.fillRect(s.x - z / 2, s.y - z / 2, z, z);
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ---------- космонавт ---------- */
+function astronaut(g, x, y, ang, st, alpha, size = 1) {
+  g.save();
+  g.translate(x, y); g.rotate(ang); g.scale(size * st, size / Math.sqrt(st));
+  g.globalAlpha = alpha;
+  g.fillStyle = '#ece6da'; g.strokeStyle = '#ece6da'; g.lineCap = 'round'; g.lineWidth = 2.4;
+  g.beginPath(); g.moveTo(4, -2); g.lineTo(12, -3.2); g.moveTo(4, 2); g.lineTo(12, 3.2); g.stroke();
+  g.beginPath(); g.moveTo(-5, -3.6); g.lineTo(1, -6.5); g.moveTo(-5, 3.6); g.lineTo(1, 6.5); g.stroke();
+  g.beginPath(); g.roundRect(-7, -4, 12, 8, 3); g.fill();
+  circle(g, -11, 0, 4.4); g.fill();
+  g.fillStyle = '#ffa04a'; g.beginPath(); g.ellipse(-12.2, 0, 1.8, 2.8, 0, 0, TAU); g.fill();
+  g.restore();
+}
+
+/* ---------- чёрная дыра: диск, доплер, линзирование (как на сайте) ---------- */
+function makeBH(seed, N, NS) {
+  const R = rng(seed);
+  const layer = document.createElement('canvas'); layer.width = W; layer.height = H;
+  const g = layer.getContext('2d');
+  const parts = [];
+  for (let i = 0; i < N; i++) {
+    const r = 3 + Math.pow(R(), 1.8) * 9.5, v = Math.sqrt(0.5 / (r - 1)), h = Math.pow(3 / r, 0.75);
+    parts.push({ r, a: R() * TAU, z: (R() - 0.5) * 0.05 * r, s: 0.6 + R() * 1.1, b: 0.35 + R() * 0.65, v, w: v / r, gi: Math.sqrt(1 - v * v), g: Math.sqrt(1 - 1 / r), h, h2: Math.pow(h, 1.6) });
+  }
+  const stars = [];
+  for (let i = 0; i < NS; i++) stars.push({ x: R(), y: R(), m: Math.pow(R(), 3), c: ['#ffffff', '#dfe8ff', '#fff1dc', '#cfdcff', '#ffe2c4'][(R() * 5) | 0], tw: R() * TAU });
+  const ax = new Float32Array(N), ay = new Float32Array(N), aD = new Float32Array(N), aI = new Float32Array(N), aC = new Uint8Array(N);
+  let drift = 0, time = 0, first = true;
+  function starImg(cx, cy, u, nx, ny, th, mu, st, tw, SH) {
+    if (th < SH) return;
+    const a = Math.min(1, (0.03 + 0.24 * st.m) * tw * Math.min(mu, 6));
+    if (a < 0.02) return;
+    g.globalAlpha = a;
+    if (mu > 1.8) {
+      const ang = Math.atan2(ny, nx), span = Math.min(0.45, 0.006 * mu * (1 + st.m * 3));
+      g.strokeStyle = st.c; g.lineWidth = 1.2 + st.m * 2;
+      g.beginPath(); g.arc(cx, cy, th * u, ang - span, ang + span); g.stroke();
+    } else {
+      const sz = 1.2 + st.m * 2.6;
+      g.fillStyle = st.c; g.fillRect(cx + nx * th * u - sz / 2, cy + ny * th * u - sz / 2, sz, sz);
+    }
+  }
+  function draw(cx, cy, u, tilt, dt, fade = 0.2) {
+    time += dt; drift += dt * 0.28;
+    const sT = Math.sin(tilt), cT = Math.cos(tilt), SH = 2.62;
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+    g.fillStyle = first ? C.void : `rgba(5,6,11,${fade})`; g.fillRect(0, 0, W, H); first = false;
+    g.globalCompositeOperation = 'lighter';
+    glow(g, cx, cy, u * 16, '255,130,50', 0.022);
+    const FW = W / u * 1.2, FH = H / u * 1.2, ox = (FW - W / u) / 2, oy = (FH - H / u) / 2;
+    const rE = 4.2, k4 = 4 * rE * rE;
+    for (const st of stars) {
+      const xs = (((st.x * FW + drift) % FW) + FW) % FW - ox;
+      const ys = (((st.y * FH + drift * 0.22) % FH) + FH) % FH - oy;
+      const x = xs - cx / u, y = ys - cy / u;
+      const b = Math.hypot(x, y) || 1e-4, q = Math.sqrt(b * b + k4);
+      const uu = b / rE, base = (uu * uu + 2) / (2 * uu * Math.sqrt(uu * uu + 4));
+      const tw = 0.72 + 0.28 * Math.sin(time * 1.7 + st.tw), nx = x / b, ny = y / b;
+      starImg(cx, cy, u, nx, ny, (b + q) / 2, base + 0.5, st, tw, SH);
+      const tm = (q - b) / 2;
+      if (tm > SH) starImg(cx, cy, u, -nx, -ny, tm, base - 0.5, st, tw, SH);
+    }
+    const n = parts.length, spin = dt * 7;
+    for (let i = 0; i < n; i++) {
+      const p = parts[i];
+      p.a += p.w * spin;
+      const ca = Math.cos(p.a), sa = Math.sin(p.a), Dp = p.r * sa;
+      ax[i] = p.r * ca; ay[i] = -Dp * sT - p.z * cT; aD[i] = Dp * cT;
+      const D = p.gi / (1 - p.v * (-ca * cT));
+      aI[i] = p.b * Math.pow(D, 2.4) * p.g * p.h2 * 0.3;
+      aC[i] = clamp(Math.round(p.h * Math.pow(D, 0.45) * p.g * 1.12 * 63), 0, 63);
+    }
+    const sz0 = clamp(u * 0.038, 1.3, 6);
+    for (let i = 0; i < n; i++) {
+      const dep = aD[i]; if (dep <= 0) continue;
+      const x = ax[i], y = ay[i], b = Math.hypot(x, y), kk = 8 * dep, q = Math.sqrt(b * b + kk);
+      let nx = 0, ny = -1; if (b > 1e-4) { nx = x / b; ny = y / b; }
+      const rr = Math.sqrt(kk / 4), uu = Math.max(b / rr, 1e-3), base = (uu * uu + 2) / (2 * uu * Math.sqrt(uu * uu + 4));
+      const sz = sz0 * parts[i].s; g.fillStyle = PAL[aC[i]];
+      const tp = (b + q) / 2;
+      if (tp > SH * 0.98) { g.globalAlpha = Math.min(1, aI[i] * Math.min(base + 0.5, 2.5) * 1.5); g.fillRect(cx + nx * tp * u - sz / 2, cy + ny * tp * u - sz / 2, sz, sz); }
+      const tm = (q - b) / 2;
+      if (tm > SH) { g.globalAlpha = Math.min(1, aI[i] * Math.min(base - 0.5, 1.2) * 0.8); g.fillRect(cx - nx * tm * u - sz / 2, cy - ny * tm * u - sz / 2, sz, sz); }
+    }
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+    g.fillStyle = '#000'; circle(g, cx, cy, SH * u); g.fill();
+    g.globalCompositeOperation = 'lighter';
+    const lg = g.createLinearGradient(cx - SH * u, 0, cx + SH * u, 0);
+    lg.addColorStop(0, 'rgba(255,238,205,0.3)'); lg.addColorStop(1, 'rgba(255,160,80,0.07)');
+    g.strokeStyle = lg; g.lineWidth = Math.max(1.5, u * 0.06); circle(g, cx, cy, SH * u * 1.01); g.stroke();
+    g.globalAlpha = 0.1; g.lineWidth = Math.max(3, u * 0.3); circle(g, cx, cy, SH * u * 1.06); g.stroke();
+    for (let i = 0; i < n; i++) {
+      if (aD[i] > 0) continue;
+      const sz = sz0 * parts[i].s;
+      g.globalAlpha = Math.min(1, aI[i] * (ax[i] * ax[i] + ay[i] * ay[i] < SH * SH ? 2.4 : 1));
+      g.fillStyle = PAL[aC[i]];
+      g.fillRect(cx + ax[i] * u - sz / 2, cy + ay[i] * u - sz / 2, sz, sz);
+    }
+    g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  }
+  return { layer, draw };
+}
+
+/* =====================================================================
+   Ролик 1. Что будет, если упасть в чёрную дыру
+   ===================================================================== */
+const V1 = (() => {
+  let bh, lastTick;
+  const CAPS = [
+    { a: 0.15, b: 3.9, s: 'Что будет, если [упасть] в чёрную дыру?', size: 76 },
+    { a: 4.0, b: 7.2, s: '[Sgr A*] — чёрная дыра в центре нашей Галактики' },
+    { a: 7.2, b: 10.4, s: 'Она в [4 миллиона] раз тяжелее Солнца' },
+    { a: 10.4, b: 13.4, s: 'Свет огибает её, поэтому диск виден [сверху и снизу]' },
+    { a: 13.4, b: 16.4, s: 'У горизонта [время замедляется]' },
+    { a: 16.4, b: 19.4, s: 'Час рядом с ней — это [7 лет] на Земле' },
+    { a: 19.4, b: 22.6, s: 'Маленькая дыра растянула бы тебя [в спагетти]' },
+    { a: 22.6, b: 25.4, s: 'А горизонт гиганта пересечёшь [и не заметишь]' },
+    { a: 25.7, b: 28.0, s: 'Но назад [дороги нет]', y: 960, size: 72, band: false }
+  ];
+  const uAt = t => {
+    if (t < 4) return lerp(21, 24, t / 4);
+    if (t < 12) return lerp(24, 38, easeInOut(inv(4, 12, t)));
+    if (t < 19.4) return lerp(38, 44, inv(12, 19.4, t));
+    if (t < 25.4) return lerp(44, 50, inv(19.4, 25.4, t));
+    return 50 * Math.pow(70, easeIn(inv(25.4, 27.6, t)));
+  };
+  function clocks(t) {
+    const k = win(t, 13.4, 19.5, 0.45, 0.4);
+    if (k <= 0) return;
+    const f = inv(13.9, 19.0, t);
+    ctx.save(); ctx.globalAlpha = k;
+    ctx.fillStyle = 'rgba(11,13,22,0.82)'; ctx.strokeStyle = C.line; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(110, 210, 860, 400, 28); ctx.fill(); ctx.stroke();
+    const face = (x, col) => {
+      ctx.fillStyle = '#121522'; circle(ctx, x, 380, 118); ctx.fill();
+      ctx.strokeStyle = C.line; ctx.lineWidth = 2; circle(ctx, x, 380, 118); ctx.stroke();
+      ctx.strokeStyle = C.dust;
+      for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * 98, 380 + Math.sin(a) * 98); ctx.lineTo(x + Math.cos(a) * 112, 380 + Math.sin(a) * 112); ctx.stroke(); }
+      ctx.fillStyle = col; circle(ctx, x, 380, 7); ctx.fill();
+    };
+    const hand = (x, a, len, w, col) => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x, 380); ctx.lineTo(x + Math.cos(a - Math.PI / 2) * len, 380 + Math.sin(a - Math.PI / 2) * len); ctx.stroke(); };
+    face(320, C.disk);
+    hand(320, (10 + f) / 12 * TAU, 58, 8, C.star);
+    hand(320, f * TAU, 88, 5, C.disk);
+    face(760, C.quant);
+    ctx.globalAlpha = k * 0.22; ctx.fillStyle = C.quant; circle(ctx, 760, 380, 90 * clamp(f * 8)); ctx.fill();
+    ctx.globalAlpha = k * 0.12; ctx.fillStyle = C.star; circle(ctx, 760, 380, 60 * clamp(f * 8)); ctx.fill();
+    ctx.globalAlpha = k;
+    if (f <= 0) { hand(760, 10 / 12 * TAU, 58, 8, C.star); hand(760, 0, 88, 5, C.quant); }
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = `500 28px ${FM}`;
+    ctx.fillStyle = C.disk; ctx.fillText('у горизонта', 320, 535);
+    ctx.fillStyle = C.quant; ctx.fillText('на Земле', 760, 535);
+    ctx.font = `700 40px ${FD}`; ctx.fillStyle = C.star;
+    ctx.fillText(Math.floor(f * 60) + ' мин', 320, 578);
+    const y = f * 7;
+    ctx.fillText(y < 0.95 ? Math.round(y * 365) + ' дн.' : y >= 6.95 ? '7 лет' : y.toFixed(1).replace('.', ',') + ' года', 760, 578);
+    ctx.restore();
+    if (f > 0 && f < 1) { const tick = Math.floor(f * 30); if (tick !== lastTick) { lastTick = tick; cue(t, 'tick', 0.6); } }
+  }
+  function falling(t, cx, cy, u) {
+    const SHr = 2.62 * u;
+    const run = (a, b, stretch) => {
+      if (t < a || t > b) return;
+      const f = inv(a, b, t), e = easeIn(f);
+      const x0 = 150, y0 = 600, x1 = cx - SHr * 0.55, y1 = cy - SHr * 0.2;
+      const x = lerp(x0, x1, e), y = lerp(y0, y1, e);
+      const ang = Math.atan2(y1 - y0, x1 - x0);
+      const st = stretch ? 1 + 9 * Math.pow(clamp((f - 0.25) / 0.75), 2) : 1;
+      const al = (1 - inv(0.86, 1, f)) * easeOut(inv(0, 0.1, f));
+      if (stretch && st > 3) glow(ctx, x, y, 40 * st * 0.5, '255,160,74', 0.25 * al);
+      astronaut(ctx, x - Math.cos(ang) * 12 * 4.6 * st, y - Math.sin(ang) * 12 * 4.6 * st, ang, st, al, 4.6);
+    };
+    run(19.6, 22.5, true);
+    run(22.7, 25.3, false);
+  }
+  return {
+    slug: 'chernaya-dyra', dur: 30, title: 'Что будет, если упасть в чёрную дыру',
+    setup() { bh = makeBH(11, 6000, 1100); lastTick = -1; cue(0.1, 'pad'); cue(0.15, 'swell'); cue(4.0, 'whoosh', 0.5); cue(13.4, 'whoosh', 0.4); cue(19.4, 'whoosh', 0.5); cue(25.4, 'fall'); cue(27.5, 'boom'); cue(28.1, 'chime'); },
+    frame(t, dt) {
+      const k = inv(25.4, 27.6, t);
+      const cx = 540, cy = lerp(840, 960, easeIn(k)), u = uAt(t);
+      const tilt = lerp(0.16 + 0.03 * Math.sin(t * 0.4), 0.05, easeInOut(k));
+      bh.draw(cx, cy, u, tilt, dt);
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+      ctx.drawImage(bh.layer, 0, 0);
+      clocks(t);
+      falling(t, cx, cy, u);
+      const blk = inv(26.9, 27.6, t);
+      if (blk > 0) { ctx.fillStyle = `rgba(0,0,0,${blk})`; ctx.fillRect(0, 0, W, H); }
+      brand(0.55 * (1 - blk));
+      captions(t, CAPS);
+      endCard(t, 28.0);
+    }
+  };
+})();
+
+/* =====================================================================
+   Ролик 2. Двухщелевой опыт
+   ===================================================================== */
+const V2 = (() => {
+  const SRC = { x: 540, y: 560 }, BY = 840, SL = [468, 612], SW = 30, PL = { x0: 90, x1: 990, y0: 1130, y1: 1440 };
+  const sinc = x => x === 0 ? 1 : Math.sin(Math.PI * x) / (Math.PI * x);
+  function cdf(fn) { const n = 900, a = new Float64Array(n + 1); let s = 0; for (let i = 0; i < n; i++) { s += fn(-1 + 2 * (i + 0.5) / n); a[i + 1] = s; } for (let i = 0; i <= n; i++) a[i] /= s; return a; }
+  function sample(a, r) { let lo = 0, hi = a.length - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (a[m] < r) lo = m; else hi = m; } return -1 + 2 * (lo + (r - a[lo]) / ((a[hi] - a[lo]) || 1)) / (a.length - 1); }
+  const CI = cdf(u => { const c = Math.cos(Math.PI * u / 0.19); const e = sinc(u / 0.95); return c * c * e * e; });
+  const CD = cdf(u => Math.exp(-0.5 * ((u - 0.42) / 0.13) ** 2) + Math.exp(-0.5 * ((u + 0.42) / 0.13) ** 2));
+  const CAPS = [
+    { a: 0.15, b: 3.2, s: 'Самый [странный] опыт в физике', y: 330, size: 76 },
+    { a: 3.2, b: 6.5, s: 'Стреляем электронами [по одному]', y: 330 },
+    { a: 6.5, b: 10.0, s: 'Каждый оставляет на экране [одну точку]', y: 330 },
+    { a: 10.0, b: 14.0, s: 'Но вместе они рисуют [полосы]', y: 330 },
+    { a: 14.0, b: 18.0, s: 'Как волна, прошедшая через [обе щели сразу]', y: 330 },
+    { a: 18.0, b: 21.0, s: 'Поставим у щелей [детектор]…', y: 330 },
+    { a: 21.0, b: 24.4, s: 'Полосы [исчезли]', y: 330, size: 72 },
+    { a: 24.4, b: 27.0, s: '[Наблюдение] меняет результат', y: 330, size: 68 }
+  ];
+  let R, hits, fly, acc, stars, flash, cueN;
+  const rate = t => {
+    if (t < 3.3) return 0;
+    if (t < 6.5) return 1.4;
+    if (t < 10) return lerp(2, 40, Math.pow(inv(6.5, 10, t), 2));
+    if (t < 17.8) return lerp(40, 420, inv(10, 12.5, t));
+    if (t < 19.4) return 0;
+    if (t < 21.0) return 2.4;
+    if (t < 26.6) return lerp(20, 420, inv(21.0, 22.8, t));
+    return 0;
+  };
+  function eye(x, y, k, fl) {
+    ctx.save(); ctx.globalAlpha = k;
+    glow(ctx, x, y, 70, '255,160,74', 0.15 + 0.5 * fl);
+    ctx.fillStyle = '#121522'; ctx.strokeStyle = C.disk; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(x - 42, y); ctx.quadraticCurveTo(x, y - 34, x + 42, y); ctx.quadraticCurveTo(x, y + 34, x - 42, y); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = C.disk; circle(ctx, x, y, 13); ctx.fill();
+    ctx.fillStyle = '#05060b'; circle(ctx, x, y, 5); ctx.fill();
+    ctx.restore();
+  }
+  return {
+    slug: 'dvuhshchelevoy-opyt', dur: 29, title: 'Самый странный опыт в физике',
+    setup() { R = rng(5); hits = []; fly = []; acc = 0; stars = makeStars(21, 260); flash = [0, 0]; cueN = 0; cue(0.1, 'pad2'); cue(0.15, 'swell'); cue(18.1, 'beep'); cue(18.5, 'sweep'); cue(21.0, 'whoosh', 0.4); cue(27.0, 'chime'); },
+    frame(t, dt) {
+      const det = t >= 18.6;
+      acc += rate(t) * dt;
+      while (acc >= 1) {
+        acc -= 1;
+        const u = sample(det ? CD : CI, R());
+        fly.push({ t0: t, x: 540 + u * 450, y: lerp(PL.y0 + 14, PL.y1 - 14, R()), slit: u > 0 ? 1 : 0, det, T: det ? 0.9 : 0.75 });
+      }
+      for (let i = fly.length - 1; i >= 0; i--) {
+        const f = fly[i];
+        if (f.det && !f.passed && t - f.t0 >= f.T * 0.45) { f.passed = true; flash[f.slit] = 1; }
+        if (t - f.t0 >= f.T) {
+          hits.push({ x: f.x, y: f.y, t });
+          if (rate(t) < 30 && cueN < 60) { cue(t, 'hit', 0.8); cueN++; }
+          fly.splice(i, 1);
+        }
+      }
+      flash[0] = Math.max(0, flash[0] - dt * 5); flash[1] = Math.max(0, flash[1] - dt * 5);
+      const clearK = 1 - inv(18.4, 19.1, t);
+      if (t >= 19.1 && hits.length && hits[0].t < 19) hits = hits.filter(h => h.t > 19);
+
+      ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+      ctx.fillStyle = C.void; ctx.fillRect(0, 0, W, H);
+      drawStars(stars, t, 0.6);
+      /* волны вероятности */
+      const wa = win(t, 3.4, 18.5, 0.8, 0.4) * (det ? 0 : 1);
+      if (wa > 0) {
+        const lam = 46, ph = (t * 1.3) % 1;
+        ctx.strokeStyle = C.quant; ctx.lineWidth = 2.4;
+        for (let k = 0; k < 20; k++) {
+          const r = (k + ph) * lam; if (r > BY - SRC.y) break;
+          ctx.globalAlpha = wa * 0.4 * (1 - r / (BY - SRC.y) * 0.5);
+          ctx.beginPath(); ctx.arc(SRC.x, SRC.y, r, Math.PI / 2 - 0.65, Math.PI / 2 + 0.65); ctx.stroke();
+        }
+        ctx.save(); ctx.beginPath(); ctx.rect(0, BY, W, PL.y0 - BY); ctx.clip();
+        const rmax = Math.hypot(500, PL.y0 - BY);
+        for (const sx of SL) for (let k = 0; k < 20; k++) {
+          const r = (k + ph) * lam; if (r > rmax) break;
+          ctx.globalAlpha = wa * 0.32 * (1 - r / rmax);
+          ctx.beginPath(); ctx.arc(sx, BY, r, 0.12, Math.PI - 0.12); ctx.stroke();
+        }
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1;
+      /* пушка, пластина, экран */
+      glow(ctx, SRC.x, SRC.y, 70, '134,212,255', 0.75);
+      ctx.fillStyle = '#121522'; ctx.strokeStyle = C.quant; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.roundRect(SRC.x - 46, SRC.y - 110, 92, 96, 14); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = C.dust;
+      ctx.fillRect(0, BY - 9, SL[0] - SW / 2, 18);
+      ctx.fillRect(SL[0] + SW / 2, BY - 9, SL[1] - SL[0] - SW, 18);
+      ctx.fillRect(SL[1] + SW / 2, BY - 9, W - SL[1] - SW / 2, 18);
+      ctx.fillStyle = '#0d1020'; ctx.strokeStyle = C.line; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(PL.x0, PL.y0, PL.x1 - PL.x0, PL.y1 - PL.y0, 18); ctx.fill(); ctx.stroke();
+      ctx.font = `500 26px ${FM}`; ctx.textBaseline = 'middle';
+      ctx.fillStyle = C.dust; ctx.textAlign = 'left'; ctx.fillText('источник электронов', SRC.x + 70, SRC.y - 62);
+      ctx.textAlign = 'right'; ctx.fillText('две щели', W - 40, BY - 40);
+      ctx.textAlign = 'left'; ctx.fillText('экран', PL.x0 + 4, PL.y1 + 36);
+      /* детектор */
+      const dk = easeOut(inv(18.1, 18.6, t));
+      if (dk > 0) { eye(SL[0] - 100, BY - 70, dk, flash[0]); eye(SL[1] + 100, BY - 70, dk, flash[1]); }
+      /* электроны в полёте */
+      ctx.globalCompositeOperation = 'lighter';
+      const r0 = rate(t);
+      for (const f of fly) {
+        const age = t - f.t0;
+        let x, y, a;
+        if (f.det) {
+          const sx = SL[f.slit];
+          if (age < f.T * 0.45) { const e = age / (f.T * 0.45); x = lerp(SRC.x, sx, e); y = lerp(SRC.y, BY, e); }
+          else { const e = (age - f.T * 0.45) / (f.T * 0.55); x = lerp(sx, f.x, e); y = lerp(BY, f.y, e); }
+          a = r0 > 100 ? 0.5 : 1;
+        } else {
+          if (age > f.T * 0.45) continue;
+          const e = age / (f.T * 0.45); x = SRC.x; y = lerp(SRC.y, BY - 10, e);
+          a = clamp(1 - (r0 - 4) / 30);
+        }
+        if (a <= 0) continue;
+        if (r0 < 30) glow(ctx, x, y, 22, '134,212,255', 0.6 * a);
+        ctx.globalAlpha = a; ctx.fillStyle = '#e8f6ff'; ctx.fillRect(x - 3, y - 3, 6, 6);
+      }
+      /* попадания */
+      for (const h of hits) {
+        const age = t - h.t, fresh = age < 0.3;
+        ctx.globalAlpha = (h.t < 19 ? clearK : 1) * (fresh ? 1 : 0.7);
+        if (fresh && hits.length < 400) glow(ctx, h.x, h.y, 16 * (1 - age / 0.3) + 5, '134,212,255', 0.7);
+        ctx.fillStyle = fresh ? '#ffffff' : C.quant;
+        const z = fresh ? 6 : 3.4;
+        ctx.fillRect(h.x - z / 2, h.y - z / 2, z, z);
+      }
+      ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+      ctx.font = `500 30px ${FM}`; ctx.textAlign = 'right'; ctx.fillStyle = C.star;
+      ctx.fillText(hits.length + ' электр.', PL.x1 - 4, PL.y1 + 36);
+      brand();
+      captions(t, CAPS);
+      endCard(t, 27.0);
+    }
+  };
+})();
+
+/* =====================================================================
+   Ролик 3. Вся история Вселенной за один год
+   ===================================================================== */
+const V3 = (() => {
+  const AGE = 13.8e9, YS = 365 * 86400;
+  const KF = [[0, AGE], [5.8, AGE], [7.4, 13.6e9], [9.2, 13.6e9], [11.9, 4.57e9], [14.6, 4.57e9], [15.2, 3.8e9], [16.7, 3.8e9], [18.0, 2.3e8], [20.3, 2.3e8], [21.2, 6.6e7], [22.9, 6.6e7], [24.4, 3e5], [25.9, 3e5], [27.0, 4500], [27.9, 4500], [29.0, 65], [30.0, 65], [31.0, 0]];
+  const L = x => Math.log10(x + 1);
+  function agoAt(t) {
+    if (t <= KF[0][0]) return KF[0][1];
+    for (let i = 1; i < KF.length; i++) {
+      if (t <= KF[i][0]) { const [t0, a0] = KF[i - 1], [t1, a1] = KF[i]; return Math.pow(10, lerp(L(a0), L(a1), easeInOut(inv(t0, t1, t)))) - 1; }
+    }
+    return 0;
+  }
+  const MON = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  const MD = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  function dateOf(ago) {
+    const left = ago / AGE * YS;
+    if (left < 0.004) return { d: '31 декабря', tm: '24:00:00', sec: YS };
+    const sec = YS - left;
+    let day = Math.floor(sec / 86400), m = 0; while (day >= MD[m]) { day -= MD[m]; m++; }
+    const s = sec % 86400, hh = Math.floor(s / 3600), mm = Math.floor(s % 3600 / 60), ss = s % 60;
+    const p2 = v => String(v).padStart(2, '0');
+    const tm = left < 60 ? `${p2(hh)}:${p2(mm)}:${ss.toFixed(2).padStart(5, '0').replace('.', ',')}` : `${p2(hh)}:${p2(mm)}:${p2(Math.floor(ss))}`;
+    return { d: `${day + 1} ${MON[m]}`, tm, sec };
+  }
+  const CAPS = [
+    { a: 0.15, b: 3.1, s: 'Вся история Вселенной [за один год]', size: 74 },
+    { a: 3.2, b: 5.7, s: '[1 января] — Большой взрыв' },
+    { a: 5.9, b: 9.0, s: '[6 января] — зажигаются первые звёзды' },
+    { a: 9.2, b: 11.9, s: 'Миллиарды лет растут [галактики]' },
+    { a: 12.0, b: 14.6, s: '[2 сентября] — рождаются Солнце и Земля' },
+    { a: 14.8, b: 16.7, s: '[22 сентября] — первая жизнь' },
+    { a: 16.9, b: 20.3, s: '[25 декабря] — появляются динозавры' },
+    { a: 20.5, b: 22.9, s: '[30 декабря] — астероид их уничтожает' },
+    { a: 23.0, b: 25.9, s: '[31 декабря, 23:48] — появляются люди' },
+    { a: 26.0, b: 27.9, s: '[23:59:50] — строятся пирамиды' },
+    { a: 28.0, b: 30.0, s: '[23:59:59,85] — Гагарин летит в космос' },
+    { a: 30.2, b: 32.6, s: 'Вся история людей — [последние 30 секунд] года', size: 64 }
+  ];
+  let stars, boom, cells, spiral;
+  const SX = 540, SY = 900;
+  function bar(t, ago) {
+    const mode = t < 22.95 ? 0 : t < 25.95 ? 1 : 2;
+    const left = ago / AGE * YS;
+    const f = mode === 0 ? 1 - left / YS : mode === 1 ? 1 - left / 86400 : 1 - left / 60;
+    const x0 = 120, x1 = 960, y = 560;
+    ctx.save();
+    ctx.font = `500 24px ${FM}`; ctx.letterSpacing = '3px'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = C.dust; ctx.textAlign = 'left';
+    ctx.fillText(['ВЕСЬ ГОД', '31 ДЕКАБРЯ', 'ПОСЛЕДНЯЯ МИНУТА'][mode], x0, y - 44);
+    ctx.textAlign = 'right';
+    ctx.fillText(['янв → дек', '00:00 → 24:00', '23:59 → 24:00'][mode], x1, y - 44);
+    ctx.letterSpacing = '0px';
+    ctx.fillStyle = '#121522'; ctx.strokeStyle = C.line; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(x0, y - 14, x1 - x0, 28, 14); ctx.fill(); ctx.stroke();
+    const ticks = mode === 0 ? 12 : mode === 1 ? 24 : 6;
+    ctx.strokeStyle = C.line;
+    for (let i = 1; i < ticks; i++) { const x = lerp(x0, x1, i / ticks); ctx.beginPath(); ctx.moveTo(x, y - 14); ctx.lineTo(x, y + 14); ctx.stroke(); }
+    const px = lerp(x0, x1, clamp(f));
+    const gr = ctx.createLinearGradient(x0, 0, px, 0);
+    gr.addColorStop(0, 'rgba(255,160,74,0.25)'); gr.addColorStop(1, 'rgba(255,160,74,0.9)');
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.roundRect(x0, y - 14, Math.max(28, px - x0), 28, 14); ctx.fill();
+    glow(ctx, px, y, 40, '255,225,180', 0.6);
+    ctx.fillStyle = C.hot; circle(ctx, px, y, 10); ctx.fill();
+    ctx.restore();
+  }
+  function bigBang(t) {
+    const k = t - 3.2;
+    if (k < 0 || k > 3.0) return;
+    const a = 1 - inv(1.6, 3.0, k);
+    glow(ctx, SX, SY, 60 + k * 520, '255,240,215', 0.9 * a * (1 - inv(0, 1.4, k) * 0.6));
+    ctx.globalCompositeOperation = 'lighter';
+    for (const p of boom) {
+      const d = p.v * (1 - Math.exp(-k * 2.2)) * 520;
+      ctx.globalAlpha = a * p.m;
+      ctx.fillStyle = PAL[p.c];
+      ctx.fillRect(SX + Math.cos(p.a) * d - p.s / 2, SY + Math.sin(p.a) * d - p.s / 2, p.s, p.s);
+    }
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (k < 0.6) { ctx.fillStyle = `rgba(255,248,235,${0.85 * (1 - k / 0.6)})`; ctx.fillRect(0, 0, W, H); }
+  }
+  function galaxy(t, k, x, y, r, rot) {
+    if (k <= 0) return;
+    ctx.save(); ctx.globalAlpha = k;
+    glow(ctx, x, y, r * 0.45, '255,225,180', 0.55);
+    ctx.globalCompositeOperation = 'lighter';
+    const ca = Math.cos(rot), sa = Math.sin(rot);
+    for (const [px, py, m] of spiral) {
+      ctx.fillStyle = m > 0.8 ? C.quant : C.hot;
+      ctx.globalAlpha = k * (0.35 + m * 0.5);
+      const z = 1.6 + m * 2.4;
+      ctx.fillRect(x + (px * ca - py * sa) * r - z / 2, y + (px * sa + py * ca) * r * 0.58 - z / 2, z, z);
+    }
+    ctx.restore();
+  }
+  function sunEarth(t, k) {
+    if (k <= 0) return;
+    ctx.save(); ctx.globalAlpha = k;
+    glow(ctx, SX, SY, 260, '255,170,80', 0.5);
+    const g = ctx.createRadialGradient(SX - 30, SY - 30, 10, SX, SY, 110);
+    g.addColorStop(0, '#fff3d6'); g.addColorStop(0.6, '#ffc35a'); g.addColorStop(1, '#ff8a2a');
+    const a = t * 1.1, ex = SX + Math.cos(a) * 330, ey = SY + Math.sin(a) * 110;
+    const earth = () => {
+      const eg = ctx.createRadialGradient(ex - 8, ey - 8, 2, ex, ey, 26);
+      eg.addColorStop(0, '#8cc0ff'); eg.addColorStop(0.6, '#2d6bd1'); eg.addColorStop(1, '#102a5e');
+      ctx.fillStyle = eg; circle(ctx, ex, ey, 26); ctx.fill();
+    };
+    ctx.strokeStyle = 'rgba(163,160,182,0.5)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(SX, SY, 330, 110, 0, 0, TAU); ctx.stroke();
+    if (Math.sin(a) < 0) earth();
+    ctx.fillStyle = g; circle(ctx, SX, SY, 110); ctx.fill();
+    if (Math.sin(a) >= 0) earth();
+    ctx.restore();
+  }
+  function life(t, k) {
+    if (k <= 0) return;
+    ctx.save(); ctx.globalAlpha = k;
+    glow(ctx, SX, SY, 380, '31,163,154', 0.25);
+    for (const c of cells) {
+      const wob = 1 + 0.06 * Math.sin(t * 3 + c.p);
+      const x = SX + c.x + Math.sin(t * 0.7 + c.p) * 14, y = SY + c.y + Math.cos(t * 0.6 + c.p) * 12;
+      const g = ctx.createRadialGradient(x, y, c.r * 0.2, x, y, c.r * wob);
+      g.addColorStop(0, 'rgba(120,230,190,0.35)'); g.addColorStop(0.85, 'rgba(60,190,150,0.45)'); g.addColorStop(1, 'rgba(160,255,215,0.9)');
+      ctx.fillStyle = g; circle(ctx, x, y, c.r * wob); ctx.fill();
+      ctx.fillStyle = 'rgba(30,110,90,0.9)'; circle(ctx, x + c.r * 0.15, y - c.r * 0.1, c.r * 0.28); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function sunset(k) {
+    const g = ctx.createRadialGradient(SX, 1040, 40, SX, 1040, 330);
+    g.addColorStop(0, `rgba(255,214,150,${k})`); g.addColorStop(0.5, `rgba(255,140,50,${0.9 * k})`); g.addColorStop(1, 'rgba(255,90,30,0)');
+    ctx.fillStyle = g; circle(ctx, SX, 1040, 330); ctx.fill();
+    ctx.fillStyle = `rgba(0,0,0,${k})`; ctx.fillRect(0, 1130, W, 70);
+  }
+  function dino(t, k, x) {
+    if (k <= 0) return;
+    ctx.save(); ctx.globalAlpha = k; ctx.fillStyle = '#000';
+    ctx.translate(x, 1130);
+    ctx.beginPath(); ctx.ellipse(0, -95, 120, 58, 0, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(80, -120); ctx.quadraticCurveTo(170, -190, 175, -300); ctx.lineTo(205, -300); ctx.quadraticCurveTo(205, -170, 110, -80); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(205, -305, 32, 17, -0.15, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-100, -110); ctx.quadraticCurveTo(-230, -90, -320, -20); ctx.lineTo(-310, -10); ctx.quadraticCurveTo(-210, -60, -90, -60); ctx.closePath(); ctx.fill();
+    ctx.lineCap = 'round'; ctx.strokeStyle = '#000'; ctx.lineWidth = 30;
+    for (const [lx, ph] of [[-70, 0], [-40, Math.PI], [55, Math.PI], [85, 0]]) {
+      ctx.beginPath(); ctx.moveTo(lx, -70); ctx.lineTo(lx + Math.sin(t * 4 + ph) * 16, 0); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function asteroid(t) {
+    const k = inv(20.4, 21.2, t);
+    if (t < 20.4 || t > 23) return;
+    if (k < 1) {
+      const x = lerp(1100, 700, k), y = lerp(560, 1120, k);
+      const g = ctx.createLinearGradient(x + 260, y - 360, x, y);
+      g.addColorStop(0, 'rgba(255,200,120,0)'); g.addColorStop(1, 'rgba(255,240,215,0.95)');
+      ctx.strokeStyle = g; ctx.lineWidth = 16; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(x + 260, y - 360); ctx.lineTo(x, y); ctx.stroke();
+      glow(ctx, x, y, 60, '255,240,215', 0.9);
+    } else {
+      const f = inv(21.2, 22.9, t);
+      glow(ctx, 700, 1120, 200 + f * 900, '255,200,140', 0.95 * (1 - f));
+      ctx.fillStyle = `rgba(255,236,210,${0.8 * (1 - inv(0, 0.35, f))})`; ctx.fillRect(0, 0, W, H);
+    }
+  }
+  function dusk(k, top, bottom) {
+    const g = ctx.createLinearGradient(0, 640, 0, 1130);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.45, top); g.addColorStop(1, bottom);
+    ctx.save(); ctx.globalAlpha = k; ctx.fillStyle = g; ctx.fillRect(0, 640, W, 490); ctx.restore();
+  }
+  function humans(t, k) {
+    if (k <= 0) return;
+    dusk(k, 'rgba(60,50,110,0.55)', 'rgba(150,80,90,0.75)');
+    ctx.save(); ctx.globalAlpha = k;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 1130, W, 70);
+    const fx = 640, fy = 1128;
+    glow(ctx, fx, fy - 40, 330, '255,140,50', 0.45 + 0.08 * Math.sin(t * 13));
+    ctx.translate(fx, fy); ctx.scale(1.5, 1.5); ctx.translate(-fx, -fy);
+    for (let i = 0; i < 5; i++) {
+      const h = 70 + 30 * Math.sin(t * 9 + i * 1.7), w = 22 - i * 2;
+      ctx.fillStyle = i % 2 ? '#ffd27a' : '#ff8a2a';
+      ctx.beginPath(); ctx.moveTo(fx - w + i * 6 - 12, fy); ctx.quadraticCurveTo(fx - 4 + i * 4 - 12, fy - h, fx + i * 6 - 12, fy - h - 10); ctx.quadraticCurveTo(fx + 8 + i * 4 - 12, fy - h * 0.5, fx + w + i * 6 - 12, fy); ctx.closePath(); ctx.fill();
+    }
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.translate(420, 1128); ctx.scale(1.35, 1.35); ctx.translate(-420, -1128);
+    ctx.fillStyle = '#000';
+    const hx = 420;
+    circle(ctx, hx, 905, 26); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(hx - 28, 935, 56, 110, 18); ctx.fill();
+    ctx.lineCap = 'round'; ctx.strokeStyle = '#000'; ctx.lineWidth = 20;
+    ctx.beginPath(); ctx.moveTo(hx - 14, 1040); ctx.lineTo(hx - 22, 1128); ctx.moveTo(hx + 14, 1040); ctx.lineTo(hx + 22, 1128); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(hx + 22, 955); ctx.lineTo(hx + 70, 900); ctx.lineTo(hx + 96, 830); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(hx - 22, 955); ctx.lineTo(hx - 40, 1030); ctx.stroke();
+    ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(hx + 110, 790); ctx.lineTo(hx + 70, 1128); ctx.stroke();
+    ctx.restore();
+  }
+  function pyramids(t, k) {
+    if (k <= 0) return;
+    dusk(k, 'rgba(255,140,60,0.35)', 'rgba(255,170,90,0.85)');
+    ctx.save(); ctx.globalAlpha = k;
+    glow(ctx, 760, 760, 200, '255,225,180', 0.35);
+    ctx.fillStyle = C.hot; circle(ctx, 760, 760, 46); ctx.fill();
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 1130, W, 70);
+    for (const [x, s] of [[360, 1], [620, 0.78], [820, 0.55]]) {
+      ctx.fillStyle = '#000';
+      ctx.beginPath(); ctx.moveTo(x - 240 * s, 1132); ctx.lineTo(x, 1132 - 300 * s); ctx.lineTo(x + 240 * s, 1132); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function rocket(t, k) {
+    if (k <= 0) return;
+    ctx.save(); ctx.globalAlpha = k;
+    const EY = 2420, ER = 1260;
+    const g = ctx.createRadialGradient(SX, EY, ER - 60, SX, EY, ER + 50);
+    g.addColorStop(0, 'rgba(110,170,255,0)'); g.addColorStop(0.55, 'rgba(110,170,255,0.75)'); g.addColorStop(1, 'rgba(110,170,255,0)');
+    ctx.fillStyle = g; circle(ctx, SX, EY, ER + 50); ctx.fill();
+    const eg = ctx.createLinearGradient(0, EY - ER, 0, EY - ER + 500);
+    eg.addColorStop(0, '#1d4fa8'); eg.addColorStop(1, '#06122e');
+    ctx.fillStyle = eg; circle(ctx, SX, EY, ER); ctx.fill();
+    const f = inv(28.0, 31.5, t), y = lerp(1120, 780, easeIn(f) * 0.6 + f * 0.4);
+    ctx.translate(SX, y);
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 3; i++) glow(ctx, 0, 60 + i * 40, 70 - i * 12, '255,170,80', 0.6);
+    ctx.globalCompositeOperation = 'source-over';
+    const fl = 120 + 30 * Math.sin(t * 30);
+    const fg = ctx.createLinearGradient(0, 40, 0, 40 + fl);
+    fg.addColorStop(0, '#fff3d6'); fg.addColorStop(0.4, '#ffa04a'); fg.addColorStop(1, 'rgba(255,90,30,0)');
+    ctx.fillStyle = fg; ctx.beginPath(); ctx.moveTo(-26, 40); ctx.lineTo(0, 40 + fl); ctx.lineTo(26, 40); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#d9dce6';
+    ctx.beginPath(); ctx.moveTo(-22, 50); ctx.lineTo(-22, -110); ctx.quadraticCurveTo(0, -190, 22, -110); ctx.lineTo(22, 50); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#b8bcc9';
+    for (const s of [-1, 1]) { ctx.beginPath(); ctx.moveTo(s * 22, 50); ctx.lineTo(s * 22, -40); ctx.quadraticCurveTo(s * 40, -40, s * 46, 55); ctx.closePath(); ctx.fill(); }
+    ctx.fillStyle = '#ffa04a'; circle(ctx, 0, -120, 10); ctx.fill();
+    ctx.restore();
+  }
+  return {
+    slug: 'istoriya-vselennoy-za-god', dur: 34.5, title: 'Вся история Вселенной за один год',
+    setup() {
+      const R = rng(3);
+      stars = makeStars(33, 420);
+      boom = []; for (let i = 0; i < 900; i++) boom.push({ a: R() * TAU, v: Math.pow(R(), 0.6), s: 1.5 + R() * 3.5, m: 0.4 + R() * 0.6, c: 30 + ((R() * 33) | 0) });
+      cells = []; for (let i = 0; i < 9; i++) cells.push({ x: (R() - 0.5) * 640, y: (R() - 0.5) * 360, r: 40 + R() * 46, p: R() * TAU });
+      spiral = []; for (let i = 0; i < 700; i++) { const t = R(), th = t * 3.4 * Math.PI + (i % 2) * Math.PI + (R() - 0.5) * 0.6, rr = 0.06 + t * 0.92; spiral.push([Math.cos(th) * rr * (1 + (R() - 0.5) * 0.18), Math.sin(th) * rr * (1 + (R() - 0.5) * 0.18), R()]); }
+      cue(0.1, 'pad3'); cue(0.15, 'swell'); cue(3.2, 'boom');
+      for (const c of CAPS.slice(2)) cue(c.a, 'whoosh', 0.35);
+      cue(21.2, 'impact'); cue(28.0, 'launch'); cue(32.6, 'chime');
+    },
+    frame(t) {
+      ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+      ctx.fillStyle = C.void; ctx.fillRect(0, 0, W, H);
+      const starsK = inv(5.9, 8.6, t);
+      const sceneDark = win(t, 16.7, 25.9, 0.5, 0.5);
+      drawStars(stars, t, 1 - sceneDark * 0.6, starsK);
+      galaxy(t, win(t, 9.0, 12.2, 0.8, 0.6), SX, SY, 400, t * 0.25);
+      galaxy(t, win(t, 9.4, 12.2, 0.8, 0.6) * 0.5, 230, 700, 110, -t * 0.3);
+      galaxy(t, win(t, 9.6, 12.2, 0.8, 0.6) * 0.45, 880, 1080, 90, t * 0.35);
+      sunEarth(t, win(t, 11.9, 14.8, 0.6, 0.5));
+      life(t, win(t, 14.6, 16.9, 0.4, 0.4));
+      const ss = win(t, 16.7, 22.9, 0.5, 0.6);
+      if (ss > 0) { ctx.save(); ctx.globalAlpha = 1; sunset(ss * (1 - inv(21.2, 22.6, t) * 0.7)); ctx.restore(); }
+      dino(t, win(t, 16.8, 21.25, 0.5, 0.08), lerp(330, 520, inv(16.8, 21.2, t)));
+      asteroid(t);
+      humans(t, win(t, 22.9, 26.0, 0.6, 0.4));
+      pyramids(t, win(t, 25.9, 28.0, 0.4, 0.4));
+      rocket(t, win(t, 27.9, 33.0, 0.4, 0.6));
+      bigBang(t);
+      const ago = agoAt(t), d = dateOf(ago);
+      const dk = easeOut(inv(2.6, 3.2, t));
+      if (dk > 0) {
+        ctx.save(); ctx.globalAlpha = dk; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 30;
+        ctx.font = `700 84px ${FD}`; ctx.fillStyle = C.star; ctx.fillText(d.d, 540, 300);
+        ctx.font = `500 52px ${FM}`; ctx.fillStyle = C.hot; ctx.fillText(d.tm, 540, 394);
+        ctx.restore();
+        ctx.save(); ctx.globalAlpha = dk; bar(t, ago); ctx.restore();
+      }
+      brand();
+      captions(t, CAPS);
+      if (t < 3.1) drawRich('1 секунда = [437 лет]', 540, 1500, 40, win(t, 0.9, 3.1), { family: FM, weight: 500, band: false, accent: C.hot, color: C.dust });
+      endCard(t, 32.6);
+    }
+  };
+})();
+
+/* ---------- API для рендера ---------- */
+const VIDEOS = { 1: V1, 2: V2, 3: V3 };
+let cur = null, lastT = -1;
+function setup(id) {
+  cur = VIDEOS[id]; CUES = []; lastT = -1;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  cur.setup();
+  return { dur: cur.dur, slug: cur.slug, title: cur.title };
+}
+function renderFrame(t) {
+  const dt = lastT < 0 ? 1 / 30 : Math.max(0, t - lastT);
+  ctx.save(); cur.frame(t, dt); ctx.restore();
+  lastT = t;
+}
+async function ready() {
+  const fonts = ['700 40px UnbC', '700 40px UnbL', '800 40px UnbC', '800 40px UnbL', '500 40px MonoC', '500 40px MonoL', 'italic 300 40px LitC', 'italic 300 40px LitL'];
+  await Promise.all(fonts.map(f => document.fonts.load(f)));
+  return fonts.every(f => document.fonts.check(f));
+}
+window.setup = setup; window.renderFrame = renderFrame; window.ready = ready;
+window.getCues = () => CUES.slice().sort((a, b) => a.t - b.t);
+
+const qs = new URLSearchParams(location.search);
+if (qs.has('v')) {
+  document.body.classList.add('preview');
+  (async () => {
+    await ready(); const info = setup(+qs.get('v')); const t0 = performance.now();
+    const loop = () => { const t = ((performance.now() - t0) / 1000) % info.dur; if (t < lastT) setup(+qs.get('v')); renderFrame(t); requestAnimationFrame(loop); };
+    loop();
+  })();
+}
+</script>
+</body>
+</html>
