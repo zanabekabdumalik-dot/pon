@@ -165,6 +165,34 @@ PAIRS = [
     ('<span>Последняя минута</span>', '<span>Last minute</span>'),
     ('aria-pressed="true">❚❚ Пауза</button>', 'aria-pressed="true">❚❚ Pause</button>'),
     ('font-size:.85rem">1 января, 00:00</span>', 'font-size:.85rem">January 1, 00:00</span>'),
+    # --- вопросы ---
+    ('</svg>Спросить</button>', '</svg>Ask</button>'),
+    ('<h2>Спросите Claude</h2>', '<h2>Ask Claude</h2>'),
+    ('<p>Любой вопрос о космосе, чёрных дырах или квантовой физике. Отвечает искусственный интеллект Claude, он может ошибаться.</p>',
+     '<p>Ask anything about space, black holes or quantum physics. Answers come from Claude, an AI, and it can make mistakes.</p>'),
+    ('<span class="label">Например</span>', '<span class="label">For example</span>'),
+    ('<button class="btn" type="button">Что внутри чёрной дыры?</button>', '<button class="btn" type="button">What is inside a black hole?</button>'),
+    ('<button class="btn" type="button">Почему ничего не летает быстрее света?</button>', '<button class="btn" type="button">Why can’t anything go faster than light?</button>'),
+    ('<button class="btn" type="button">Как появились первые звёзды?</button>', '<button class="btn" type="button">How did the first stars form?</button>'),
+    ('<button class="btn" type="button">Что такое тёмная материя?</button>', '<button class="btn" type="button">What is dark matter?</button>'),
+    ('placeholder="Ваш вопрос о космосе…" aria-label="Ваш вопрос"', 'placeholder="Your question about space…" aria-label="Your question"'),
+    ('id="ask-send">Спросить</button>', 'id="ask-send">Ask</button>'),
+    ("""  send: 'Спросить', stop: 'Стоп', thinking: 'Думаю…',
+  noteSample: 'Ответы идут через ваш аккаунт Claude: при первом вопросе claude.ai попросит разрешение.',
+  stopped: 'Остановлено.',
+  off: 'Ответы недоступны: этой странице не разрешено обращаться к Claude.',
+  rate: 'Слишком много вопросов подряд. Попробуйте чуть позже.',
+  refused: 'На этот вопрос ответа не будет. Попробуйте спросить иначе.',
+  cut: 'Ответ оборвался: попробуйте спросить короче.',
+  fail: 'Не получилось получить ответ. Попробуйте ещё раз.'""",
+     """  send: 'Ask', stop: 'Stop', thinking: 'Thinking…',
+  noteSample: 'Answers use your own Claude account: claude.ai asks for permission on your first question.',
+  stopped: 'Stopped.',
+  off: 'Answers are unavailable: this page is not allowed to use Claude.',
+  rate: 'Too many questions in a row. Try again a little later.',
+  refused: 'This question will not get an answer. Try asking it differently.',
+  cut: 'The answer was cut short: try a shorter question.',
+  fail: 'Could not get an answer. Please try again.'"""),
     ('<p>Симуляции упрощены, но формулы в них настоящие. Данные: NASA, ESA,', '<p>The simulations are simplified, but the formulas are real. Data: NASA, ESA,'),
     ('LIGO</a>, миссия «Планк».</p>', 'LIGO</a>, the Planck mission.</p>'),
     # --- числа и единицы ---
@@ -325,6 +353,7 @@ def main():
     # комментарии в коде: переводить не обязательно, но на английском сайте их лучше убрать
     s = re.sub(r"/\*[^*]*[А-Яа-яЁё][^*]*\*/", lambda m: "/* — */" if "\n" not in m.group(0) else m.group(0), s)
     s = re.sub(r"<!--[^>]*[А-Яа-яЁё][^>]*-->", "", s)
+    s = re.sub(r"(?m)^[ \t]*//[^\n]*[А-Яа-яЁё][^\n]*\n", "", s)
     left = [f"{i + 1}: {line.strip()[:110]}" for i, line in enumerate(s.splitlines()) if re.search(r"[А-Яа-яЁё]", line)]
     if left:
         sys.exit("осталась кириллица:\n  " + "\n  ".join(left))

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Горизонт событий</title>
 <meta name="description" content="Чёрные дыры, квантовая физика и история Вселенной: три коротких видео и опыты, которые можно потрогать.">
+<meta name="ask-endpoint" content="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,300;1,7..72,400&family=Unbounded:wght@400;500;700;800&display=swap">
@@ -35,6 +36,7 @@ a{color:var(--accent)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .wrap{max-width:72rem;margin-inline:auto;padding-inline:clamp(16px,4vw,40px)}
 sub{line-height:0}
+[hidden]{display:none!important}
 
 /* верхняя панель и вкладки */
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:rgba(5,6,11,.86);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
@@ -161,6 +163,26 @@ h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.4
 @media (max-width:420px){.events li{grid-template-columns:1.4rem minmax(0,1fr)}.events .d,.events p{grid-column:2}}
 .cal-ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1.25rem;padding:0 clamp(1rem,2.5vw,1.6rem) 1.4rem}
 
+/* вопросы */
+.ask{display:grid;gap:1.25rem;max-width:46rem}
+.ask-log{display:grid;gap:1.1rem}
+.ask-log:empty{display:none}
+.qa{display:grid;gap:.6rem}
+.q-bubble{justify-self:end;max-width:85%;background:var(--panel-2);border:1px solid var(--line);border-radius:14px 14px 4px 14px;padding:.65rem .95rem;font-size:.98rem;overflow-wrap:anywhere}
+.a-bubble{background:var(--panel);border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:.9rem 1.1rem;white-space:pre-line;line-height:1.62;overflow-wrap:anywhere}
+.a-bubble.thinking{color:var(--dust);font-family:var(--f-mono);font-size:.85rem}
+.a-bubble.thinking::after{content:"";display:inline-block;width:.5em;height:.5em;margin-left:.6em;border-radius:50%;background:var(--disk);vertical-align:.05em;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+.a-bubble.err{color:var(--dust);font-size:.92rem}
+.ask-suggest{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+.ask-suggest .label{margin-right:.25rem}
+.ask-form{display:grid;gap:.5rem}
+.ask-row{display:flex;gap:.6rem;align-items:flex-end}
+.ask-row textarea{flex:1;min-width:0;resize:vertical;min-height:3.1rem;max-height:12rem;background:var(--panel);color:var(--star);border:1px solid var(--line);border-radius:12px;padding:.75rem .9rem;font:inherit;font-size:1rem;line-height:1.45}
+.ask-row textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.ask-row .btn{min-height:3.1rem}
+.ask-note{margin:0;color:var(--dust);font-size:.82rem}
+
 footer{border-top:1px solid var(--line);padding-block:1.75rem 2.25rem;color:var(--dust);font-size:.85rem}
 footer p{margin:0;max-width:52rem}
 footer a{color:var(--star)}
@@ -180,6 +202,8 @@ footer a{color:var(--star)}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12c2.5-6 5-6 7.5 0s5 6 7.5 0 3.5-4 5-2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>Кванты</button>
       <button class="tab" role="tab" id="t-vselennaya" data-tab="vselennaya" aria-controls="p-vselennaya" aria-selected="false" tabindex="-1">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 12c0-3 3-4 5-2s1 6-3 7-8-2-8-6 4-8 9-7"/></svg>Вселенная</button>
+      <button class="tab" role="tab" id="t-ask" data-tab="ask" aria-controls="p-ask" aria-selected="false" tabindex="-1" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke-linejoin="round"/><path d="M9 10h.01M12 10h.01M15 10h.01" stroke-linecap="round" stroke-width="2.4"/></svg>Спросить</button>
     </div>
   </div>
 </div>
@@ -415,6 +439,33 @@ footer a{color:var(--star)}
           <ol class="events" id="events"></ol>
         </div>
       </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ СПРОСИТЬ ============ -->
+<section class="panel" role="tabpanel" id="p-ask" aria-labelledby="t-ask" hidden>
+  <div class="wrap">
+    <div class="panel-head">
+      <h2>Спросите Claude</h2>
+      <p>Любой вопрос о космосе, чёрных дырах или квантовой физике. Отвечает искусственный интеллект Claude, он может ошибаться.</p>
+    </div>
+    <div class="ask">
+      <div class="ask-log" id="ask-log" aria-live="polite"></div>
+      <div class="ask-suggest" id="ask-suggest">
+        <span class="label">Например</span>
+        <button class="btn" type="button">Что внутри чёрной дыры?</button>
+        <button class="btn" type="button">Почему ничего не летает быстрее света?</button>
+        <button class="btn" type="button">Как появились первые звёзды?</button>
+        <button class="btn" type="button">Что такое тёмная материя?</button>
+      </div>
+      <form class="ask-form" id="ask-form">
+        <div class="ask-row">
+          <textarea id="ask-input" rows="2" maxlength="500" placeholder="Ваш вопрос о космосе…" aria-label="Ваш вопрос"></textarea>
+          <button class="btn primary" type="submit" id="ask-send">Спросить</button>
+        </div>
+        <p class="ask-note" id="ask-note"></p>
+      </form>
     </div>
   </div>
 </section>
@@ -1434,13 +1485,110 @@ new IntersectionObserver(es => { cal.visible = es[0].isIntersecting; }, { rootMa
   requestAnimationFrame(calLoop);
 })(performance.now());
 
+/* ================= ВОПРОСЫ CLAUDE ================= */
+// На claude.ai страница спрашивает Claude через аккаунт зрителя (capability "sample").
+// На своём хостинге — через сервер из server/ask-worker.js, адрес которого стоит в <meta name="ask-endpoint">.
+// Ключ API на страницу не попадает никогда.
+const ASK_RULES = 'You are the guide on Event Horizon, a small website about black holes, quantum physics and the history of the Universe. '
+  + 'Answer the visitor\'s question about space, astronomy or physics accurately and vividly for a curious non-expert. '
+  + 'Reply in the same language the visitor writes in. Keep it short: two to four short paragraphs of plain text, no Markdown, no headings, no bullet lists. '
+  + 'Use real numbers where they help. If the question is not about science or space, say in one sentence that you only answer questions about space and physics.';
+const ASK_ENDPOINT = ((document.querySelector('meta[name="ask-endpoint"]') || {}).content || '').trim();
+const ask = { mode: null, sample: null, turns: [], busy: false, ctl: null, off: false };
+const askLog = document.getElementById('ask-log'), askForm = document.getElementById('ask-form');
+const askInput = document.getElementById('ask-input'), askSend = document.getElementById('ask-send'), askNote = document.getElementById('ask-note');
+const ASK_TXT = {
+  send: 'Спросить', stop: 'Стоп', thinking: 'Думаю…',
+  noteSample: 'Ответы идут через ваш аккаунт Claude: при первом вопросе claude.ai попросит разрешение.',
+  stopped: 'Остановлено.',
+  off: 'Ответы недоступны: этой странице не разрешено обращаться к Claude.',
+  rate: 'Слишком много вопросов подряд. Попробуйте чуть позже.',
+  refused: 'На этот вопрос ответа не будет. Попробуйте спросить иначе.',
+  cut: 'Ответ оборвался: попробуйте спросить короче.',
+  fail: 'Не получилось получить ответ. Попробуйте ещё раз.'
+};
+function askBusy(on) {
+  ask.busy = on;
+  askSend.textContent = on ? ASK_TXT.stop : ASK_TXT.send;
+  askSend.classList.toggle('primary', !on);
+}
+function addExchange(q) {
+  const box = document.createElement('div'); box.className = 'qa';
+  const qb = document.createElement('div'); qb.className = 'q-bubble'; qb.textContent = q;
+  const ab = document.createElement('div'); ab.className = 'a-bubble thinking'; ab.textContent = ASK_TXT.thinking;
+  box.append(qb, ab); askLog.append(box);
+  ab.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
+  return ab;
+}
+function askFail(ab, text, msg) {
+  ab.classList.remove('thinking');
+  if (text) { ab.textContent = text + '\n\n' + msg; } else { ab.textContent = msg; ab.classList.add('err'); }
+}
+async function askQuestion(raw) {
+  const q = String(raw || '').trim().slice(0, 500);
+  if (!q || ask.busy || !ask.mode || ask.off) return;
+  askInput.value = '';
+  askBusy(true);
+  const ab = addExchange(q);
+  ask.turns.push({ role: 'user', content: q });
+  const history = ask.turns.slice(-7);
+  const ctl = ask.ctl = new AbortController();
+  try {
+    let text = '', cut = false;
+    if (ask.mode === 'sample') {
+      const r = await ask.sample([{ role: 'user', content: ASK_RULES }, ...history], {
+        cache: false, signal: ctl.signal,
+        onText: u => { ab.classList.remove('thinking'); ab.textContent = u.text; }
+      });
+      text = r.text; cut = r.truncated;
+    } else {
+      const res = await fetch(ASK_ENDPOINT, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ messages: history }), signal: ctl.signal });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.text) throw { code: data.error === 'rate_limited' ? 'rate_limited' : data.error === 'refused' ? 'refused' : 'upstream_error' };
+      text = data.text; cut = !!data.truncated;
+      ab.classList.remove('thinking'); ab.textContent = text;
+    }
+    if (cut) ab.textContent = text + '\n\n' + ASK_TXT.cut;
+    ask.turns.push({ role: 'assistant', content: text });
+  } catch (e) {
+    ask.turns.pop();
+    const code = (e && e.code) || (e && e.name === 'AbortError' ? 'cancelled' : 'upstream_error');
+    const partial = e && typeof e.text === 'string' ? e.text : '';
+    if (code === 'cancelled') askFail(ab, partial, ASK_TXT.stopped);
+    else if (['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(code)) {
+      ask.off = true; askFail(ab, '', ASK_TXT.off); askInput.disabled = true; askSend.disabled = true;
+    } else if (code === 'rate_limited' || code === 'session_expired') askFail(ab, partial, ASK_TXT.rate);
+    else if (code === 'refused') askFail(ab, '', ASK_TXT.refused);
+    else askFail(ab, partial, ASK_TXT.fail);
+  } finally {
+    if (ask.ctl === ctl) ask.ctl = null;
+    askBusy(false);
+  }
+}
+askForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if (ask.busy) { if (ask.ctl) ask.ctl.abort(); return; }
+  askQuestion(askInput.value);
+});
+askInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); askForm.requestSubmit(); }
+});
+document.querySelectorAll('#ask-suggest .btn').forEach(b => b.addEventListener('click', () => askQuestion(b.textContent)));
+function enableAsk(mode, sample) {
+  if (ask.mode) return;
+  ask.mode = mode; ask.sample = sample || null;
+  askNote.textContent = mode === 'sample' ? ASK_TXT.noteSample : '';
+  document.getElementById('t-ask').hidden = false;
+  if (location.hash.slice(1) === 'ask') showTab('ask', true, false);
+}
+
 /* ================= ВКЛАДКИ И ВИДЕО ================= */
-const TABS = ['video', 'dyry', 'kvanty', 'vselennaya'];
+const TABS = ['video', 'dyry', 'kvanty', 'vselennaya', 'ask'];
 const tabBtns = [...document.querySelectorAll('[role="tab"]')];
 const videos = [...document.querySelectorAll('video')];
 const content = document.getElementById('content');
 function showTab(id, scroll, setHash) {
-  if (!TABS.includes(id)) id = 'video';
+  if (!TABS.includes(id) || (id === 'ask' && !ask.mode)) id = 'video';
   tabBtns.forEach(b => { const on = b.dataset.tab === id; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
   TABS.forEach(k => { document.getElementById('p-' + k).hidden = k !== id; });
   if (id !== 'video') videos.forEach(v => v.pause());
@@ -1448,13 +1596,14 @@ function showTab(id, scroll, setHash) {
   if (setHash) { try { history.replaceState(null, '', '#' + id); } catch (e) { /* в песочнице */ } }
   if (scroll) content.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
 }
-tabBtns.forEach((b, i) => {
+tabBtns.forEach(b => {
   b.addEventListener('click', () => showTab(b.dataset.tab, true, true));
   b.addEventListener('keydown', e => {
     const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
     if (!d) return;
     e.preventDefault();
-    const nb = tabBtns[(i + d + tabBtns.length) % tabBtns.length];
+    const vis = tabBtns.filter(x => !x.hidden), j = vis.indexOf(b);
+    const nb = vis[(j + d + vis.length) % vis.length];
     nb.focus(); showTab(nb.dataset.tab, false, true);
   });
 });
@@ -1465,6 +1614,12 @@ let initial = location.hash.slice(1);
 const fromHash = TABS.includes(initial);
 if (!fromHash) { try { initial = localStorage.getItem('gs-tab') || 'video'; } catch (e) { initial = 'video'; } }
 showTab(initial, fromHash, false);
+
+// вопросы включаются, когда есть чем отвечать
+if (ASK_ENDPOINT) enableAsk('endpoint');
+else if (window.claude && typeof window.claude.use === 'function') {
+  window.claude.use('sample').then(s => { if (s) enableAsk('sample', s); }).catch(() => {});
+}
 
 startScenes();
 })();

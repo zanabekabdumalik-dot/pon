@@ -124,3 +124,28 @@ cd kosmos/video && ./build.sh --en   # пересобрать ролики с а
 3. В **Settings → Pages → Custom domain** впишите домен, нажмите **Save**, после проверки DNS включите
    **Enforce HTTPS**. GitHub сам добавит в `docs/` файл `CNAME`.
 
+## Вопросы Claude на сайте
+
+Вкладка «Спросить» / «Ask» отвечает на вопросы о космосе. Ключ API на страницу не попадает никогда:
+его видел бы любой посетитель.
+
+- **На claude.ai** вкладка работает сама: страница спрашивает Claude через аккаунт того, кто её открыл
+  (при первом вопросе claude.ai просит разрешение). Ключ не нужен.
+- **На своём хостинге** вопросы идут через маленький сервер [`server/ask-worker.js`](server/ask-worker.js)
+  (Cloudflare Worker), который хранит ключ у себя. Пока адрес сервера не указан, вкладка скрыта.
+
+### Как подключить свой ключ
+
+1. Зайдите на dash.cloudflare.com (бесплатный аккаунт) → **Workers & Pages → Create → Worker** →
+   **Deploy**, затем **Edit code**: замените весь код содержимым `server/ask-worker.js` → **Deploy**.
+2. В настройках Worker'а: **Settings → Variables and Secrets → Add**, тип **Secret**, имя
+   `ANTHROPIC_API_KEY`, значение — ваш ключ из console.anthropic.com. Сохраните.
+3. Там же, по желанию, переменная `ALLOWED_ORIGIN` с адресом сайта (например `https://event-horizon.netlify.app`):
+   тогда сервер отвечает только вашему сайту.
+4. Скопируйте адрес Worker'а (`https://….workers.dev`) и впишите его в `index.html`:
+   `<meta name="ask-endpoint" content="https://….workers.dev">`. Загрузите сайт заново.
+5. В console.anthropic.com поставьте месячный лимит расходов: сервер открыт в интернет, и лимит — главная защита.
+
+Модель — `claude-opus-5-5` с низким уровнем рассуждений (короткие ответы в чате); поменять можно в
+константе `MODEL` в начале `server/ask-worker.js`.
+
