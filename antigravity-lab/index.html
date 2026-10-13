@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AntiGravity Lab — Gravitational Research Division</title>
+<title>AntiGravity Lab</title>
 <meta name="description" content="AntiGravity Lab — a research and concept site on antigravity technology, levitation physics and zero-gravity engineering.">
 <meta name="theme-color" content="#03050d">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='15' r='7' fill='%2300D4FF'/%3E%3Cellipse cx='16' cy='15' rx='14' ry='4.5' fill='none' stroke='%237B2FFF' stroke-width='2' transform='rotate(-18 16 15)'/%3E%3C/svg%3E">
@@ -18,6 +18,7 @@
    Tokens
    ========================================================================== */
 :root{
+  color-scheme:dark;
   --bg:#03050d;
   --cyan:#00D4FF;
   --violet:#7B2FFF;
@@ -95,7 +96,7 @@ img,svg,canvas{display:block}
 .nav{
   position:fixed;inset:0 0 auto 0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;gap:24px;
-  padding:14px clamp(16px,4vw,40px);
+  padding:calc(14px + env(safe-area-inset-top, 0px)) clamp(16px,4vw,40px) 14px;
   background:rgba(3,5,13,.55);
   -webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);
   border-bottom:1px solid rgba(255,255,255,.06);
@@ -1254,11 +1255,41 @@ function initMap() {
   }
   const map = L.map(el, { center: CENTER, zoom: 13, scrollWheelZoom: false, attributionControl: false });
   L.control.attribution({ position: 'bottomleft', prefix: '<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>' }).addTo(map);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  const tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     subdomains: 'abcd',
     maxZoom: 20,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'
   }).addTo(map);
+
+  // If the basemap can't be reached (offline, or a sandbox that blocks external images),
+  // swap in a drawn survey grid so the zones still sit on a map-like surface.
+  const SurveyGrid = L.GridLayer.extend({
+    createTile(coords) {
+      const size = this.getTileSize();
+      const c = document.createElement('canvas');
+      c.width = size.x; c.height = size.y;
+      const g = c.getContext('2d');
+      g.fillStyle = '#0b0f1a';
+      g.fillRect(0, 0, size.x, size.y);
+      g.strokeStyle = 'rgba(0,212,255,.06)';
+      g.beginPath();
+      for (let i = 32; i < size.x; i += 32) { g.moveTo(i + 0.5, 0); g.lineTo(i + 0.5, size.y); g.moveTo(0, i + 0.5); g.lineTo(size.x, i + 0.5); }
+      g.stroke();
+      g.strokeStyle = 'rgba(0,212,255,.14)';
+      g.strokeRect(0.5, 0.5, size.x, size.y);
+      g.fillStyle = 'rgba(255,255,255,.18)';
+      g.font = '10px ui-monospace, Menlo, Consolas, monospace';
+      g.fillText(`${coords.z}/${coords.x}/${coords.y}`, 6, 14);
+      return c;
+    }
+  });
+  let gridOn = false;
+  tiles.on('tileerror', () => {
+    if (gridOn) return;
+    gridOn = true;
+    map.removeLayer(tiles);
+    new SurveyGrid({ maxZoom: 20, attribution: 'Survey grid' }).addTo(map);
+  });
 
   // field measurement network: every zone linked to every other zone
   for (let i = 0; i < ZONES.length; i++) {
