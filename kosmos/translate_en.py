@@ -5,6 +5,9 @@
 осталась кириллица, скрипт падает и показывает строки, которые нужно добавить в словарь.
 
     python3 kosmos/translate_en.py
+
+Заодно кладёт в docs/ всё, что нужно поисковикам: robots.txt, sitemap.xml, картинку для превью
+ссылки (og.jpg) и канонический адрес. Адрес сайта — константа SITE_URL ниже.
 """
 import re
 import shutil
@@ -14,6 +17,8 @@ from pathlib import Path
 HERE = Path(__file__).parent
 SRC = HERE / "index.html"
 DOCS = HERE.parent / "docs"
+SITE_URL = "https://event-horizon.kz"   # адрес, под которым сайт должны находить поисковики
+UPDATED = "2026-10-13"
 
 FAVICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E"
            "%3Ccircle cx='16' cy='16' r='15' fill='%2305060b'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='4' "
@@ -30,6 +35,13 @@ PAIRS = [
      '<meta property="og:title" content="Event Horizon">\n'
      '<meta property="og:description" content="Black holes, quantum physics and the history of the Universe: three short videos and experiments you can play with.">\n'
      '<meta property="og:type" content="website">\n'
+     '<meta property="og:site_name" content="Event Horizon">\n'
+     f'<meta property="og:url" content="{SITE_URL}/">\n'
+     f'<meta property="og:image" content="{SITE_URL}/og.jpg">\n'
+     '<meta property="og:image:width" content="1200">\n'
+     '<meta property="og:image:height" content="630">\n'
+     '<meta name="twitter:card" content="summary_large_image">\n'
+     f'<link rel="canonical" href="{SITE_URL}/">\n'
      f'<link rel="icon" href="{FAVICON}">'),
     ('/* верхняя панель и вкладки */', '/* top bar and tabs */'),
     ('/* герой */', '/* hero */'),
@@ -360,6 +372,13 @@ def main():
     DOCS.mkdir(exist_ok=True)
     (DOCS / "index.html").write_text(s, encoding="utf-8")
     (DOCS / ".nojekyll").write_text("", encoding="utf-8")
+    (DOCS / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n", encoding="utf-8")
+    (DOCS / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f'  <url><loc>{SITE_URL}/</loc><lastmod>{UPDATED}</lastmod></url>\n'
+        '</urlset>\n', encoding="utf-8")
+    shutil.copy2(HERE / "og-en.jpg", DOCS / "og.jpg")
     web = HERE / "video" / "web" / "en"
     if web.exists():
         (DOCS / "video").mkdir(exist_ok=True)

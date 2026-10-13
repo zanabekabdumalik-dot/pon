@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://event-horizon.kz/sitemap.xml
