@@ -64,7 +64,7 @@ sub{line-height:0}
   .top{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--void)}
   .top .wrap{justify-content:center}
   .tabs{position:fixed;left:0;right:0;bottom:0;margin:0;gap:0;justify-content:space-around;background:rgba(9,10,18,.97);border-top:1px solid var(--line);padding:.35rem .4rem calc(.35rem + env(safe-area-inset-bottom,0px))}
-  .tab{flex:1;flex-direction:column;gap:.3rem;font-size:.66rem;padding:.55rem .2rem;border-radius:12px}
+  .tab{flex:1;min-width:0;flex-direction:column;gap:.3rem;font-size:.62rem;padding:.55rem .1rem;border-radius:12px}
   .tab svg{width:20px;height:20px}
   .tab[aria-selected="true"]{box-shadow:none}
   body{padding-bottom:calc(4.6rem + env(safe-area-inset-bottom,0px))}
@@ -175,6 +175,14 @@ h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.4
 .cal-ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1.25rem;padding:0 clamp(1rem,2.5vw,1.6rem) 1.4rem}
 
 /* — */
+.demo.play{grid-template-columns:minmax(0,4fr) minmax(0,8fr)}
+#grav-cv{cursor:none;touch-action:none;outline:none}
+#grav-cv:focus-visible{box-shadow:inset 0 0 0 2px var(--accent)}
+.meter{height:.55rem;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:.45rem}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--disk),var(--hot));transition:width .1s linear}
+@media (max-width:860px){.demo.play{grid-template-columns:minmax(0,1fr)}}
+
+/* — */
 .ask{display:grid;gap:1.25rem;max-width:46rem}
 .ask-log{display:grid;gap:1.1rem}
 .ask-log:empty{display:none}
@@ -207,6 +215,8 @@ footer a{color:var(--star)}
     <div class="tabs" role="tablist" aria-label="Sections">
       <button class="tab" role="tab" id="t-video" data-tab="video" aria-controls="p-video" aria-selected="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9v6l5-3z" fill="currentColor" stroke="none"/></svg>Videos</button>
+      <button class="tab" role="tab" id="t-play" data-tab="play" aria-controls="p-play" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="15" cy="15" r="5"/><circle cx="15" cy="15" r="1.6" fill="currentColor"/><path d="M3 3l6 2.5-2.2.9L6 8.6z" fill="currentColor" stroke-linejoin="round"/><path d="M7.5 7.5l3.5 3.5" stroke-linecap="round"/></svg>Try it</button>
       <button class="tab" role="tab" id="t-black-holes" data-tab="black-holes" aria-controls="p-black-holes" aria-selected="false" tabindex="-1">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="3.5"/></svg>Black holes</button>
       <button class="tab" role="tab" id="t-quantum" data-tab="quantum" aria-controls="p-quantum" aria-selected="false" tabindex="-1">
@@ -228,7 +238,7 @@ footer a{color:var(--star)}
       <p class="lead">Three short videos and eight experiments you can play with: black holes, the quantum world and the whole history of the Universe.</p>
       <div class="actions">
         <button class="btn primary" type="button" data-go="video">▶ Watch the videos</button>
-        <button class="btn ghost" type="button" data-go="black-holes">Experiments</button>
+        <button class="btn ghost" type="button" data-go="play">Try it</button>
       </div>
     </div>
   </div>
@@ -263,6 +273,40 @@ footer a{color:var(--star)}
         <div class="vmeta"><span class="dur">0:35</span><button class="btn" type="button" data-go="universe">Try it →</button></div>
       </article>
     </div>
+  </div>
+</section>
+
+
+<section class="panel" role="tabpanel" id="p-play" aria-labelledby="t-play" hidden>
+  <div class="wrap">
+    <div class="panel-head">
+      <h2>Try it yourself</h2>
+      <p>Your cursor becomes an astronaut on a tether. Bring it close to the black hole and feel the pull.</p>
+    </div>
+    <article class="demo play">
+      <div class="demo-text">
+        <h3>Don’t fall in</h3>
+        <p>The closer you get, the harder the black hole pulls: the astronaut lags behind the cursor and slides toward the center. Once it crosses the horizon, getting it back out is very hard: move the cursor as far from the hole as you can and hold it there.</p>
+        <div class="stats" aria-live="off">
+          <div><span class="label">Distance</span><span class="v" id="gv-r">—</span></div>
+          <div><span class="label">Pull</span><span class="v" id="gv-pull">—</span></div>
+          <div class="wide"><span class="label">Astronaut’s clock</span><span class="v" id="gv-time">—</span></div>
+          <div class="wide"><span class="label">Status</span><span class="v big" id="gv-state">—</span></div>
+          <div class="wide" id="gv-meter-box" hidden><span class="label">Breaking free</span><div class="meter"><i id="gv-meter"></i></div></div>
+        </div>
+        <div class="ctrl">
+          <div class="field">
+            <label class="label" for="gv-mass">Black hole mass</label>
+            <input type="range" id="gv-mass" min="0.6" max="2" step="0.01" value="1">
+          </div>
+          <div class="chips">
+            <button class="btn" type="button" id="gv-reset">Start over</button>
+            <span class="read" id="gv-esc" style="color:var(--dust);font-size:.85rem;align-self:center">Escapes: 0</span>
+          </div>
+        </div>
+      </div>
+      <figure class="demo-fig"><canvas id="grav-cv" tabindex="0" style="--ar:4/3;--ar-m:4/5" aria-label="Game: an astronaut on a tether near a black hole. Control it with the mouse, a finger or the arrow keys."></canvas></figure>
+    </article>
   </div>
 </section>
 
@@ -1491,6 +1535,197 @@ new IntersectionObserver(es => { cal.visible = es[0].isIntersecting; }, { rootMa
 })(performance.now());
 
 /* — */
+const GV_TXT = {
+  free: 'Drifting freely', feel: 'You can feel the pull', strong: 'Pulling hard!', caught: 'Captured!', escaped: 'Broke free!',
+  inside: 'past the horizon', stopped: 'nearly stopped', slower: v => 'running ' + v + '× slower', normal: 'running as on Earth',
+  escapes: n => 'Escapes: ' + n,
+  hintMouse: 'Move the cursor over the field', hintTouch: 'Drag your finger over the field',
+  pullHint: 'Move the cursor far from the hole and hold it there',
+  boom: 'Broke free!', boomSub: 'A real black hole would never let you go'
+};
+const gv = { w: 0, h: 0, p: null, v: { x: 0, y: 0 }, a: null, captured: false, prog: 0, escapes: 0, grace: 0, boom: 0, mass: 1, trail: [], burst: [], txt: 0, touched: false, touch: false, inside: false };
+const GV_K = 140, GV_C = 2 * Math.sqrt(GV_K);
+const gvDisk = [], gvStars = [];
+for (let i = 0; i < 460; i++) gvDisk.push({ r: 1.5 + Math.pow(Math.random(), 1.4) * 2.8, a: Math.random() * TAU, s: 0.8 + Math.random() * 1.4 });
+for (let i = 0; i < 260; i++) gvStars.push({ x: Math.random(), y: Math.random(), m: Math.pow(Math.random(), 3), tw: Math.random() * TAU });
+const gvCv = document.getElementById('grav-cv');
+const gvEl = { r: document.getElementById('gv-r'), pull: document.getElementById('gv-pull'), time: document.getElementById('gv-time'), state: document.getElementById('gv-state'), meter: document.getElementById('gv-meter'), meterBox: document.getElementById('gv-meter-box'), esc: document.getElementById('gv-esc') };
+function gvGeom() {
+  const R = Math.min(gv.w, gv.h) * 0.075 * Math.pow(gv.mass, 0.6);
+  return { cx: gv.w / 2, cy: gv.h / 2, R, GM: 9.9 * GV_K * Math.pow(Math.min(gv.w, gv.h) * 0.075, 3) * gv.mass };
+}
+function gvReset() {
+  const x = gv.w * 0.16, y = gv.h * 0.2;
+  gv.p = { x, y }; gv.a = { x, y }; gv.v = { x: 0, y: 0 };
+  gv.captured = false; gv.prog = 0; gv.grace = 0; gv.trail = []; gv.burst = [];
+}
+function gvPoint(e) {
+  const r = gvCv.getBoundingClientRect();
+  gv.a = { x: clamp(e.clientX - r.left, 0, r.width), y: clamp(e.clientY - r.top, 0, r.height) };
+  gv.touched = true; gv.inside = true; gv.touch = e.pointerType === 'touch';
+}
+gvCv.addEventListener('pointermove', gvPoint);
+gvCv.addEventListener('pointerdown', e => { gvPoint(e); try { gvCv.setPointerCapture(e.pointerId); } catch (err) { /* — */ } });
+gvCv.addEventListener('pointerleave', () => { gv.inside = false; });
+gvCv.addEventListener('keydown', e => {
+  const step = 24, d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
+  if (!d || !gv.a) return;
+  e.preventDefault();
+  gv.a = { x: clamp(gv.a.x + d[0], 0, gv.w), y: clamp(gv.a.y + d[1], 0, gv.h) }; gv.touched = true;
+});
+document.getElementById('gv-mass').addEventListener('input', e => { gv.mass = +e.target.value; });
+document.getElementById('gv-reset').addEventListener('click', gvReset);
+function gvEscape(g) {
+  let dx = gv.a.x - g.cx, dy = gv.a.y - g.cy; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
+  gv.p = { x: g.cx + dx * g.R * 1.3, y: g.cy + dy * g.R * 1.3 };
+  const sp = 700 + g.R * 6; gv.v = { x: dx * sp, y: dy * sp };
+  gv.captured = false; gv.prog = 0; gv.grace = 1.0; gv.boom = 2.6; gv.escapes++;
+  for (let i = 0; i < 70; i++) { const a = Math.random() * TAU, v = 80 + Math.random() * 320; gv.burst.push({ x: gv.p.x, y: gv.p.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, life: 0.6 + Math.random() * 0.7 }); }
+}
+function gvStep(g, h) {
+  const k = gv.captured ? GV_K * 0.05 : GV_K, c = gv.captured ? GV_C * 0.5 : GV_C;
+  let ax = k * (gv.a.x - gv.p.x) - c * gv.v.x, ay = k * (gv.a.y - gv.p.y) - c * gv.v.y;
+  const rx = g.cx - gv.p.x, ry = g.cy - gv.p.y, r = Math.hypot(rx, ry) || 1e-3, re = Math.max(r, g.R * 0.3);
+  const gr = g.GM / (re * re) * (gv.grace > 0 ? 0.12 : 1);
+  ax += gr * rx / r; ay += gr * ry / r;
+  if (r < g.R * 6) { const sw = gr * (gv.captured ? 0.6 : 0.3); ax += -sw * ry / r; ay += sw * rx / r; }
+  gv.v.x += ax * h; gv.v.y += ay * h;
+  gv.p.x += gv.v.x * h; gv.p.y += gv.v.y * h;
+  const nr = Math.hypot(gv.p.x - g.cx, gv.p.y - g.cy);
+  if (!gv.captured && gv.grace <= 0 && nr < g.R) { gv.captured = true; gv.prog = 0; }
+  if (gv.captured && nr > g.R * 0.92) {
+    const ux = (gv.p.x - g.cx) / nr, uy = (gv.p.y - g.cy) / nr;
+    gv.p.x = g.cx + ux * g.R * 0.92; gv.p.y = g.cy + uy * g.R * 0.92;
+    const out = gv.v.x * ux + gv.v.y * uy; if (out > 0) { gv.v.x -= out * ux; gv.v.y -= out * uy; }
+  }
+}
+makeScene('grav-cv', (s, dt) => {
+  const { ctx, w, h } = s;
+  gv.w = w; gv.h = h;
+  if (!gv.p) gvReset();
+  const g = gvGeom(), { cx, cy, R } = g;
+  if (dt > 0) {
+    const n = 5; for (let i = 0; i < n; i++) gvStep(g, dt / n);
+    gv.grace = Math.max(0, gv.grace - dt); gv.boom = Math.max(0, gv.boom - dt);
+    if (gv.captured) {
+      const pull = clamp((Math.hypot(gv.a.x - cx, gv.a.y - cy) - R * 1.6) / (Math.min(w, h) * 0.36), 0, 1);
+      gv.prog = clamp(gv.prog + dt * (pull > 0.15 ? pull * pull * 0.24 : -0.3), 0, 1);
+      if (gv.prog >= 1) gvEscape(g);
+    }
+    gv.trail.push({ x: gv.p.x, y: gv.p.y }); if (gv.trail.length > 46) gv.trail.shift();
+    for (const b of gv.burst) { b.t += dt; b.x += b.vx * dt; b.y += b.vy * dt; b.vx *= 0.97; b.vy *= 0.97; }
+    gv.burst = gv.burst.filter(b => b.t < b.life);
+    for (const d of gvDisk) d.a += dt * 2.2 / Math.pow(d.r, 1.5);
+  }
+  const r = Math.hypot(gv.p.x - cx, gv.p.y - cy);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.fillStyle = C.void; ctx.fillRect(0, 0, w, h);
+  /* — */
+  const rE = R * 1.8, k4 = 4 * rE * rE;
+  ctx.fillStyle = C.star;
+  for (const st of gvStars) {
+    const x = st.x * w - cx, y = st.y * h - cy, b = Math.hypot(x, y) || 1, q = Math.sqrt(b * b + k4), th = (b + q) / 2;
+    const uu = b / rE, mu = Math.min(6, (uu * uu + 2) / (uu * Math.sqrt(uu * uu + 4)));
+    if (th < R) continue;
+    ctx.globalAlpha = Math.min(1, (0.15 + 0.6 * st.m) * (0.7 + 0.3 * Math.sin(s.t * 1.5 + st.tw)) * Math.min(mu, 3) * 0.6);
+    const z = 1 + st.m * 2;
+    ctx.fillRect(cx + x / b * th - z / 2, cy + y / b * th - z / 2, z, z);
+  }
+  /* — */
+  ctx.strokeStyle = C.disk; ctx.lineWidth = 1;
+  for (let i = 0; i < 6; i++) {
+    const f = ((i + s.t * 0.35) % 6) / 6, rr = R * (1.25 + (1 - f) * 7);
+    ctx.globalAlpha = 0.09 * Math.sin(f * Math.PI); circle(ctx, cx, cy, rr); ctx.stroke();
+  }
+  /* — */
+  const sq = 0.32;
+  const disk = back => {
+    for (const d of gvDisk) {
+      const sa = Math.sin(d.a); if ((sa < 0) !== back) continue;
+      ctx.globalAlpha = clamp(1.6 / d.r, 0.2, 1) * 0.85;
+      ctx.fillStyle = PAL[clamp(Math.round(Math.pow(1.5 / d.r, 0.8) * 60), 10, 63)];
+      ctx.fillRect(cx + d.r * R * Math.cos(d.a) - d.s / 2, cy + d.r * R * sa * sq - d.s / 2, d.s, d.s);
+    }
+  };
+  ctx.globalCompositeOperation = 'lighter'; disk(true); ctx.globalCompositeOperation = 'source-over';
+  const gl = ctx.createRadialGradient(cx, cy, R * 0.95, cx, cy, R * 1.6);
+  gl.addColorStop(0, 'rgba(255,160,74,0.35)'); gl.addColorStop(1, 'rgba(255,160,74,0)');
+  ctx.globalAlpha = 1; ctx.fillStyle = gl; circle(ctx, cx, cy, R * 1.6); ctx.fill();
+  ctx.fillStyle = '#000'; circle(ctx, cx, cy, R); ctx.fill();
+  ctx.strokeStyle = gv.captured ? '#ff7a4a' : C.hot; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.8; circle(ctx, cx, cy, R); ctx.stroke();
+  ctx.globalCompositeOperation = 'lighter'; disk(false); ctx.globalCompositeOperation = 'source-over';
+  /* — */
+  if (gv.captured) {
+    ctx.globalAlpha = 1; ctx.strokeStyle = C.line; ctx.lineWidth = 5; circle(ctx, cx, cy, R * 1.18); ctx.stroke();
+    ctx.strokeStyle = C.hot; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(cx, cy, R * 1.18, -Math.PI / 2, -Math.PI / 2 + gv.prog * TAU); ctx.stroke(); ctx.lineCap = 'butt';
+  }
+  /* — */
+  ctx.lineWidth = 2;
+  for (let i = 1; i < gv.trail.length; i++) {
+    ctx.globalAlpha = (i / gv.trail.length) * 0.5; ctx.strokeStyle = gv.captured ? '#ff7a4a' : C.quant;
+    ctx.beginPath(); ctx.moveTo(gv.trail[i - 1].x, gv.trail[i - 1].y); ctx.lineTo(gv.trail[i].x, gv.trail[i].y); ctx.stroke();
+  }
+  /* — */
+  const ten = clamp(Math.hypot(gv.a.x - gv.p.x, gv.a.y - gv.p.y) / (Math.min(w, h) * 0.45), 0, 1);
+  ctx.globalAlpha = 0.35 + ten * 0.6; ctx.lineWidth = 1 + ten * 2.5;
+  ctx.strokeStyle = `rgb(255,${Math.round(lerp(240, 90, ten))},${Math.round(lerp(220, 60, ten))})`;
+  ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(gv.a.x, gv.a.y); ctx.lineTo(gv.p.x, gv.p.y); ctx.stroke(); ctx.setLineDash([]);
+  /* — */
+  const ang = Math.atan2(cy - gv.p.y, cx - gv.p.x);
+  const st = 1 + clamp(Math.pow(2.2 * R / Math.max(r, R * 0.3), 3) - 1, 0, gv.captured ? 2 : 2.6);
+  const size = Math.max(R * (gv.captured ? 0.022 : 0.03), 1.1);
+  ctx.save();
+  if (gv.captured) { circle(ctx, cx, cy, R * 0.98); ctx.clip(); }
+  ctx.translate(gv.p.x, gv.p.y); ctx.scale(size, size);
+  drawAstronaut(ctx, 0, 0, ang, st, gv.captured ? 0.75 : 1, gv.captured ? 0.9 : clamp(1 - (r / R - 1) / 1.5, 0, 0.6));
+  ctx.restore();
+  /* — */
+  ctx.globalCompositeOperation = 'lighter';
+  for (const b of gv.burst) { ctx.globalAlpha = 1 - b.t / b.life; ctx.fillStyle = C.hot; ctx.fillRect(b.x - 1.5, b.y - 1.5, 3, 3); }
+  ctx.globalCompositeOperation = 'source-over';
+  /* — */
+  ctx.globalAlpha = gv.inside || !gv.touched ? 1 : 0.45; ctx.strokeStyle = C.star; ctx.lineWidth = 1.5;
+  circle(ctx, gv.a.x, gv.a.y, 9); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(gv.a.x - 14, gv.a.y); ctx.lineTo(gv.a.x - 5, gv.a.y); ctx.moveTo(gv.a.x + 5, gv.a.y); ctx.lineTo(gv.a.x + 14, gv.a.y);
+  ctx.moveTo(gv.a.x, gv.a.y - 14); ctx.lineTo(gv.a.x, gv.a.y - 5); ctx.moveTo(gv.a.x, gv.a.y + 5); ctx.lineTo(gv.a.x, gv.a.y + 14); ctx.stroke();
+  /* — */
+  ctx.globalAlpha = 1; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  if (gv.boom > 0) {
+    const k = Math.min(1, gv.boom / 0.5);
+    ctx.globalAlpha = k; ctx.font = '700 ' + Math.round(Math.min(w, h) * 0.07) + 'px "Unbounded", system-ui, sans-serif'; ctx.fillStyle = C.hot;
+    ctx.fillText(GV_TXT.boom, w / 2, h * 0.14);
+    ctx.font = '500 12px ' + MONO; ctx.fillStyle = C.star; ctx.fillText(GV_TXT.boomSub, w / 2, h * 0.14 + Math.min(w, h) * 0.06);
+  } else if (gv.captured) {
+    ctx.font = '500 12px ' + MONO; ctx.fillStyle = C.hot; ctx.fillText(GV_TXT.pullHint, w / 2, h - 22);
+  } else if (!gv.touched) {
+    ctx.font = '500 12px ' + MONO; ctx.fillStyle = C.dust; ctx.fillText(matchMedia('(pointer: coarse)').matches ? GV_TXT.hintTouch : GV_TXT.hintMouse, w / 2, h - 22);
+  }
+  ctx.globalAlpha = 1;
+  /* — */
+  if ((gv.txt += dt) > 0.1 || dt === 0) {
+    gv.txt = 0;
+    const rr = r / R;
+    gvEl.r.textContent = gv.captured ? GV_TXT.inside : NF1.format(rr) + ' rₛ';
+    gvEl.pull.textContent = '×' + fmt(Math.max(1, Math.pow(10 / Math.max(rr, 0.3), 2)) * gv.mass);
+    const f = gv.captured ? 0 : Math.sqrt(Math.max(0, 1 - 1 / rr));
+    gvEl.time.textContent = gv.captured ? GV_TXT.stopped : f > 0.97 ? GV_TXT.normal : GV_TXT.slower(NF1.format(1 / f));
+    gvEl.state.textContent = gv.boom > 0 ? GV_TXT.escaped : gv.captured ? GV_TXT.caught : rr < 2.5 ? GV_TXT.strong : rr < 6 ? GV_TXT.feel : GV_TXT.free;
+    gvEl.meterBox.hidden = !gv.captured;
+    gvEl.meter.style.width = Math.round(gv.prog * 100) + '%';
+    gvEl.esc.textContent = GV_TXT.escapes(gv.escapes);
+  }
+}, {
+  onResize(s) {
+    if (gv.p && gv.w && gv.h) {
+      const fx = s.w / gv.w, fy = s.h / gv.h;
+      gv.p.x *= fx; gv.p.y *= fy; gv.a.x *= fx; gv.a.y *= fy; gv.trail = [];
+    }
+    gv.w = s.w; gv.h = s.h;
+  }
+});
+
+/* — */
 const ASK_RULES = 'You are the guide on Event Horizon, a small website about black holes, quantum physics and the history of the Universe. '
   + 'Answer the visitor\'s question about space, astronomy or physics accurately and vividly for a curious non-expert. '
   + 'Reply in the same language the visitor writes in. Keep it short: two to four short paragraphs of plain text, no Markdown, no headings, no bullet lists. '
@@ -1585,7 +1820,7 @@ function enableAsk(mode, sample) {
 }
 
 /* — */
-const TABS = ['video', 'black-holes', 'quantum', 'universe', 'ask'];
+const TABS = ['video', 'play', 'black-holes', 'quantum', 'universe', 'ask'];
 const tabBtns = [...document.querySelectorAll('[role="tab"]')];
 const videos = [...document.querySelectorAll('video')];
 const content = document.getElementById('content');
