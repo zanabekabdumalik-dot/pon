@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AntiGravity Lab</title>
-<meta name="description" content="AntiGravity Lab — a research and concept site on antigravity technology, levitation physics and zero-gravity engineering.">
+<meta name="description" content="AntiGravity Lab — исследовательский концепт-сайт об антигравитации, физике левитации и инженерии невесомости.">
 <meta name="theme-color" content="#03050d">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='15' r='7' fill='%2300D4FF'/%3E%3Cellipse cx='16' cy='15' rx='14' ry='4.5' fill='none' stroke='%237B2FFF' stroke-width='2' transform='rotate(-18 16 15)'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -81,7 +81,8 @@ img,svg,canvas{display:block}
 
 .block{padding-top:clamp(84px,11vw,136px)}
 .sec-head{max-width:740px;margin-bottom:clamp(32px,5vw,52px)}
-.sec-head h2{font-size:clamp(30px,4.6vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:14px 0 12px}
+.sec-head h2{font-size:clamp(30px,4.6vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:14px 0 12px;text-wrap:balance}
+.u{text-transform:none}
 .sec-head p{margin:0;color:var(--muted);font-size:clamp(15px,1.6vw,17px)}
 
 .status{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:6px;border:1px solid;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;line-height:1}
@@ -305,7 +306,7 @@ img,svg,canvas{display:block}
 .hud-title{position:absolute;top:24px;left:48px;display:grid;gap:4px}
 .hud-title strong{font-family:Inter,system-ui,sans-serif;font-size:16px;font-weight:700;letter-spacing:-.01em;text-transform:none;color:#fff}
 .hud-read{position:absolute;top:24px;right:48px;display:grid;gap:5px;text-align:right}
-.hud-read b{display:inline-block;min-width:84px;color:var(--cyan);font-weight:600;font-variant-numeric:tabular-nums}
+.hud-read b{display:inline-block;min-width:84px;text-transform:none;color:var(--cyan);font-weight:600;font-variant-numeric:tabular-nums}
 .hud-foot{position:absolute;left:48px;right:48px;bottom:24px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px}
 .hud-foot span{display:inline-flex;align-items:center;gap:8px}
 .hud-foot .t{margin-left:auto;color:#fff;font-variant-numeric:tabular-nums}
@@ -467,7 +468,7 @@ img,svg,canvas{display:block}
   .program{position:relative;top:0}
   .zone-strip{grid-template-columns:repeat(3,1fr)}
 }
-@media (max-width:860px){
+@media (max-width:1000px){
   .nav-links{display:none}
 }
 @media (max-width:760px){
@@ -491,6 +492,10 @@ img,svg,canvas{display:block}
   .zone-strip{grid-template-columns:repeat(2,1fr)}
   .zchip:last-child{grid-column:1/-1}
 }
+@media (max-width:480px){
+  .tag{font-size:10.5px;letter-spacing:.14em}
+  .stat-label{letter-spacing:.08em}
+}
 @media (max-width:380px){
   .stats{grid-template-columns:1fr}
   .btn{width:100%;justify-content:center}
@@ -505,7 +510,7 @@ img,svg,canvas{display:block}
 
 <!-- ======================= NAV ======================= -->
 <header class="nav">
-  <a class="brand" href="#top" aria-label="AntiGravity Lab — back to top">
+  <a class="brand" href="#top" aria-label="AntiGravity Lab — наверх">
     <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
       <defs><radialGradient id="bm" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#00D4FF"/><stop offset="1" stop-color="#7B2FFF"/></radialGradient></defs>
       <circle cx="16" cy="14" r="7" fill="url(#bm)"/>
@@ -515,13 +520,13 @@ img,svg,canvas{display:block}
     AntiGravity Lab
   </a>
   <ul class="nav-links">
-    <li><a href="#tech">Technologies</a></li>
-    <li><a href="#live">Live Data</a></li>
-    <li><a href="#viz">Visualizer</a></li>
-    <li><a href="#zones">Zones</a></li>
-    <li><a href="#timeline">Timeline</a></li>
+    <li><a href="#tech">Технологии</a></li>
+    <li><a href="#live">Телеметрия</a></li>
+    <li><a href="#viz">Модель</a></li>
+    <li><a href="#zones">Карта зон</a></li>
+    <li><a href="#timeline">Хронология</a></li>
   </ul>
-  <span class="nav-status"><i class="blink"></i>FIELD ONLINE</span>
+  <span class="nav-status"><i class="blink"></i>ПОЛЕ АКТИВНО</span>
 </header>
 
 <main>
@@ -551,15 +556,15 @@ img,svg,canvas{display:block}
   </div>
 
   <div class="hero-inner">
-    <span class="tag"><i class="blink"></i>Gravitational Research Division</span>
+    <span class="tag"><i class="blink"></i>Отдел гравитационных исследований</span>
     <h1>AntiGravity Lab</h1>
-    <p class="lead">Exploring the boundaries of gravitational physics and electromagnetic levitation technology</p>
+    <p class="lead">Исследуем границы гравитационной физики и технологий электромагнитной левитации</p>
     <div class="hero-cta">
-      <a class="btn btn-primary" href="#tech">🔬 Research Papers</a>
-      <a class="btn btn-ghost" href="#live">⚡ Live Experiments</a>
+      <a class="btn btn-primary" href="#tech">🔬 Научные статьи</a>
+      <a class="btn btn-ghost" href="#live">⚡ Эксперименты онлайн</a>
     </div>
     <div class="hero-meta">
-      <span>LAT 44.893° N</span><span>LNG 78.248° E</span><span>Field status: <b>Nominal</b></span>
+      <span>44,893° с. ш.</span><span>78,248° в. д.</span><span>Статус поля: <b>норма</b></span>
     </div>
   </div>
 </section>
@@ -570,26 +575,26 @@ img,svg,canvas{display:block}
     <article class="stat glass reveal">
       <span class="stat-ico" aria-hidden="true">🧪</span>
       <div class="stat-val"><span data-count="12">12</span></div>
-      <div class="stat-label">Experiments</div>
-      <div class="stat-sub">Logged across 5 measurement zones</div>
+      <div class="stat-label">Экспериментов</div>
+      <div class="stat-sub">Проведены в 5 измерительных зонах</div>
     </article>
     <article class="stat glass reveal" style="--d:.08s">
       <span class="stat-ico" aria-hidden="true">🧲</span>
       <div class="stat-val"><span data-count="3">3</span></div>
-      <div class="stat-label">Active Fields</div>
-      <div class="stat-sub"><span class="zone za">Zone A</span> · <span class="zone zb">Zone B</span> · <span class="zone zc">Zone C</span></div>
+      <div class="stat-label">Активных поля</div>
+      <div class="stat-sub"><span class="zone za">Зона A</span> · <span class="zone zb">Зона B</span> · <span class="zone zc">Зона C</span></div>
     </article>
     <article class="stat glass reveal" style="--d:.16s">
       <span class="stat-ico" aria-hidden="true">🎯</span>
-      <div class="stat-val"><span data-count="99.7" data-dec="1">99.7</span><small>%</small></div>
-      <div class="stat-label">Accuracy</div>
-      <div class="stat-sub">Calibrated against <span class="zone ze">Zone E</span></div>
+      <div class="stat-val"><span data-count="99.7" data-dec="1">99,7</span><small>%</small></div>
+      <div class="stat-label">Точность</div>
+      <div class="stat-sub">Калибровка по <span class="zone ze">Зоне E</span></div>
     </article>
     <article class="stat glass reveal" style="--d:.24s">
       <span class="stat-ico" aria-hidden="true">🛰️</span>
-      <div class="stat-val"><span data-count="0" data-from="1" data-dec="2">0.00</span><small>g</small></div>
-      <div class="stat-label">Zero-G Zone</div>
-      <div class="stat-sub">Sustained at the <span class="zone za">Zone A</span> core</div>
+      <div class="stat-val"><span data-count="0" data-from="1" data-dec="2">0,00</span><small>g</small></div>
+      <div class="stat-label">Зона невесомости</div>
+      <div class="stat-sub">Поддерживается в ядре <span class="zone za">Зоны A</span></div>
     </article>
   </div>
 </div>
@@ -598,45 +603,45 @@ img,svg,canvas{display:block}
 <section class="block" id="tech">
   <div class="container">
     <header class="sec-head reveal">
-      <div class="kicker">01 · Research Programs</div>
-      <h2>Core Technologies</h2>
-      <p>Three parallel programs, each attacking gravity from a different direction — from proven magnetics to open questions in quantum physics.</p>
+      <div class="kicker">01 · Исследовательские программы</div>
+      <h2>Ключевые технологии</h2>
+      <p>Три параллельные программы подходят к гравитации с разных сторон: от проверенной магнитики до открытых вопросов квантовой физики.</p>
     </header>
 
     <div class="tech-grid">
       <article class="tech-card reveal" style="--glow:rgba(0,212,255,.35)">
         <div class="tech-icon" aria-hidden="true">⚡</div>
-        <h3>Electromagnetic Levitation</h3>
-        <p>Using opposing magnetic fields to suspend objects without physical contact. Stable levitation achieved at 340 gauss.</p>
-        <div class="spec"><span>FIELD <b>340 G</b></span><span>GAP <b>12 mm</b></span></div>
+        <h3>Электромагнитная левитация</h3>
+        <p>Встречные магнитные поля удерживают объекты в воздухе без физического контакта. Стабильная левитация достигнута при 340 гауссах.</p>
+        <div class="spec"><span>ПОЛЕ <b>340 Гс</b></span><span>ЗАЗОР <b>12 мм</b></span></div>
         <div class="trl" data-trl="6"></div>
         <div class="tech-foot">
-          <span class="status st-op">OPERATIONAL</span>
-          <span class="site">Site: <span class="zone za">Zone A</span></span>
+          <span class="status st-op">РАБОТАЕТ</span>
+          <span class="site">Площадка: <span class="zone za">Зона A</span></span>
         </div>
       </article>
 
       <article class="tech-card reveal" style="--glow:rgba(255,179,0,.25);--d:.1s">
         <div class="tech-icon" aria-hidden="true">🔊</div>
-        <h3>Acoustic Levitation</h3>
-        <p>Standing wave nodes trap particles in mid-air using ultrasonic frequencies between 22–40 kHz.</p>
-        <div class="spec"><span>FREQ <b>22–40 kHz</b></span><span>TRAP <b>0.3 mm</b></span></div>
+        <h3>Акустическая левитация</h3>
+        <p>Узлы стоячей волны удерживают частицы в воздухе с помощью ультразвука частотой 22–40 кГц.</p>
+        <div class="spec"><span>ЧАСТОТА <b>22–40 кГц</b></span><span>ЛОВУШКА <b>0,3 мм</b></span></div>
         <div class="trl" data-trl="4"></div>
         <div class="tech-foot">
-          <span class="status st-test">TESTING</span>
-          <span class="site">Site: <span class="zone zc">Zone C</span></span>
+          <span class="status st-test">ИСПЫТАНИЯ</span>
+          <span class="site">Площадка: <span class="zone zc">Зона C</span></span>
         </div>
       </article>
 
       <article class="tech-card reveal" style="--glow:rgba(123,47,255,.4);--d:.2s">
         <div class="tech-icon" aria-hidden="true">🌀</div>
-        <h3>Quantum Field Manipulation</h3>
-        <p>Theoretical framework for gravity shielding using quantum vacuum fluctuation modulation.</p>
-        <div class="spec"><span>STAGE <b>Theory</b></span><span>START <b>2026</b></span></div>
+        <h3>Управление квантовым полем</h3>
+        <p>Теоретическая модель гравитационного экранирования через модуляцию квантовых флуктуаций вакуума.</p>
+        <div class="spec"><span>ЭТАП <b>теория</b></span><span>СТАРТ <b>2026</b></span></div>
         <div class="trl" data-trl="2"></div>
         <div class="tech-foot">
-          <span class="status st-res">RESEARCH</span>
-          <span class="site">Baseline: <span class="zone ze">Zone E</span></span>
+          <span class="status st-res">ИССЛЕДОВАНИЕ</span>
+          <span class="site">Эталон: <span class="zone ze">Зона E</span></span>
         </div>
       </article>
     </div>
@@ -647,47 +652,47 @@ img,svg,canvas{display:block}
 <section class="block" id="live">
   <div class="container">
     <header class="sec-head reveal">
-      <div class="kicker">02 · Telemetry</div>
-      <h2>Field Readings — Live</h2>
-      <p>Sensor telemetry from the levitation rig. Values refresh as the field array reports in.</p>
+      <div class="kicker">02 · Телеметрия</div>
+      <h2>Показания поля — онлайн</h2>
+      <p>Данные с датчиков левитационного стенда. Значения обновляются по мере поступления новых замеров.</p>
     </header>
 
     <div class="panel reveal" id="livePanel">
       <div class="panel-head">
-        <span class="ph-live"><i class="blink"></i>Live stream</span>
-        <span class="ph-rig">Rig-07 · 1.2 kHz sampling</span>
+        <span class="ph-live"><i class="blink"></i>Прямой поток</span>
+        <span class="ph-rig">Стенд-07 · опрос 1,2 <span class="u">кГц</span></span>
         <span id="utcClock">--:--:-- UTC</span>
       </div>
 
       <div class="data-rows">
         <div class="drow" style="--c:#00D4FF;--ct:#5fe3ff" data-to="3420" data-dec="0" data-jit="24" data-max="3500" data-pct="80" data-pj="2.5">
-          <div class="d-label">MAGNETIC FLUX DENSITY<span class="d-src">Hall probe array · <span class="zone za">Zone A</span></span></div>
+          <div class="d-label">ПЛОТНОСТЬ МАГНИТНОГО ПОТОКА<span class="d-src">Датчики Холла · <span class="zone za">Зона A</span></span></div>
           <div class="bar" aria-hidden="true"><i></i></div>
-          <div class="d-val"><span class="d-num">3,420</span><small>Gauss</small></div>
-          <div class="d-trend up" aria-label="rising">↑</div>
+          <div class="d-val"><span class="d-num">3&nbsp;420</span><small>Гс</small></div>
+          <div class="d-trend up" aria-label="растёт">↑</div>
         </div>
         <div class="drow" style="--c:#00FF9F;--ct:#00FF9F" data-to="99.7" data-dec="1" data-jit="0.1" data-max="99.9" data-pct="100" data-pj="0">
-          <div class="d-label">LEVITATION STABILITY<span class="d-src">Optical tracker · <span class="zone za">Zone A</span></span></div>
+          <div class="d-label">СТАБИЛЬНОСТЬ ЛЕВИТАЦИИ<span class="d-src">Оптический трекер · <span class="zone za">Зона A</span></span></div>
           <div class="bar" aria-hidden="true"><i></i></div>
-          <div class="d-val"><span class="d-num">99.7</span><small>%</small></div>
-          <div class="d-trend" aria-label="stable">✓</div>
+          <div class="d-val"><span class="d-num">99,7</span><small>%</small></div>
+          <div class="d-trend" aria-label="стабильно">✓</div>
         </div>
         <div class="drow" style="--c:#7B2FFF;--ct:#A47BFF" data-to="28.4" data-dec="1" data-jit="0.15" data-max="40" data-pct="70" data-pj="1.5">
-          <div class="d-label">FIELD FREQUENCY<span class="d-src">Transducer bank · <span class="zone zc">Zone C</span></span></div>
+          <div class="d-label">ЧАСТОТА ПОЛЯ<span class="d-src">Блок излучателей · <span class="zone zc">Зона C</span></span></div>
           <div class="bar" aria-hidden="true"><i></i></div>
-          <div class="d-val"><span class="d-num">28.4</span><small>kHz</small></div>
-          <div class="d-trend side" aria-label="steady">→</div>
+          <div class="d-val"><span class="d-num">28,4</span><small>кГц</small></div>
+          <div class="d-trend side" aria-label="без изменений">→</div>
         </div>
         <div class="drow" style="--c:#FF8A3D;--ct:#FF9F5E" data-to="4.2" data-dec="1" data-jit="0.1" data-max="10" data-pct="50" data-pj="2">
-          <div class="d-label">POWER CONSUMPTION<span class="d-src">Power bus · <span class="zone zb">Zone B</span></span></div>
+          <div class="d-label">ПОТРЕБЛЯЕМАЯ МОЩНОСТЬ<span class="d-src">Шина питания · <span class="zone zb">Зона B</span></span></div>
           <div class="bar" aria-hidden="true"><i></i></div>
-          <div class="d-val"><span class="d-num">4.2</span><small>kW</small></div>
-          <div class="d-trend down" aria-label="falling">↓</div>
+          <div class="d-val"><span class="d-num">4,2</span><small>кВт</small></div>
+          <div class="d-trend down" aria-label="снижается">↓</div>
         </div>
       </div>
 
       <div class="scope">
-        <div class="scope-cap"><span>Field oscilloscope · CH-1</span><span>28.4 kHz carrier · 2 ms/div</span></div>
+        <div class="scope-cap"><span>Осциллограф поля · канал 1</span><span>Несущая 28,4 <span class="u">кГц</span> · 2 <span class="u">мс/дел</span></span></div>
         <canvas id="scope" aria-hidden="true"></canvas>
       </div>
     </div>
@@ -698,25 +703,25 @@ img,svg,canvas{display:block}
 <section class="block" id="viz">
   <div class="container">
     <header class="sec-head reveal">
-      <div class="kicker">03 · Simulation</div>
-      <h2>Physics Visualizer</h2>
-      <p>A real-time model of a body suspended above a superconducting coil: dipole field lines, orbiting test particles and the repulsion field beneath.</p>
+      <div class="kicker">03 · Моделирование</div>
+      <h2>Физическая модель</h2>
+      <p>Модель в реальном времени: тело парит над сверхпроводящей катушкой. Видны дипольные силовые линии, пробные частицы на орбитах и поле отталкивания под телом.</p>
     </header>
 
     <div class="viz reveal">
-      <canvas id="vizCanvas" role="img" aria-label="Animated model of a glowing sphere levitating inside curved magnetic field lines, with particles orbiting it and a pulsing repulsion ring below"></canvas>
+      <canvas id="vizCanvas" role="img" aria-label="Анимированная модель: светящаяся сфера парит среди изогнутых силовых линий магнитного поля, вокруг вращаются частицы, снизу пульсирует кольцо поля отталкивания"></canvas>
       <div class="hud" aria-hidden="true">
         <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
-        <div class="hud-title"><strong>Electromagnetic Levitation Model</strong><span>Model 01 · Stable dipole configuration</span></div>
+        <div class="hud-title"><strong>Модель электромагнитной левитации</strong><span>Модель 01 · устойчивая дипольная конфигурация</span></div>
         <div class="hud-read">
-          <div>ALT <b id="hAlt">12.40 mm</b></div>
-          <div>B₀ <b id="hB">340 G</b></div>
-          <div>STABILITY <b>99.7%</b></div>
+          <div>ВЫСОТА <b id="hAlt">12,40 мм</b></div>
+          <div>B₀ <b id="hB">340 Гс</b></div>
+          <div>СТАБИЛЬНОСТЬ <b>99,7%</b></div>
         </div>
         <div class="hud-foot">
-          <span><i class="lg lg-line"></i>B-field lines</span>
-          <span><i class="lg lg-dot"></i>Test particles</span>
-          <span><i class="lg lg-ring"></i>Repulsion field</span>
+          <span><i class="lg lg-line"></i>Силовые линии B</span>
+          <span><i class="lg lg-dot"></i>Пробные частицы</span>
+          <span><i class="lg lg-ring"></i>Поле отталкивания</span>
           <span class="t" id="hT">T+ 00:00:00</span>
         </div>
       </div>
@@ -728,30 +733,30 @@ img,svg,canvas{display:block}
 <section class="block" id="zones">
   <div class="container">
     <header class="sec-head reveal">
-      <div class="kicker">04 · Field Map</div>
-      <h2>Field Experiment Zones</h2>
-      <p>Active antigravity measurement points · Balpyk Bi, Kazakhstan</p>
+      <div class="kicker">04 · Карта поля</div>
+      <h2>Зоны полевых экспериментов</h2>
+      <p>Активные точки измерения антигравитации · Балпык би, Казахстан</p>
     </header>
   </div>
   <div class="container wide">
 
     <div class="map-wrap reveal">
-      <div id="map" role="region" aria-label="Map of the five field experiment zones near Balpyk Bi, Kazakhstan"></div>
+      <div id="map" role="region" aria-label="Карта пяти зон полевых экспериментов у села Балпык би, Казахстан"></div>
       <div class="legend">
-        <h4>MEASUREMENT ZONES</h4>
+        <h4>ИЗМЕРИТЕЛЬНЫЕ ЗОНЫ</h4>
         <ul>
-          <li><i class="sw za"></i><span><span class="zone za">Zone A</span> — Primary Field</span></li>
-          <li><i class="sw zb"></i><span><span class="zone zb">Zone B</span> — Secondary Array</span></li>
-          <li><i class="sw zc"></i><span><span class="zone zc">Zone C</span> — Acoustic Node</span></li>
-          <li><i class="sw zd"></i><span><span class="zone zd">Zone D</span> — Peripheral Edge</span></li>
-          <li><i class="sw ze"></i><span><span class="zone ze">Zone E</span> — Background</span></li>
+          <li><i class="sw za"></i><span><span class="zone za">Зона A</span> — Основное поле</span></li>
+          <li><i class="sw zb"></i><span><span class="zone zb">Зона B</span> — Вторичный массив</span></li>
+          <li><i class="sw zc"></i><span><span class="zone zc">Зона C</span> — Акустический узел</span></li>
+          <li><i class="sw zd"></i><span><span class="zone zd">Зона D</span> — Периферийная граница</span></li>
+          <li><i class="sw ze"></i><span><span class="zone ze">Зона E</span> — Фон</span></li>
         </ul>
       </div>
     </div>
 
     <div class="strip-head">
-      <span>Zone readings · units recorded</span>
-      <button class="reset" type="button" id="mapReset">⟲ Reset view</button>
+      <span>Показания зон · зафиксировано единиц</span>
+      <button class="reset" type="button" id="mapReset">⟲ Сбросить вид</button>
     </div>
     <div class="zone-strip" id="zoneStrip"></div>
   </div>
@@ -761,9 +766,9 @@ img,svg,canvas{display:block}
 <section class="block" id="timeline">
   <div class="container">
     <header class="sec-head reveal">
-      <div class="kicker">05 · Milestones</div>
-      <h2>Research Timeline</h2>
-      <p>Seven years from the first floating gram to quantum vacuum experiments.</p>
+      <div class="kicker">05 · Этапы</div>
+      <h2>Хронология исследований</h2>
+      <p>Семь лет пути: от первого парящего грамма до опытов с квантовым вакуумом.</p>
     </header>
 
     <div class="tl-layout">
@@ -771,43 +776,43 @@ img,svg,canvas{display:block}
         <li class="tl-item reveal">
           <span class="tl-dot"></span>
           <div class="tl-year">2019</div>
-          <div class="tl-card"><h3>First stable levitation (12g object)</h3><p>Superconducting coil pair at the <span class="zone za">Zone A</span> core, held at 340 gauss.</p></div>
+          <div class="tl-card"><h3>Первая стабильная левитация (объект 12 г)</h3><p>Пара сверхпроводящих катушек в ядре <span class="zone za">Зоны A</span>, поле 340 гаусс.</p></div>
         </li>
         <li class="tl-item reveal">
           <span class="tl-dot"></span>
           <div class="tl-year">2021</div>
-          <div class="tl-card"><h3>Acoustic trap achieved (0.3mm particle)</h3><p>Ultrasonic standing wave locked at the <span class="zone zc">Zone C</span> acoustic node.</p></div>
+          <div class="tl-card"><h3>Создана акустическая ловушка (частица 0,3 мм)</h3><p>Ультразвуковая стоячая волна удержана в акустическом узле <span class="zone zc">Зоны C</span>.</p></div>
         </li>
         <li class="tl-item reveal">
           <span class="tl-dot"></span>
           <div class="tl-year">2023</div>
-          <div class="tl-card"><h3>Field duration record: 72 continuous hours</h3><p>Uninterrupted electromagnetic suspension in <span class="zone za">Zone A</span>.</p></div>
+          <div class="tl-card"><h3>Рекорд длительности поля: 72 часа без перерыва</h3><p>Непрерывная электромагнитная подвеска в <span class="zone za">Зоне A</span>.</p></div>
         </li>
         <li class="tl-item reveal">
           <span class="tl-dot"></span>
           <div class="tl-year">2024</div>
-          <div class="tl-card"><h3>Multi-object simultaneous levitation</h3><p>Synchronized arrays across <span class="zone za">Zone A</span> and <span class="zone zb">Zone B</span>.</p></div>
+          <div class="tl-card"><h3>Одновременная левитация нескольких объектов</h3><p>Синхронная работа массивов в <span class="zone za">Зоне A</span> и <span class="zone zb">Зоне B</span>.</p></div>
         </li>
         <li class="tl-item now reveal">
           <span class="tl-dot"></span>
-          <div class="tl-year">2026 <span class="now-badge">NOW</span></div>
-          <div class="tl-card"><h3>Quantum field experiments begin</h3><p>Vacuum baseline mapped at <span class="zone ze">Zone E</span>, shielding perimeter set at <span class="zone zd">Zone D</span>.</p></div>
+          <div class="tl-year">2026 <span class="now-badge">СЕЙЧАС</span></div>
+          <div class="tl-card"><h3>Начало экспериментов с квантовым полем</h3><p>Фон вакуума измерен в <span class="zone ze">Зоне E</span>, периметр экранирования выставлен в <span class="zone zd">Зоне D</span>.</p></div>
         </li>
       </ol>
 
       <aside class="program reveal" style="--d:.15s">
-        <div class="pg-head"><span>CURRENT PROGRAM</span><span class="status st-res">PHASE V</span></div>
-        <h3>Quantum Field Experiments</h3>
-        <p>Testing whether modulated vacuum fluctuations can produce a measurable gravitational shielding effect.</p>
-        <div class="pg-meta"><span>Program progress</span><b>34%</b></div>
+        <div class="pg-head"><span>ТЕКУЩАЯ ПРОГРАММА</span><span class="status st-res">ФАЗА V</span></div>
+        <h3>Эксперименты с квантовым полем</h3>
+        <p>Проверяем, может ли модуляция флуктуаций вакуума дать измеримый эффект гравитационного экранирования.</p>
+        <div class="pg-meta"><span>Выполнение программы</span><b>34%</b></div>
         <div class="pg-bar"><i style="--p:34%"></i></div>
         <ul class="pg-list">
-          <li class="done">Vacuum chamber commissioning</li>
-          <li class="done">Baseline survey at <span class="zone ze">Zone E</span></li>
-          <li class="active">Casimir cavity array at <span class="zone za">Zone A</span></li>
-          <li>Shielding trials at <span class="zone zd">Zone D</span></li>
+          <li class="done">Ввод вакуумной камеры в строй</li>
+          <li class="done">Фоновые замеры в <span class="zone ze">Зоне E</span></li>
+          <li class="active">Массив резонаторов Казимира в <span class="zone za">Зоне A</span></li>
+          <li>Испытания экранирования в <span class="zone zd">Зоне D</span></li>
         </ul>
-        <div class="pg-foot"><span>Next review</span><b>Q4 2026</b></div>
+        <div class="pg-foot"><span>Следующий отчёт</span><b>IV кв. 2026</b></div>
       </aside>
     </div>
   </div>
@@ -816,15 +821,15 @@ img,svg,canvas{display:block}
 
 <!-- ======================= FOOTER ======================= -->
 <footer class="footer">
-  <div class="f-brand">AntiGravity Lab · Gravitational Physics Research</div>
-  <nav class="f-icons" aria-label="Lab sections">
-    <a href="#tech" aria-label="Research">🔬</a>
-    <a href="#live" aria-label="Telemetry">📡</a>
-    <a href="#viz" aria-label="Physics model">⚛️</a>
-    <a href="#timeline" aria-label="Missions">🚀</a>
+  <div class="f-brand">AntiGravity Lab · Исследования гравитационной физики</div>
+  <nav class="f-icons" aria-label="Разделы лаборатории">
+    <a href="#tech" aria-label="Исследования">🔬</a>
+    <a href="#live" aria-label="Телеметрия">📡</a>
+    <a href="#viz" aria-label="Физическая модель">⚛️</a>
+    <a href="#timeline" aria-label="Миссии">🚀</a>
   </nav>
-  <p class="f-note">All experiments conducted under standard laboratory conditions</p>
-  <p class="f-copy">© 2026 AntiGravity Lab · Concept research site</p>
+  <p class="f-note">Все эксперименты проводятся в стандартных лабораторных условиях</p>
+  <p class="f-copy">© 2026 AntiGravity Lab · Концептуальный исследовательский сайт</p>
 </footer>
 
 <script>
@@ -837,8 +842,8 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const TAU = Math.PI * 2;
-const fmt = (v, dec) => v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
-const zl = id => `<span class="zone z${id.toLowerCase()}">Zone ${id}</span>`;
+const fmt = (v, dec) => v.toLocaleString('ru-RU', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+const zl = id => `<span class="zone z${id.toLowerCase()}">Зона ${id}</span>`;
 if (!HAS_IO) document.documentElement.classList.add('no-io');
 
 /* ---------- canvas helpers ---------- */
@@ -951,7 +956,7 @@ $('.hero').addEventListener('pointermove', e => {
 // Technology readiness meters
 $$('[data-trl]').forEach(el => {
   const n = +el.dataset.trl;
-  el.innerHTML = `TRL ${n}/9 <span class="trl-bar">${Array.from({ length: 9 }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</span>`;
+  el.innerHTML = `УГТ ${n}/9 <span class="trl-bar">${Array.from({ length: 9 }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</span>`;
 });
 
 function startCount(el) {
@@ -1214,8 +1219,8 @@ function drawViz(t, dt) {
   hudTick += dt;
   if (hudTick > 0.12 || dt === 0) {
     hudTick = 0;
-    hAlt.textContent = (12.4 + bob * 0.42).toFixed(2) + ' mm';
-    hB.textContent = Math.round(340 + Math.sin(t * 2.2) * 3) + ' G';
+    hAlt.textContent = fmt(12.4 + bob * 0.42, 2) + ' мм';
+    hB.textContent = Math.round(340 + Math.sin(t * 2.2) * 3) + ' Гс';
     const s = Math.floor(t);
     hT.textContent = 'T+ ' + [s / 3600, (s / 60) % 60, s % 60].map(v => String(Math.floor(v)).padStart(2, '0')).join(':');
   }
@@ -1228,11 +1233,11 @@ animate(vizEl, drawViz);
    ========================================================================== */
 const CENTER = [44.893, 78.248];
 const ZONES = [
-  { id: 'A', lat: 44.90739, lng: 78.23628, color: '#00D4FF', bg: 'rgba(0,212,255,0.2)', label: 'Primary Field', legend: 'Primary Field', icon: '⚡', head: 'Maximum field intensity', body: 'Electromagnetic core · 48 units', units: 48, dir: 'left' },
-  { id: 'B', lat: 44.88131, lng: 78.26044, color: '#7B2FFF', bg: 'rgba(123,47,255,0.2)', label: 'Secondary Array', legend: 'Secondary Array', icon: '🔊', head: 'Secondary resonance point', body: '31 units recorded', units: 31, dir: 'right' },
-  { id: 'C', lat: 44.89544, lng: 78.23869, color: '#00FF9F', bg: 'rgba(0,255,159,0.2)', label: 'Acoustic Node', legend: 'Acoustic Node', icon: '🌀', head: 'Acoustic levitation zone', body: '18 units recorded', units: 18, dir: 'left' },
-  { id: 'D', lat: 44.88425, lng: 78.24853, color: '#FFB300', bg: 'rgba(255,179,0,0.2)', label: 'Peripheral', legend: 'Peripheral Edge', icon: '📡', head: 'Peripheral field edge', body: '9 units recorded', units: 9, dir: 'left' },
-  { id: 'E', lat: 44.89847, lng: 78.24744, color: 'rgba(200,220,255,0.6)', bg: 'rgba(200,220,255,0.12)', label: 'Background', legend: 'Background', icon: '🔬', head: 'Background baseline', body: '3 units · No field detected', units: 3, dir: 'right' }
+  { id: 'A', lat: 44.90739, lng: 78.23628, color: '#00D4FF', bg: 'rgba(0,212,255,0.2)', label: 'Основное поле', legend: 'Основное поле', icon: '⚡', head: 'Максимальная интенсивность поля', body: 'Электромагнитное ядро · 48 ед.', units: 48, dir: 'left' },
+  { id: 'B', lat: 44.88131, lng: 78.26044, color: '#7B2FFF', bg: 'rgba(123,47,255,0.2)', label: 'Вторичный массив', legend: 'Вторичный массив', icon: '🔊', head: 'Вторичная точка резонанса', body: 'Зафиксирована 31 ед.', units: 31, dir: 'right' },
+  { id: 'C', lat: 44.89544, lng: 78.23869, color: '#00FF9F', bg: 'rgba(0,255,159,0.2)', label: 'Акустический узел', legend: 'Акустический узел', icon: '🌀', head: 'Область акустической левитации', body: 'Зафиксировано 18 ед.', units: 18, dir: 'left' },
+  { id: 'D', lat: 44.88425, lng: 78.24853, color: '#FFB300', bg: 'rgba(255,179,0,0.2)', label: 'Периферия', legend: 'Периферийная граница', icon: '📡', head: 'Периферийная граница поля', body: 'Зафиксировано 9 ед.', units: 9, dir: 'left' },
+  { id: 'E', lat: 44.89847, lng: 78.24744, color: 'rgba(200,220,255,0.6)', bg: 'rgba(200,220,255,0.12)', label: 'Фон', legend: 'Фон', icon: '🔬', head: 'Фоновый уровень', body: '3 ед. · Поле не обнаружено', units: 3, dir: 'right' }
 ];
 const maxUnits = Math.max(...ZONES.map(z => z.units));
 
@@ -1241,7 +1246,7 @@ const strip = $('#zoneStrip');
 strip.innerHTML = ZONES.map((z, i) => `
   <button class="zchip reveal" type="button" data-zone="${z.id}" style="--zc:${z.color};--p:${(z.units / maxUnits * 100).toFixed(1)}%;--d:${(i * 0.06).toFixed(2)}s">
     <span class="zc-top">${zl(z.id)}<span class="zc-name">${z.legend}</span></span>
-    <span class="zc-units"><span data-count="${z.units}">${z.units}</span><small>units</small></span>
+    <span class="zc-units"><span data-count="${z.units}">${z.units}</span><small>ед.</small></span>
     <span class="zc-bar"><i></i></span>
   </button>`).join('');
 onVisible($$('.zchip', strip), el => el.classList.add('in'), { threshold: 0.2 });
@@ -1250,7 +1255,7 @@ onVisible($$('[data-count]', strip), startCount, { threshold: 0.4 });
 function initMap() {
   const el = $('#map');
   if (!window.L) {
-    el.innerHTML = '<div class="map-fallback">Map library could not be loaded — check your connection</div>';
+    el.innerHTML = '<div class="map-fallback">Не удалось загрузить карту. Проверьте подключение к интернету</div>';
     return;
   }
   const map = L.map(el, { center: CENTER, zoom: 13, scrollWheelZoom: false, attributionControl: false });
@@ -1258,7 +1263,7 @@ function initMap() {
   const tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     subdomains: 'abcd',
     maxZoom: 20,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'
+    attribution: '&copy; участники <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'
   }).addTo(map);
 
   // If the basemap can't be reached (offline, or a sandbox that blocks external images),
@@ -1288,7 +1293,7 @@ function initMap() {
     if (gridOn) return;
     gridOn = true;
     map.removeLayer(tiles);
-    new SurveyGrid({ maxZoom: 20, attribution: 'Survey grid' }).addTo(map);
+    new SurveyGrid({ maxZoom: 20, attribution: 'Координатная сетка' }).addTo(map);
   });
 
   // field measurement network: every zone linked to every other zone
@@ -1313,12 +1318,12 @@ function initMap() {
       tooltipAnchor: [z.dir === 'left' ? -22 : 22, 0]
     });
     const m = L.marker([z.lat, z.lng], { icon, riseOnHover: true }).addTo(map);
-    m.getElement().setAttribute('aria-label', `Zone ${z.id} · ${z.label}`);
+    m.getElement().setAttribute('aria-label', `Зона ${z.id} · ${z.label}`);
     m.bindTooltip(`${zl(z.id)} · ${z.label}`, { permanent: permanentLabels, direction: z.dir, className: 'zone-tip', opacity: 1 });
     m.bindPopup(
       `<div class="pp-t">${z.icon} ${zl(z.id)} — ${z.head}</div>` +
       `<div class="pp-b">${z.body}</div>` +
-      `<div class="pp-c">${z.lat.toFixed(5)}° N · ${z.lng.toFixed(5)}° E</div>`,
+      `<div class="pp-c">${fmt(z.lat, 5)}° с. ш. · ${fmt(z.lng, 5)}° в. д.</div>`,
       { maxWidth: 280 }
     );
     markers[z.id] = m;
