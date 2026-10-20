@@ -1,20 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Event Horizon</title>
-<meta name="description" content="Black holes, quantum physics and the history of the Universe: three short videos and experiments you can play with.">
-<meta property="og:title" content="Event Horizon">
-<meta property="og:description" content="Black holes, quantum physics and the history of the Universe: three short videos and experiments you can play with.">
+<title>Горизонт событий</title>
+<meta name="description" content="Чёрные дыры, квантовая физика и история Вселенной: три коротких видео и опыты, которые можно потрогать.">
+<meta property="og:title" content="Горизонт событий">
+<meta property="og:description" content="Чёрные дыры, квантовая физика и история Вселенной: три коротких видео и опыты, которые можно потрогать.">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Event Horizon">
+<meta property="og:site_name" content="Горизонт событий">
+<meta property="og:locale" content="ru_RU">
 <meta property="og:url" content="https://event-horizon.kz/">
 <meta property="og:image" content="https://event-horizon.kz/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://event-horizon.kz/">
+<link rel="alternate" hreflang="ru" href="https://event-horizon.kz/">
+<link rel="alternate" hreflang="en" href="https://event-horizon.kz/en/">
+<link rel="alternate" hreflang="x-default" href="https://event-horizon.kz/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%2305060b'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='4' fill='none' stroke='%23ffa04a' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23000' stroke='%23ffe1b4' stroke-width='1.5'/%3E%3C/svg%3E">
 <meta name="ask-endpoint" content="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +53,7 @@ a{color:var(--accent)}
 sub{line-height:0}
 [hidden]{display:none!important}
 
-/* top bar and tabs */
+/* верхняя панель и вкладки */
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:rgba(5,6,11,.86);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;gap:1rem;min-height:var(--bar)}
 .brand{font-family:var(--f-display);font-weight:500;font-size:.8rem;letter-spacing:.04em;color:var(--star);text-decoration:none;white-space:nowrap}
@@ -60,9 +64,12 @@ sub{line-height:0}
 .tab:hover{color:var(--star)}
 .tab[aria-selected="true"]{background:var(--panel-2);color:var(--star);box-shadow:inset 0 0 0 1px var(--line)}
 .tab[aria-selected="true"] svg{color:var(--disk)}
+.lang{font:500 .72rem/1 var(--f-mono);letter-spacing:.08em;color:var(--dust);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:.5rem .7rem;white-space:nowrap;transition:color .2s,border-color .2s}
+.lang:hover{color:var(--star);border-color:var(--dust)}
 @media (max-width:720px){
   .top{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--void)}
-  .top .wrap{justify-content:center}
+  .top .wrap{justify-content:center;position:relative}
+  .lang{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%)}
   .tabs{position:fixed;left:0;right:0;bottom:0;margin:0;gap:0;justify-content:space-around;background:rgba(9,10,18,.97);border-top:1px solid var(--line);padding:.35rem .4rem calc(.35rem + env(safe-area-inset-bottom,0px))}
   .tab{flex:1;min-width:0;flex-direction:column;gap:.3rem;font-size:.62rem;padding:.55rem .1rem;border-radius:12px}
   .tab svg{width:20px;height:20px}
@@ -70,7 +77,7 @@ sub{line-height:0}
   body{padding-bottom:calc(4.6rem + env(safe-area-inset-bottom,0px))}
 }
 
-/* hero */
+/* герой */
 .hero{position:relative;min-height:clamp(440px,64vh,640px);display:flex;align-items:flex-end;overflow:hidden;background:var(--void)}
 .hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
 .hero::after{content:"";position:absolute;inset:auto 0 0 0;height:35%;background:linear-gradient(to bottom,rgba(5,6,11,0),var(--void));pointer-events:none}
@@ -84,7 +91,7 @@ h1 .b{display:block;font-family:var(--f-body);font-style:italic;font-weight:300;
 .hero-note{position:absolute;z-index:1;right:clamp(16px,4vw,40px);top:1rem;max-width:17rem;font-family:var(--f-mono);font-size:.72rem;line-height:1.55;color:var(--dust);margin:0}
 @media (max-width:719px){.hero{min-height:clamp(470px,78vh,640px)}.hero-note{display:none}.lead{font-size:1.08rem}}
 
-/* buttons and fields */
+/* кнопки и поля */
 .btn{font:500 .8rem/1 var(--f-mono);color:var(--star);background:transparent;border:1px solid var(--line);border-radius:999px;padding:.7rem 1rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.45rem;transition:border-color .2s,background-color .2s,color .2s;white-space:nowrap;min-height:2.5rem}
 .btn:hover{border-color:var(--accent)}
 .btn.primary,.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--void)}
@@ -95,7 +102,7 @@ h1 .b{display:block;font-family:var(--f-body);font-style:italic;font-weight:300;
 input[type=range]{accent-color:var(--accent);width:100%;min-width:0;margin:0;height:1.75rem}
 .read{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
-/* panels */
+/* панели */
 #content{scroll-margin-top:calc(var(--bar) + env(safe-area-inset-top,0px))}
 .panel{padding-block:clamp(2rem,5vw,3.5rem) clamp(3rem,7vw,5rem)}
 .panel[data-tone="quant"]{--accent:var(--quant)}
@@ -106,12 +113,16 @@ h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.4
 .panel-head p{margin:0;max-width:34rem;color:var(--dust)}
 .formula{font-family:var(--f-mono);color:var(--accent);font-size:.9rem}
 
-/* videos */
+/* видео */
 .videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1rem,2.5vw,1.75rem)}
 .vcard{display:flex;flex-direction:column;gap:.85rem;min-width:0}
 .vcard video{display:block;width:100%;aspect-ratio:9/16;max-width:100%;border-radius:10px;background:var(--panel);border:1px solid var(--line);object-fit:cover}
 .vcard h3{font-family:var(--f-display);font-weight:500;font-size:1rem;line-height:1.3;margin:0;text-wrap:balance}
 .vcard p{margin:0;color:var(--dust);font-size:.95rem;line-height:1.5}
+.vbox{position:relative;min-width:0}
+.vnote{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:max-content;max-width:calc(100% - 1.5rem);font:500 .75rem/1.4 var(--f-mono);color:var(--star);background:rgba(5,6,11,.84);border:1px solid var(--line);border-radius:999px;padding:.55rem .9rem;text-align:center;font-variant-numeric:tabular-nums}
+.vnote:disabled{cursor:default;opacity:1}
+.vnote:not(:disabled){cursor:pointer;border-color:var(--disk)}
 .vmeta{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-top:auto}
 .dur{font-family:var(--f-mono);font-size:.75rem;color:var(--dust)}
 @media (max-width:720px){
@@ -120,7 +131,7 @@ h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.4
   .vcard{flex:0 0 78%;scroll-snap-align:center}
 }
 
-/* experiment cards */
+/* карточки опытов */
 .demos{display:grid;gap:clamp(1.25rem,3vw,2rem)}
 .demo{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-areas:"text fig";background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .demo-text{grid-area:text;padding:clamp(1.1rem,2.5vw,1.6rem);display:flex;flex-direction:column;gap:1rem;min-width:0}
@@ -143,13 +154,13 @@ h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.4
   .demo.wide .demo-fig{border-bottom:0}
 }
 
-/* scale */
+/* масштаб */
 .scale-info{border-top:1px solid var(--line);padding-top:1rem;display:grid;gap:.35rem}
 .scale-info h4{font-family:var(--f-display);font-weight:500;font-size:1.05rem;margin:0}
 .scale-info .size{font-family:var(--f-mono);color:var(--accent);font-size:.95rem}
 .scale-info p{font-size:.92rem}
 
-/* calendar */
+/* календарь */
 .cal{display:grid;gap:2.5rem;padding:2rem clamp(1rem,2.5vw,1.6rem) 1.25rem}
 .strip-head{display:flex;justify-content:space-between;gap:1rem;font-family:var(--f-mono);font-size:.7rem;color:var(--dust);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.5rem}
 .strip{position:relative;height:2.6rem;border:1px solid var(--line);border-radius:4px;background:var(--panel-2)}
@@ -165,7 +176,7 @@ h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.4
 .playhead.on{opacity:1}
 .zoomband{position:absolute;top:0;bottom:0;background:rgba(255,160,74,.12);border-left:1px dashed var(--disk)}
 .events{list-style:none;margin:0;padding:0 clamp(1rem,2.5vw,1.6rem) 1.25rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:0 2rem}
-.events li{display:grid;grid-template-columns:1.5rem 7.5rem minmax(0,1fr);gap:.5rem;padding:.6rem 0;border-top:1px solid var(--line);opacity:.45;transition:opacity .4s}
+.events li{display:grid;grid-template-columns:1.5rem 7rem minmax(0,1fr);gap:.5rem;padding:.6rem 0;border-top:1px solid var(--line);opacity:.45;transition:opacity .4s}
 .events li.lit{opacity:1}
 .events .no{font-family:var(--f-mono);font-size:.72rem;color:var(--disk);padding-top:.15rem}
 .events .d{font-family:var(--f-mono);font-size:.74rem;color:var(--star);padding-top:.1rem;font-variant-numeric:tabular-nums}
@@ -174,7 +185,7 @@ h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.4
 @media (max-width:420px){.events li{grid-template-columns:1.4rem minmax(0,1fr)}.events .d,.events p{grid-column:2}}
 .cal-ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1.25rem;padding:0 clamp(1rem,2.5vw,1.6rem) 1.4rem}
 
-/* — */
+/* попробуй */
 .demo.play{grid-template-columns:minmax(0,4fr) minmax(0,8fr)}
 #grav-cv{cursor:none;touch-action:none;outline:none}
 #grav-cv:focus-visible{box-shadow:inset 0 0 0 2px var(--accent)}
@@ -182,7 +193,7 @@ h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.4
 .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--disk),var(--hot));transition:width .1s linear}
 @media (max-width:860px){.demo.play{grid-template-columns:minmax(0,1fr)}}
 
-/* — */
+/* вопросы */
 .ask{display:grid;gap:1.25rem;max-width:46rem}
 .ask-log{display:grid;gap:1.1rem}
 .ask-log:empty{display:none}
@@ -211,34 +222,35 @@ footer a{color:var(--star)}
 
 <div class="top">
   <div class="wrap">
-    <a class="brand" href="#top">Event Horizon</a>
-    <div class="tabs" role="tablist" aria-label="Sections">
+    <a class="brand" href="#top">Горизонт событий</a>
+    <div class="tabs" role="tablist" aria-label="Разделы">
       <button class="tab" role="tab" id="t-video" data-tab="video" aria-controls="p-video" aria-selected="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9v6l5-3z" fill="currentColor" stroke="none"/></svg>Videos</button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9v6l5-3z" fill="currentColor" stroke="none"/></svg>Видео</button>
       <button class="tab" role="tab" id="t-play" data-tab="play" aria-controls="p-play" aria-selected="false" tabindex="-1">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="15" cy="15" r="5"/><circle cx="15" cy="15" r="1.6" fill="currentColor"/><path d="M3 3l6 2.5-2.2.9L6 8.6z" fill="currentColor" stroke-linejoin="round"/><path d="M7.5 7.5l3.5 3.5" stroke-linecap="round"/></svg>Try it</button>
-      <button class="tab" role="tab" id="t-black-holes" data-tab="black-holes" aria-controls="p-black-holes" aria-selected="false" tabindex="-1">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="3.5"/></svg>Black holes</button>
-      <button class="tab" role="tab" id="t-quantum" data-tab="quantum" aria-controls="p-quantum" aria-selected="false" tabindex="-1">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12c2.5-6 5-6 7.5 0s5 6 7.5 0 3.5-4 5-2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>Quantum</button>
-      <button class="tab" role="tab" id="t-universe" data-tab="universe" aria-controls="p-universe" aria-selected="false" tabindex="-1">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 12c0-3 3-4 5-2s1 6-3 7-8-2-8-6 4-8 9-7"/></svg>Universe</button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="15" cy="15" r="5"/><circle cx="15" cy="15" r="1.6" fill="currentColor"/><path d="M3 3l6 2.5-2.2.9L6 8.6z" fill="currentColor" stroke-linejoin="round"/><path d="M7.5 7.5l3.5 3.5" stroke-linecap="round"/></svg>Попробуй</button>
+      <button class="tab" role="tab" id="t-dyry" data-tab="dyry" aria-controls="p-dyry" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="3.5"/></svg>Чёрные дыры</button>
+      <button class="tab" role="tab" id="t-kvanty" data-tab="kvanty" aria-controls="p-kvanty" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12c2.5-6 5-6 7.5 0s5 6 7.5 0 3.5-4 5-2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>Кванты</button>
+      <button class="tab" role="tab" id="t-vselennaya" data-tab="vselennaya" aria-controls="p-vselennaya" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 12c0-3 3-4 5-2s1 6-3 7-8-2-8-6 4-8 9-7"/></svg>Вселенная</button>
       <button class="tab" role="tab" id="t-ask" data-tab="ask" aria-controls="p-ask" aria-selected="false" tabindex="-1" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke-linejoin="round"/><path d="M9 10h.01M12 10h.01M15 10h.01" stroke-linecap="round" stroke-width="2.4"/></svg>Ask</button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke-linejoin="round"/><path d="M9 10h.01M12 10h.01M15 10h.01" stroke-linecap="round" stroke-width="2.4"/></svg>Спросить</button>
     </div>
+    <a class="lang" href="en/" hreflang="en" aria-label="English version">EN</a>
   </div>
 </div>
 
 <header class="hero" id="top">
-  <canvas id="bh" aria-label="Animation: a black hole with an accretion disk whose light is bent by gravity"></canvas>
-  <p class="hero-note">This is computed live, not a picture: light from the far side of the disk bends around the black hole, so the disk shows both above and below the shadow. Move the cursor to change the view.</p>
+  <canvas id="bh" aria-label="Анимация: чёрная дыра с аккреционным диском, свет которого изгибается гравитацией"></canvas>
+  <p class="hero-note">Это расчёт в реальном времени: свет дальней части диска огибает чёрную дыру, поэтому диск виден и над тенью, и под ней. Ведите курсором, чтобы сменить ракурс.</p>
   <div class="hero-copy wrap">
     <div class="inner">
-      <h1><span class="a">Event</span><span class="b">horizon</span></h1>
-      <p class="lead">Three short videos and eight experiments you can play with: black holes, the quantum world and the whole history of the Universe.</p>
+      <h1><span class="a">Горизонт</span><span class="b">событий</span></h1>
+      <p class="lead">Три коротких видео и восемь опытов, которые можно потрогать: чёрные дыры, квантовый мир и вся история Вселенной.</p>
       <div class="actions">
-        <button class="btn primary" type="button" data-go="video">▶ Watch the videos</button>
-        <button class="btn ghost" type="button" data-go="play">Try it</button>
+        <button class="btn primary" type="button" data-go="video">▶ Смотреть видео</button>
+        <button class="btn ghost" type="button" data-go="play">Попробовать</button>
       </div>
     </div>
   </div>
@@ -246,250 +258,250 @@ footer a{color:var(--star)}
 
 <main id="content">
 
-<!-- ============ VIDEOS ============ -->
+<!-- ============ ВИДЕО ============ -->
 <section class="panel" role="tabpanel" id="p-video" aria-labelledby="t-video">
   <div class="wrap">
     <div class="panel-head">
-      <h2>Videos</h2>
-      <p>Three half-minute videos in vertical format: watch them on your phone or post them to Shorts.</p>
+      <h2>Видео</h2>
+      <p>Три ролика по полминуты в вертикальном формате: смотреть с телефона или выкладывать в Shorts.</p>
     </div>
     <div class="videos">
       <article class="vcard">
-        <video controls playsinline preload="metadata" poster="video/event-horizon-01.jpg" src="video/event-horizon-01.mp4" aria-label="Video: what happens if you fall into a black hole"></video>
-        <h3>What happens if you fall into a black hole</h3>
-        <p>Light bends around it, time near the horizon slows down, and a small black hole stretches you into spaghetti.</p>
-        <div class="vmeta"><span class="dur">0:30</span><button class="btn" type="button" data-go="black-holes">Try it →</button></div>
+        <video controls playsinline preload="metadata" poster="video/kosmos-01.jpg" src="video/kosmos-01.mp4" aria-label="Видео: что будет, если упасть в чёрную дыру"></video>
+        <h3>Что будет, если упасть в чёрную дыру</h3>
+        <p>Свет огибает дыру, время у горизонта замедляется, а маленькая дыра растягивает в спагетти.</p>
+        <div class="vmeta"><span class="dur">0:30</span><button class="btn" type="button" data-go="dyry">Попробовать →</button></div>
       </article>
       <article class="vcard">
-        <video controls playsinline preload="metadata" poster="video/event-horizon-02.jpg" src="video/event-horizon-02.mp4" aria-label="Video: the double-slit experiment"></video>
-        <h3>The weirdest experiment in physics</h3>
-        <p>Electrons fly one at a time but add up to stripes, like a wave. Until someone starts watching.</p>
-        <div class="vmeta"><span class="dur">0:29</span><button class="btn" type="button" data-go="quantum">Try it →</button></div>
+        <video controls playsinline preload="metadata" poster="video/kosmos-02.jpg" src="video/kosmos-02.mp4" aria-label="Видео: двухщелевой опыт"></video>
+        <h3>Самый странный опыт в физике</h3>
+        <p>Электроны летят по одному, но складываются в полосы, как волна. Пока за ними не начинают следить.</p>
+        <div class="vmeta"><span class="dur">0:29</span><button class="btn" type="button" data-go="kvanty">Попробовать →</button></div>
       </article>
       <article class="vcard">
-        <video controls playsinline preload="metadata" poster="video/event-horizon-03.jpg" src="video/event-horizon-03.mp4" aria-label="Video: the history of the Universe in one year"></video>
-        <h3>The whole history of the Universe in one year</h3>
-        <p>The Big Bang on January 1, dinosaurs on Christmas Day, and Gagarin 0.15 seconds before midnight.</p>
-        <div class="vmeta"><span class="dur">0:35</span><button class="btn" type="button" data-go="universe">Try it →</button></div>
+        <video controls playsinline preload="metadata" poster="video/kosmos-03.jpg" src="video/kosmos-03.mp4" aria-label="Видео: история Вселенной за один год"></video>
+        <h3>Вся история Вселенной за один год</h3>
+        <p>Большой взрыв 1 января, динозавры на Рождество, а Гагарин за 0,15 секунды до полуночи.</p>
+        <div class="vmeta"><span class="dur">0:35</span><button class="btn" type="button" data-go="vselennaya">Попробовать →</button></div>
       </article>
     </div>
   </div>
 </section>
 
-
+<!-- ============ ПОПРОБУЙ ============ -->
 <section class="panel" role="tabpanel" id="p-play" aria-labelledby="t-play" hidden>
   <div class="wrap">
     <div class="panel-head">
-      <h2>Try it yourself</h2>
-      <p>Your cursor becomes an astronaut on a tether. Bring it close to the black hole and feel the pull.</p>
+      <h2>Попробуйте сами</h2>
+      <p>Курсор превращается в космонавта на тросе. Подведите его к чёрной дыре и почувствуйте, как она тянет.</p>
     </div>
     <article class="demo play">
       <div class="demo-text">
-        <h3>Don’t fall in</h3>
-        <p>The closer you get, the harder the black hole pulls: the astronaut lags behind the cursor and slides toward the center. Once it crosses the horizon, getting it back out is very hard: move the cursor as far from the hole as you can and hold it there.</p>
+        <h3>Не упадите в дыру</h3>
+        <p>Чем ближе к дыре, тем сильнее она тянет: космонавт отстаёт от курсора и сползает к центру. Если он пересечёт горизонт, вытащить его будет очень трудно: уведите курсор как можно дальше от дыры и держите.</p>
         <div class="stats" aria-live="off">
-          <div><span class="label">Distance</span><span class="v" id="gv-r">—</span></div>
-          <div><span class="label">Pull</span><span class="v" id="gv-pull">—</span></div>
-          <div class="wide"><span class="label">Astronaut’s clock</span><span class="v" id="gv-time">—</span></div>
-          <div class="wide"><span class="label">Status</span><span class="v big" id="gv-state">—</span></div>
-          <div class="wide" id="gv-meter-box" hidden><span class="label">Breaking free</span><div class="meter"><i id="gv-meter"></i></div></div>
+          <div><span class="label">Расстояние</span><span class="v" id="gv-r">—</span></div>
+          <div><span class="label">Притяжение</span><span class="v" id="gv-pull">—</span></div>
+          <div class="wide"><span class="label">Часы космонавта</span><span class="v" id="gv-time">—</span></div>
+          <div class="wide"><span class="label">Состояние</span><span class="v big" id="gv-state">—</span></div>
+          <div class="wide" id="gv-meter-box" hidden><span class="label">Рывок на свободу</span><div class="meter"><i id="gv-meter"></i></div></div>
         </div>
         <div class="ctrl">
           <div class="field">
-            <label class="label" for="gv-mass">Black hole mass</label>
+            <label class="label" for="gv-mass">Масса дыры</label>
             <input type="range" id="gv-mass" min="0.6" max="2" step="0.01" value="1">
           </div>
           <div class="chips">
-            <button class="btn" type="button" id="gv-reset">Start over</button>
-            <span class="read" id="gv-esc" style="color:var(--dust);font-size:.85rem;align-self:center">Escapes: 0</span>
+            <button class="btn" type="button" id="gv-reset">Начать заново</button>
+            <span class="read" id="gv-esc" style="color:var(--dust);font-size:.85rem;align-self:center">Побегов: 0</span>
           </div>
         </div>
       </div>
-      <figure class="demo-fig"><canvas id="grav-cv" tabindex="0" style="--ar:4/3;--ar-m:4/5" aria-label="Game: an astronaut on a tether near a black hole. Control it with the mouse, a finger or the arrow keys."></canvas></figure>
+      <figure class="demo-fig"><canvas id="grav-cv" tabindex="0" style="--ar:4/3;--ar-m:4/5" aria-label="Игра: космонавт на тросе рядом с чёрной дырой. Управление мышью, пальцем или стрелками."></canvas></figure>
     </article>
   </div>
 </section>
 
-<!-- ============ BLACK HOLES ============ -->
-<section class="panel" role="tabpanel" id="p-black-holes" aria-labelledby="t-black-holes" hidden>
+<!-- ============ ЧЁРНЫЕ ДЫРЫ ============ -->
+<section class="panel" role="tabpanel" id="p-dyry" aria-labelledby="t-dyry" hidden>
   <div class="wrap">
     <div class="panel-head">
-      <h2>Black holes</h2>
-      <p>Mass squeezed so tightly that not even light can escape. The point of no return: <span class="formula">r<sub>s</sub> = 2GM/c²</span></p>
+      <h2>Чёрные дыры</h2>
+      <p>Масса, сжатая так сильно, что даже свет не может вырваться. Граница невозврата: <span class="formula">r<sub>s</sub> = 2GM/c²</span></p>
     </div>
     <div class="demos">
       <article class="demo">
         <div class="demo-text">
-          <h3>Squeeze anything</h3>
-          <p>Pick an object and the calculator shows how small it must be squeezed to become a black hole.</p>
+          <h3>Сожмите что угодно</h3>
+          <p>Выберите объект, и калькулятор покажет, до какого размера его надо сжать, чтобы получилась чёрная дыра.</p>
           <div class="stats" aria-live="polite">
-            <div class="wide"><span class="label">Horizon radius</span><span class="v big" id="calc-rs">—</span></div>
-            <div class="wide"><span class="label">Diameter</span><span class="v" id="calc-cmp">—</span></div>
-            <div class="wide"><span class="label">Average density</span><span class="v" id="calc-rho">—</span></div>
+            <div class="wide"><span class="label">Радиус горизонта</span><span class="v big" id="calc-rs">—</span></div>
+            <div class="wide"><span class="label">Диаметр</span><span class="v" id="calc-cmp">—</span></div>
+            <div class="wide"><span class="label">Средняя плотность</span><span class="v" id="calc-rho">—</span></div>
             <div class="wide" hidden><span class="v" id="calc-mass"></span></div>
           </div>
           <div class="ctrl">
-            <div class="chips" role="group" aria-label="Objects" id="calc-presets"></div>
+            <div class="chips" role="group" aria-label="Объекты" id="calc-presets"></div>
             <div class="field">
-              <label class="label" for="calc-range">Mass, kg (log scale)</label>
+              <label class="label" for="calc-range">Масса, кг (логарифмическая шкала)</label>
               <input type="range" id="calc-range" min="1.5" max="41" step="0.01" value="30.3">
             </div>
           </div>
         </div>
-        <figure class="demo-fig"><canvas id="calc-cv" style="--ar:4/3;--ar-m:16/10" aria-label="The horizon next to a familiar object of similar size"></canvas></figure>
+        <figure class="demo-fig"><canvas id="calc-cv" style="--ar:4/3;--ar-m:16/10" aria-label="Сравнение размера горизонта с похожим по размеру объектом"></canvas></figure>
       </article>
 
       <article class="demo">
         <div class="demo-text">
-          <h3>Time near the horizon</h3>
-          <p>Gravity slows time down. Move the slider toward the horizon and see how much time passes far away while one hour passes for you.</p>
+          <h3>Время у горизонта</h3>
+          <p>Гравитация замедляет время. Подвиньте ползунок к горизонту и посмотрите, сколько пройдёт вдали, пока у вас идёт один час.</p>
           <div class="stats" aria-live="polite">
-            <div class="wide"><span class="label">1 hour for you equals</span><span class="v big" id="td-factor">—</span></div>
-            <div><span class="label">Distance</span><span class="v" id="td-r">—</span></div>
-            <div><span class="label">Above Sgr A*’s horizon</span><span class="v" id="td-h">—</span></div>
+            <div class="wide"><span class="label">1 час у вас равен</span><span class="v big" id="td-factor">—</span></div>
+            <div><span class="label">Расстояние</span><span class="v" id="td-r">—</span></div>
+            <div><span class="label">Над горизонтом Sgr A*</span><span class="v" id="td-h">—</span></div>
           </div>
           <div class="ctrl">
             <div class="field">
-              <label class="label" for="td-range">Closeness to the horizon</label>
+              <label class="label" for="td-range">Близость к горизонту</label>
               <input type="range" id="td-range" min="-10" max="1.5" step="0.01" value="-1">
             </div>
             <div class="chips">
-              <button class="btn" type="button" id="td-miller">Miller’s planet</button>
-              <button class="btn" type="button" id="td-reset">Reset clocks</button>
+              <button class="btn" type="button" id="td-miller">Планета Миллер</button>
+              <button class="btn" type="button" id="td-reset">Обнулить часы</button>
             </div>
           </div>
         </div>
-        <figure class="demo-fig"><canvas id="clock-cv" style="--ar:16/10;--ar-m:5/4" aria-label="Two clocks: one near the horizon, one far from the black hole"></canvas></figure>
+        <figure class="demo-fig"><canvas id="clock-cv" style="--ar:16/10;--ar-m:5/4" aria-label="Двое часов: у горизонта и вдали от чёрной дыры"></canvas></figure>
       </article>
 
       <article class="demo">
         <div class="demo-text">
-          <h3>Spaghettification</h3>
-          <p>Your feet are pulled harder than your head. A small black hole tears a body apart long before the horizon; a giant’s horizon you can cross without noticing.</p>
+          <h3>Спагеттификация</h3>
+          <p>Ноги тянет сильнее, чем голову. Маленькая дыра разрывает тело задолго до горизонта, а горизонт гиганта можно пересечь незаметно.</p>
           <div class="stats" aria-live="off">
-            <div><span class="label">To the center</span><span class="v" id="sp-r">—</span></div>
-            <div><span class="label">Head-to-feet pull</span><span class="v" id="sp-a">—</span></div>
-            <div class="wide"><span class="label">How you feel</span><span class="v big" id="sp-s">—</span></div>
+            <div><span class="label">До центра</span><span class="v" id="sp-r">—</span></div>
+            <div><span class="label">Разница ускорений</span><span class="v" id="sp-a">—</span></div>
+            <div class="wide"><span class="label">Самочувствие</span><span class="v big" id="sp-s">—</span></div>
           </div>
           <div class="ctrl">
-            <div class="chips" role="group" aria-label="Black hole mass">
-              <button class="btn" type="button" data-m="stellar" aria-pressed="true">10 Sun masses</button>
+            <div class="chips" role="group" aria-label="Масса чёрной дыры">
+              <button class="btn" type="button" data-m="stellar" aria-pressed="true">10 масс Солнца</button>
               <button class="btn" type="button" data-m="smbh" aria-pressed="false">Sgr A*</button>
             </div>
           </div>
         </div>
-        <figure class="demo-fig"><canvas id="spag-cv" style="--ar:16/9;--ar-m:4/3" aria-label="An astronaut falls into a black hole and is stretched by tidal forces"></canvas></figure>
+        <figure class="demo-fig"><canvas id="spag-cv" style="--ar:16/9;--ar-m:4/3" aria-label="Космонавт падает в чёрную дыру и растягивается приливными силами"></canvas></figure>
       </article>
     </div>
   </div>
 </section>
 
-<!-- ============ QUANTUM ============ -->
-<section class="panel" role="tabpanel" id="p-quantum" aria-labelledby="t-quantum" data-tone="quant" hidden>
+<!-- ============ КВАНТЫ ============ -->
+<section class="panel" role="tabpanel" id="p-kvanty" aria-labelledby="t-kvanty" data-tone="quant" hidden>
   <div class="wrap">
     <div class="panel-head">
-      <h2>The quantum world</h2>
-      <p>At the scale of atoms, a particle behaves like a wave of probability. Lasers, LEDs and transistors all run on this.</p>
+      <h2>Квантовый мир</h2>
+      <p>На масштабе атомов частица ведёт себя как волна вероятности. На этом работают лазеры, светодиоды и транзисторы.</p>
     </div>
     <div class="demos">
       <article class="demo">
         <div class="demo-text">
-          <h3>Double-slit experiment</h3>
-          <p>Electrons fly one at a time but build up stripes, like a wave. Turn on the detector at the slits and the stripes vanish.</p>
+          <h3>Двухщелевой опыт</h3>
+          <p>Электроны летят по одному, но складываются в полосы, как волна. Включите детектор у щелей, и полосы пропадут.</p>
           <div class="ctrl">
             <div class="chips">
-              <button class="btn" type="button" id="ds-det" aria-pressed="false">Detector at slits: off</button>
-              <button class="btn" type="button" id="ds-fast" aria-pressed="false">Faster</button>
-              <button class="btn" type="button" id="ds-clear">Clear</button>
+              <button class="btn" type="button" id="ds-det" aria-pressed="false">Детектор у щелей: выкл</button>
+              <button class="btn" type="button" id="ds-fast" aria-pressed="false">Быстрее</button>
+              <button class="btn" type="button" id="ds-clear">Очистить</button>
             </div>
-            <span class="read" id="ds-count" style="color:var(--dust);font-size:.85rem">0 electrons</span>
+            <span class="read" id="ds-count" style="color:var(--dust);font-size:.85rem">0 электронов</span>
           </div>
         </div>
-        <figure class="demo-fig"><canvas id="ds-cv" style="--ar:16/9;--ar-m:4/3" aria-label="Double-slit experiment simulation"></canvas></figure>
+        <figure class="demo-fig"><canvas id="ds-cv" style="--ar:16/9;--ar-m:4/3" aria-label="Симуляция двухщелевого опыта"></canvas></figure>
       </article>
 
       <article class="demo">
         <div class="demo-text">
-          <h3>Quantum tunneling</h3>
-          <p>The particle lacks the energy to climb over the wall, yet part of its wave leaks through. That is how the Sun shines and how flash memory works.</p>
+          <h3>Туннельный эффект</h3>
+          <p>Частице не хватает энергии перелезть через стену, но часть её волны просачивается насквозь. Так светит Солнце и работает флеш-память.</p>
           <div class="stats" aria-live="off">
-            <div><span class="label">Got through the wall</span><span class="v big" id="tun-p">—</span></div>
-            <div><span class="label">Classical physics</span><span class="v">0%</span></div>
+            <div><span class="label">Прошло сквозь стену</span><span class="v big" id="tun-p">—</span></div>
+            <div><span class="label">По классике</span><span class="v">0 %</span></div>
           </div>
           <div class="ctrl">
             <div class="field">
-              <label class="label" for="tun-range">Wall thickness</label>
+              <label class="label" for="tun-range">Толщина стены</label>
               <input type="range" id="tun-range" min="2" max="20" step="1" value="7">
             </div>
           </div>
         </div>
-        <figure class="demo-fig"><canvas id="tun-cv" style="--ar:16/9;--ar-m:4/3" aria-label="A Schrödinger equation solution: a wave packet hits a barrier"></canvas></figure>
+        <figure class="demo-fig"><canvas id="tun-cv" style="--ar:16/9;--ar-m:4/3" aria-label="Решение уравнения Шрёдингера: волновой пакет налетает на барьер"></canvas></figure>
       </article>
 
       <article class="demo">
         <div class="demo-text">
-          <h3>Entanglement</h3>
-          <p>Measure one particle and the other instantly turns out opposite, at any distance. You can’t send a message this way: each side sees random ↑ and ↓.</p>
+          <h3>Запутанность</h3>
+          <p>Измерьте одну частицу, и вторая сразу окажется противоположной на любом расстоянии. Сообщение так не передать: каждый видит случайные ↑ и ↓.</p>
           <div class="ctrl">
-            <button class="btn" type="button" id="ent-measure" style="justify-self:start">Measure now</button>
-            <span class="read" id="ent-log" aria-live="polite" style="color:var(--dust);font-size:.85rem">Results show up here</span>
+            <button class="btn" type="button" id="ent-measure" style="justify-self:start">Измерить сейчас</button>
+            <span class="read" id="ent-log" aria-live="polite" style="color:var(--dust);font-size:.85rem">Результаты появятся здесь</span>
           </div>
         </div>
-        <figure class="demo-fig"><canvas id="ent-cv" style="--ar:16/8;--ar-m:4/3" aria-label="A pair of entangled particles flies apart to two observers"></canvas></figure>
+        <figure class="demo-fig"><canvas id="ent-cv" style="--ar:16/8;--ar-m:4/3" aria-label="Пара запутанных частиц разлетается к двум наблюдателям"></canvas></figure>
       </article>
     </div>
   </div>
 </section>
 
-<!-- ============ UNIVERSE ============ -->
-<section class="panel" role="tabpanel" id="p-universe" aria-labelledby="t-universe" hidden>
+<!-- ============ ВСЕЛЕННАЯ ============ -->
+<section class="panel" role="tabpanel" id="p-vselennaya" aria-labelledby="t-vselennaya" hidden>
   <div class="wrap">
     <div class="panel-head">
-      <h2>The Universe</h2>
-      <p>From the Planck length to the observable Universe, and from the Big Bang to today.</p>
+      <h2>Вселенная</h2>
+      <p>От планковской длины до наблюдаемой Вселенной и от Большого взрыва до сегодняшнего дня.</p>
     </div>
     <div class="demos">
       <article class="demo">
         <div class="demo-text">
-          <h3>The scale of everything</h3>
-          <p>62 orders of magnitude between the smallest and the largest. Press Fly or drag the slider.</p>
+          <h3>Масштаб всего</h3>
+          <p>62 порядка величины между самым маленьким и самым большим. Нажмите «Полёт» или двигайте ползунок.</p>
           <div class="scale-info" aria-live="polite">
-            <span class="label">Frame width <b id="scale-frame" style="color:var(--star);font-weight:500;text-transform:none;letter-spacing:0">2 m</b></span>
-            <h4 id="scale-name">Human</h4>
-            <span class="size" id="scale-size">1.7 m</span>
+            <span class="label">Ширина кадра <b id="scale-frame" style="color:var(--star);font-weight:500;text-transform:none;letter-spacing:0">2 м</b></span>
+            <h4 id="scale-name">Человек</h4>
+            <span class="size" id="scale-size">1,7 м</span>
             <p id="scale-desc"></p>
           </div>
           <div class="ctrl">
             <div class="field">
-              <label class="label" for="scale-range">Scale: 10ⁿ meters</label>
+              <label class="label" for="scale-range">Масштаб: 10ⁿ метров</label>
               <input type="range" id="scale-range" min="-35.3" max="27.3" step="0.01" value="0.55">
             </div>
-            <div class="chips" role="group" aria-label="Quick jump">
-              <button class="btn" id="scale-fly" type="button" aria-pressed="false">▶ Fly</button>
-              <button class="btn" type="button" data-e="-9.7">Atom</button>
-              <button class="btn" type="button" data-e="0.55">Human</button>
-              <button class="btn" type="button" data-e="7.4">Earth</button>
-              <button class="btn" type="button" data-e="21.3">Galaxy</button>
+            <div class="chips" role="group" aria-label="Быстрый переход">
+              <button class="btn" id="scale-fly" type="button" aria-pressed="false">▶ Полёт</button>
+              <button class="btn" type="button" data-e="-9.7">Атом</button>
+              <button class="btn" type="button" data-e="0.55">Человек</button>
+              <button class="btn" type="button" data-e="7.4">Земля</button>
+              <button class="btn" type="button" data-e="21.3">Галактика</button>
             </div>
           </div>
         </div>
-        <figure class="demo-fig"><canvas id="scale-cv" style="--ar:1/1;--ar-m:1/1" aria-label="Concentric circles showing object sizes at the chosen scale"></canvas></figure>
+        <figure class="demo-fig"><canvas id="scale-cv" style="--ar:1/1;--ar-m:1/1" aria-label="Концентрические круги, показывающие размеры объектов в выбранном масштабе"></canvas></figure>
       </article>
 
       <article class="demo wide">
         <div class="demo-text">
-          <h3>Cosmic calendar</h3>
-          <p>The whole history of the Universe squeezed into one year: the Big Bang at midnight on January 1, and now it is 24:00 on December 31. One second equals 437 years.</p>
+          <h3>Космический календарь</h3>
+          <p>Вся история Вселенной, сжатая в один год: Большой взрыв 1 января в полночь, сейчас 31 декабря, 24:00. Одна секунда равна 437 годам.</p>
         </div>
         <div class="demo-fig" style="display:block">
           <div class="cal" id="cal">
-            <div><div class="strip-head"><span>Whole year</span><span>Jan 1 → Dec 31</span></div><div class="strip" id="strip-0"></div></div>
-            <div><div class="strip-head"><span>December 31</span><span>00:00 → 24:00</span></div><div class="strip" id="strip-1"></div></div>
-            <div><div class="strip-head"><span>Last minute</span><span>23:59:00 → 24:00:00</span></div><div class="strip" id="strip-2"></div></div>
+            <div><div class="strip-head"><span>Весь год</span><span>1 января → 31 декабря</span></div><div class="strip" id="strip-0"></div></div>
+            <div><div class="strip-head"><span>31 декабря</span><span>00:00 → 24:00</span></div><div class="strip" id="strip-1"></div></div>
+            <div><div class="strip-head"><span>Последняя минута</span><span>23:59:00 → 24:00:00</span></div><div class="strip" id="strip-2"></div></div>
           </div>
           <div class="cal-ctrl">
-            <button class="btn" type="button" id="cal-play" aria-pressed="true">❚❚ Pause</button>
-            <span class="read" id="cal-now" style="color:var(--dust);font-size:.85rem">January 1, 00:00</span>
+            <button class="btn" type="button" id="cal-play" aria-pressed="true">❚❚ Пауза</button>
+            <span class="read" id="cal-now" style="color:var(--dust);font-size:.85rem">1 января, 00:00</span>
           </div>
           <ol class="events" id="events"></ol>
         </div>
@@ -498,26 +510,26 @@ footer a{color:var(--star)}
   </div>
 </section>
 
-
+<!-- ============ СПРОСИТЬ ============ -->
 <section class="panel" role="tabpanel" id="p-ask" aria-labelledby="t-ask" hidden>
   <div class="wrap">
     <div class="panel-head">
-      <h2>Ask Claude</h2>
-      <p>Ask anything about space, black holes or quantum physics. Answers come from Claude, an AI, and it can make mistakes.</p>
+      <h2>Спросите Claude</h2>
+      <p>Любой вопрос о космосе, чёрных дырах или квантовой физике. Отвечает искусственный интеллект Claude, он может ошибаться.</p>
     </div>
     <div class="ask">
       <div class="ask-log" id="ask-log" aria-live="polite"></div>
       <div class="ask-suggest" id="ask-suggest">
-        <span class="label">For example</span>
-        <button class="btn" type="button">What is inside a black hole?</button>
-        <button class="btn" type="button">Why can’t anything go faster than light?</button>
-        <button class="btn" type="button">How did the first stars form?</button>
-        <button class="btn" type="button">What is dark matter?</button>
+        <span class="label">Например</span>
+        <button class="btn" type="button">Что внутри чёрной дыры?</button>
+        <button class="btn" type="button">Почему ничего не летает быстрее света?</button>
+        <button class="btn" type="button">Как появились первые звёзды?</button>
+        <button class="btn" type="button">Что такое тёмная материя?</button>
       </div>
       <form class="ask-form" id="ask-form">
         <div class="ask-row">
-          <textarea id="ask-input" rows="2" maxlength="500" placeholder="Your question about space…" aria-label="Your question"></textarea>
-          <button class="btn primary" type="submit" id="ask-send">Ask</button>
+          <textarea id="ask-input" rows="2" maxlength="500" placeholder="Ваш вопрос о космосе…" aria-label="Ваш вопрос"></textarea>
+          <button class="btn primary" type="submit" id="ask-send">Спросить</button>
         </div>
         <p class="ask-note" id="ask-note"></p>
       </form>
@@ -529,7 +541,7 @@ footer a{color:var(--star)}
 
 <footer>
   <div class="wrap">
-    <p>The simulations are simplified, but the formulas are real. Data: NASA, ESA, <a href="https://eventhorizontelescope.org" target="_blank" rel="noopener">Event Horizon Telescope</a>, <a href="https://www.ligo.caltech.edu" target="_blank" rel="noopener">LIGO</a>, the Planck mission.</p>
+    <p>Симуляции упрощены, но формулы в них настоящие. Данные: NASA, ESA, <a href="https://eventhorizontelescope.org" target="_blank" rel="noopener">Event Horizon Telescope</a>, <a href="https://www.ligo.caltech.edu" target="_blank" rel="noopener">LIGO</a>, миссия «Планк».</p>
   </div>
 </footer>
 
@@ -537,7 +549,7 @@ footer a{color:var(--star)}
 (() => {
 'use strict';
 
-/* — */
+/* ---------- общие утилиты ---------- */
 const root = document.documentElement;
 const cssv = n => getComputedStyle(root).getPropertyValue(n).trim();
 const C = {
@@ -551,9 +563,9 @@ const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
 const lerp = (a, b, t) => a + (b - a) * t;
 const MONO = '"JetBrains Mono", ui-monospace, Menlo, monospace';
 
-const NF3 = new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 });
-const NF1 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
-const NF2 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const NF3 = new Intl.NumberFormat('ru-RU', { maximumSignificantDigits: 3 });
+const NF1 = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 });
+const NF2 = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmt = x => NF3.format(x);
 const SUP = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
 const sup = n => String(n).split('').map(c => SUP[c] || c).join('');
@@ -567,39 +579,45 @@ function sci(x) {
 }
 function num(x) {
   if (x < 1e6) return fmt(x);
-  if (x < 1e9) return fmt(x / 1e6) + ' million';
-  if (x < 1e12) return fmt(x / 1e9) + ' billion';
-  if (x < 1e15) return fmt(x / 1e12) + ' trillion';
+  if (x < 1e9) return fmt(x / 1e6) + ' млн';
+  if (x < 1e12) return fmt(x / 1e9) + ' млрд';
+  if (x < 1e15) return fmt(x / 1e12) + ' трлн';
   return sci(x);
 }
-function plural(n, f) { return Math.abs(n) === 1 ? f[0] : f[1]; }
+function plural(n, f) {
+  const a = Math.abs(n) % 100, b = a % 10;
+  if (a > 10 && a < 20) return f[2];
+  if (b > 1 && b < 5) return f[1];
+  if (b === 1) return f[0];
+  return f[2];
+}
 const LY = 9.4607e15, AU = 1.496e11;
 function fmtLen(m) {
-  if (m >= 0.05 * LY) return num(m / LY) + ' light-years';
-  if (m >= 1e11) return num(m / AU) + ' AU';
-  if (m >= 1e3) return num(m / 1e3) + ' km';
-  if (m >= 1) return fmt(m) + ' m';
-  if (m >= 1e-2) return fmt(m * 100) + ' cm';
-  if (m >= 1e-3) return fmt(m * 1e3) + ' mm';
-  if (m >= 1e-6) return fmt(m * 1e6) + ' µm';
-  if (m >= 1e-9) return fmt(m * 1e9) + ' nm';
-  if (m >= 1e-12) return fmt(m * 1e12) + ' pm';
-  if (m >= 0.999e-15) return fmt(m * 1e15) + ' fm';
-  return sci(m) + ' m';
+  if (m >= 0.05 * LY) return num(m / LY) + ' св. лет';
+  if (m >= 1e11) return num(m / AU) + ' а. е.';
+  if (m >= 1e3) return num(m / 1e3) + ' км';
+  if (m >= 1) return fmt(m) + ' м';
+  if (m >= 1e-2) return fmt(m * 100) + ' см';
+  if (m >= 1e-3) return fmt(m * 1e3) + ' мм';
+  if (m >= 1e-6) return fmt(m * 1e6) + ' мкм';
+  if (m >= 1e-9) return fmt(m * 1e9) + ' нм';
+  if (m >= 1e-12) return fmt(m * 1e12) + ' пм';
+  if (m >= 0.999e-15) return fmt(m * 1e15) + ' фм';
+  return sci(m) + ' м';
 }
 function fmtDur(s) {
-  if (s < 60) return NF1.format(s) + ' s';
-  if (s < 3600) return Math.floor(s / 60) + ' min ' + Math.floor(s % 60) + ' s';
-  if (s < 86400) return Math.floor(s / 3600) + ' h ' + Math.floor(s % 3600 / 60) + ' min';
+  if (s < 60) return NF1.format(s) + ' с';
+  if (s < 3600) return Math.floor(s / 60) + ' мин ' + Math.floor(s % 60) + ' с';
+  if (s < 86400) return Math.floor(s / 3600) + ' ч ' + Math.floor(s % 3600 / 60) + ' мин';
   const d = s / 86400;
-  if (d < 365.25) { const n = Math.floor(d); return n + ' ' + plural(n, ['day', 'days']) + ' ' + Math.floor(s % 86400 / 3600) + ' h'; }
+  if (d < 365.25) { const n = Math.floor(d); return n + ' ' + plural(n, ['день', 'дня', 'дней']) + ' ' + Math.floor(s % 86400 / 3600) + ' ч'; }
   const y = d / 365.25;
-  if (y < 100) { const v = Math.round(y * 10) / 10; return NF1.format(v) + ' ' + plural(v, ['year', 'years']); }
-  if (y < 1e6) { const v = Math.round(y); return fmt(v) + ' ' + plural(v, ['year', 'years']); }
-  return num(y) + ' years';
+  if (y < 100) { const v = Math.round(y * 10) / 10; return NF1.format(v) + ' ' + (Number.isInteger(v) ? plural(v, ['год', 'года', 'лет']) : 'года'); }
+  if (y < 1e6) { const v = Math.round(y); return fmt(v) + ' ' + plural(v, ['год', 'года', 'лет']); }
+  return num(y) + ' лет';
 }
 
-/* — */
+/* ---------- система сцен: один цикл анимации, рисуем только видимое ---------- */
 const scenes = [];
 function makeScene(id, draw, opts = {}) {
   const cv = document.getElementById(id);
@@ -647,7 +665,7 @@ const PAL = (() => {
 })();
 function circle(ctx, x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, TAU); }
 
-/* — */
+/* ================= ГЕРОЙ: чёрная дыра с линзированием ================= */
 const hero = { tilt: 0.17, tiltT: 0.17, px: 0, pxT: 0, drift: 0, parts: null, stars: null, hover: false };
 const STARC = ['#ffffff', '#dfe8ff', '#fff1dc', '#cfdcff', '#ffe2c4'];
 makeScene('bh', drawHero, {
@@ -709,7 +727,7 @@ function drawHero(s, dt) {
   g.addColorStop(0, 'rgba(255,130,50,0.022)'); g.addColorStop(1, 'rgba(255,130,50,0)');
   ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
 
-  /* — */
+  /* звёзды фона, отклонённые линзой точечной массы */
   const FW = w / u * 1.2, FH = h / u * 1.2, ox = (FW - w / u) / 2, oy = (FH - h / u) / 2;
   const rE = 4.2, k4 = 4 * rE * rE;
   for (const st of hero.stars) {
@@ -726,7 +744,7 @@ function drawHero(s, dt) {
     if (tm > SH) starImg(ctx, cx, cy, u, -nx, -ny, tm, base - 0.5, st, tw, SH);
   }
 
-  /* — */
+  /* частицы диска: кеплеровское вращение, доплер, гравитационное красное смещение */
   const P = hero.parts, n = P.length, ax = hero.ax, ay = hero.ay, aD = hero.aD, aI = hero.aI, aC = hero.aC;
   const spin = dt * 7;
   for (let i = 0; i < n; i++) {
@@ -740,7 +758,7 @@ function drawHero(s, dt) {
     aC[i] = clamp(Math.round(p.h * Math.pow(D, 0.45) * p.g * 1.12 * 63), 0, 63);
   }
   const sz0 = Math.max(1, u * 0.038);
-  /* — */
+  /* дальняя половина диска: первичное изображение над тенью, вторичное под ней */
   for (let i = 0; i < n; i++) {
     const dep = aD[i];
     if (dep <= 0) continue;
@@ -765,21 +783,21 @@ function drawHero(s, dt) {
       ctx.fillRect(cx - nx * tm * u - sz / 2, cy - ny * tm * u - sz / 2, sz, sz);
     }
   }
-  /* — */
+  /* тень */
   ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
   ctx.fillStyle = '#000'; circle(ctx, cx, cy, SH * u); ctx.fill();
-  /* — */
+  /* фотонное кольцо */
   ctx.globalCompositeOperation = 'lighter';
   const lg = ctx.createLinearGradient(cx - SH * u, 0, cx + SH * u, 0);
   lg.addColorStop(0, 'rgba(255,238,205,0.3)'); lg.addColorStop(1, 'rgba(255,160,80,0.07)');
   ctx.strokeStyle = lg;
   ctx.lineWidth = Math.max(1, u * 0.06); circle(ctx, cx, cy, SH * u * 1.01); ctx.stroke();
   ctx.globalAlpha = 0.1; ctx.lineWidth = Math.max(2, u * 0.3); circle(ctx, cx, cy, SH * u * 1.06); ctx.stroke();
-  /* — */
+  /* ближняя половина диска проходит перед тенью */
   for (let i = 0; i < n; i++) {
     if (aD[i] > 0) continue;
     const sz = sz0 * P[i].s;
-    /* — */
+    /* над тенью следы стираются каждый кадр, поэтому там рисуем ярче */
     ctx.globalAlpha = Math.min(1, aI[i] * (ax[i] * ax[i] + ay[i] * ay[i] < SH * SH ? 2.4 : 1));
     ctx.fillStyle = PAL[aC[i]];
     ctx.fillRect(cx + ax[i] * u - sz / 2, cy + ay[i] * u - sz / 2, sz, sz);
@@ -805,25 +823,25 @@ heroEl.addEventListener('pointerdown', e => {
   setTimeout(() => { hero.hover = false; }, 2500);
 });
 
-/* — */
+/* ================= МАСШТАБ ================= */
 const SCALE = [
-  { n: 'Planck length', s: 1.616e-35, k: 'q', v: 'foam', d: 'The smallest length that makes sense in today’s physics. To understand this scale we need a quantum theory of gravity, and we do not have one yet.' },
-  { n: 'Electron and quarks', s: 1e-18, k: 'q', d: 'Experiments have found no size for them at all. If they have one, it is smaller than 10⁻¹⁸ m.' },
-  { n: 'Proton', s: 1.7e-15, k: 'q', v: 'proton', d: 'Three quarks held together by gluons. Almost all of a proton’s mass comes from the energy of that bond, not from the quarks themselves.' },
-  { n: 'Hydrogen atom', s: 1.06e-10, k: 'q', v: 'atom', d: 'An atom is almost empty. If the nucleus were a pea, the electron cloud would be almost half a kilometer across.' },
-  { n: 'DNA molecule', s: 2e-9, k: 'b', v: 'dna', d: 'The double helix is about 2 nm wide. Yet the DNA from a single human cell, stretched out, is about 2 m long.' },
-  { n: 'Flu virus', s: 1e-7, k: 'b', v: 'virus', d: 'About 100 nm. That is shorter than the wavelength of visible light, so an ordinary microscope cannot see it.' },
-  { n: 'Red blood cell', s: 7.5e-6, k: 'b', v: 'cell', d: 'An adult body holds about 25 trillion of them.' },
-  { n: 'Human', s: 1.7, k: 'b', v: 'human', d: 'A person is about 10³⁵ times bigger than the Planck length and 5·10²⁶ times smaller than the observable Universe.' },
-  { n: 'Horizon of a Sun-mass black hole', s: 5.9e3, k: 'c', v: 'bh', d: 'Squeeze the Sun into a black hole and its horizon is about 6 km across. Smaller than a big city.' },
-  { n: 'Mount Everest', s: 8849, k: 'b', v: 'mountain', d: '8,849 m tall. Mars has a mountain two and a half times higher: Olympus Mons, about 22 km.' },
-  { n: 'Earth', s: 1.2742e7, k: 'c', v: 'earth', d: '12,742 km across. Light could circle the equator 7.5 times in one second.' },
-  { n: 'Sun', s: 1.3927e9, k: 'c', v: 'sun', d: '1.39 million km across. About 1.3 million Earths would fit inside.' },
-  { n: 'Neptune’s orbit', s: 9e12, k: 'c', v: 'orbit', d: 'About 9 billion km across. Sunlight takes about 4 hours to reach Neptune.' },
-  { n: 'Horizon of M87*', s: 3.8e13, k: 'c', v: 'bh', d: 'This black hole is 6.5 billion times heavier than the Sun. Its horizon is 4 times wider than Neptune’s orbit.' },
-  { n: 'Light-year', s: 9.46e15, k: 'c', d: 'The distance light travels in a year: 9.46 trillion km. The nearest star is 4.24 light-years away.' },
-  { n: 'Milky Way', s: 9.5e20, k: 'c', v: 'galaxy', d: 'Our galaxy: about 100,000 light-years across, with 100 to 400 billion stars.' },
-  { n: 'Observable Universe', s: 8.8e26, k: 'c', v: 'universe', d: 'About 93 billion light-years across. That is more than twice 13.8 billion because space kept expanding the whole time.' }
+  { n: 'Планковская длина', s: 1.616e-35, k: 'q', v: 'foam', d: 'Самая маленькая длина, о которой имеет смысл говорить в современной физике. Чтобы понять, что происходит на таком масштабе, нужна квантовая теория гравитации, а её пока нет.' },
+  { n: 'Электрон и кварки', s: 1e-18, k: 'q', d: 'Эксперименты не нашли у них никакого размера. Известно только, что если он есть, то меньше 10⁻¹⁸ м.' },
+  { n: 'Протон', s: 1.7e-15, k: 'q', v: 'proton', d: 'Три кварка, связанные глюонами. Почти вся масса протона берётся из энергии этой связи, а не из масс самих кварков.' },
+  { n: 'Атом водорода', s: 1.06e-10, k: 'q', v: 'atom', d: 'Атом почти пустой. Если увеличить ядро до горошины, облако электрона будет почти полкилометра в поперечнике.' },
+  { n: 'Молекула ДНК', s: 2e-9, k: 'b', v: 'dna', d: 'Ширина двойной спирали около 2 нм. При этом ДНК из одной клетки человека, если её растянуть, будет длиной около 2 м.' },
+  { n: 'Вирус гриппа', s: 1e-7, k: 'b', v: 'virus', d: 'Около 100 нм. Это меньше длины волны видимого света, поэтому вирус не разглядеть в обычный микроскоп.' },
+  { n: 'Эритроцит', s: 7.5e-6, k: 'b', v: 'cell', d: 'Красная клетка крови. В теле взрослого человека их около 25 триллионов.' },
+  { n: 'Человек', s: 1.7, k: 'b', v: 'human', d: 'Человек примерно в 10³⁵ раз больше планковской длины и в 5·10²⁶ раз меньше наблюдаемой Вселенной.' },
+  { n: 'Горизонт дыры массой с Солнце', s: 5.9e3, k: 'c', v: 'bh', d: 'Если сжать Солнце в чёрную дыру, её горизонт будет около 6 км в диаметре. Это меньше большого города.' },
+  { n: 'Эверест', s: 8849, k: 'b', v: 'mountain', d: 'Высота 8849 м. На Марсе есть гора в два с половиной раза выше: Олимп, около 22 км.' },
+  { n: 'Земля', s: 1.2742e7, k: 'c', v: 'earth', d: '12 742 км в диаметре. Свет облетел бы её по экватору 7,5 раза за одну секунду.' },
+  { n: 'Солнце', s: 1.3927e9, k: 'c', v: 'sun', d: '1,39 млн км в диаметре. Внутри поместилось бы около 1,3 миллиона Земель.' },
+  { n: 'Орбита Нептуна', s: 9e12, k: 'c', v: 'orbit', d: 'Около 9 млрд км в поперечнике. Свет от Солнца до Нептуна идёт около 4 часов.' },
+  { n: 'Горизонт M87*', s: 3.8e13, k: 'c', v: 'bh', d: 'Эта чёрная дыра в 6,5 млрд раз тяжелее Солнца. Её горизонт в 4 раза шире орбиты Нептуна.' },
+  { n: 'Световой год', s: 9.46e15, k: 'c', d: 'Расстояние, которое свет проходит за год: 9,46 трлн км. До ближайшей звезды 4,24 световых года.' },
+  { n: 'Млечный Путь', s: 9.5e20, k: 'c', v: 'galaxy', d: 'Наша Галактика: около 100 000 световых лет в поперечнике и от 100 до 400 млрд звёзд.' },
+  { n: 'Наблюдаемая Вселенная', s: 8.8e26, k: 'c', v: 'universe', d: 'Около 93 млрд световых лет в диаметре. Это больше, чем удвоенные 13,8 млрд лет, потому что пространство всё это время расширялось.' }
 ];
 const sc = { e: 0.55, eT: 0.55, fly: false, focus: -1, frameTxt: '' };
 const SPIRAL = [];
@@ -918,7 +936,7 @@ function drawObj(ctx, o, x, y, r, t) {
 const scaleRange = document.getElementById('scale-range');
 const scaleFly = document.getElementById('scale-fly');
 const scaleEls = { frame: document.getElementById('scale-frame'), name: document.getElementById('scale-name'), size: document.getElementById('scale-size'), desc: document.getElementById('scale-desc') };
-function setFly(on) { sc.fly = on; scaleFly.setAttribute('aria-pressed', on); scaleFly.textContent = on ? '❚❚ Pause' : '▶ Fly'; }
+function setFly(on) { sc.fly = on; scaleFly.setAttribute('aria-pressed', on); scaleFly.textContent = on ? '❚❚ Пауза' : '▶ Полёт'; }
 scaleFly.addEventListener('click', () => {
   if (!sc.fly && sc.eT >= 27.2) { sc.e = sc.eT = -35.3; scaleRange.value = sc.eT; }
   setFly(!sc.fly);
@@ -972,8 +990,8 @@ makeScene('scale-cv', (s, dt) => {
   ctx.strokeStyle = C.star; ctx.lineWidth = 1.2;
   ctx.beginPath(); ctx.moveTo(16, yb); ctx.lineTo(16 + bl, yb); ctx.moveTo(16, yb - 5); ctx.lineTo(16, yb + 5); ctx.moveTo(16 + bl, yb - 5); ctx.lineTo(16 + bl, yb + 5); ctx.stroke();
   ctx.fillStyle = C.star; ctx.textAlign = 'left'; ctx.fillText(fmtLen(barM), 26 + bl, yb);
-  ctx.fillStyle = C.dust; ctx.textAlign = 'right'; ctx.fillText('frame ≈ 10' + sup(Math.round(sc.e)) + ' m', w - 16, yb);
-  /* — */
+  ctx.fillStyle = C.dust; ctx.textAlign = 'right'; ctx.fillText('кадр ≈ 10' + sup(Math.round(sc.e)) + ' м', w - 16, yb);
+  /* мини-карта всех 62 порядков */
   const m0 = 16, m1 = w - 16, my = h - 16, E0 = -35.3, E1 = 27.3, MX = e => lerp(m0, m1, (e - E0) / (E1 - E0));
   ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(m0, my); ctx.lineTo(m1, my); ctx.stroke();
   for (let i = 0; i < SCALE.length; i++) {
@@ -988,17 +1006,17 @@ makeScene('scale-cv', (s, dt) => {
   if (ft !== sc.frameTxt) { sc.frameTxt = ft; scaleEls.frame.textContent = ft; }
 });
 
-/* — */
+/* ================= КАЛЬКУЛЯТОР РАДИУСА ШВАРЦШИЛЬДА ================= */
 const G = 6.674e-11, CL = 2.998e8, MSUN = 1.989e30;
 const PRESETS = [
-  { n: 'Human', m: 70 }, { n: 'Earth', m: 5.972e24 }, { n: 'Sun', m: MSUN }, { n: 'Cygnus X-1', m: 21.2 * MSUN },
+  { n: 'Человек', m: 70 }, { n: 'Земля', m: 5.972e24 }, { n: 'Солнце', m: MSUN }, { n: 'Лебедь X-1', m: 21.2 * MSUN },
   { n: 'Sgr A*', m: 4.3e6 * MSUN }, { n: 'M87*', m: 6.5e9 * MSUN }, { n: 'TON 618', m: 4.07e10 * MSUN }
 ];
 const REFS = [
-  { n: 'a proton', d: 1.7e-15 }, { n: 'an atom', d: 1.06e-10 }, { n: 'a virus', d: 1e-7 }, { n: 'a red blood cell', d: 7.5e-6 },
-  { n: 'a grain of sand', d: 5e-4 }, { n: 'a grape', d: 2e-2 }, { n: 'a person', d: 1.7 }, { n: 'a football field', d: 105 },
-  { n: 'Mount Everest', d: 8849 }, { n: 'Manhattan', d: 2.16e4 }, { n: 'the Moon', d: 3.474e6 }, { n: 'the Earth', d: 1.2742e7 },
-  { n: 'the Sun', d: 1.3927e9 }, { n: 'Mercury’s orbit', d: 1.16e11 }, { n: 'Earth’s orbit', d: 2.99e11 }, { n: 'Neptune’s orbit', d: 9e12 }
+  { n: 'протон', d: 1.7e-15 }, { n: 'атом', d: 1.06e-10 }, { n: 'вирус', d: 1e-7 }, { n: 'эритроцит', d: 7.5e-6 },
+  { n: 'песчинка', d: 5e-4 }, { n: 'виноградина', d: 2e-2 }, { n: 'человек', d: 1.7 }, { n: 'футбольное поле', d: 105 },
+  { n: 'высота Эвереста', d: 8849 }, { n: 'Москва в пределах МКАД', d: 3.5e4 }, { n: 'Луна', d: 3.474e6 }, { n: 'Земля', d: 1.2742e7 },
+  { n: 'Солнце', d: 1.3927e9 }, { n: 'орбита Меркурия', d: 1.16e11 }, { n: 'орбита Земли', d: 2.99e11 }, { n: 'орбита Нептуна', d: 9e12 }
 ];
 const calc = { lm: Math.log10(MSUN), D: 0, ref: null };
 const calcRange = document.getElementById('calc-range');
@@ -1012,16 +1030,16 @@ PRESETS.forEach(p => {
 });
 calcRange.addEventListener('input', () => updateCalc(+calcRange.value));
 function timesTxt(t) {
-  if (t < 10) return NF1.format(Math.round(t * 10) / 10) + ' times';
-  if (t < 1e6) return fmt(Number(t.toPrecision(3))) + ' times';
-  return num(t) + ' times';
+  if (t < 10) { const v = Math.round(t * 10) / 10; return NF1.format(v) + ' ' + (Number.isInteger(v) ? plural(v, ['раз', 'раза', 'раз']) : 'раза'); }
+  if (t < 1e6) { const v = Number(t.toPrecision(3)); return fmt(v) + ' ' + plural(v, ['раз', 'раза', 'раз']); }
+  return num(t) + ' раз';
 }
 function updateCalc(lm) {
   calc.lm = lm;
   const M = Math.pow(10, lm), rs = 2 * G * M / (CL * CL), D = 2 * rs;
   calc.D = D;
   presetBox.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', Math.abs(+b.dataset.lm - lm) < 0.006));
-  const ms = M >= 0.01 * MSUN ? num(M / MSUN) + ' M☉ (' + sci(M) + ' kg)' : (M < 1e6 ? fmt(M) : sci(M)) + ' kg';
+  const ms = M >= 0.01 * MSUN ? num(M / MSUN) + ' M☉ (' + sci(M) + ' кг)' : (M < 1e6 ? fmt(M) : sci(M)) + ' кг';
   document.getElementById('calc-mass').textContent = ms;
   document.getElementById('calc-rs').textContent = fmtLen(rs);
   let best = REFS[0], bd = Infinity;
@@ -1029,15 +1047,15 @@ function updateCalc(lm) {
   calc.ref = best;
   const ratio = D / best.d;
   let txt;
-  if (ratio > 0.67 && ratio < 1.5) txt = fmtLen(D) + ', about the size of ' + best.n;
-  else if (ratio >= 1.5) txt = fmtLen(D) + ', ' + timesTxt(ratio) + ' bigger than ' + best.n;
-  else txt = fmtLen(D) + ', ' + timesTxt(1 / ratio) + ' smaller than ' + best.n;
+  if (ratio > 0.67 && ratio < 1.5) txt = fmtLen(D) + ', примерно как ' + best.n;
+  else if (ratio >= 1.5) txt = fmtLen(D) + ', в ' + timesTxt(ratio) + ' больше, чем ' + best.n;
+  else txt = fmtLen(D) + ', в ' + timesTxt(1 / ratio) + ' меньше, чем ' + best.n;
   document.getElementById('calc-cmp').textContent = txt;
   const rho = M / (4 / 3 * Math.PI * rs * rs * rs);
   let rt;
-  if (rho < 1.2) rt = fmt(rho) + ' kg/m³, thinner than air';
-  else if (rho < 1000) rt = fmt(rho) + ' kg/m³, less dense than water';
-  else rt = sci(rho) + ' kg/m³, ' + num(rho / 1000) + ' times denser than water';
+  if (rho < 1.2) rt = fmt(rho) + ' кг/м³, это меньше плотности воздуха';
+  else if (rho < 1000) rt = fmt(rho) + ' кг/м³, это меньше плотности воды';
+  else rt = sci(rho) + ' кг/м³, в ' + num(rho / 1000) + ' раз плотнее воды';
   document.getElementById('calc-rho').textContent = rt;
 }
 makeScene('calc-cv', (s) => {
@@ -1058,19 +1076,19 @@ makeScene('calc-cv', (s) => {
   ctx.strokeStyle = C.disk; ctx.lineWidth = 1.2; circle(ctx, x2, y, rH); ctx.stroke();
   ctx.font = '500 11px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
   ctx.fillStyle = C.dust; ctx.fillText(calc.ref.n, x1, y + Math.max(rR, rH) + 14);
-  ctx.fillStyle = C.disk; ctx.fillText('horizon', x2, y + Math.max(rR, rH) + 14);
+  ctx.fillStyle = C.disk; ctx.fillText('горизонт', x2, y + Math.max(rR, rH) + 14);
   ctx.fillStyle = C.dust; ctx.textBaseline = 'alphabetic';
-  ctx.fillText('to scale', w / 2, h - 14);
+  ctx.fillText('в одном масштабе', w / 2, h - 14);
 });
 updateCalc(+calcRange.value);
 
-/* — */
+/* ================= ЗАМЕДЛЕНИЕ ВРЕМЕНИ ================= */
 const clk = { eps: 0.1, tl: 36600, tf: 36600, el: 0, ef: 0 };
 const tdRange = document.getElementById('td-range');
 const factorOf = eps => Math.sqrt((1 + eps) / eps);
 function updateTd() {
   const f = factorOf(clk.eps);
-  document.getElementById('td-factor').textContent = fmtDur(3600 * f) + ' far away';
+  document.getElementById('td-factor').textContent = fmtDur(3600 * f) + ' вдали';
   document.getElementById('td-r').textContent = clk.eps >= 0.01 ? NF1.format(1 + clk.eps) + ' rₛ' : 'rₛ + ' + sci(clk.eps) + ' rₛ';
   document.getElementById('td-h').textContent = fmtLen(clk.eps * 1.27e10);
 }
@@ -1115,14 +1133,14 @@ makeScene('clock-cv', (s, dt) => {
   drawClock(ctx, x2, y, R, clk.tf, f, dt, C.quant);
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
   ctx.font = '500 12px ' + MONO;
-  ctx.fillStyle = C.disk; ctx.fillText('near the horizon (yours)', x1, y + R + 16);
-  ctx.fillStyle = C.quant; ctx.fillText('far from the hole', x2, y + R + 16);
+  ctx.fillStyle = C.disk; ctx.fillText('у горизонта (ваши часы)', x1, y + R + 16);
+  ctx.fillStyle = C.quant; ctx.fillText('вдали от дыры', x2, y + R + 16);
   ctx.font = '400 12px ' + MONO; ctx.fillStyle = C.star;
-  ctx.fillText('elapsed ' + fmtDur(clk.el), x1, y + R + 36);
-  ctx.fillText('elapsed ' + fmtDur(clk.ef), x2, y + R + 36);
+  ctx.fillText('прошло ' + fmtDur(clk.el), x1, y + R + 36);
+  ctx.fillText('прошло ' + fmtDur(clk.ef), x2, y + R + 36);
 });
 
-/* — */
+/* ================= СПАГЕТТИФИКАЦИЯ ================= */
 const BH = { stellar: { M: 10 * MSUN, name: '10 M☉' }, smbh: { M: 4.3e6 * MSUN, name: 'Sgr A*' } };
 const sp = { kind: 'stellar', t: 0, txt: 0 };
 document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => {
@@ -1159,7 +1177,7 @@ makeScene('spag-cv', (s, dt) => {
   let r = 300 * Math.pow(Math.max(1 - tt / T, 0), 2 / 3);
   const inside = r <= 1;
   r = Math.max(r, 1);
-  /* — */
+  /* деления шкалы */
   ctx.font = '400 10.5px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
   for (const rr of (small ? [300, 10, 3] : [300, 100, 30, 10, 3])) {
     const x = xOf(rr);
@@ -1168,14 +1186,14 @@ makeScene('spag-cv', (s, dt) => {
     ctx.fillStyle = C.dust; ctx.fillText(fmtLen(rr * rs), x, cy + h * 0.28);
   }
   ctx.strokeStyle = C.line; ctx.beginPath(); ctx.moveTo(xOf(300), cy + h * 0.23); ctx.lineTo(bx - Rh, cy + h * 0.23); ctx.stroke();
-  /* — */
+  /* чёрная дыра */
   const gl = ctx.createRadialGradient(bx, cy, Rh, bx, cy, Rh * 2.1);
   gl.addColorStop(0, 'rgba(255,150,60,0.35)'); gl.addColorStop(1, 'rgba(255,150,60,0)');
   ctx.fillStyle = gl; circle(ctx, bx, cy, Rh * 2.1); ctx.fill();
   ctx.fillStyle = '#000'; circle(ctx, bx, cy, Rh); ctx.fill();
   ctx.strokeStyle = C.disk; ctx.lineWidth = 1.2; circle(ctx, bx, cy, Rh); ctx.stroke();
-  ctx.fillStyle = C.disk; ctx.textAlign = 'center'; ctx.fillText('horizon ' + bh.name, bx, cy + Rh + 8);
-  /* — */
+  ctx.fillStyle = C.disk; ctx.textAlign = 'center'; ctx.fillText('горизонт ' + bh.name, bx, cy + Rh + 8);
+  /* приливное ускорение для тела длиной 2 м */
   const rm = r * rs;
   const da = 2 * G * bh.M * 2 / (rm * rm * rm) / 9.81;
   const st = da > 1 ? 1 + clamp(Math.log10(da), 0, 9) * 0.95 : 1;
@@ -1196,13 +1214,13 @@ makeScene('spag-cv', (s, dt) => {
   ctx.globalAlpha = 1;
   if ((sp.txt += dt) > 0.08 || dt === 0) {
     sp.txt = 0;
-    document.getElementById('sp-r').textContent = inside ? 'past the horizon' : fmtLen(rm);
+    document.getElementById('sp-r').textContent = inside ? 'за горизонтом' : fmtLen(rm);
     document.getElementById('sp-a').textContent = da < 0.001 ? sci(da) + ' g' : (da < 1e4 ? fmt(da) : sci(da)) + ' g';
-    document.getElementById('sp-s').textContent = inside ? (sp.kind === 'smbh' ? 'intact, but trapped' : 'nothing left intact') : da < 1 ? 'feels nothing' : da < 10 ? 'legs pulled' : da < 1000 ? 'deadly' : 'spaghetti';
+    document.getElementById('sp-s').textContent = inside ? (sp.kind === 'smbh' ? 'цел, но выхода уже нет' : 'не осталось ничего целого') : da < 1 ? 'ничего не чувствует' : da < 10 ? 'тянет за ноги' : da < 1000 ? 'смертельно опасно' : 'спагетти';
   }
 });
 
-/* — */
+/* ================= ДВУХЩЕЛЕВОЙ ОПЫТ ================= */
 const sinc = x => x === 0 ? 1 : Math.sin(Math.PI * x) / (Math.PI * x);
 function buildCdf(fn) {
   const n = 700, a = new Float64Array(n + 1); let sum = 0;
@@ -1234,7 +1252,7 @@ function dsReset(seed) {
 }
 dsReset(650);
 const dsDet = document.getElementById('ds-det'), dsFast = document.getElementById('ds-fast');
-dsDet.addEventListener('click', () => { ds.det = !ds.det; dsDet.setAttribute('aria-pressed', ds.det); dsDet.textContent = 'Detector at slits: ' + (ds.det ? 'on' : 'off'); dsReset(0); });
+dsDet.addEventListener('click', () => { ds.det = !ds.det; dsDet.setAttribute('aria-pressed', ds.det); dsDet.textContent = 'Детектор у щелей: ' + (ds.det ? 'вкл' : 'выкл'); dsReset(0); });
 dsFast.addEventListener('click', () => { ds.fast = !ds.fast; dsFast.setAttribute('aria-pressed', ds.fast); });
 document.getElementById('ds-clear').addEventListener('click', () => dsReset(0));
 makeScene('ds-cv', (s, dt) => {
@@ -1243,7 +1261,7 @@ makeScene('ds-cv', (s, dt) => {
   const sx = w * 0.06, bx = w * 0.4, scr = w * 0.84, hx0 = w * 0.865, hx1 = w * 0.975, cy = h / 2;
   const sd = h * 0.06, sa = h * 0.022, T = 0.85;
   const Y = y => cy + y * h;
-  /* — */
+  /* эмиссия */
   ds.acc += dt * (ds.fast ? 180 : 22);
   while (ds.acc >= 1) {
     ds.acc -= 1;
@@ -1252,7 +1270,7 @@ makeScene('ds-cv', (s, dt) => {
   }
   for (const p of ds.fly) p.t += dt;
   for (let i = ds.fly.length - 1; i >= 0; i--) if (ds.fly[i].t >= T) { dsHit(ds.fly[i].y); ds.fly.splice(i, 1); }
-  /* — */
+  /* волны вероятности */
   if (!ds.det) {
     const lam = h * 0.045, ph = (s.t * 1.4) % 1;
     ctx.strokeStyle = C.quant; ctx.lineWidth = 1.2;
@@ -1272,7 +1290,7 @@ makeScene('ds-cv', (s, dt) => {
     }
     ctx.restore();
   }
-  /* — */
+  /* источник, пластина, экран */
   ctx.globalAlpha = 1;
   const sg = ctx.createRadialGradient(sx, cy, 0, sx, cy, 14);
   sg.addColorStop(0, 'rgba(134,212,255,0.9)'); sg.addColorStop(1, 'rgba(134,212,255,0)');
@@ -1292,9 +1310,9 @@ makeScene('ds-cv', (s, dt) => {
     }
     ctx.globalAlpha = 1;
     ctx.font = '500 10.5px ' + MONO; ctx.fillStyle = C.disk; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-    ctx.fillText('detector', bx - bw / 2 - 18, cy - sd - sa * 2.2);
+    ctx.fillText('детектор', bx - bw / 2 - 18, cy - sd - sa * 2.2);
   }
-  /* — */
+  /* летящие электроны */
   ctx.globalCompositeOperation = 'lighter';
   for (const p of ds.fly) {
     if (ds.det) {
@@ -1308,7 +1326,7 @@ makeScene('ds-cv', (s, dt) => {
       ctx.globalAlpha = 0.9; ctx.fillStyle = C.quant; ctx.fillRect(x - 1.5, y - 1.5, 3, 3);
     }
   }
-  /* — */
+  /* попадания */
   ctx.fillStyle = C.quant;
   const H = ds.hits, n = H.length;
   for (let i = 0; i < n; i += 2) {
@@ -1318,7 +1336,7 @@ makeScene('ds-cv', (s, dt) => {
     ctx.fillRect(scr + H[i + 1] * 10 - sz / 2, Y(H[i]) - sz / 2, sz, sz);
   }
   ctx.globalCompositeOperation = 'source-over';
-  /* — */
+  /* гистограмма */
   let mx = 1; for (let i = 0; i < NB; i++) if (ds.bins[i] > mx) mx = ds.bins[i];
   const bh = 0.9 * h / NB;
   ctx.fillStyle = C.quant; ctx.globalAlpha = 0.75;
@@ -1327,10 +1345,10 @@ makeScene('ds-cv', (s, dt) => {
     if (len > 0.3) ctx.fillRect(hx0, cy - 0.45 * h + i * bh + 0.5, len, Math.max(1, bh - 1));
   }
   ctx.globalAlpha = 1;
-  if ((ds.txt += dt) > 0.15 || dt === 0) { ds.txt = 0; const n2 = ds.total; document.getElementById('ds-count').textContent = fmt(n2) + ' ' + plural(n2, ['electron', 'electrons']); }
+  if ((ds.txt += dt) > 0.15 || dt === 0) { ds.txt = 0; const n2 = ds.total; document.getElementById('ds-count').textContent = fmt(n2) + ' ' + plural(n2, ['электрон', 'электрона', 'электронов']); }
 });
 
-/* — */
+/* ================= ТУННЕЛИРОВАНИЕ (уравнение Шрёдингера, схема Висшера) ================= */
 const TN = 900, tun = { R: new Float64Array(TN), I: new Float64Array(TN), V: new Float64Array(TN), steps: 0, wB: 7, hold: 0, pct: null, txt: 0 };
 const TX0 = 250, TS = 28, TK = 0.38, TV = 0.09, TB = 480, TDT = 0.5;
 function tunReset() {
@@ -1371,8 +1389,8 @@ makeScene('tun-cv', (s, dt) => {
   ctx.setLineDash([4, 5]); ctx.strokeStyle = C.quant; ctx.globalAlpha = 0.6;
   ctx.beginPath(); ctx.moveTo(0, eY); ctx.lineTo(w, eY); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
   ctx.font = '500 11px ' + MONO; ctx.fillStyle = C.quant; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
-  ctx.fillText('particle energy', 10, eY - 4);
-  ctx.fillStyle = C.dust; ctx.textAlign = 'center'; ctx.fillText('wall', X(TB + tun.wB / 2), base - bh - 4);
+  ctx.fillText('энергия частицы', 10, eY - 4);
+  ctx.fillStyle = C.dust; ctx.textAlign = 'center'; ctx.fillText('стена', X(TB + tun.wB / 2), base - bh - 4);
   ctx.strokeStyle = C.line; ctx.beginPath(); ctx.moveTo(0, base); ctx.lineTo(w, base); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(X(i0), base);
   let tot = 0, right = 0;
@@ -1387,18 +1405,18 @@ makeScene('tun-cv', (s, dt) => {
   if (tun.steps > 1700) tun.pct = right / tot;
   if ((tun.txt += dt) > 0.1 || dt === 0) {
     tun.txt = 0;
-    document.getElementById('tun-p').textContent = tun.pct == null ? 'heading for the wall…' : (tun.pct * 100 < 1 ? NF1.format(Math.max(tun.pct * 100, 0.1)) : Math.round(tun.pct * 100)) + '%';
+    document.getElementById('tun-p').textContent = tun.pct == null ? 'летит к стене…' : (tun.pct * 100 < 1 ? NF1.format(Math.max(tun.pct * 100, 0.1)) : Math.round(tun.pct * 100)) + ' %';
   }
 });
 
-/* — */
+/* ================= ЗАПУТАННОСТЬ ================= */
 const ent = { t: 0, res: null, mAt: 0, log: [] };
 const ENT_T = 2.4;
 function entMeasure() {
   if (ent.res) return;
   ent.res = Math.random() < 0.5 ? 1 : -1; ent.mAt = ent.t;
   ent.log.unshift(ent.res > 0 ? '↑↓' : '↓↑'); ent.log = ent.log.slice(0, 10);
-  document.getElementById('ent-log').textContent = 'Alice / Bob: ' + ent.log.join('  ');
+  document.getElementById('ent-log').textContent = 'Алиса / Боб: ' + ent.log.join('  ');
 }
 document.getElementById('ent-measure').addEventListener('click', entMeasure);
 function drawSpin(ctx, x, y, r, ang, col, collapsed, flash) {
@@ -1427,11 +1445,11 @@ makeScene('ent-cv', (s, dt) => {
   const f = Math.min(ent.t / ENT_T, 1), e = 1 - Math.pow(1 - f, 2);
   const xl = cx - span * e, xr = cx + span * e;
   ctx.font = '500 12px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  for (const [x, nm] of [[cx - span, 'Alice'], [cx + span, 'Bob']]) {
+  for (const [x, nm] of [[cx - span, 'Алиса'], [cx + span, 'Боб']]) {
     ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.strokeRect(x - r * 1.6, cy - r * 1.6, r * 3.2, r * 3.2);
     ctx.fillStyle = C.dust; ctx.fillText(nm, x, cy + r * 1.6 + 10);
   }
-  ctx.fillStyle = C.dust; ctx.fillText('pair source', cx, cy + r * 1.6 + 10);
+  ctx.fillStyle = C.dust; ctx.fillText('источник пар', cx, cy + r * 1.6 + 10);
   const sg = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
   sg.addColorStop(0, 'rgba(134,212,255,0.5)'); sg.addColorStop(1, 'rgba(134,212,255,0)');
   ctx.fillStyle = sg; circle(ctx, cx, cy, r); ctx.fill();
@@ -1449,28 +1467,28 @@ makeScene('ent-cv', (s, dt) => {
   ctx.globalAlpha = 1;
 });
 
-/* — */
+/* ================= КОСМИЧЕСКИЙ КАЛЕНДАРЬ ================= */
 const AGE = 13.8e9, YDAY = AGE / 365.25, YMIN = YDAY / 1440;
 const EV = [
-  { ago: 13.8e9, date: 'Jan 1, 00:00', t: 'The Big Bang', sub: '13.8 billion years ago', strip: 0, lvl: 'up', lab: '1–2' },
-  { ago: 13.8e9 - 3.8e5, date: 'Jan 1, 00:14', t: 'The Universe turns transparent; we still see that light as the cosmic microwave background', sub: '380,000 years in', strip: 0, hide: true },
-  { ago: 13.6e9, date: 'Jan 6', t: 'The first stars light up', sub: '≈ 200 million years in', strip: 0, lvl: 'dn' },
-  { ago: 4.57e9, date: 'Sep 2', t: 'The Sun and Earth form', sub: '4.6 billion years ago', strip: 0, lvl: 'up' },
-  { ago: 3.8e9, date: 'Sep 22', t: 'First life on Earth', sub: '≈ 3.8 billion years ago', strip: 0, lvl: 'dn' },
-  { ago: 5.38e8, date: 'Dec 17', t: 'The Cambrian explosion: complex animals appear', sub: '538 million years ago', strip: 0, lvl: 'up' },
-  { ago: 2.3e8, date: 'Dec 25', t: 'Dinosaurs appear', sub: '230 million years ago', strip: 0, lvl: 'dn' },
-  { ago: 6.6e7, date: 'Dec 30, 06:00', t: 'An asteroid wipes out the dinosaurs', sub: '66 million years ago', strip: 0, lvl: 'up' },
-  { ago: 4e6, date: 'Dec 31, 21:28', t: 'Human ancestors start walking on two legs', sub: '≈ 4 million years ago', strip: 1, lvl: 'up' },
-  { ago: 3e5, date: 'Dec 31, 23:48', t: 'Homo sapiens appears', sub: '≈ 300,000 years ago', strip: 1, lvl: 'dn' },
-  { ago: 1.2e4, date: '23:59:33', t: 'People start farming', sub: '≈ 12,000 years ago', strip: 2, lvl: 'up' },
-  { ago: 4.5e3, date: '23:59:50', t: 'The Egyptian pyramids are built', sub: '≈ 4,500 years ago', strip: 2, lvl: 'dn' },
-  { ago: 534, date: '23:59:58.8', t: 'Columbus reaches the Americas', sub: '1492', strip: 2, lvl: 'up' },
-  { ago: 65, date: '23:59:59.85', t: 'Yuri Gagarin flies to space', sub: '1961', strip: 2, lvl: 'dn' }
+  { ago: 13.8e9, date: '1 января, 00:00', t: 'Большой взрыв', sub: '13,8 млрд лет назад', strip: 0, lvl: 'up', lab: '1–2' },
+  { ago: 13.8e9 - 3.8e5, date: '1 января, 00:14', t: 'Вселенная становится прозрачной, свет этого момента мы видим как реликтовое излучение', sub: 'через 380 тыс. лет', strip: 0, hide: true },
+  { ago: 13.6e9, date: '6 января', t: 'Загораются первые звёзды', sub: 'через ≈ 200 млн лет', strip: 0, lvl: 'dn' },
+  { ago: 4.57e9, date: '2 сентября', t: 'Рождаются Солнце и Земля', sub: '4,6 млрд лет назад', strip: 0, lvl: 'up' },
+  { ago: 3.8e9, date: '22 сентября', t: 'Первая жизнь на Земле', sub: '≈ 3,8 млрд лет назад', strip: 0, lvl: 'dn' },
+  { ago: 5.38e8, date: '17 декабря', t: 'Кембрийский взрыв: появляется множество сложных животных', sub: '538 млн лет назад', strip: 0, lvl: 'up' },
+  { ago: 2.3e8, date: '25 декабря', t: 'Появляются динозавры', sub: '230 млн лет назад', strip: 0, lvl: 'dn' },
+  { ago: 6.6e7, date: '30 декабря, 06:00', t: 'Астероид уничтожает динозавров', sub: '66 млн лет назад', strip: 0, lvl: 'up' },
+  { ago: 4e6, date: '31 декабря, 21:28', t: 'Предки человека начинают ходить на двух ногах', sub: '≈ 4 млн лет назад', strip: 1, lvl: 'up' },
+  { ago: 3e5, date: '31 декабря, 23:48', t: 'Появляется Homo sapiens', sub: '≈ 300 тыс. лет назад', strip: 1, lvl: 'dn' },
+  { ago: 1.2e4, date: '23:59:33', t: 'Люди начинают заниматься земледелием', sub: '≈ 12 тыс. лет назад', strip: 2, lvl: 'up' },
+  { ago: 4.5e3, date: '23:59:50', t: 'Строятся египетские пирамиды', sub: '≈ 4500 лет назад', strip: 2, lvl: 'dn' },
+  { ago: 534, date: '23:59:58,8', t: 'Колумб доплывает до Америки', sub: '1492 год', strip: 2, lvl: 'up' },
+  { ago: 65, date: '23:59:59,85', t: 'Юрий Гагарин летит в космос', sub: '1961 год', strip: 2, lvl: 'dn' }
 ];
 const SPAN = [AGE, YDAY, YMIN];
 const strips = [0, 1, 2].map(i => document.getElementById('strip-' + i));
 (function buildCal() {
-  const md = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], mn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const md = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], mn = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
   const tk = [
     md.map((d, i) => `<span style="--d:${d}">${mn[i]}</span>`).join(''),
     [0, 3, 6, 9, 12, 15, 18, 21].map(hh => `<span>${String(hh).padStart(2, '0')}:00</span>`).join(''),
@@ -1499,12 +1517,12 @@ const heads = strips.map(s => s.querySelector('.playhead'));
 function calLabel(si, f) {
   if (si === 0) {
     const day = Math.min(Math.floor(f * 365), 364), md = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    const mg = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const mg = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
     let d = day, m = 0; while (d >= md[m]) { d -= md[m]; m++; }
-    return mg[m] + ' ' + (d + 1);
+    return (d + 1) + ' ' + mg[m];
   }
-  if (si === 1) { const mins = Math.floor(f * 1440); return 'December 31, ' + String(Math.floor(mins / 60)).padStart(2, '0') + ':' + String(mins % 60).padStart(2, '0'); }
-  return 'December 31, 23:59:' + String(Math.min(Math.floor(f * 60), 59)).padStart(2, '0');
+  if (si === 1) { const mins = Math.floor(f * 1440); return '31 декабря, ' + String(Math.floor(mins / 60)).padStart(2, '0') + ':' + String(mins % 60).padStart(2, '0'); }
+  return '31 декабря, 23:59:' + String(Math.min(Math.floor(f * 60), 59)).padStart(2, '0');
 }
 function calRender() {
   const si = Math.min(Math.floor(cal.p), 2), f = Math.min(cal.p - si, 1);
@@ -1514,10 +1532,10 @@ function calRender() {
     e.li.classList.toggle('lit', lit);
     if (e.mark) e.mark.classList.toggle('lit', lit);
   }
-  const t = cal.p >= 3 ? 'December 31, 24:00, now' : calLabel(si, f);
+  const t = cal.p >= 3 ? '31 декабря, 24:00 — сейчас' : calLabel(si, f);
   if (t !== cal.txt) { cal.txt = t; calNow.textContent = t; }
 }
-function setCalPlay(on) { cal.play = on; calBtn.setAttribute('aria-pressed', on); calBtn.textContent = on ? '❚❚ Pause' : '▶ Play'; }
+function setCalPlay(on) { cal.play = on; calBtn.setAttribute('aria-pressed', on); calBtn.textContent = on ? '❚❚ Пауза' : '▶ Смотреть'; }
 calBtn.addEventListener('click', () => { if (!cal.play && cal.p >= 3) cal.p = 0; setCalPlay(!cal.play); });
 setCalPlay(cal.play);
 if (reduced) cal.p = 3;
@@ -1534,14 +1552,17 @@ new IntersectionObserver(es => { cal.visible = es[0].isIntersecting; }, { rootMa
   requestAnimationFrame(calLoop);
 })(performance.now());
 
-/* — */
+/* ================= ПОПРОБУЙ: ДЫРА ТЯНЕТ КУРСОР ================= */
+// Курсор — точка крепления троса; космонавт висит на пружине и падает к дыре по закону 1/r².
+// Чем ближе к дыре, тем дальше он отстаёт от курсора. За горизонтом трос почти не держит,
+// и вырваться можно, только долго держа курсор далеко от дыры.
 const GV_TXT = {
-  free: 'Drifting freely', feel: 'You can feel the pull', strong: 'Pulling hard!', caught: 'Captured!', escaped: 'Broke free!',
-  inside: 'past the horizon', stopped: 'nearly stopped', slower: v => 'running ' + v + '× slower', normal: 'running as on Earth',
-  escapes: n => 'Escapes: ' + n,
-  hintMouse: 'Move the cursor over the field', hintTouch: 'Drag your finger over the field',
-  pullHint: 'Move the cursor far from the hole and hold it there',
-  boom: 'Broke free!', boomSub: 'A real black hole would never let you go'
+  free: 'Свободный полёт', feel: 'Чувствуется притяжение', strong: 'Сильно тянет!', caught: 'Захвачен!', escaped: 'Вырвался!',
+  inside: 'за горизонтом', stopped: 'почти остановились', slower: v => 'идут в ' + v + ' раза медленнее', normal: 'идут как на Земле',
+  escapes: n => 'Побегов: ' + n,
+  hintMouse: 'Ведите курсор по полю', hintTouch: 'Ведите пальцем по полю',
+  pullHint: 'Уведите курсор подальше от дыры и держите',
+  boom: 'Вырвался!', boomSub: 'В настоящей чёрной дыре так не получится'
 };
 const gv = { w: 0, h: 0, p: null, v: { x: 0, y: 0 }, a: null, captured: false, prog: 0, escapes: 0, grace: 0, boom: 0, mass: 1, trail: [], burst: [], txt: 0, touched: false, touch: false, inside: false };
 const GV_K = 140, GV_C = 2 * Math.sqrt(GV_K);
@@ -1565,7 +1586,7 @@ function gvPoint(e) {
   gv.touched = true; gv.inside = true; gv.touch = e.pointerType === 'touch';
 }
 gvCv.addEventListener('pointermove', gvPoint);
-gvCv.addEventListener('pointerdown', e => { gvPoint(e); try { gvCv.setPointerCapture(e.pointerId); } catch (err) { /* — */ } });
+gvCv.addEventListener('pointerdown', e => { gvPoint(e); try { gvCv.setPointerCapture(e.pointerId); } catch (err) { /* не критично */ } });
 gvCv.addEventListener('pointerleave', () => { gv.inside = false; });
 gvCv.addEventListener('keydown', e => {
   const step = 24, d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
@@ -1620,7 +1641,7 @@ makeScene('grav-cv', (s, dt) => {
   const r = Math.hypot(gv.p.x - cx, gv.p.y - cy);
   ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
   ctx.fillStyle = C.void; ctx.fillRect(0, 0, w, h);
-  /* — */
+  /* звёзды фона, отклонённые гравитационной линзой */
   const rE = R * 1.8, k4 = 4 * rE * rE;
   ctx.fillStyle = C.star;
   for (const st of gvStars) {
@@ -1631,13 +1652,13 @@ makeScene('grav-cv', (s, dt) => {
     const z = 1 + st.m * 2;
     ctx.fillRect(cx + x / b * th - z / 2, cy + y / b * th - z / 2, z, z);
   }
-  /* — */
+  /* кольца «воронки», сползающие к центру */
   ctx.strokeStyle = C.disk; ctx.lineWidth = 1;
   for (let i = 0; i < 6; i++) {
     const f = ((i + s.t * 0.35) % 6) / 6, rr = R * (1.25 + (1 - f) * 7);
     ctx.globalAlpha = 0.09 * Math.sin(f * Math.PI); circle(ctx, cx, cy, rr); ctx.stroke();
   }
-  /* — */
+  /* диск: задняя половина, тень, передняя половина */
   const sq = 0.32;
   const disk = back => {
     for (const d of gvDisk) {
@@ -1654,24 +1675,24 @@ makeScene('grav-cv', (s, dt) => {
   ctx.fillStyle = '#000'; circle(ctx, cx, cy, R); ctx.fill();
   ctx.strokeStyle = gv.captured ? '#ff7a4a' : C.hot; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.8; circle(ctx, cx, cy, R); ctx.stroke();
   ctx.globalCompositeOperation = 'lighter'; disk(false); ctx.globalCompositeOperation = 'source-over';
-  /* — */
+  /* полоска рывка вокруг горизонта */
   if (gv.captured) {
     ctx.globalAlpha = 1; ctx.strokeStyle = C.line; ctx.lineWidth = 5; circle(ctx, cx, cy, R * 1.18); ctx.stroke();
     ctx.strokeStyle = C.hot; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.arc(cx, cy, R * 1.18, -Math.PI / 2, -Math.PI / 2 + gv.prog * TAU); ctx.stroke(); ctx.lineCap = 'butt';
   }
-  /* — */
+  /* след */
   ctx.lineWidth = 2;
   for (let i = 1; i < gv.trail.length; i++) {
     ctx.globalAlpha = (i / gv.trail.length) * 0.5; ctx.strokeStyle = gv.captured ? '#ff7a4a' : C.quant;
     ctx.beginPath(); ctx.moveTo(gv.trail[i - 1].x, gv.trail[i - 1].y); ctx.lineTo(gv.trail[i].x, gv.trail[i].y); ctx.stroke();
   }
-  /* — */
+  /* трос: чем сильнее натянут, тем краснее */
   const ten = clamp(Math.hypot(gv.a.x - gv.p.x, gv.a.y - gv.p.y) / (Math.min(w, h) * 0.45), 0, 1);
   ctx.globalAlpha = 0.35 + ten * 0.6; ctx.lineWidth = 1 + ten * 2.5;
   ctx.strokeStyle = `rgb(255,${Math.round(lerp(240, 90, ten))},${Math.round(lerp(220, 60, ten))})`;
   ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(gv.a.x, gv.a.y); ctx.lineTo(gv.p.x, gv.p.y); ctx.stroke(); ctx.setLineDash([]);
-  /* — */
+  /* космонавт: растягивается у горизонта, краснеет за ним */
   const ang = Math.atan2(cy - gv.p.y, cx - gv.p.x);
   const st = 1 + clamp(Math.pow(2.2 * R / Math.max(r, R * 0.3), 3) - 1, 0, gv.captured ? 2 : 2.6);
   const size = Math.max(R * (gv.captured ? 0.022 : 0.03), 1.1);
@@ -1680,16 +1701,16 @@ makeScene('grav-cv', (s, dt) => {
   ctx.translate(gv.p.x, gv.p.y); ctx.scale(size, size);
   drawAstronaut(ctx, 0, 0, ang, st, gv.captured ? 0.75 : 1, gv.captured ? 0.9 : clamp(1 - (r / R - 1) / 1.5, 0, 0.6));
   ctx.restore();
-  /* — */
+  /* искры побега */
   ctx.globalCompositeOperation = 'lighter';
   for (const b of gv.burst) { ctx.globalAlpha = 1 - b.t / b.life; ctx.fillStyle = C.hot; ctx.fillRect(b.x - 1.5, b.y - 1.5, 3, 3); }
   ctx.globalCompositeOperation = 'source-over';
-  /* — */
+  /* точка крепления троса — это и есть курсор */
   ctx.globalAlpha = gv.inside || !gv.touched ? 1 : 0.45; ctx.strokeStyle = C.star; ctx.lineWidth = 1.5;
   circle(ctx, gv.a.x, gv.a.y, 9); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(gv.a.x - 14, gv.a.y); ctx.lineTo(gv.a.x - 5, gv.a.y); ctx.moveTo(gv.a.x + 5, gv.a.y); ctx.lineTo(gv.a.x + 14, gv.a.y);
   ctx.moveTo(gv.a.x, gv.a.y - 14); ctx.lineTo(gv.a.x, gv.a.y - 5); ctx.moveTo(gv.a.x, gv.a.y + 5); ctx.lineTo(gv.a.x, gv.a.y + 14); ctx.stroke();
-  /* — */
+  /* подсказки на поле */
   ctx.globalAlpha = 1; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   if (gv.boom > 0) {
     const k = Math.min(1, gv.boom / 0.5);
@@ -1702,7 +1723,7 @@ makeScene('grav-cv', (s, dt) => {
     ctx.font = '500 12px ' + MONO; ctx.fillStyle = C.dust; ctx.fillText(matchMedia('(pointer: coarse)').matches ? GV_TXT.hintTouch : GV_TXT.hintMouse, w / 2, h - 22);
   }
   ctx.globalAlpha = 1;
-  /* — */
+  /* показания */
   if ((gv.txt += dt) > 0.1 || dt === 0) {
     gv.txt = 0;
     const rr = r / R;
@@ -1725,7 +1746,10 @@ makeScene('grav-cv', (s, dt) => {
   }
 });
 
-/* — */
+/* ================= ВОПРОСЫ CLAUDE ================= */
+// На claude.ai страница спрашивает Claude через аккаунт зрителя (capability "sample").
+// На своём хостинге — через сервер из server/ask-worker.js, адрес которого стоит в <meta name="ask-endpoint">.
+// Ключ API на страницу не попадает никогда.
 const ASK_RULES = 'You are the guide on Event Horizon, a small website about black holes, quantum physics and the history of the Universe. '
   + 'Answer the visitor\'s question about space, astronomy or physics accurately and vividly for a curious non-expert. '
   + 'Reply in the same language the visitor writes in. Keep it short: two to four short paragraphs of plain text, no Markdown, no headings, no bullet lists. '
@@ -1735,14 +1759,14 @@ const ask = { mode: null, sample: null, turns: [], busy: false, ctl: null, off: 
 const askLog = document.getElementById('ask-log'), askForm = document.getElementById('ask-form');
 const askInput = document.getElementById('ask-input'), askSend = document.getElementById('ask-send'), askNote = document.getElementById('ask-note');
 const ASK_TXT = {
-  send: 'Ask', stop: 'Stop', thinking: 'Thinking…',
-  noteSample: 'Answers use your own Claude account: claude.ai asks for permission on your first question.',
-  stopped: 'Stopped.',
-  off: 'Answers are unavailable: this page is not allowed to use Claude.',
-  rate: 'Too many questions in a row. Try again a little later.',
-  refused: 'This question will not get an answer. Try asking it differently.',
-  cut: 'The answer was cut short: try a shorter question.',
-  fail: 'Could not get an answer. Please try again.'
+  send: 'Спросить', stop: 'Стоп', thinking: 'Думаю…',
+  noteSample: 'Ответы идут через ваш аккаунт Claude: при первом вопросе claude.ai попросит разрешение.',
+  stopped: 'Остановлено.',
+  off: 'Ответы недоступны: этой странице не разрешено обращаться к Claude.',
+  rate: 'Слишком много вопросов подряд. Попробуйте чуть позже.',
+  refused: 'На этот вопрос ответа не будет. Попробуйте спросить иначе.',
+  cut: 'Ответ оборвался: попробуйте спросить короче.',
+  fail: 'Не получилось получить ответ. Попробуйте ещё раз.'
 };
 function askBusy(on) {
   ask.busy = on;
@@ -1819,8 +1843,8 @@ function enableAsk(mode, sample) {
   if (location.hash.slice(1) === 'ask') showTab('ask', true, false);
 }
 
-/* — */
-const TABS = ['video', 'play', 'black-holes', 'quantum', 'universe', 'ask'];
+/* ================= ВКЛАДКИ И ВИДЕО ================= */
+const TABS = ['video', 'play', 'dyry', 'kvanty', 'vselennaya', 'ask'];
 const tabBtns = [...document.querySelectorAll('[role="tab"]')];
 const videos = [...document.querySelectorAll('video')];
 const content = document.getElementById('content');
@@ -1829,8 +1853,8 @@ function showTab(id, scroll, setHash) {
   tabBtns.forEach(b => { const on = b.dataset.tab === id; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
   TABS.forEach(k => { document.getElementById('p-' + k).hidden = k !== id; });
   if (id !== 'video') videos.forEach(v => v.pause());
-  try { localStorage.setItem('eh-tab', id); } catch (e) { /* storage unavailable */ }
-  if (setHash) { try { history.replaceState(null, '', '#' + id); } catch (e) { /* sandboxed */ } }
+  try { localStorage.setItem('gs-tab', id); } catch (e) { /* хранилище недоступно */ }
+  if (setHash) { try { history.replaceState(null, '', '#' + id); } catch (e) { /* в песочнице */ } }
   if (scroll) content.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
 }
 tabBtns.forEach(b => {
@@ -1846,12 +1870,87 @@ tabBtns.forEach(b => {
 });
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.go, true, true)));
 videos.forEach(v => v.addEventListener('play', () => videos.forEach(o => { if (o !== v) o.pause(); })));
+
+// Где ролик нельзя проигрывать прямо из файла (песочница claude.ai), адрес лежит в data-src:
+// файл скачивается целиком и играет из памяти браузера. Если и так не вышло, пробуем прямой адрес.
+const VL_TXT = {
+  load: p => 'Загружается видео' + (p == null ? '…' : ' · ' + p + ' %'),
+  fail: 'Видео не загрузилось. Нажмите, чтобы попробовать ещё раз'
+};
+const lazyVideos = videos.filter(v => v.dataset.src && !v.getAttribute('src'));
+const vQueue = [];
+let vBusy = false;
+function vNote(v, text, retry) {
+  const n = v.parentNode.querySelector('.vnote');
+  n.hidden = text == null;
+  if (text != null) { n.textContent = text; n.disabled = !retry; }
+}
+async function vFetch(v) {
+  vNote(v, VL_TXT.load(null));
+  try {
+    const r = await fetch(v.dataset.src);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const total = +r.headers.get('content-length') || 0;
+    let parts;
+    if (total && r.body && r.body.getReader) {
+      const rd = r.body.getReader();
+      let got = 0; parts = [];
+      for (;;) {
+        const { done, value } = await rd.read();
+        if (done) break;
+        parts.push(value); got += value.length;
+        vNote(v, VL_TXT.load(Math.min(99, Math.round(got / total * 100))));
+      }
+    } else parts = [await r.arrayBuffer()];
+    v.dataset.state = 'blob';
+    v.src = URL.createObjectURL(new Blob(parts, { type: 'video/mp4' }));
+  } catch (e) {
+    v.dataset.state = 'direct';
+    v.src = v.dataset.src;
+  }
+  vNote(v, null);
+}
+async function vPump() {
+  if (vBusy) return;
+  vBusy = true;
+  while (vQueue.length) await vFetch(vQueue.shift());
+  vBusy = false;
+}
+function vWant(v, first) {
+  const i = vQueue.indexOf(v);
+  if (i > 0 && first) { vQueue.splice(i, 1); vQueue.unshift(v); }
+  if (v.dataset.state) return;
+  v.dataset.state = 'queued';
+  if (first) vQueue.unshift(v); else vQueue.push(v);
+  vPump();
+}
+lazyVideos.forEach(v => {
+  const box = document.createElement('div');
+  box.className = 'vbox';
+  v.before(box); box.append(v);
+  const n = document.createElement('button');
+  n.type = 'button'; n.className = 'vnote'; n.hidden = true;
+  box.append(n);
+  n.addEventListener('click', () => { delete v.dataset.state; vWant(v, true); });
+  box.addEventListener('pointerdown', () => vWant(v, true));
+  v.addEventListener('error', () => {
+    if (v.dataset.state === 'blob') { v.dataset.state = 'direct'; v.src = v.dataset.src; }
+    else if (v.dataset.state === 'direct') { v.dataset.state = 'failed'; vNote(v, VL_TXT.fail, true); }
+  });
+});
+if (lazyVideos.length) {
+  if ('IntersectionObserver' in window) {
+    const vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { vio.unobserve(e.target); vWant(e.target); } }), { rootMargin: '300px' });
+    lazyVideos.forEach(v => vio.observe(v));
+  } else lazyVideos.forEach(v => vWant(v));
+}
 window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.includes(h)) showTab(h, true, false); });
 let initial = location.hash.slice(1);
 const fromHash = TABS.includes(initial);
-if (!fromHash) { try { initial = localStorage.getItem('eh-tab') || 'video'; } catch (e) { initial = 'video'; } }
+if (!fromHash) { try { initial = localStorage.getItem('gs-tab') || 'video'; } catch (e) { initial = 'video'; } }
 showTab(initial, fromHash, false);
 
+// вопросы включаются, когда есть чем отвечать
 if (ASK_ENDPOINT) enableAsk('endpoint');
 else if (window.claude && typeof window.claude.use === 'function') {
   window.claude.use('sample').then(s => { if (s) enableAsk('sample', s); }).catch(() => {});

@@ -49,9 +49,12 @@ sub{line-height:0}
 .tab:hover{color:var(--star)}
 .tab[aria-selected="true"]{background:var(--panel-2);color:var(--star);box-shadow:inset 0 0 0 1px var(--line)}
 .tab[aria-selected="true"] svg{color:var(--disk)}
+.lang{font:500 .72rem/1 var(--f-mono);letter-spacing:.08em;color:var(--dust);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:.5rem .7rem;white-space:nowrap;transition:color .2s,border-color .2s}
+.lang:hover{color:var(--star);border-color:var(--dust)}
 @media (max-width:720px){
   .top{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--void)}
-  .top .wrap{justify-content:center}
+  .top .wrap{justify-content:center;position:relative}
+  .lang{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%)}
   .tabs{position:fixed;left:0;right:0;bottom:0;margin:0;gap:0;justify-content:space-around;background:rgba(9,10,18,.97);border-top:1px solid var(--line);padding:.35rem .4rem calc(.35rem + env(safe-area-inset-bottom,0px))}
   .tab{flex:1;min-width:0;flex-direction:column;gap:.3rem;font-size:.62rem;padding:.55rem .1rem;border-radius:12px}
   .tab svg{width:20px;height:20px}
@@ -101,6 +104,10 @@ h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.4
 .vcard video{display:block;width:100%;aspect-ratio:9/16;max-width:100%;border-radius:10px;background:var(--panel);border:1px solid var(--line);object-fit:cover}
 .vcard h3{font-family:var(--f-display);font-weight:500;font-size:1rem;line-height:1.3;margin:0;text-wrap:balance}
 .vcard p{margin:0;color:var(--dust);font-size:.95rem;line-height:1.5}
+.vbox{position:relative;min-width:0}
+.vnote{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:max-content;max-width:calc(100% - 1.5rem);font:500 .75rem/1.4 var(--f-mono);color:var(--star);background:rgba(5,6,11,.84);border:1px solid var(--line);border-radius:999px;padding:.55rem .9rem;text-align:center;font-variant-numeric:tabular-nums}
+.vnote:disabled{cursor:default;opacity:1}
+.vnote:not(:disabled){cursor:pointer;border-color:var(--disk)}
 .vmeta{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-top:auto}
 .dur{font-family:var(--f-mono);font-size:.75rem;color:var(--dust)}
 @media (max-width:720px){
@@ -215,6 +222,7 @@ footer a{color:var(--star)}
       <button class="tab" role="tab" id="t-ask" data-tab="ask" aria-controls="p-ask" aria-selected="false" tabindex="-1" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke-linejoin="round"/><path d="M9 10h.01M12 10h.01M15 10h.01" stroke-linecap="round" stroke-width="2.4"/></svg>Спросить</button>
     </div>
+    <a class="lang" href="en/" hreflang="en" aria-label="English version">EN</a>
   </div>
 </div>
 
@@ -1847,6 +1855,80 @@ tabBtns.forEach(b => {
 });
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.go, true, true)));
 videos.forEach(v => v.addEventListener('play', () => videos.forEach(o => { if (o !== v) o.pause(); })));
+
+// Где ролик нельзя проигрывать прямо из файла (песочница claude.ai), адрес лежит в data-src:
+// файл скачивается целиком и играет из памяти браузера. Если и так не вышло, пробуем прямой адрес.
+const VL_TXT = {
+  load: p => 'Загружается видео' + (p == null ? '…' : ' · ' + p + ' %'),
+  fail: 'Видео не загрузилось. Нажмите, чтобы попробовать ещё раз'
+};
+const lazyVideos = videos.filter(v => v.dataset.src && !v.getAttribute('src'));
+const vQueue = [];
+let vBusy = false;
+function vNote(v, text, retry) {
+  const n = v.parentNode.querySelector('.vnote');
+  n.hidden = text == null;
+  if (text != null) { n.textContent = text; n.disabled = !retry; }
+}
+async function vFetch(v) {
+  vNote(v, VL_TXT.load(null));
+  try {
+    const r = await fetch(v.dataset.src);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const total = +r.headers.get('content-length') || 0;
+    let parts;
+    if (total && r.body && r.body.getReader) {
+      const rd = r.body.getReader();
+      let got = 0; parts = [];
+      for (;;) {
+        const { done, value } = await rd.read();
+        if (done) break;
+        parts.push(value); got += value.length;
+        vNote(v, VL_TXT.load(Math.min(99, Math.round(got / total * 100))));
+      }
+    } else parts = [await r.arrayBuffer()];
+    v.dataset.state = 'blob';
+    v.src = URL.createObjectURL(new Blob(parts, { type: 'video/mp4' }));
+  } catch (e) {
+    v.dataset.state = 'direct';
+    v.src = v.dataset.src;
+  }
+  vNote(v, null);
+}
+async function vPump() {
+  if (vBusy) return;
+  vBusy = true;
+  while (vQueue.length) await vFetch(vQueue.shift());
+  vBusy = false;
+}
+function vWant(v, first) {
+  const i = vQueue.indexOf(v);
+  if (i > 0 && first) { vQueue.splice(i, 1); vQueue.unshift(v); }
+  if (v.dataset.state) return;
+  v.dataset.state = 'queued';
+  if (first) vQueue.unshift(v); else vQueue.push(v);
+  vPump();
+}
+lazyVideos.forEach(v => {
+  const box = document.createElement('div');
+  box.className = 'vbox';
+  v.before(box); box.append(v);
+  const n = document.createElement('button');
+  n.type = 'button'; n.className = 'vnote'; n.hidden = true;
+  box.append(n);
+  n.addEventListener('click', () => { delete v.dataset.state; vWant(v, true); });
+  box.addEventListener('pointerdown', () => vWant(v, true));
+  v.addEventListener('error', () => {
+    if (v.dataset.state === 'blob') { v.dataset.state = 'direct'; v.src = v.dataset.src; }
+    else if (v.dataset.state === 'direct') { v.dataset.state = 'failed'; vNote(v, VL_TXT.fail, true); }
+  });
+});
+if (lazyVideos.length) {
+  if ('IntersectionObserver' in window) {
+    const vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { vio.unobserve(e.target); vWant(e.target); } }), { rootMargin: '300px' });
+    lazyVideos.forEach(v => vio.observe(v));
+  } else lazyVideos.forEach(v => vWant(v));
+}
 window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.includes(h)) showTab(h, true, false); });
 let initial = location.hash.slice(1);
 const fromHash = TABS.includes(initial);

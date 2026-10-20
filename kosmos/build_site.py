@@ -1,13 +1,14 @@
-"""Собирает английскую версию сайта для GitHub Pages: kosmos/index.html → docs/index.html.
+"""Собирает сайт для хостинга в docs/: русская версия в корне, английская в docs/en/.
 
-Русская страница остаётся источником: вся вёрстка и логика правятся там, а этот скрипт
-заменяет тексты, единицы и форматирование чисел на английские. Если после замены в файле
-осталась кириллица, скрипт падает и показывает строки, которые нужно добавить в словарь.
+    python3 kosmos/build_site.py
 
-    python3 kosmos/translate_en.py
+Русская страница kosmos/index.html остаётся источником: вся вёрстка и логика правятся там.
+Для английской версии скрипт заменяет тексты, единицы и форматирование чисел. Если после замены
+в файле осталась кириллица, скрипт падает и показывает строки, которые нужно добавить в словарь.
 
-Заодно кладёт в docs/ всё, что нужно поисковикам: robots.txt, sitemap.xml, картинку для превью
-ссылки (og.jpg) и канонический адрес. Адрес сайта — константа SITE_URL ниже.
+Заодно кладёт в docs/ всё, что нужно поисковикам: robots.txt, sitemap.xml, картинки для превью
+ссылки (og.jpg), канонические адреса и связи между языковыми версиями (hreflang).
+Адрес сайта — константа SITE_URL ниже.
 """
 import re
 import shutil
@@ -18,31 +19,49 @@ HERE = Path(__file__).parent
 SRC = HERE / "index.html"
 DOCS = HERE.parent / "docs"
 SITE_URL = "https://event-horizon.kz"   # адрес, под которым сайт должны находить поисковики
-UPDATED = "2026-10-13"
+UPDATED = "2026-10-20"
+LANG_URL = {"ru": f"{SITE_URL}/", "en": f"{SITE_URL}/en/"}
+DESC_RU = "Чёрные дыры, квантовая физика и история Вселенной: три коротких видео и опыты, которые можно потрогать."
+DESC_EN = "Black holes, quantum physics and the history of the Universe: three short videos and experiments you can play with."
 
 FAVICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E"
            "%3Ccircle cx='16' cy='16' r='15' fill='%2305060b'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='4' "
            "fill='none' stroke='%23ffa04a' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23000' "
            "stroke='%23ffe1b4' stroke-width='1.5'/%3E%3C/svg%3E")
 
+
+
+def seo(lang, name, desc):
+    """Метатеги для превью ссылки, канонический адрес и ссылки на другую языковую версию."""
+    url = LANG_URL[lang]
+    return "\n".join([
+        f'<meta property="og:title" content="{name}">',
+        f'<meta property="og:description" content="{desc}">',
+        '<meta property="og:type" content="website">',
+        f'<meta property="og:site_name" content="{name}">',
+        f'<meta property="og:locale" content="{"ru_RU" if lang == "ru" else "en_US"}">',
+        f'<meta property="og:url" content="{url}">',
+        f'<meta property="og:image" content="{url}og.jpg">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        f'<link rel="canonical" href="{url}">',
+        *[f'<link rel="alternate" hreflang="{k}" href="{v}">' for k, v in LANG_URL.items()],
+        f'<link rel="alternate" hreflang="x-default" href="{LANG_URL["ru"]}">',
+        f'<link rel="icon" href="{FAVICON}">',
+    ])
+
+
+META_RU = f'<meta name="description" content="{DESC_RU}">'
+
 # (русский фрагмент, английский фрагмент) — применяются по порядку, каждый должен найтись
 PAIRS = [
     # --- шапка документа ---
     ('<html lang="ru">', '<html lang="en">'),
     ('<title>Горизонт событий</title>', '<title>Event Horizon</title>'),
-    ('<meta name="description" content="Чёрные дыры, квантовая физика и история Вселенной: три коротких видео и опыты, которые можно потрогать.">',
-     '<meta name="description" content="Black holes, quantum physics and the history of the Universe: three short videos and experiments you can play with.">\n'
-     '<meta property="og:title" content="Event Horizon">\n'
-     '<meta property="og:description" content="Black holes, quantum physics and the history of the Universe: three short videos and experiments you can play with.">\n'
-     '<meta property="og:type" content="website">\n'
-     '<meta property="og:site_name" content="Event Horizon">\n'
-     f'<meta property="og:url" content="{SITE_URL}/">\n'
-     f'<meta property="og:image" content="{SITE_URL}/og.jpg">\n'
-     '<meta property="og:image:width" content="1200">\n'
-     '<meta property="og:image:height" content="630">\n'
-     '<meta name="twitter:card" content="summary_large_image">\n'
-     f'<link rel="canonical" href="{SITE_URL}/">\n'
-     f'<link rel="icon" href="{FAVICON}">'),
+    (META_RU, f'<meta name="description" content="{DESC_EN}">\n' + seo("en", "Event Horizon", DESC_EN)),
+    ('<a class="lang" href="en/" hreflang="en" aria-label="English version">EN</a>',
+     '<a class="lang" href="../" hreflang="ru" aria-label="Russian version">RU</a>'),
     ('/* верхняя панель и вкладки */', '/* top bar and tabs */'),
     ('/* герой */', '/* hero */'),
     ('/* кнопки и поля */', '/* buttons and fields */'),
@@ -376,14 +395,16 @@ PAIRS = [
     ("localStorage.setItem('gs-tab', id); } catch (e) { /* хранилище недоступно */ }", "localStorage.setItem('eh-tab', id); } catch (e) { /* storage unavailable */ }"),
     ("history.replaceState(null, '', '#' + id); } catch (e) { /* в песочнице */ } }", "history.replaceState(null, '', '#' + id); } catch (e) { /* sandboxed */ } }"),
     ("initial = localStorage.getItem('gs-tab') || 'video';", "initial = localStorage.getItem('eh-tab') || 'video';"),
+    # --- загрузка видео ---
+    ("load: p => 'Загружается видео' + (p == null ? '…' : ' · ' + p + ' %'),", "load: p => 'Loading video' + (p == null ? '…' : ' · ' + p + '%'),"),
+    ("fail: 'Видео не загрузилось. Нажмите, чтобы попробовать ещё раз'", "fail: 'The video did not load. Tap to try again'"),
 ]
 
 # адреса разделов по-английски
 IDS = [('dyry', 'black-holes'), ('kvanty', 'quantum'), ('vselennaya', 'universe')]
 
 
-def main():
-    s = SRC.read_text(encoding="utf-8")
+def build_en(s):
     missing = [a[:70] for a, _ in PAIRS if a not in s]
     if missing:
         sys.exit("не найдено в kosmos/index.html:\n  " + "\n  ".join(missing))
@@ -398,22 +419,42 @@ def main():
     left = [f"{i + 1}: {line.strip()[:110]}" for i, line in enumerate(s.splitlines()) if re.search(r"[А-Яа-яЁё]", line)]
     if left:
         sys.exit("осталась кириллица:\n  " + "\n  ".join(left))
-    DOCS.mkdir(exist_ok=True)
-    (DOCS / "index.html").write_text(s, encoding="utf-8")
+    return s
+
+
+def build_ru(s):
+    if s.count(META_RU) != 1:
+        sys.exit("не найдено описание страницы в kosmos/index.html")
+    s = s.replace(META_RU, META_RU + "\n" + seo("ru", "Горизонт событий", DESC_RU))
+    return s.replace('"video/web/kosmos-', '"video/kosmos-')
+
+
+def copy_videos(src, pattern, dst):
+    dst.mkdir(parents=True, exist_ok=True)
+    for f in sorted(src.glob(pattern)):
+        shutil.copy2(f, dst / f.name)
+
+
+def main():
+    src = SRC.read_text(encoding="utf-8")
+    ru, en = build_ru(src), build_en(src)
+    (DOCS / "en").mkdir(parents=True, exist_ok=True)
+    (DOCS / "index.html").write_text(ru, encoding="utf-8")
+    (DOCS / "en" / "index.html").write_text(en, encoding="utf-8")
     (DOCS / ".nojekyll").write_text("", encoding="utf-8")
     (DOCS / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n", encoding="utf-8")
+    alts = "".join(f'\n    <xhtml:link rel="alternate" hreflang="{k}" href="{v}"/>' for k, v in LANG_URL.items())
+    urls = "".join(f"  <url>\n    <loc>{u}</loc>\n    <lastmod>{UPDATED}</lastmod>{alts}\n  </url>\n" for u in LANG_URL.values())
     (DOCS / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        f'  <url><loc>{SITE_URL}/</loc><lastmod>{UPDATED}</lastmod></url>\n'
-        '</urlset>\n', encoding="utf-8")
-    shutil.copy2(HERE / "og-en.jpg", DOCS / "og.jpg")
-    web = HERE / "video" / "web" / "en"
-    if web.exists():
-        (DOCS / "video").mkdir(exist_ok=True)
-        for f in sorted(web.glob("event-horizon-*")):
-            shutil.copy2(f, DOCS / "video" / f.name)
-    print(f"docs/index.html: {len(s.splitlines())} строк")
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
+        f"{urls}</urlset>\n", encoding="utf-8")
+    shutil.copy2(HERE / "og-ru.jpg", DOCS / "og.jpg")
+    shutil.copy2(HERE / "og-en.jpg", DOCS / "en" / "og.jpg")
+    web = HERE / "video" / "web"
+    copy_videos(web, "kosmos-*", DOCS / "video")
+    copy_videos(web / "en", "event-horizon-*", DOCS / "en" / "video")
+    print(f"docs/index.html: {len(ru.splitlines())} строк, docs/en/index.html: {len(en.splitlines())} строк")
 
 
 if __name__ == "__main__":

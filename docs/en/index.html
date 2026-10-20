@@ -1,0 +1,1948 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Event Horizon</title>
+<meta name="description" content="Black holes, quantum physics and the history of the Universe: three short videos and experiments you can play with.">
+<meta property="og:title" content="Event Horizon">
+<meta property="og:description" content="Black holes, quantum physics and the history of the Universe: three short videos and experiments you can play with.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Event Horizon">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://event-horizon.kz/en/">
+<meta property="og:image" content="https://event-horizon.kz/en/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://event-horizon.kz/en/">
+<link rel="alternate" hreflang="ru" href="https://event-horizon.kz/">
+<link rel="alternate" hreflang="en" href="https://event-horizon.kz/en/">
+<link rel="alternate" hreflang="x-default" href="https://event-horizon.kz/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%2305060b'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='4' fill='none' stroke='%23ffa04a' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23000' stroke='%23ffe1b4' stroke-width='1.5'/%3E%3C/svg%3E">
+<meta name="ask-endpoint" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,300;1,7..72,400&family=Unbounded:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: a short lensed black-hole hero, then one tab bar (top on desktop, thumb bar on phones) that switches between four compact panels: videos and three sets of hands-on demos. */
+:root{
+  --void:#05060b;
+  --panel:#0b0d16;
+  --panel-2:#121522;
+  --line:#242839;
+  --star:#ece6da;
+  --dust:#9d99b0;
+  --disk:#ffa04a;
+  --hot:#ffe1b4;
+  --quant:#86d4ff;
+  --accent:var(--disk);
+  --f-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --f-body:"Literata",Georgia,"Times New Roman",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --bar:3.5rem;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--void);scroll-behavior:smooth}
+body{margin:0;background:var(--void);color:var(--star);font-family:var(--f-body);font-size:1.0625rem;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:72rem;margin-inline:auto;padding-inline:clamp(16px,4vw,40px)}
+sub{line-height:0}
+[hidden]{display:none!important}
+
+/* top bar and tabs */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:rgba(5,6,11,.86);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:1rem;min-height:var(--bar)}
+.brand{font-family:var(--f-display);font-weight:500;font-size:.8rem;letter-spacing:.04em;color:var(--star);text-decoration:none;white-space:nowrap}
+.brand::before{content:"";display:inline-block;width:.7em;height:.7em;border-radius:50%;background:#000;box-shadow:0 0 0 1.5px var(--disk),0 0 10px var(--disk);margin-right:.6em;vertical-align:-.05em}
+.tabs{display:flex;gap:.25rem;margin-left:auto}
+.tab{font:500 .8rem/1 var(--f-mono);color:var(--dust);background:transparent;border:0;border-radius:999px;padding:.65rem .95rem;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;transition:color .2s,background-color .2s;white-space:nowrap}
+.tab svg{width:18px;height:18px;flex:none}
+.tab:hover{color:var(--star)}
+.tab[aria-selected="true"]{background:var(--panel-2);color:var(--star);box-shadow:inset 0 0 0 1px var(--line)}
+.tab[aria-selected="true"] svg{color:var(--disk)}
+.lang{font:500 .72rem/1 var(--f-mono);letter-spacing:.08em;color:var(--dust);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:.5rem .7rem;white-space:nowrap;transition:color .2s,border-color .2s}
+.lang:hover{color:var(--star);border-color:var(--dust)}
+@media (max-width:720px){
+  .top{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--void)}
+  .top .wrap{justify-content:center;position:relative}
+  .lang{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%)}
+  .tabs{position:fixed;left:0;right:0;bottom:0;margin:0;gap:0;justify-content:space-around;background:rgba(9,10,18,.97);border-top:1px solid var(--line);padding:.35rem .4rem calc(.35rem + env(safe-area-inset-bottom,0px))}
+  .tab{flex:1;min-width:0;flex-direction:column;gap:.3rem;font-size:.62rem;padding:.55rem .1rem;border-radius:12px}
+  .tab svg{width:20px;height:20px}
+  .tab[aria-selected="true"]{box-shadow:none}
+  body{padding-bottom:calc(4.6rem + env(safe-area-inset-bottom,0px))}
+}
+
+/* hero */
+.hero{position:relative;min-height:clamp(440px,64vh,640px);display:flex;align-items:flex-end;overflow:hidden;background:var(--void)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:35%;background:linear-gradient(to bottom,rgba(5,6,11,0),var(--void));pointer-events:none}
+.hero-copy{position:relative;z-index:1;width:100%;padding-block:0 clamp(2rem,5vh,3.25rem)}
+.hero-copy .inner{max-width:34rem}
+h1{margin:0 0 1rem;line-height:.95;text-shadow:0 2px 30px rgba(0,0,0,.8)}
+h1 .a{display:block;font-family:var(--f-display);font-weight:800;font-size:clamp(2.3rem,6.4vw,4.6rem);letter-spacing:-.035em;text-transform:uppercase}
+h1 .b{display:block;font-family:var(--f-body);font-style:italic;font-weight:300;font-size:clamp(2.4rem,6.8vw,4.9rem);color:var(--hot);padding-left:.08em}
+.lead{font-size:1.2rem;line-height:1.5;margin:0;max-width:32rem;text-shadow:0 1px 16px rgba(0,0,0,.9)}
+.actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.5rem}
+.hero-note{position:absolute;z-index:1;right:clamp(16px,4vw,40px);top:1rem;max-width:17rem;font-family:var(--f-mono);font-size:.72rem;line-height:1.55;color:var(--dust);margin:0}
+@media (max-width:719px){.hero{min-height:clamp(470px,78vh,640px)}.hero-note{display:none}.lead{font-size:1.08rem}}
+
+/* buttons and fields */
+.btn{font:500 .8rem/1 var(--f-mono);color:var(--star);background:transparent;border:1px solid var(--line);border-radius:999px;padding:.7rem 1rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.45rem;transition:border-color .2s,background-color .2s,color .2s;white-space:nowrap;min-height:2.5rem}
+.btn:hover{border-color:var(--accent)}
+.btn.primary,.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--void)}
+.btn.ghost{background:rgba(5,6,11,.55)}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem}
+.field{display:grid;gap:.45rem;min-width:0}
+.label{font-family:var(--f-mono);font-size:.7rem;color:var(--dust);text-transform:uppercase;letter-spacing:.08em}
+input[type=range]{accent-color:var(--accent);width:100%;min-width:0;margin:0;height:1.75rem}
+.read{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* panels */
+#content{scroll-margin-top:calc(var(--bar) + env(safe-area-inset-top,0px))}
+.panel{padding-block:clamp(2rem,5vw,3.5rem) clamp(3rem,7vw,5rem)}
+.panel[data-tone="quant"]{--accent:var(--quant)}
+@media (prefers-reduced-motion:no-preference){.panel:not([hidden]){animation:rise .35s ease both}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.panel-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.5rem 2rem;margin-bottom:1.75rem}
+h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.4rem);line-height:1.1;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.panel-head p{margin:0;max-width:34rem;color:var(--dust)}
+.formula{font-family:var(--f-mono);color:var(--accent);font-size:.9rem}
+
+/* videos */
+.videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1rem,2.5vw,1.75rem)}
+.vcard{display:flex;flex-direction:column;gap:.85rem;min-width:0}
+.vcard video{display:block;width:100%;aspect-ratio:9/16;max-width:100%;border-radius:10px;background:var(--panel);border:1px solid var(--line);object-fit:cover}
+.vcard h3{font-family:var(--f-display);font-weight:500;font-size:1rem;line-height:1.3;margin:0;text-wrap:balance}
+.vcard p{margin:0;color:var(--dust);font-size:.95rem;line-height:1.5}
+.vbox{position:relative;min-width:0}
+.vnote{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:max-content;max-width:calc(100% - 1.5rem);font:500 .75rem/1.4 var(--f-mono);color:var(--star);background:rgba(5,6,11,.84);border:1px solid var(--line);border-radius:999px;padding:.55rem .9rem;text-align:center;font-variant-numeric:tabular-nums}
+.vnote:disabled{cursor:default;opacity:1}
+.vnote:not(:disabled){cursor:pointer;border-color:var(--disk)}
+.vmeta{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-top:auto}
+.dur{font-family:var(--f-mono);font-size:.75rem;color:var(--dust)}
+@media (max-width:720px){
+  .videos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:.9rem;margin-inline:calc(-1 * clamp(16px,4vw,40px));padding-inline:clamp(16px,4vw,40px);padding-bottom:.5rem;scrollbar-width:none}
+  .videos::-webkit-scrollbar{display:none}
+  .vcard{flex:0 0 78%;scroll-snap-align:center}
+}
+
+/* experiment cards */
+.demos{display:grid;gap:clamp(1.25rem,3vw,2rem)}
+.demo{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-areas:"text fig";background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.demo-text{grid-area:text;padding:clamp(1.1rem,2.5vw,1.6rem);display:flex;flex-direction:column;gap:1rem;min-width:0}
+.demo-fig{grid-area:fig;margin:0;min-width:0;border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;background:var(--panel)}
+.demo-fig canvas{display:block;width:100%;max-width:100%;aspect-ratio:var(--ar,4/3)}
+.demo h3{font-family:var(--f-display);font-weight:500;font-size:1.2rem;line-height:1.25;margin:0;text-wrap:balance}
+.demo p{margin:0;color:var(--dust);font-size:.98rem;line-height:1.55}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.75rem 1.25rem}
+.stats .v{display:block;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:1rem;color:var(--star);margin-top:.2rem;overflow-wrap:anywhere;line-height:1.4}
+.stats .v.big{font-size:1.35rem;color:var(--accent)}
+.stats .wide{grid-column:1/-1}
+.ctrl{display:grid;gap:.85rem;margin-top:auto}
+.demo.wide{grid-template-columns:minmax(0,1fr);grid-template-areas:"text" "fig"}
+.demo.wide .demo-fig{border-left:0;border-top:1px solid var(--line)}
+@media (max-width:860px){
+  .demo{grid-template-columns:minmax(0,1fr);grid-template-areas:"fig" "text"}
+  .demo-fig{border-left:0;border-bottom:1px solid var(--line)}
+  .demo-fig canvas{aspect-ratio:var(--ar-m,var(--ar,4/3))}
+  .demo.wide{grid-template-areas:"text" "fig"}
+  .demo.wide .demo-fig{border-bottom:0}
+}
+
+/* scale */
+.scale-info{border-top:1px solid var(--line);padding-top:1rem;display:grid;gap:.35rem}
+.scale-info h4{font-family:var(--f-display);font-weight:500;font-size:1.05rem;margin:0}
+.scale-info .size{font-family:var(--f-mono);color:var(--accent);font-size:.95rem}
+.scale-info p{font-size:.92rem}
+
+/* calendar */
+.cal{display:grid;gap:2.5rem;padding:2rem clamp(1rem,2.5vw,1.6rem) 1.25rem}
+.strip-head{display:flex;justify-content:space-between;gap:1rem;font-family:var(--f-mono);font-size:.7rem;color:var(--dust);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.5rem}
+.strip{position:relative;height:2.6rem;border:1px solid var(--line);border-radius:4px;background:var(--panel-2)}
+.ticks{display:flex;height:100%}
+.ticks span{flex:var(--d,1);border-right:1px solid var(--line);font-family:var(--f-mono);font-size:.6rem;color:var(--dust);padding:.25rem .3rem;overflow:hidden;white-space:nowrap}
+.ticks span:last-child{border-right:0}
+.mark{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--disk);opacity:.35;transition:opacity .3s}
+.mark i{position:absolute;left:50%;transform:translateX(-50%);font:500 .66rem/1 var(--f-mono);font-style:normal;color:var(--star);white-space:nowrap}
+.mark.up i{top:-1.1rem}
+.mark.dn i{bottom:-1.1rem}
+.mark.lit{opacity:1;box-shadow:0 0 10px var(--disk)}
+.playhead{position:absolute;top:-6px;bottom:-6px;width:2px;margin-left:-1px;background:var(--star);box-shadow:0 0 12px var(--hot);left:0;opacity:0;transition:opacity .3s}
+.playhead.on{opacity:1}
+.zoomband{position:absolute;top:0;bottom:0;background:rgba(255,160,74,.12);border-left:1px dashed var(--disk)}
+.events{list-style:none;margin:0;padding:0 clamp(1rem,2.5vw,1.6rem) 1.25rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:0 2rem}
+.events li{display:grid;grid-template-columns:1.5rem 7.5rem minmax(0,1fr);gap:.5rem;padding:.6rem 0;border-top:1px solid var(--line);opacity:.45;transition:opacity .4s}
+.events li.lit{opacity:1}
+.events .no{font-family:var(--f-mono);font-size:.72rem;color:var(--disk);padding-top:.15rem}
+.events .d{font-family:var(--f-mono);font-size:.74rem;color:var(--star);padding-top:.1rem;font-variant-numeric:tabular-nums}
+.events p{margin:0;font-size:.92rem;line-height:1.45;color:var(--star)}
+.events small{display:block;color:var(--dust);font-size:.8rem}
+@media (max-width:420px){.events li{grid-template-columns:1.4rem minmax(0,1fr)}.events .d,.events p{grid-column:2}}
+.cal-ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1.25rem;padding:0 clamp(1rem,2.5vw,1.6rem) 1.4rem}
+
+/* — */
+.demo.play{grid-template-columns:minmax(0,4fr) minmax(0,8fr)}
+#grav-cv{cursor:none;touch-action:none;outline:none}
+#grav-cv:focus-visible{box-shadow:inset 0 0 0 2px var(--accent)}
+.meter{height:.55rem;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:.45rem}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--disk),var(--hot));transition:width .1s linear}
+@media (max-width:860px){.demo.play{grid-template-columns:minmax(0,1fr)}}
+
+/* — */
+.ask{display:grid;gap:1.25rem;max-width:46rem}
+.ask-log{display:grid;gap:1.1rem}
+.ask-log:empty{display:none}
+.qa{display:grid;gap:.6rem}
+.q-bubble{justify-self:end;max-width:85%;background:var(--panel-2);border:1px solid var(--line);border-radius:14px 14px 4px 14px;padding:.65rem .95rem;font-size:.98rem;overflow-wrap:anywhere}
+.a-bubble{background:var(--panel);border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:.9rem 1.1rem;white-space:pre-line;line-height:1.62;overflow-wrap:anywhere}
+.a-bubble.thinking{color:var(--dust);font-family:var(--f-mono);font-size:.85rem}
+.a-bubble.thinking::after{content:"";display:inline-block;width:.5em;height:.5em;margin-left:.6em;border-radius:50%;background:var(--disk);vertical-align:.05em;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+.a-bubble.err{color:var(--dust);font-size:.92rem}
+.ask-suggest{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+.ask-suggest .label{margin-right:.25rem}
+.ask-form{display:grid;gap:.5rem}
+.ask-row{display:flex;gap:.6rem;align-items:flex-end}
+.ask-row textarea{flex:1;min-width:0;resize:vertical;min-height:3.1rem;max-height:12rem;background:var(--panel);color:var(--star);border:1px solid var(--line);border-radius:12px;padding:.75rem .9rem;font:inherit;font-size:1rem;line-height:1.45}
+.ask-row textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.ask-row .btn{min-height:3.1rem}
+.ask-note{margin:0;color:var(--dust);font-size:.82rem}
+
+footer{border-top:1px solid var(--line);padding-block:1.75rem 2.25rem;color:var(--dust);font-size:.85rem}
+footer p{margin:0;max-width:52rem}
+footer a{color:var(--star)}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">Event Horizon</a>
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" id="t-video" data-tab="video" aria-controls="p-video" aria-selected="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9v6l5-3z" fill="currentColor" stroke="none"/></svg>Videos</button>
+      <button class="tab" role="tab" id="t-play" data-tab="play" aria-controls="p-play" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="15" cy="15" r="5"/><circle cx="15" cy="15" r="1.6" fill="currentColor"/><path d="M3 3l6 2.5-2.2.9L6 8.6z" fill="currentColor" stroke-linejoin="round"/><path d="M7.5 7.5l3.5 3.5" stroke-linecap="round"/></svg>Try it</button>
+      <button class="tab" role="tab" id="t-black-holes" data-tab="black-holes" aria-controls="p-black-holes" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="3.5"/></svg>Black holes</button>
+      <button class="tab" role="tab" id="t-quantum" data-tab="quantum" aria-controls="p-quantum" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12c2.5-6 5-6 7.5 0s5 6 7.5 0 3.5-4 5-2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>Quantum</button>
+      <button class="tab" role="tab" id="t-universe" data-tab="universe" aria-controls="p-universe" aria-selected="false" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 12c0-3 3-4 5-2s1 6-3 7-8-2-8-6 4-8 9-7"/></svg>Universe</button>
+      <button class="tab" role="tab" id="t-ask" data-tab="ask" aria-controls="p-ask" aria-selected="false" tabindex="-1" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke-linejoin="round"/><path d="M9 10h.01M12 10h.01M15 10h.01" stroke-linecap="round" stroke-width="2.4"/></svg>Ask</button>
+    </div>
+    <a class="lang" href="../" hreflang="ru" aria-label="Russian version">RU</a>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <canvas id="bh" aria-label="Animation: a black hole with an accretion disk whose light is bent by gravity"></canvas>
+  <p class="hero-note">This is computed live, not a picture: light from the far side of the disk bends around the black hole, so the disk shows both above and below the shadow. Move the cursor to change the view.</p>
+  <div class="hero-copy wrap">
+    <div class="inner">
+      <h1><span class="a">Event</span><span class="b">horizon</span></h1>
+      <p class="lead">Three short videos and eight experiments you can play with: black holes, the quantum world and the whole history of the Universe.</p>
+      <div class="actions">
+        <button class="btn primary" type="button" data-go="video">▶ Watch the videos</button>
+        <button class="btn ghost" type="button" data-go="play">Try it</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="content">
+
+<!-- ============ VIDEOS ============ -->
+<section class="panel" role="tabpanel" id="p-video" aria-labelledby="t-video">
+  <div class="wrap">
+    <div class="panel-head">
+      <h2>Videos</h2>
+      <p>Three half-minute videos in vertical format: watch them on your phone or post them to Shorts.</p>
+    </div>
+    <div class="videos">
+      <article class="vcard">
+        <video controls playsinline preload="metadata" poster="video/event-horizon-01.jpg" src="video/event-horizon-01.mp4" aria-label="Video: what happens if you fall into a black hole"></video>
+        <h3>What happens if you fall into a black hole</h3>
+        <p>Light bends around it, time near the horizon slows down, and a small black hole stretches you into spaghetti.</p>
+        <div class="vmeta"><span class="dur">0:30</span><button class="btn" type="button" data-go="black-holes">Try it →</button></div>
+      </article>
+      <article class="vcard">
+        <video controls playsinline preload="metadata" poster="video/event-horizon-02.jpg" src="video/event-horizon-02.mp4" aria-label="Video: the double-slit experiment"></video>
+        <h3>The weirdest experiment in physics</h3>
+        <p>Electrons fly one at a time but add up to stripes, like a wave. Until someone starts watching.</p>
+        <div class="vmeta"><span class="dur">0:29</span><button class="btn" type="button" data-go="quantum">Try it →</button></div>
+      </article>
+      <article class="vcard">
+        <video controls playsinline preload="metadata" poster="video/event-horizon-03.jpg" src="video/event-horizon-03.mp4" aria-label="Video: the history of the Universe in one year"></video>
+        <h3>The whole history of the Universe in one year</h3>
+        <p>The Big Bang on January 1, dinosaurs on Christmas Day, and Gagarin 0.15 seconds before midnight.</p>
+        <div class="vmeta"><span class="dur">0:35</span><button class="btn" type="button" data-go="universe">Try it →</button></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<section class="panel" role="tabpanel" id="p-play" aria-labelledby="t-play" hidden>
+  <div class="wrap">
+    <div class="panel-head">
+      <h2>Try it yourself</h2>
+      <p>Your cursor becomes an astronaut on a tether. Bring it close to the black hole and feel the pull.</p>
+    </div>
+    <article class="demo play">
+      <div class="demo-text">
+        <h3>Don’t fall in</h3>
+        <p>The closer you get, the harder the black hole pulls: the astronaut lags behind the cursor and slides toward the center. Once it crosses the horizon, getting it back out is very hard: move the cursor as far from the hole as you can and hold it there.</p>
+        <div class="stats" aria-live="off">
+          <div><span class="label">Distance</span><span class="v" id="gv-r">—</span></div>
+          <div><span class="label">Pull</span><span class="v" id="gv-pull">—</span></div>
+          <div class="wide"><span class="label">Astronaut’s clock</span><span class="v" id="gv-time">—</span></div>
+          <div class="wide"><span class="label">Status</span><span class="v big" id="gv-state">—</span></div>
+          <div class="wide" id="gv-meter-box" hidden><span class="label">Breaking free</span><div class="meter"><i id="gv-meter"></i></div></div>
+        </div>
+        <div class="ctrl">
+          <div class="field">
+            <label class="label" for="gv-mass">Black hole mass</label>
+            <input type="range" id="gv-mass" min="0.6" max="2" step="0.01" value="1">
+          </div>
+          <div class="chips">
+            <button class="btn" type="button" id="gv-reset">Start over</button>
+            <span class="read" id="gv-esc" style="color:var(--dust);font-size:.85rem;align-self:center">Escapes: 0</span>
+          </div>
+        </div>
+      </div>
+      <figure class="demo-fig"><canvas id="grav-cv" tabindex="0" style="--ar:4/3;--ar-m:4/5" aria-label="Game: an astronaut on a tether near a black hole. Control it with the mouse, a finger or the arrow keys."></canvas></figure>
+    </article>
+  </div>
+</section>
+
+<!-- ============ BLACK HOLES ============ -->
+<section class="panel" role="tabpanel" id="p-black-holes" aria-labelledby="t-black-holes" hidden>
+  <div class="wrap">
+    <div class="panel-head">
+      <h2>Black holes</h2>
+      <p>Mass squeezed so tightly that not even light can escape. The point of no return: <span class="formula">r<sub>s</sub> = 2GM/c²</span></p>
+    </div>
+    <div class="demos">
+      <article class="demo">
+        <div class="demo-text">
+          <h3>Squeeze anything</h3>
+          <p>Pick an object and the calculator shows how small it must be squeezed to become a black hole.</p>
+          <div class="stats" aria-live="polite">
+            <div class="wide"><span class="label">Horizon radius</span><span class="v big" id="calc-rs">—</span></div>
+            <div class="wide"><span class="label">Diameter</span><span class="v" id="calc-cmp">—</span></div>
+            <div class="wide"><span class="label">Average density</span><span class="v" id="calc-rho">—</span></div>
+            <div class="wide" hidden><span class="v" id="calc-mass"></span></div>
+          </div>
+          <div class="ctrl">
+            <div class="chips" role="group" aria-label="Objects" id="calc-presets"></div>
+            <div class="field">
+              <label class="label" for="calc-range">Mass, kg (log scale)</label>
+              <input type="range" id="calc-range" min="1.5" max="41" step="0.01" value="30.3">
+            </div>
+          </div>
+        </div>
+        <figure class="demo-fig"><canvas id="calc-cv" style="--ar:4/3;--ar-m:16/10" aria-label="The horizon next to a familiar object of similar size"></canvas></figure>
+      </article>
+
+      <article class="demo">
+        <div class="demo-text">
+          <h3>Time near the horizon</h3>
+          <p>Gravity slows time down. Move the slider toward the horizon and see how much time passes far away while one hour passes for you.</p>
+          <div class="stats" aria-live="polite">
+            <div class="wide"><span class="label">1 hour for you equals</span><span class="v big" id="td-factor">—</span></div>
+            <div><span class="label">Distance</span><span class="v" id="td-r">—</span></div>
+            <div><span class="label">Above Sgr A*’s horizon</span><span class="v" id="td-h">—</span></div>
+          </div>
+          <div class="ctrl">
+            <div class="field">
+              <label class="label" for="td-range">Closeness to the horizon</label>
+              <input type="range" id="td-range" min="-10" max="1.5" step="0.01" value="-1">
+            </div>
+            <div class="chips">
+              <button class="btn" type="button" id="td-miller">Miller’s planet</button>
+              <button class="btn" type="button" id="td-reset">Reset clocks</button>
+            </div>
+          </div>
+        </div>
+        <figure class="demo-fig"><canvas id="clock-cv" style="--ar:16/10;--ar-m:5/4" aria-label="Two clocks: one near the horizon, one far from the black hole"></canvas></figure>
+      </article>
+
+      <article class="demo">
+        <div class="demo-text">
+          <h3>Spaghettification</h3>
+          <p>Your feet are pulled harder than your head. A small black hole tears a body apart long before the horizon; a giant’s horizon you can cross without noticing.</p>
+          <div class="stats" aria-live="off">
+            <div><span class="label">To the center</span><span class="v" id="sp-r">—</span></div>
+            <div><span class="label">Head-to-feet pull</span><span class="v" id="sp-a">—</span></div>
+            <div class="wide"><span class="label">How you feel</span><span class="v big" id="sp-s">—</span></div>
+          </div>
+          <div class="ctrl">
+            <div class="chips" role="group" aria-label="Black hole mass">
+              <button class="btn" type="button" data-m="stellar" aria-pressed="true">10 Sun masses</button>
+              <button class="btn" type="button" data-m="smbh" aria-pressed="false">Sgr A*</button>
+            </div>
+          </div>
+        </div>
+        <figure class="demo-fig"><canvas id="spag-cv" style="--ar:16/9;--ar-m:4/3" aria-label="An astronaut falls into a black hole and is stretched by tidal forces"></canvas></figure>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUANTUM ============ -->
+<section class="panel" role="tabpanel" id="p-quantum" aria-labelledby="t-quantum" data-tone="quant" hidden>
+  <div class="wrap">
+    <div class="panel-head">
+      <h2>The quantum world</h2>
+      <p>At the scale of atoms, a particle behaves like a wave of probability. Lasers, LEDs and transistors all run on this.</p>
+    </div>
+    <div class="demos">
+      <article class="demo">
+        <div class="demo-text">
+          <h3>Double-slit experiment</h3>
+          <p>Electrons fly one at a time but build up stripes, like a wave. Turn on the detector at the slits and the stripes vanish.</p>
+          <div class="ctrl">
+            <div class="chips">
+              <button class="btn" type="button" id="ds-det" aria-pressed="false">Detector at slits: off</button>
+              <button class="btn" type="button" id="ds-fast" aria-pressed="false">Faster</button>
+              <button class="btn" type="button" id="ds-clear">Clear</button>
+            </div>
+            <span class="read" id="ds-count" style="color:var(--dust);font-size:.85rem">0 electrons</span>
+          </div>
+        </div>
+        <figure class="demo-fig"><canvas id="ds-cv" style="--ar:16/9;--ar-m:4/3" aria-label="Double-slit experiment simulation"></canvas></figure>
+      </article>
+
+      <article class="demo">
+        <div class="demo-text">
+          <h3>Quantum tunneling</h3>
+          <p>The particle lacks the energy to climb over the wall, yet part of its wave leaks through. That is how the Sun shines and how flash memory works.</p>
+          <div class="stats" aria-live="off">
+            <div><span class="label">Got through the wall</span><span class="v big" id="tun-p">—</span></div>
+            <div><span class="label">Classical physics</span><span class="v">0%</span></div>
+          </div>
+          <div class="ctrl">
+            <div class="field">
+              <label class="label" for="tun-range">Wall thickness</label>
+              <input type="range" id="tun-range" min="2" max="20" step="1" value="7">
+            </div>
+          </div>
+        </div>
+        <figure class="demo-fig"><canvas id="tun-cv" style="--ar:16/9;--ar-m:4/3" aria-label="A Schrödinger equation solution: a wave packet hits a barrier"></canvas></figure>
+      </article>
+
+      <article class="demo">
+        <div class="demo-text">
+          <h3>Entanglement</h3>
+          <p>Measure one particle and the other instantly turns out opposite, at any distance. You can’t send a message this way: each side sees random ↑ and ↓.</p>
+          <div class="ctrl">
+            <button class="btn" type="button" id="ent-measure" style="justify-self:start">Measure now</button>
+            <span class="read" id="ent-log" aria-live="polite" style="color:var(--dust);font-size:.85rem">Results show up here</span>
+          </div>
+        </div>
+        <figure class="demo-fig"><canvas id="ent-cv" style="--ar:16/8;--ar-m:4/3" aria-label="A pair of entangled particles flies apart to two observers"></canvas></figure>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ UNIVERSE ============ -->
+<section class="panel" role="tabpanel" id="p-universe" aria-labelledby="t-universe" hidden>
+  <div class="wrap">
+    <div class="panel-head">
+      <h2>The Universe</h2>
+      <p>From the Planck length to the observable Universe, and from the Big Bang to today.</p>
+    </div>
+    <div class="demos">
+      <article class="demo">
+        <div class="demo-text">
+          <h3>The scale of everything</h3>
+          <p>62 orders of magnitude between the smallest and the largest. Press Fly or drag the slider.</p>
+          <div class="scale-info" aria-live="polite">
+            <span class="label">Frame width <b id="scale-frame" style="color:var(--star);font-weight:500;text-transform:none;letter-spacing:0">2 m</b></span>
+            <h4 id="scale-name">Human</h4>
+            <span class="size" id="scale-size">1.7 m</span>
+            <p id="scale-desc"></p>
+          </div>
+          <div class="ctrl">
+            <div class="field">
+              <label class="label" for="scale-range">Scale: 10ⁿ meters</label>
+              <input type="range" id="scale-range" min="-35.3" max="27.3" step="0.01" value="0.55">
+            </div>
+            <div class="chips" role="group" aria-label="Quick jump">
+              <button class="btn" id="scale-fly" type="button" aria-pressed="false">▶ Fly</button>
+              <button class="btn" type="button" data-e="-9.7">Atom</button>
+              <button class="btn" type="button" data-e="0.55">Human</button>
+              <button class="btn" type="button" data-e="7.4">Earth</button>
+              <button class="btn" type="button" data-e="21.3">Galaxy</button>
+            </div>
+          </div>
+        </div>
+        <figure class="demo-fig"><canvas id="scale-cv" style="--ar:1/1;--ar-m:1/1" aria-label="Concentric circles showing object sizes at the chosen scale"></canvas></figure>
+      </article>
+
+      <article class="demo wide">
+        <div class="demo-text">
+          <h3>Cosmic calendar</h3>
+          <p>The whole history of the Universe squeezed into one year: the Big Bang at midnight on January 1, and now it is 24:00 on December 31. One second equals 437 years.</p>
+        </div>
+        <div class="demo-fig" style="display:block">
+          <div class="cal" id="cal">
+            <div><div class="strip-head"><span>Whole year</span><span>Jan 1 → Dec 31</span></div><div class="strip" id="strip-0"></div></div>
+            <div><div class="strip-head"><span>December 31</span><span>00:00 → 24:00</span></div><div class="strip" id="strip-1"></div></div>
+            <div><div class="strip-head"><span>Last minute</span><span>23:59:00 → 24:00:00</span></div><div class="strip" id="strip-2"></div></div>
+          </div>
+          <div class="cal-ctrl">
+            <button class="btn" type="button" id="cal-play" aria-pressed="true">❚❚ Pause</button>
+            <span class="read" id="cal-now" style="color:var(--dust);font-size:.85rem">January 1, 00:00</span>
+          </div>
+          <ol class="events" id="events"></ol>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<section class="panel" role="tabpanel" id="p-ask" aria-labelledby="t-ask" hidden>
+  <div class="wrap">
+    <div class="panel-head">
+      <h2>Ask Claude</h2>
+      <p>Ask anything about space, black holes or quantum physics. Answers come from Claude, an AI, and it can make mistakes.</p>
+    </div>
+    <div class="ask">
+      <div class="ask-log" id="ask-log" aria-live="polite"></div>
+      <div class="ask-suggest" id="ask-suggest">
+        <span class="label">For example</span>
+        <button class="btn" type="button">What is inside a black hole?</button>
+        <button class="btn" type="button">Why can’t anything go faster than light?</button>
+        <button class="btn" type="button">How did the first stars form?</button>
+        <button class="btn" type="button">What is dark matter?</button>
+      </div>
+      <form class="ask-form" id="ask-form">
+        <div class="ask-row">
+          <textarea id="ask-input" rows="2" maxlength="500" placeholder="Your question about space…" aria-label="Your question"></textarea>
+          <button class="btn primary" type="submit" id="ask-send">Ask</button>
+        </div>
+        <p class="ask-note" id="ask-note"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>The simulations are simplified, but the formulas are real. Data: NASA, ESA, <a href="https://eventhorizontelescope.org" target="_blank" rel="noopener">Event Horizon Telescope</a>, <a href="https://www.ligo.caltech.edu" target="_blank" rel="noopener">LIGO</a>, the Planck mission.</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+'use strict';
+
+/* — */
+const root = document.documentElement;
+const cssv = n => getComputedStyle(root).getPropertyValue(n).trim();
+const C = {
+  void: cssv('--void') || '#05060b', panel: cssv('--panel') || '#0b0d16', panel2: cssv('--panel-2') || '#121522',
+  line: cssv('--line') || '#242839', star: cssv('--star') || '#ece6da', dust: cssv('--dust') || '#9d99b0',
+  disk: cssv('--disk') || '#ffa04a', hot: cssv('--hot') || '#ffe1b4', quant: cssv('--quant') || '#86d4ff'
+};
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TAU = Math.PI * 2;
+const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
+const lerp = (a, b, t) => a + (b - a) * t;
+const MONO = '"JetBrains Mono", ui-monospace, Menlo, monospace';
+
+const NF3 = new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 });
+const NF1 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
+const NF2 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt = x => NF3.format(x);
+const SUP = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+const sup = n => String(n).split('').map(c => SUP[c] || c).join('');
+function sci(x) {
+  if (x === 0) return '0';
+  let e = Math.floor(Math.log10(Math.abs(x)));
+  let m = x / Math.pow(10, e);
+  if (Math.round(m * 10) / 10 >= 10) { m /= 10; e += 1; }
+  const ms = NF1.format(m);
+  return (ms === '1' ? '' : ms + '·') + '10' + sup(e);
+}
+function num(x) {
+  if (x < 1e6) return fmt(x);
+  if (x < 1e9) return fmt(x / 1e6) + ' million';
+  if (x < 1e12) return fmt(x / 1e9) + ' billion';
+  if (x < 1e15) return fmt(x / 1e12) + ' trillion';
+  return sci(x);
+}
+function plural(n, f) { return Math.abs(n) === 1 ? f[0] : f[1]; }
+const LY = 9.4607e15, AU = 1.496e11;
+function fmtLen(m) {
+  if (m >= 0.05 * LY) return num(m / LY) + ' light-years';
+  if (m >= 1e11) return num(m / AU) + ' AU';
+  if (m >= 1e3) return num(m / 1e3) + ' km';
+  if (m >= 1) return fmt(m) + ' m';
+  if (m >= 1e-2) return fmt(m * 100) + ' cm';
+  if (m >= 1e-3) return fmt(m * 1e3) + ' mm';
+  if (m >= 1e-6) return fmt(m * 1e6) + ' µm';
+  if (m >= 1e-9) return fmt(m * 1e9) + ' nm';
+  if (m >= 1e-12) return fmt(m * 1e12) + ' pm';
+  if (m >= 0.999e-15) return fmt(m * 1e15) + ' fm';
+  return sci(m) + ' m';
+}
+function fmtDur(s) {
+  if (s < 60) return NF1.format(s) + ' s';
+  if (s < 3600) return Math.floor(s / 60) + ' min ' + Math.floor(s % 60) + ' s';
+  if (s < 86400) return Math.floor(s / 3600) + ' h ' + Math.floor(s % 3600 / 60) + ' min';
+  const d = s / 86400;
+  if (d < 365.25) { const n = Math.floor(d); return n + ' ' + plural(n, ['day', 'days']) + ' ' + Math.floor(s % 86400 / 3600) + ' h'; }
+  const y = d / 365.25;
+  if (y < 100) { const v = Math.round(y * 10) / 10; return NF1.format(v) + ' ' + plural(v, ['year', 'years']); }
+  if (y < 1e6) { const v = Math.round(y); return fmt(v) + ' ' + plural(v, ['year', 'years']); }
+  return num(y) + ' years';
+}
+
+/* — */
+const scenes = [];
+function makeScene(id, draw, opts = {}) {
+  const cv = document.getElementById(id);
+  if (!cv) return null;
+  const s = Object.assign({ cv, ctx: cv.getContext('2d'), w: 0, h: 0, dpr: 1, visible: false, t: 0, frames: 0, draw }, opts);
+  s.fit = () => {
+    const r = cv.getBoundingClientRect();
+    const d = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+    if (w === s.w && h === s.h && d === s.dpr) return;
+    s.w = w; s.h = h; s.dpr = d;
+    cv.width = Math.round(w * d); cv.height = Math.round(h * d);
+    s.ctx.setTransform(d, 0, 0, d, 0, 0);
+    if (s.onResize) s.onResize(s);
+    s.draw(s, 0);
+  };
+  scenes.push(s);
+  return s;
+}
+function startScenes() {
+  const ro = new ResizeObserver(es => { for (const e of es) { const s = scenes.find(x => x.cv === e.target); if (s) s.fit(); } });
+  const io = new IntersectionObserver(es => { for (const e of es) { const s = scenes.find(x => x.cv === e.target); if (s) s.visible = e.isIntersecting; } }, { rootMargin: '150px' });
+  for (const s of scenes) { ro.observe(s.cv); io.observe(s.cv); s.fit(); }
+  let last = performance.now();
+  const loop = now => {
+    const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+    for (const s of scenes) {
+      if (!s.visible || s.w < 2) continue;
+      if (reduced && s.ambient && s.frames > 45) continue;
+      s.t += dt; s.frames++;
+      s.draw(s, dt);
+    }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
+const PAL = (() => {
+  const st = [[70, 14, 6], [170, 48, 14], [240, 110, 34], [255, 170, 80], [255, 214, 150], [255, 240, 215], [226, 236, 255]];
+  const out = [];
+  for (let i = 0; i < 64; i++) {
+    const t = i / 63 * (st.length - 1), k = Math.min(st.length - 2, Math.floor(t)), f = t - k, a = st[k], b = st[k + 1];
+    out.push(`rgb(${Math.round(lerp(a[0], b[0], f))},${Math.round(lerp(a[1], b[1], f))},${Math.round(lerp(a[2], b[2], f))})`);
+  }
+  return out;
+})();
+function circle(ctx, x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, TAU); }
+
+/* — */
+const hero = { tilt: 0.17, tiltT: 0.17, px: 0, pxT: 0, drift: 0, parts: null, stars: null, hover: false };
+const STARC = ['#ffffff', '#dfe8ff', '#fff1dc', '#cfdcff', '#ffe2c4'];
+makeScene('bh', drawHero, {
+  ambient: true,
+  onResize(s) {
+    const small = s.w < 720;
+    hero.cx = s.w * (small ? 0.5 : 0.64);
+    hero.cy = s.h * (small ? 0.25 : 0.37);
+    hero.u = Math.min(s.w / (small ? 27 : 32), s.h * (small ? 0.05 : 0.072));
+    if (!hero.parts) {
+      const N = small ? 1900 : 3600;
+      hero.parts = [];
+      for (let i = 0; i < N; i++) {
+        const r = 3 + Math.pow(Math.random(), 1.8) * 9.5;
+        const v = Math.sqrt(0.5 / (r - 1));
+        const h = Math.pow(3 / r, 0.75);
+        hero.parts.push({ r, a: Math.random() * TAU, z: (Math.random() - 0.5) * 0.05 * r, s: 0.6 + Math.random() * 1.1, b: 0.35 + Math.random() * 0.65, v, w: v / r, gi: Math.sqrt(1 - v * v), g: Math.sqrt(1 - 1 / r), h, h2: Math.pow(h, 1.6) });
+      }
+      hero.ax = new Float32Array(N); hero.ay = new Float32Array(N); hero.aD = new Float32Array(N); hero.aI = new Float32Array(N); hero.aC = new Uint8Array(N);
+      hero.stars = [];
+      const NS = small ? 420 : 760;
+      for (let i = 0; i < NS; i++) hero.stars.push({ x: Math.random(), y: Math.random(), m: Math.pow(Math.random(), 3), c: STARC[(Math.random() * STARC.length) | 0], tw: Math.random() * TAU });
+    }
+    s.ctx.globalCompositeOperation = 'source-over';
+    s.ctx.globalAlpha = 1;
+    s.ctx.fillStyle = C.void; s.ctx.fillRect(0, 0, s.w, s.h);
+  }
+});
+function starImg(ctx, cx, cy, u, nx, ny, th, mu, st, tw, SH) {
+  if (th < SH) return;
+  const a = Math.min(1, (0.03 + 0.24 * st.m) * tw * Math.min(mu, 6));
+  if (a < 0.02) return;
+  ctx.globalAlpha = a;
+  if (mu > 1.8) {
+    const ang = Math.atan2(ny, nx), span = Math.min(0.45, 0.006 * mu * (1 + st.m * 3));
+    ctx.strokeStyle = st.c; ctx.lineWidth = 0.8 + st.m * 1.4;
+    ctx.beginPath(); ctx.arc(cx, cy, th * u, ang - span, ang + span); ctx.stroke();
+  } else {
+    const sz = 0.8 + st.m * 1.8;
+    ctx.fillStyle = st.c; ctx.fillRect(cx + nx * th * u - sz / 2, cy + ny * th * u - sz / 2, sz, sz);
+  }
+}
+function drawHero(s, dt) {
+  const { ctx, w, h } = s, { cx, cy, u } = hero;
+  if (!hero.hover) hero.tiltT = 0.17 + 0.035 * Math.sin(s.t * 0.25);
+  const k = 1 - Math.exp(-dt * 2.5);
+  hero.tilt += (hero.tiltT - hero.tilt) * k;
+  hero.px += (hero.pxT - hero.px) * k;
+  hero.drift += dt * 0.28;
+  const sT = Math.sin(hero.tilt), cT = Math.cos(hero.tilt);
+  const SH = 2.62;
+
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.fillStyle = dt > 0 ? 'rgba(5,6,11,0.2)' : C.void;
+  ctx.fillRect(0, 0, w, h);
+  ctx.globalCompositeOperation = 'lighter';
+
+  const g = ctx.createRadialGradient(cx, cy, u * SH, cx, cy, u * 16);
+  g.addColorStop(0, 'rgba(255,130,50,0.022)'); g.addColorStop(1, 'rgba(255,130,50,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+
+  /* — */
+  const FW = w / u * 1.2, FH = h / u * 1.2, ox = (FW - w / u) / 2, oy = (FH - h / u) / 2;
+  const rE = 4.2, k4 = 4 * rE * rE;
+  for (const st of hero.stars) {
+    const xs = (((st.x * FW + hero.drift + hero.px) % FW) + FW) % FW - ox;
+    const ys = (((st.y * FH + hero.drift * 0.22) % FH) + FH) % FH - oy;
+    const x = xs - cx / u, y = ys - cy / u;
+    const b = Math.hypot(x, y) || 1e-4;
+    const q = Math.sqrt(b * b + k4);
+    const uu = b / rE, base = (uu * uu + 2) / (2 * uu * Math.sqrt(uu * uu + 4));
+    const tw = 0.72 + 0.28 * Math.sin(s.t * 1.7 + st.tw);
+    const nx = x / b, ny = y / b;
+    starImg(ctx, cx, cy, u, nx, ny, (b + q) / 2, base + 0.5, st, tw, SH);
+    const tm = (q - b) / 2;
+    if (tm > SH) starImg(ctx, cx, cy, u, -nx, -ny, tm, base - 0.5, st, tw, SH);
+  }
+
+  /* — */
+  const P = hero.parts, n = P.length, ax = hero.ax, ay = hero.ay, aD = hero.aD, aI = hero.aI, aC = hero.aC;
+  const spin = dt * 7;
+  for (let i = 0; i < n; i++) {
+    const p = P[i];
+    p.a += p.w * spin;
+    const ca = Math.cos(p.a), sa = Math.sin(p.a);
+    const Dp = p.r * sa;
+    ax[i] = p.r * ca; ay[i] = -Dp * sT - p.z * cT; aD[i] = Dp * cT;
+    const D = p.gi / (1 - p.v * (-ca * cT));
+    aI[i] = p.b * Math.pow(D, 2.4) * p.g * p.h2 * 0.3;
+    aC[i] = clamp(Math.round(p.h * Math.pow(D, 0.45) * p.g * 1.12 * 63), 0, 63);
+  }
+  const sz0 = Math.max(1, u * 0.038);
+  /* — */
+  for (let i = 0; i < n; i++) {
+    const dep = aD[i];
+    if (dep <= 0) continue;
+    const x = ax[i], y = ay[i];
+    const b = Math.hypot(x, y);
+    const kk = 8 * dep;
+    const q = Math.sqrt(b * b + kk);
+    let nx = 0, ny = -1;
+    if (b > 1e-4) { nx = x / b; ny = y / b; }
+    const rr = Math.sqrt(kk / 4), uu = Math.max(b / rr, 1e-3);
+    const base = (uu * uu + 2) / (2 * uu * Math.sqrt(uu * uu + 4));
+    const sz = sz0 * P[i].s;
+    ctx.fillStyle = PAL[aC[i]];
+    const tp = (b + q) / 2;
+    if (tp > SH * 0.98) {
+      ctx.globalAlpha = Math.min(1, aI[i] * Math.min(base + 0.5, 2.5) * 1.5);
+      ctx.fillRect(cx + nx * tp * u - sz / 2, cy + ny * tp * u - sz / 2, sz, sz);
+    }
+    const tm = (q - b) / 2;
+    if (tm > SH) {
+      ctx.globalAlpha = Math.min(1, aI[i] * Math.min(base - 0.5, 1.2) * 0.8);
+      ctx.fillRect(cx - nx * tm * u - sz / 2, cy - ny * tm * u - sz / 2, sz, sz);
+    }
+  }
+  /* — */
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.fillStyle = '#000'; circle(ctx, cx, cy, SH * u); ctx.fill();
+  /* — */
+  ctx.globalCompositeOperation = 'lighter';
+  const lg = ctx.createLinearGradient(cx - SH * u, 0, cx + SH * u, 0);
+  lg.addColorStop(0, 'rgba(255,238,205,0.3)'); lg.addColorStop(1, 'rgba(255,160,80,0.07)');
+  ctx.strokeStyle = lg;
+  ctx.lineWidth = Math.max(1, u * 0.06); circle(ctx, cx, cy, SH * u * 1.01); ctx.stroke();
+  ctx.globalAlpha = 0.1; ctx.lineWidth = Math.max(2, u * 0.3); circle(ctx, cx, cy, SH * u * 1.06); ctx.stroke();
+  /* — */
+  for (let i = 0; i < n; i++) {
+    if (aD[i] > 0) continue;
+    const sz = sz0 * P[i].s;
+    /* — */
+    ctx.globalAlpha = Math.min(1, aI[i] * (ax[i] * ax[i] + ay[i] * ay[i] < SH * SH ? 2.4 : 1));
+    ctx.fillStyle = PAL[aC[i]];
+    ctx.fillRect(cx + ax[i] * u - sz / 2, cy + ay[i] * u - sz / 2, sz, sz);
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+}
+const heroEl = document.getElementById('top');
+heroEl.addEventListener('pointermove', e => {
+  if (e.pointerType === 'touch') return;
+  const r = heroEl.getBoundingClientRect();
+  const fx = (e.clientX - r.left) / r.width - 0.5, fy = (e.clientY - r.top) / r.height - 0.5;
+  hero.hover = true;
+  hero.tiltT = clamp(0.17 - fy * 0.4, 0.04, 0.42);
+  hero.pxT = -fx * 5;
+});
+heroEl.addEventListener('pointerleave', () => { hero.hover = false; hero.pxT = 0; });
+heroEl.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'touch') return;
+  const r = heroEl.getBoundingClientRect();
+  hero.hover = true;
+  hero.tiltT = clamp(0.17 - ((e.clientY - r.top) / r.height - 0.35) * 0.5, 0.04, 0.42);
+  hero.pxT = -((e.clientX - r.left) / r.width - 0.5) * 5;
+  setTimeout(() => { hero.hover = false; }, 2500);
+});
+
+/* — */
+const SCALE = [
+  { n: 'Planck length', s: 1.616e-35, k: 'q', v: 'foam', d: 'The smallest length that makes sense in today’s physics. To understand this scale we need a quantum theory of gravity, and we do not have one yet.' },
+  { n: 'Electron and quarks', s: 1e-18, k: 'q', d: 'Experiments have found no size for them at all. If they have one, it is smaller than 10⁻¹⁸ m.' },
+  { n: 'Proton', s: 1.7e-15, k: 'q', v: 'proton', d: 'Three quarks held together by gluons. Almost all of a proton’s mass comes from the energy of that bond, not from the quarks themselves.' },
+  { n: 'Hydrogen atom', s: 1.06e-10, k: 'q', v: 'atom', d: 'An atom is almost empty. If the nucleus were a pea, the electron cloud would be almost half a kilometer across.' },
+  { n: 'DNA molecule', s: 2e-9, k: 'b', v: 'dna', d: 'The double helix is about 2 nm wide. Yet the DNA from a single human cell, stretched out, is about 2 m long.' },
+  { n: 'Flu virus', s: 1e-7, k: 'b', v: 'virus', d: 'About 100 nm. That is shorter than the wavelength of visible light, so an ordinary microscope cannot see it.' },
+  { n: 'Red blood cell', s: 7.5e-6, k: 'b', v: 'cell', d: 'An adult body holds about 25 trillion of them.' },
+  { n: 'Human', s: 1.7, k: 'b', v: 'human', d: 'A person is about 10³⁵ times bigger than the Planck length and 5·10²⁶ times smaller than the observable Universe.' },
+  { n: 'Horizon of a Sun-mass black hole', s: 5.9e3, k: 'c', v: 'bh', d: 'Squeeze the Sun into a black hole and its horizon is about 6 km across. Smaller than a big city.' },
+  { n: 'Mount Everest', s: 8849, k: 'b', v: 'mountain', d: '8,849 m tall. Mars has a mountain two and a half times higher: Olympus Mons, about 22 km.' },
+  { n: 'Earth', s: 1.2742e7, k: 'c', v: 'earth', d: '12,742 km across. Light could circle the equator 7.5 times in one second.' },
+  { n: 'Sun', s: 1.3927e9, k: 'c', v: 'sun', d: '1.39 million km across. About 1.3 million Earths would fit inside.' },
+  { n: 'Neptune’s orbit', s: 9e12, k: 'c', v: 'orbit', d: 'About 9 billion km across. Sunlight takes about 4 hours to reach Neptune.' },
+  { n: 'Horizon of M87*', s: 3.8e13, k: 'c', v: 'bh', d: 'This black hole is 6.5 billion times heavier than the Sun. Its horizon is 4 times wider than Neptune’s orbit.' },
+  { n: 'Light-year', s: 9.46e15, k: 'c', d: 'The distance light travels in a year: 9.46 trillion km. The nearest star is 4.24 light-years away.' },
+  { n: 'Milky Way', s: 9.5e20, k: 'c', v: 'galaxy', d: 'Our galaxy: about 100,000 light-years across, with 100 to 400 billion stars.' },
+  { n: 'Observable Universe', s: 8.8e26, k: 'c', v: 'universe', d: 'About 93 billion light-years across. That is more than twice 13.8 billion because space kept expanding the whole time.' }
+];
+const sc = { e: 0.55, eT: 0.55, fly: false, focus: -1, frameTxt: '' };
+const SPIRAL = [];
+for (let i = 0; i < 520; i++) {
+  const t = Math.random(), th = t * 3.4 * Math.PI + (i % 2) * Math.PI + (Math.random() - 0.5) * 0.6, rr = 0.06 + t * 0.92;
+  SPIRAL.push([Math.cos(th) * rr * (1 + (Math.random() - 0.5) * 0.18), Math.sin(th) * rr * (1 + (Math.random() - 0.5) * 0.18), Math.random()]);
+}
+function radial(ctx, x, y, r, stops) {
+  const g = ctx.createRadialGradient(x - r * 0.25, y - r * 0.25, r * 0.05, x, y, r);
+  stops.forEach(([o, c]) => g.addColorStop(o, c));
+  ctx.fillStyle = g; circle(ctx, x, y, r); ctx.fill();
+}
+function drawObj(ctx, o, x, y, r, t) {
+  switch (o.v) {
+    case 'foam':
+      ctx.fillStyle = C.quant;
+      for (let i = 0; i < 70; i++) { const a = Math.random() * TAU, d = Math.sqrt(Math.random()) * r, z = 1 + Math.random() * 2.5; ctx.fillRect(x + Math.cos(a) * d - z / 2, y + Math.sin(a) * d - z / 2, z, z); }
+      break;
+    case 'proton':
+      ctx.fillStyle = 'rgba(134,212,255,0.1)'; circle(ctx, x, y, r); ctx.fill();
+      ['#ff6b6b', '#5fd38d', '#6b9bff'].forEach((c, i) => { const a = t * 0.8 + i * TAU / 3; ctx.fillStyle = c; circle(ctx, x + Math.cos(a) * r * 0.42, y + Math.sin(a) * r * 0.42, Math.max(1.5, r * 0.11)); ctx.fill(); });
+      break;
+    case 'atom':
+      radial(ctx, x, y, r, [[0, 'rgba(134,212,255,0.45)'], [1, 'rgba(134,212,255,0)']]);
+      ctx.fillStyle = C.hot; circle(ctx, x, y, Math.max(1.2, r * 0.015)); ctx.fill();
+      break;
+    case 'dna':
+      ctx.lineWidth = Math.max(1, r * 0.06);
+      for (let k = 0; k < 2; k++) {
+        ctx.strokeStyle = k ? C.quant : C.disk; ctx.beginPath();
+        for (let i = 0; i <= 60; i++) { const yy = y - r + 2 * r * i / 60, xx = x + Math.sin(i / 60 * TAU * 1.5 + k * Math.PI + t) * r * 0.5; i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
+        ctx.stroke();
+      }
+      break;
+    case 'virus':
+      ctx.strokeStyle = '#7fc8a9'; ctx.lineWidth = Math.max(1, r * 0.05);
+      for (let i = 0; i < 28; i++) { const a = i / 28 * TAU; ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * r * 0.78, y + Math.sin(a) * r * 0.78); ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); ctx.stroke(); }
+      radial(ctx, x, y, r * 0.78, [[0, '#4f8f78'], [1, '#24493d']]);
+      break;
+    case 'cell':
+      radial(ctx, x, y, r, [[0, '#7e1b1f'], [0.55, '#b52c31'], [1, '#e2585b']]);
+      break;
+    case 'human':
+      ctx.save(); ctx.translate(x, y); ctx.scale(2 * r / 28, 2 * r / 28);
+      drawAstronaut(ctx, 0, 1.7, Math.PI / 2, 1, ctx.globalAlpha, 0);
+      ctx.restore();
+      break;
+    case 'bh': {
+      const g = ctx.createRadialGradient(x, y, r, x, y, r * 1.8);
+      g.addColorStop(0, 'rgba(255,160,74,0.45)'); g.addColorStop(1, 'rgba(255,160,74,0)');
+      ctx.fillStyle = g; circle(ctx, x, y, r * 1.8); ctx.fill();
+      ctx.fillStyle = '#000'; circle(ctx, x, y, r); ctx.fill();
+      break;
+    }
+    case 'mountain':
+      ctx.fillStyle = '#5b5f73'; ctx.beginPath(); ctx.moveTo(x - r * 1.4, y + r); ctx.lineTo(x - r * 0.1, y - r); ctx.lineTo(x + r * 1.4, y + r); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#eef0f6'; ctx.beginPath(); ctx.moveTo(x - r * 0.1, y - r); ctx.lineTo(x - r * 0.45, y - r * 0.45); ctx.lineTo(x + r * 0.28, y - r * 0.45); ctx.closePath(); ctx.fill();
+      break;
+    case 'earth':
+      radial(ctx, x, y, r, [[0, '#8cc0ff'], [0.55, '#2d6bd1'], [1, '#102a5e']]);
+      break;
+    case 'sun': {
+      const g = ctx.createRadialGradient(x, y, r * 0.9, x, y, r * 1.5);
+      g.addColorStop(0, 'rgba(255,170,80,0.4)'); g.addColorStop(1, 'rgba(255,170,80,0)');
+      ctx.fillStyle = g; circle(ctx, x, y, r * 1.5); ctx.fill();
+      radial(ctx, x, y, r, [[0, '#fff3d6'], [0.6, '#ffc35a'], [1, '#ff8a2a']]);
+      break;
+    }
+    case 'orbit':
+      ctx.strokeStyle = C.dust; ctx.lineWidth = 1;
+      [0.13, 0.25, 0.33, 0.64, 1].forEach(f => { ctx.globalAlpha *= 0.9; circle(ctx, x, y, r * f); ctx.stroke(); });
+      ctx.fillStyle = '#ffc35a'; circle(ctx, x, y, Math.max(1.5, r * 0.012)); ctx.fill();
+      break;
+    case 'galaxy': {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r * 0.35);
+      g.addColorStop(0, 'rgba(255,225,180,0.6)'); g.addColorStop(1, 'rgba(255,225,180,0)');
+      ctx.fillStyle = g; circle(ctx, x, y, r * 0.35); ctx.fill();
+      const ca = Math.cos(t * 0.05), sa = Math.sin(t * 0.05);
+      for (const [px, py, m] of SPIRAL) {
+        ctx.fillStyle = m > 0.8 ? C.quant : C.hot;
+        const z = 0.8 + m * 1.4;
+        ctx.fillRect(x + (px * ca - py * sa) * r - z / 2, y + (px * sa + py * ca) * r * 0.62 - z / 2, z, z);
+      }
+      break;
+    }
+    case 'universe': {
+      radial(ctx, x, y, r, [[0, 'rgba(138,120,240,0.18)'], [0.8, 'rgba(31,163,154,0.12)'], [1, 'rgba(255,160,74,0.25)']]);
+      break;
+    }
+  }
+}
+const scaleRange = document.getElementById('scale-range');
+const scaleFly = document.getElementById('scale-fly');
+const scaleEls = { frame: document.getElementById('scale-frame'), name: document.getElementById('scale-name'), size: document.getElementById('scale-size'), desc: document.getElementById('scale-desc') };
+function setFly(on) { sc.fly = on; scaleFly.setAttribute('aria-pressed', on); scaleFly.textContent = on ? '❚❚ Pause' : '▶ Fly'; }
+scaleFly.addEventListener('click', () => {
+  if (!sc.fly && sc.eT >= 27.2) { sc.e = sc.eT = -35.3; scaleRange.value = sc.eT; }
+  setFly(!sc.fly);
+});
+scaleRange.addEventListener('input', () => { sc.eT = +scaleRange.value; setFly(false); });
+document.querySelectorAll('[data-e]').forEach(b => b.addEventListener('click', () => { sc.eT = +b.dataset.e; scaleRange.value = sc.eT; setFly(false); }));
+function showScale(i) {
+  const o = SCALE[i];
+  scaleEls.name.textContent = o.n; scaleEls.size.textContent = fmtLen(o.s); scaleEls.desc.textContent = o.d;
+}
+makeScene('scale-cv', (s, dt) => {
+  const { ctx, w, h } = s;
+  if (sc.fly && dt > 0) { sc.eT = Math.min(27.3, sc.eT + dt * 2.3); scaleRange.value = sc.eT.toFixed(2); if (sc.eT >= 27.3) setFly(false); }
+  sc.e = dt > 0 ? sc.e + (sc.eT - sc.e) * (1 - Math.exp(-dt * 6)) : sc.eT;
+  ctx.clearRect(0, 0, w, h);
+  const cx = w / 2, cy = h / 2, big = Math.max(w, h);
+  let best = 0, bd = Infinity;
+  for (let i = 0; i < SCALE.length; i++) { const d = Math.abs(Math.log10(SCALE[i].s) - sc.e - Math.log10(0.45)); if (d < bd) { bd = d; best = i; } }
+  if (best !== sc.focus) { sc.focus = best; showScale(best); }
+  ctx.font = '500 11px ' + MONO; ctx.textBaseline = 'middle';
+  for (let i = SCALE.length - 1; i >= 0; i--) {
+    const o = SCALE[i];
+    const r = 0.5 * w * Math.pow(10, Math.log10(o.s) - sc.e);
+    if (r < 0.4 || r > 2.5 * big) continue;
+    const col = o.k === 'q' ? C.quant : o.k === 'c' ? C.disk : C.star;
+    const fade = clamp((r - 0.4) / 8, 0, 1) * clamp((2.5 * big - r) / (1.5 * big), 0, 1);
+    const isF = i === best;
+    if (o.v) { ctx.globalAlpha = fade * (isF ? 1 : 0.55); drawObj(ctx, o, cx, cy, r, s.t); }
+    else { ctx.globalAlpha = fade * (isF ? 0.08 : 0.03); ctx.fillStyle = col; circle(ctx, cx, cy, r); ctx.fill(); }
+    ctx.globalAlpha = fade * (isF ? 0.9 : 0.4); ctx.strokeStyle = col; ctx.lineWidth = isF ? 1.4 : 1; ctx.setLineDash(o.v ? [3, 5] : []); circle(ctx, cx, cy, r); ctx.stroke(); ctx.setLineDash([]);
+    if (r > 12) {
+      let lx = -1, ly = -1;
+      const ang = -Math.PI / 4 - (i % 3) * 0.42;
+      if (r * 0.75 < cy - 24) { lx = cx + r * Math.cos(ang); ly = cy + r * Math.sin(ang); }
+      else if (r > cy - 24) { ly = 24; lx = cx + Math.sqrt(r * r - (cy - 24) * (cy - 24)); }
+      if (ly > 10 && ly < h - 50 && lx > 4 && lx < w - 4) {
+        ctx.globalAlpha = fade * (isF ? 1 : 0.7);
+        ctx.fillStyle = col; circle(ctx, lx, ly, 2.5); ctx.fill();
+        const tw = ctx.measureText(o.n).width;
+        const right = lx + 8 + tw < w - 6;
+        ctx.textAlign = right ? 'left' : 'right';
+        ctx.fillStyle = isF ? C.star : C.dust;
+        ctx.fillText(o.n, right ? lx + 8 : lx - 8, ly - 9);
+      }
+    }
+  }
+  ctx.globalAlpha = 1;
+  const em = Math.floor(sc.e - 0.7), barM = Math.pow(10, em), bl = barM / Math.pow(10, sc.e) * w;
+  const yb = h - 46;
+  ctx.fillStyle = 'rgba(11,13,22,0.7)'; ctx.fillRect(0, h - 70, w, 70);
+  ctx.strokeStyle = C.star; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(16, yb); ctx.lineTo(16 + bl, yb); ctx.moveTo(16, yb - 5); ctx.lineTo(16, yb + 5); ctx.moveTo(16 + bl, yb - 5); ctx.lineTo(16 + bl, yb + 5); ctx.stroke();
+  ctx.fillStyle = C.star; ctx.textAlign = 'left'; ctx.fillText(fmtLen(barM), 26 + bl, yb);
+  ctx.fillStyle = C.dust; ctx.textAlign = 'right'; ctx.fillText('frame ≈ 10' + sup(Math.round(sc.e)) + ' m', w - 16, yb);
+  /* — */
+  const m0 = 16, m1 = w - 16, my = h - 16, E0 = -35.3, E1 = 27.3, MX = e => lerp(m0, m1, (e - E0) / (E1 - E0));
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(m0, my); ctx.lineTo(m1, my); ctx.stroke();
+  for (let i = 0; i < SCALE.length; i++) {
+    const o = SCALE[i];
+    ctx.fillStyle = o.k === 'q' ? C.quant : o.k === 'c' ? C.disk : C.star;
+    ctx.globalAlpha = i === best ? 1 : 0.55;
+    circle(ctx, MX(Math.log10(o.s)), my, i === best ? 3.5 : 2.2); ctx.fill();
+  }
+  ctx.globalAlpha = 1; ctx.strokeStyle = C.star; ctx.lineWidth = 1.5;
+  const mxp = MX(sc.e); ctx.beginPath(); ctx.moveTo(mxp, my - 8); ctx.lineTo(mxp, my + 6); ctx.stroke();
+  const ft = fmtLen(Math.pow(10, sc.e));
+  if (ft !== sc.frameTxt) { sc.frameTxt = ft; scaleEls.frame.textContent = ft; }
+});
+
+/* — */
+const G = 6.674e-11, CL = 2.998e8, MSUN = 1.989e30;
+const PRESETS = [
+  { n: 'Human', m: 70 }, { n: 'Earth', m: 5.972e24 }, { n: 'Sun', m: MSUN }, { n: 'Cygnus X-1', m: 21.2 * MSUN },
+  { n: 'Sgr A*', m: 4.3e6 * MSUN }, { n: 'M87*', m: 6.5e9 * MSUN }, { n: 'TON 618', m: 4.07e10 * MSUN }
+];
+const REFS = [
+  { n: 'a proton', d: 1.7e-15 }, { n: 'an atom', d: 1.06e-10 }, { n: 'a virus', d: 1e-7 }, { n: 'a red blood cell', d: 7.5e-6 },
+  { n: 'a grain of sand', d: 5e-4 }, { n: 'a grape', d: 2e-2 }, { n: 'a person', d: 1.7 }, { n: 'a football field', d: 105 },
+  { n: 'Mount Everest', d: 8849 }, { n: 'Manhattan', d: 2.16e4 }, { n: 'the Moon', d: 3.474e6 }, { n: 'the Earth', d: 1.2742e7 },
+  { n: 'the Sun', d: 1.3927e9 }, { n: 'Mercury’s orbit', d: 1.16e11 }, { n: 'Earth’s orbit', d: 2.99e11 }, { n: 'Neptune’s orbit', d: 9e12 }
+];
+const calc = { lm: Math.log10(MSUN), D: 0, ref: null };
+const calcRange = document.getElementById('calc-range');
+const presetBox = document.getElementById('calc-presets');
+PRESETS.forEach(p => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'btn'; b.textContent = p.n; b.dataset.lm = Math.log10(p.m);
+  b.setAttribute('aria-pressed', 'false');
+  b.addEventListener('click', () => { calcRange.value = b.dataset.lm; updateCalc(+b.dataset.lm); });
+  presetBox.appendChild(b);
+});
+calcRange.addEventListener('input', () => updateCalc(+calcRange.value));
+function timesTxt(t) {
+  if (t < 10) return NF1.format(Math.round(t * 10) / 10) + ' times';
+  if (t < 1e6) return fmt(Number(t.toPrecision(3))) + ' times';
+  return num(t) + ' times';
+}
+function updateCalc(lm) {
+  calc.lm = lm;
+  const M = Math.pow(10, lm), rs = 2 * G * M / (CL * CL), D = 2 * rs;
+  calc.D = D;
+  presetBox.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', Math.abs(+b.dataset.lm - lm) < 0.006));
+  const ms = M >= 0.01 * MSUN ? num(M / MSUN) + ' M☉ (' + sci(M) + ' kg)' : (M < 1e6 ? fmt(M) : sci(M)) + ' kg';
+  document.getElementById('calc-mass').textContent = ms;
+  document.getElementById('calc-rs').textContent = fmtLen(rs);
+  let best = REFS[0], bd = Infinity;
+  for (const r of REFS) { const d = Math.abs(Math.log10(D / r.d)); if (d < bd) { bd = d; best = r; } }
+  calc.ref = best;
+  const ratio = D / best.d;
+  let txt;
+  if (ratio > 0.67 && ratio < 1.5) txt = fmtLen(D) + ', about the size of ' + best.n;
+  else if (ratio >= 1.5) txt = fmtLen(D) + ', ' + timesTxt(ratio) + ' bigger than ' + best.n;
+  else txt = fmtLen(D) + ', ' + timesTxt(1 / ratio) + ' smaller than ' + best.n;
+  document.getElementById('calc-cmp').textContent = txt;
+  const rho = M / (4 / 3 * Math.PI * rs * rs * rs);
+  let rt;
+  if (rho < 1.2) rt = fmt(rho) + ' kg/m³, thinner than air';
+  else if (rho < 1000) rt = fmt(rho) + ' kg/m³, less dense than water';
+  else rt = sci(rho) + ' kg/m³, ' + num(rho / 1000) + ' times denser than water';
+  document.getElementById('calc-rho').textContent = rt;
+}
+makeScene('calc-cv', (s) => {
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+  if (!calc.ref) return;
+  const D = calc.D, R = calc.ref.d, mx = Math.max(D, R);
+  const avail = Math.min(w * 0.38, h * 0.62);
+  const rH = Math.max(1.5, D / mx * avail / 2), rR = Math.max(1.5, R / mx * avail / 2);
+  const y = h * 0.47, x1 = w * 0.29, x2 = w * 0.71;
+  ctx.setLineDash([4, 4]); ctx.strokeStyle = C.dust; ctx.lineWidth = 1.2;
+  circle(ctx, x1, y, rR); ctx.stroke(); ctx.setLineDash([]);
+  const pulse = 0.65 + 0.35 * Math.sin(s.t * 2);
+  const gl = ctx.createRadialGradient(x2, y, rH, x2, y, rH * 1.6 + 6);
+  gl.addColorStop(0, 'rgba(255,160,74,' + (0.45 * pulse) + ')'); gl.addColorStop(1, 'rgba(255,160,74,0)');
+  ctx.fillStyle = gl; circle(ctx, x2, y, rH * 1.6 + 6); ctx.fill();
+  ctx.fillStyle = '#000'; circle(ctx, x2, y, rH); ctx.fill();
+  ctx.strokeStyle = C.disk; ctx.lineWidth = 1.2; circle(ctx, x2, y, rH); ctx.stroke();
+  ctx.font = '500 11px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.fillStyle = C.dust; ctx.fillText(calc.ref.n, x1, y + Math.max(rR, rH) + 14);
+  ctx.fillStyle = C.disk; ctx.fillText('horizon', x2, y + Math.max(rR, rH) + 14);
+  ctx.fillStyle = C.dust; ctx.textBaseline = 'alphabetic';
+  ctx.fillText('to scale', w / 2, h - 14);
+});
+updateCalc(+calcRange.value);
+
+/* — */
+const clk = { eps: 0.1, tl: 36600, tf: 36600, el: 0, ef: 0 };
+const tdRange = document.getElementById('td-range');
+const factorOf = eps => Math.sqrt((1 + eps) / eps);
+function updateTd() {
+  const f = factorOf(clk.eps);
+  document.getElementById('td-factor').textContent = fmtDur(3600 * f) + ' far away';
+  document.getElementById('td-r').textContent = clk.eps >= 0.01 ? NF1.format(1 + clk.eps) + ' rₛ' : 'rₛ + ' + sci(clk.eps) + ' rₛ';
+  document.getElementById('td-h').textContent = fmtLen(clk.eps * 1.27e10);
+}
+tdRange.addEventListener('input', () => { clk.eps = Math.pow(10, +tdRange.value); updateTd(); });
+document.getElementById('td-miller').addEventListener('click', () => { clk.eps = 2.66e-10; tdRange.value = Math.log10(clk.eps).toFixed(2); updateTd(); });
+document.getElementById('td-reset').addEventListener('click', () => { clk.el = 0; clk.ef = 0; clk.tl = clk.tf = 36600; });
+updateTd();
+function drawClock(ctx, x, y, R, t, rate, dt, col) {
+  ctx.fillStyle = C.panel2; circle(ctx, x, y, R); ctx.fill();
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1; circle(ctx, x, y, R); ctx.stroke();
+  ctx.strokeStyle = C.dust;
+  for (let i = 0; i < 60; i++) {
+    const a = i / 60 * TAU, inner = i % 5 ? R * 0.92 : R * 0.82;
+    ctx.globalAlpha = i % 5 ? 0.35 : 0.9; ctx.lineWidth = i % 5 ? 1 : 1.6;
+    ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * inner, y + Math.sin(a) * inner); ctx.lineTo(x + Math.cos(a) * R * 0.97, y + Math.sin(a) * R * 0.97); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  const hands = [[43200, 0.5, 3.2, C.star], [3600, 0.74, 2.2, C.star], [60, 0.88, 1.3, col]];
+  for (const [per, len, lw, c] of hands) {
+    const step = TAU / per * rate * (dt || 1 / 60);
+    if (step > 0.35) {
+      ctx.globalAlpha = 0.16; ctx.fillStyle = c; circle(ctx, x, y, R * len); ctx.fill(); ctx.globalAlpha = 1;
+      continue;
+    }
+    const a = (t % per) / per * TAU - Math.PI / 2;
+    ctx.strokeStyle = c; ctx.lineWidth = lw; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x - Math.cos(a) * R * 0.1, y - Math.sin(a) * R * 0.1); ctx.lineTo(x + Math.cos(a) * R * len, y + Math.sin(a) * R * len); ctx.stroke();
+  }
+  ctx.fillStyle = col; circle(ctx, x, y, 3); ctx.fill();
+}
+makeScene('clock-cv', (s, dt) => {
+  const { ctx, w, h } = s;
+  const f = factorOf(clk.eps);
+  clk.tl += dt; clk.tf += dt * f; clk.el += dt; clk.ef += dt * f;
+  ctx.clearRect(0, 0, w, h);
+  const R = Math.min(w / 5.2, h * 0.33);
+  const y = h * 0.43, x1 = w * 0.27, x2 = w * 0.73;
+  const sh = ctx.createRadialGradient(x1, y, R * 1.05, x1, y, R * 1.7);
+  sh.addColorStop(0, 'rgba(255,160,74,0.10)'); sh.addColorStop(1, 'rgba(255,160,74,0)');
+  ctx.fillStyle = sh; circle(ctx, x1, y, R * 1.7); ctx.fill();
+  drawClock(ctx, x1, y, R, clk.tl, 1, dt, C.disk);
+  drawClock(ctx, x2, y, R, clk.tf, f, dt, C.quant);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.font = '500 12px ' + MONO;
+  ctx.fillStyle = C.disk; ctx.fillText('near the horizon (yours)', x1, y + R + 16);
+  ctx.fillStyle = C.quant; ctx.fillText('far from the hole', x2, y + R + 16);
+  ctx.font = '400 12px ' + MONO; ctx.fillStyle = C.star;
+  ctx.fillText('elapsed ' + fmtDur(clk.el), x1, y + R + 36);
+  ctx.fillText('elapsed ' + fmtDur(clk.ef), x2, y + R + 36);
+});
+
+/* — */
+const BH = { stellar: { M: 10 * MSUN, name: '10 M☉' }, smbh: { M: 4.3e6 * MSUN, name: 'Sgr A*' } };
+const sp = { kind: 'stellar', t: 0, txt: 0 };
+document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => {
+  sp.kind = b.dataset.m; sp.t = 0;
+  document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', x === b));
+}));
+function drawAstronaut(ctx, x, y, ang, st, alpha, red) {
+  ctx.save();
+  ctx.translate(x, y); ctx.rotate(ang); ctx.scale(st, 1 / Math.sqrt(st));
+  ctx.globalAlpha = alpha;
+  const body = red > 0 ? `rgb(255,${Math.round(lerp(236, 110, red))},${Math.round(lerp(220, 60, red))})` : '#ece6da';
+  ctx.fillStyle = body; ctx.strokeStyle = body; ctx.lineCap = 'round';
+  ctx.lineWidth = 2.4;
+  ctx.beginPath(); ctx.moveTo(4, -2); ctx.lineTo(12, -3.2); ctx.moveTo(4, 2); ctx.lineTo(12, 3.2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-5, -3.6); ctx.lineTo(1, -6.5); ctx.moveTo(-5, 3.6); ctx.lineTo(1, 6.5); ctx.stroke();
+  ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-7, -4, 12, 8, 3) : ctx.rect(-7, -4, 12, 8); ctx.fill();
+  circle(ctx, -11, 0, 4.4); ctx.fill();
+  ctx.fillStyle = '#ffa04a'; ctx.beginPath(); ctx.ellipse(-12.2, 0, 1.8, 2.8, 0, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+makeScene('spag-cv', (s, dt) => {
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+  const bh = BH[sp.kind], rs = 2 * G * bh.M / (CL * CL);
+  const small = w < 560;
+  const Rh = Math.min(h * 0.17, w * 0.07);
+  const bx = w - Rh - w * 0.07, cy = h * 0.5, x0 = w * 0.05 + 14;
+  const L10 = Math.log10(300), path = bx - Rh - x0;
+  const xOf = r => bx - (Rh + path * Math.log10(r) / L10);
+  const T = 6.5;
+  sp.t += dt;
+  if (sp.t > T + 1.4) sp.t = 0;
+  const tt = Math.min(sp.t, T);
+  let r = 300 * Math.pow(Math.max(1 - tt / T, 0), 2 / 3);
+  const inside = r <= 1;
+  r = Math.max(r, 1);
+  /* — */
+  ctx.font = '400 10.5px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (const rr of (small ? [300, 10, 3] : [300, 100, 30, 10, 3])) {
+    const x = xOf(rr);
+    ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, cy + h * 0.2); ctx.lineTo(x, cy + h * 0.26); ctx.stroke();
+    ctx.fillStyle = C.dust; ctx.fillText(fmtLen(rr * rs), x, cy + h * 0.28);
+  }
+  ctx.strokeStyle = C.line; ctx.beginPath(); ctx.moveTo(xOf(300), cy + h * 0.23); ctx.lineTo(bx - Rh, cy + h * 0.23); ctx.stroke();
+  /* — */
+  const gl = ctx.createRadialGradient(bx, cy, Rh, bx, cy, Rh * 2.1);
+  gl.addColorStop(0, 'rgba(255,150,60,0.35)'); gl.addColorStop(1, 'rgba(255,150,60,0)');
+  ctx.fillStyle = gl; circle(ctx, bx, cy, Rh * 2.1); ctx.fill();
+  ctx.fillStyle = '#000'; circle(ctx, bx, cy, Rh); ctx.fill();
+  ctx.strokeStyle = C.disk; ctx.lineWidth = 1.2; circle(ctx, bx, cy, Rh); ctx.stroke();
+  ctx.fillStyle = C.disk; ctx.textAlign = 'center'; ctx.fillText('horizon ' + bh.name, bx, cy + Rh + 8);
+  /* — */
+  const rm = r * rs;
+  const da = 2 * G * bh.M * 2 / (rm * rm * rm) / 9.81;
+  const st = da > 1 ? 1 + clamp(Math.log10(da), 0, 9) * 0.95 : 1;
+  const scl = small ? 0.8 : 1.1;
+  const x = xOf(r) - 12 * st * scl;
+  const fadeIn = inside ? clamp(1 - (sp.t - T) / 1.0, 0, 1) : 1;
+  const red = clamp(1 - (r - 1) / 4, 0, 1) * 0.8;
+  if (da > 50) {
+    ctx.globalCompositeOperation = 'lighter';
+    const gw = ctx.createRadialGradient(x, cy, 0, x, cy, 13 * st * 0.6);
+    gw.addColorStop(0, 'rgba(255,160,74,' + 0.25 * fadeIn + ')'); gw.addColorStop(1, 'rgba(255,160,74,0)');
+    ctx.fillStyle = gw; circle(ctx, x, cy, 13 * st * 0.6); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  ctx.save(); ctx.translate(x, cy); ctx.scale(scl, scl); ctx.translate(-x, -cy);
+  drawAstronaut(ctx, x, cy, 0, st, fadeIn, red);
+  ctx.restore();
+  ctx.globalAlpha = 1;
+  if ((sp.txt += dt) > 0.08 || dt === 0) {
+    sp.txt = 0;
+    document.getElementById('sp-r').textContent = inside ? 'past the horizon' : fmtLen(rm);
+    document.getElementById('sp-a').textContent = da < 0.001 ? sci(da) + ' g' : (da < 1e4 ? fmt(da) : sci(da)) + ' g';
+    document.getElementById('sp-s').textContent = inside ? (sp.kind === 'smbh' ? 'intact, but trapped' : 'nothing left intact') : da < 1 ? 'feels nothing' : da < 10 ? 'legs pulled' : da < 1000 ? 'deadly' : 'spaghetti';
+  }
+});
+
+/* — */
+const sinc = x => x === 0 ? 1 : Math.sin(Math.PI * x) / (Math.PI * x);
+function buildCdf(fn) {
+  const n = 700, a = new Float64Array(n + 1); let sum = 0;
+  for (let i = 0; i < n; i++) { sum += fn(-0.45 + 0.9 * (i + 0.5) / n); a[i + 1] = sum; }
+  for (let i = 0; i <= n; i++) a[i] /= sum;
+  return a;
+}
+function sampleCdf(a) {
+  const r = Math.random(); let lo = 0, hi = a.length - 1;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (a[m] < r) lo = m; else hi = m; }
+  const f = (r - a[lo]) / ((a[hi] - a[lo]) || 1);
+  return -0.45 + 0.9 * (lo + f) / (a.length - 1);
+}
+const NB = 90;
+const ds = {
+  det: false, fast: false, hits: [], bins: new Float32Array(NB), total: 0, acc: 0, fly: [], flash: [0, 0], txt: 0,
+  cdfI: buildCdf(y => { const c = Math.cos(Math.PI * y / 0.085); const e = sinc(y / 0.38); return c * c * e * e; }),
+  cdfD: buildCdf(y => Math.exp(-0.5 * ((y - 0.135) / 0.065) ** 2) + Math.exp(-0.5 * ((y + 0.135) / 0.065) ** 2))
+};
+function dsHit(y) {
+  ds.hits.push(y, (Math.random() - 0.5));
+  if (ds.hits.length > 9000) ds.hits.splice(0, 2);
+  ds.bins[clamp(Math.floor((y + 0.45) / 0.9 * NB), 0, NB - 1)]++;
+  ds.total++;
+}
+function dsReset(seed) {
+  ds.hits = []; ds.bins.fill(0); ds.total = 0; ds.fly = [];
+  for (let i = 0; i < seed; i++) dsHit(sampleCdf(ds.det ? ds.cdfD : ds.cdfI));
+}
+dsReset(650);
+const dsDet = document.getElementById('ds-det'), dsFast = document.getElementById('ds-fast');
+dsDet.addEventListener('click', () => { ds.det = !ds.det; dsDet.setAttribute('aria-pressed', ds.det); dsDet.textContent = 'Detector at slits: ' + (ds.det ? 'on' : 'off'); dsReset(0); });
+dsFast.addEventListener('click', () => { ds.fast = !ds.fast; dsFast.setAttribute('aria-pressed', ds.fast); });
+document.getElementById('ds-clear').addEventListener('click', () => dsReset(0));
+makeScene('ds-cv', (s, dt) => {
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+  const sx = w * 0.06, bx = w * 0.4, scr = w * 0.84, hx0 = w * 0.865, hx1 = w * 0.975, cy = h / 2;
+  const sd = h * 0.06, sa = h * 0.022, T = 0.85;
+  const Y = y => cy + y * h;
+  /* — */
+  ds.acc += dt * (ds.fast ? 180 : 22);
+  while (ds.acc >= 1) {
+    ds.acc -= 1;
+    const y = sampleCdf(ds.det ? ds.cdfD : ds.cdfI);
+    ds.fly.push({ t: 0, y, slit: y > 0 ? 1 : -1 });
+  }
+  for (const p of ds.fly) p.t += dt;
+  for (let i = ds.fly.length - 1; i >= 0; i--) if (ds.fly[i].t >= T) { dsHit(ds.fly[i].y); ds.fly.splice(i, 1); }
+  /* — */
+  if (!ds.det) {
+    const lam = h * 0.045, ph = (s.t * 1.4) % 1;
+    ctx.strokeStyle = C.quant; ctx.lineWidth = 1.2;
+    for (let k = 0; k < 40; k++) {
+      const r = (k + ph) * lam; if (r > bx - sx) break;
+      ctx.globalAlpha = 0.28 * (1 - r / (bx - sx) * 0.6);
+      ctx.beginPath(); ctx.arc(sx, cy, r, -0.55, 0.55); ctx.stroke();
+    }
+    ctx.save(); ctx.beginPath(); ctx.rect(bx, 0, scr - bx, h); ctx.clip();
+    const rmax = Math.hypot(scr - bx, h * 0.5);
+    for (const sy of [cy - sd, cy + sd]) {
+      for (let k = 0; k < 80; k++) {
+        const r = (k + ph) * lam; if (r > rmax) break;
+        ctx.globalAlpha = 0.22 * (1 - r / rmax);
+        ctx.beginPath(); ctx.arc(bx, sy, r, -1.45, 1.45); ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+  /* — */
+  ctx.globalAlpha = 1;
+  const sg = ctx.createRadialGradient(sx, cy, 0, sx, cy, 14);
+  sg.addColorStop(0, 'rgba(134,212,255,0.9)'); sg.addColorStop(1, 'rgba(134,212,255,0)');
+  ctx.fillStyle = sg; circle(ctx, sx, cy, 14); ctx.fill();
+  ctx.fillStyle = C.dust;
+  const bw = Math.max(3, w * 0.006);
+  ctx.fillRect(bx - bw / 2, 0, bw, cy - sd - sa / 2);
+  ctx.fillRect(bx - bw / 2, cy - sd + sa / 2, bw, 2 * sd - sa);
+  ctx.fillRect(bx - bw / 2, cy + sd + sa / 2, bw, h - cy - sd - sa / 2);
+  ctx.fillStyle = C.line; ctx.fillRect(scr - 1, 0, 2, h);
+  if (ds.det) {
+    for (let i = 0; i < 2; i++) {
+      const sy = cy + (i ? sd : -sd);
+      ds.flash[i] = Math.max(0, ds.flash[i] - dt * 4);
+      ctx.fillStyle = C.disk; ctx.globalAlpha = 0.35 + ds.flash[i] * 0.65;
+      ctx.fillRect(bx - bw / 2 - 12, sy - sa * 0.9, 7, sa * 1.8);
+    }
+    ctx.globalAlpha = 1;
+    ctx.font = '500 10.5px ' + MONO; ctx.fillStyle = C.disk; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillText('detector', bx - bw / 2 - 18, cy - sd - sa * 2.2);
+  }
+  /* — */
+  ctx.globalCompositeOperation = 'lighter';
+  for (const p of ds.fly) {
+    if (ds.det) {
+      const sy = cy + p.slit * sd;
+      let x, y;
+      if (p.t < T * 0.45) { const f = p.t / (T * 0.45); x = lerp(sx, bx, f); y = lerp(cy, sy, f); }
+      else {
+        if (!p.passed) { p.passed = true; ds.flash[p.slit > 0 ? 1 : 0] = 1; }
+        const f = (p.t - T * 0.45) / (T * 0.55); x = lerp(bx, scr, f); y = lerp(sy, Y(p.y), f);
+      }
+      ctx.globalAlpha = 0.9; ctx.fillStyle = C.quant; ctx.fillRect(x - 1.5, y - 1.5, 3, 3);
+    }
+  }
+  /* — */
+  ctx.fillStyle = C.quant;
+  const H = ds.hits, n = H.length;
+  for (let i = 0; i < n; i += 2) {
+    const age = (n - i) / 2;
+    ctx.globalAlpha = age < 12 ? 1 : 0.55;
+    const sz = age < 12 ? 3 : 1.6;
+    ctx.fillRect(scr + H[i + 1] * 10 - sz / 2, Y(H[i]) - sz / 2, sz, sz);
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  /* — */
+  let mx = 1; for (let i = 0; i < NB; i++) if (ds.bins[i] > mx) mx = ds.bins[i];
+  const bh = 0.9 * h / NB;
+  ctx.fillStyle = C.quant; ctx.globalAlpha = 0.75;
+  for (let i = 0; i < NB; i++) {
+    const len = ds.bins[i] / mx * (hx1 - hx0);
+    if (len > 0.3) ctx.fillRect(hx0, cy - 0.45 * h + i * bh + 0.5, len, Math.max(1, bh - 1));
+  }
+  ctx.globalAlpha = 1;
+  if ((ds.txt += dt) > 0.15 || dt === 0) { ds.txt = 0; const n2 = ds.total; document.getElementById('ds-count').textContent = fmt(n2) + ' ' + plural(n2, ['electron', 'electrons']); }
+});
+
+/* — */
+const TN = 900, tun = { R: new Float64Array(TN), I: new Float64Array(TN), V: new Float64Array(TN), steps: 0, wB: 7, hold: 0, pct: null, txt: 0 };
+const TX0 = 250, TS = 28, TK = 0.38, TV = 0.09, TB = 480, TDT = 0.5;
+function tunReset() {
+  const { R, I, V } = tun;
+  for (let i = 0; i < TN; i++) {
+    const x = i - TX0, env = Math.exp(-x * x / (4 * TS * TS));
+    R[i] = env * Math.cos(TK * x);
+    I[i] = env * Math.sin(TK * x - TK * TK * TDT / 4);
+    V[i] = i >= TB && i < TB + tun.wB ? TV : 0;
+  }
+  R[0] = R[TN - 1] = I[0] = I[TN - 1] = 0;
+  tun.steps = 0; tun.hold = 0; tun.pct = null;
+}
+tunReset();
+document.getElementById('tun-range').addEventListener('input', e => { tun.wB = +e.target.value; tunReset(); });
+function tunStep(n) {
+  const { R, I, V } = tun, dt = TDT;
+  for (let s = 0; s < n; s++) {
+    for (let i = 1; i < TN - 1; i++) R[i] += dt * (-0.5 * (I[i + 1] - 2 * I[i] + I[i - 1]) + V[i] * I[i]);
+    for (let i = 1; i < TN - 1; i++) I[i] -= dt * (-0.5 * (R[i + 1] - 2 * R[i] + R[i - 1]) + V[i] * R[i]);
+  }
+  tun.steps += n;
+}
+makeScene('tun-cv', (s, dt) => {
+  const { ctx, w, h } = s;
+  if (dt > 0) {
+    if (tun.steps < 3000) tunStep(reduced ? 6 : 14);
+    else { tun.hold += dt; if (tun.hold > 1.6) tunReset(); }
+  }
+  ctx.clearRect(0, 0, w, h);
+  const { R, I } = tun;
+  const i0 = 60, i1 = TN - 60, base = h * 0.84, sy = h * 0.62;
+  const X = i => (i - i0) / (i1 - i0) * w;
+  const bh = h * 0.6;
+  ctx.fillStyle = 'rgba(157,153,176,0.28)'; ctx.fillRect(X(TB), base - bh, Math.max(2, X(TB + tun.wB) - X(TB)), bh);
+  ctx.strokeStyle = C.dust; ctx.lineWidth = 1; ctx.strokeRect(X(TB), base - bh, Math.max(2, X(TB + tun.wB) - X(TB)), bh);
+  const eY = base - bh * (TK * TK / 2) / TV;
+  ctx.setLineDash([4, 5]); ctx.strokeStyle = C.quant; ctx.globalAlpha = 0.6;
+  ctx.beginPath(); ctx.moveTo(0, eY); ctx.lineTo(w, eY); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+  ctx.font = '500 11px ' + MONO; ctx.fillStyle = C.quant; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+  ctx.fillText('particle energy', 10, eY - 4);
+  ctx.fillStyle = C.dust; ctx.textAlign = 'center'; ctx.fillText('wall', X(TB + tun.wB / 2), base - bh - 4);
+  ctx.strokeStyle = C.line; ctx.beginPath(); ctx.moveTo(0, base); ctx.lineTo(w, base); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(X(i0), base);
+  let tot = 0, right = 0;
+  for (let i = 1; i < TN - 1; i++) { const p = R[i] * R[i] + I[i] * I[i]; tot += p; if (i >= TB + tun.wB) right += p; }
+  for (let i = i0; i <= i1; i++) ctx.lineTo(X(i), base - (R[i] * R[i] + I[i] * I[i]) * sy);
+  ctx.lineTo(X(i1), base); ctx.closePath();
+  ctx.fillStyle = 'rgba(134,212,255,0.22)'; ctx.fill();
+  ctx.strokeStyle = C.quant; ctx.lineWidth = 1.6; ctx.stroke();
+  ctx.beginPath();
+  for (let i = i0; i <= i1; i++) { const y = base - R[i] * sy * 0.3; i === i0 ? ctx.moveTo(X(i), y) : ctx.lineTo(X(i), y); }
+  ctx.strokeStyle = C.star; ctx.globalAlpha = 0.3; ctx.lineWidth = 1; ctx.stroke(); ctx.globalAlpha = 1;
+  if (tun.steps > 1700) tun.pct = right / tot;
+  if ((tun.txt += dt) > 0.1 || dt === 0) {
+    tun.txt = 0;
+    document.getElementById('tun-p').textContent = tun.pct == null ? 'heading for the wall…' : (tun.pct * 100 < 1 ? NF1.format(Math.max(tun.pct * 100, 0.1)) : Math.round(tun.pct * 100)) + '%';
+  }
+});
+
+/* — */
+const ent = { t: 0, res: null, mAt: 0, log: [] };
+const ENT_T = 2.4;
+function entMeasure() {
+  if (ent.res) return;
+  ent.res = Math.random() < 0.5 ? 1 : -1; ent.mAt = ent.t;
+  ent.log.unshift(ent.res > 0 ? '↑↓' : '↓↑'); ent.log = ent.log.slice(0, 10);
+  document.getElementById('ent-log').textContent = 'Alice / Bob: ' + ent.log.join('  ');
+}
+document.getElementById('ent-measure').addEventListener('click', entMeasure);
+function drawSpin(ctx, x, y, r, ang, col, collapsed, flash) {
+  if (!collapsed) {
+    ctx.globalAlpha = 0.2; ctx.strokeStyle = col; ctx.lineWidth = 1; circle(ctx, x, y, r); ctx.stroke();
+    ctx.globalAlpha = 0.1; ctx.fillStyle = col; circle(ctx, x, y, r); ctx.fill();
+  } else if (flash > 0) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.4);
+    g.addColorStop(0, 'rgba(255,225,180,' + 0.5 * flash + ')'); g.addColorStop(1, 'rgba(255,225,180,0)');
+    ctx.globalAlpha = 1; ctx.fillStyle = g; circle(ctx, x, y, r * 2.4); ctx.fill();
+  }
+  ctx.globalAlpha = 1; ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+  const dx = Math.cos(ang) * r * 0.85, dy = Math.sin(ang) * r * 0.85;
+  ctx.beginPath(); ctx.moveTo(x - dx, y - dy); ctx.lineTo(x + dx, y + dy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + dx, y + dy);
+  ctx.lineTo(x + dx - Math.cos(ang - 0.5) * r * 0.45, y + dy - Math.sin(ang - 0.5) * r * 0.45);
+  ctx.lineTo(x + dx - Math.cos(ang + 0.5) * r * 0.45, y + dy - Math.sin(ang + 0.5) * r * 0.45); ctx.closePath(); ctx.fill();
+}
+makeScene('ent-cv', (s, dt) => {
+  const { ctx, w, h } = s;
+  ent.t += dt;
+  if (!ent.res && ent.t >= ENT_T) entMeasure();
+  if (ent.res && ent.t - ent.mAt > 1.8) { ent.t = 0; ent.res = null; }
+  ctx.clearRect(0, 0, w, h);
+  const cx = w / 2, cy = h * 0.46, span = w * 0.36, r = Math.min(h * 0.11, 22);
+  const f = Math.min(ent.t / ENT_T, 1), e = 1 - Math.pow(1 - f, 2);
+  const xl = cx - span * e, xr = cx + span * e;
+  ctx.font = '500 12px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (const [x, nm] of [[cx - span, 'Alice'], [cx + span, 'Bob']]) {
+    ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.strokeRect(x - r * 1.6, cy - r * 1.6, r * 3.2, r * 3.2);
+    ctx.fillStyle = C.dust; ctx.fillText(nm, x, cy + r * 1.6 + 10);
+  }
+  ctx.fillStyle = C.dust; ctx.fillText('pair source', cx, cy + r * 1.6 + 10);
+  const sg = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+  sg.addColorStop(0, 'rgba(134,212,255,0.5)'); sg.addColorStop(1, 'rgba(134,212,255,0)');
+  ctx.fillStyle = sg; circle(ctx, cx, cy, r); ctx.fill();
+  if (!ent.res && e > 0.02) {
+    ctx.strokeStyle = C.quant; ctx.globalAlpha = 0.45; ctx.lineWidth = 1; ctx.beginPath();
+    for (let i = 0; i <= 80; i++) { const x = lerp(xl, xr, i / 80); const y = cy + Math.sin(i * 0.5 - s.t * 8) * 4; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.stroke(); ctx.globalAlpha = 1;
+  }
+  const flash = ent.res ? clamp(1 - (ent.t - ent.mAt) / 0.8, 0, 1) : 0;
+  const spinA = s.t * 9;
+  const aL = ent.res ? (ent.res > 0 ? -Math.PI / 2 : Math.PI / 2) : spinA;
+  const aR = ent.res ? (ent.res > 0 ? Math.PI / 2 : -Math.PI / 2) : spinA + Math.PI;
+  drawSpin(ctx, xl, cy, r, aL, C.disk, !!ent.res, flash);
+  drawSpin(ctx, xr, cy, r, aR, C.quant, !!ent.res, flash);
+  ctx.globalAlpha = 1;
+});
+
+/* — */
+const AGE = 13.8e9, YDAY = AGE / 365.25, YMIN = YDAY / 1440;
+const EV = [
+  { ago: 13.8e9, date: 'Jan 1, 00:00', t: 'The Big Bang', sub: '13.8 billion years ago', strip: 0, lvl: 'up', lab: '1–2' },
+  { ago: 13.8e9 - 3.8e5, date: 'Jan 1, 00:14', t: 'The Universe turns transparent; we still see that light as the cosmic microwave background', sub: '380,000 years in', strip: 0, hide: true },
+  { ago: 13.6e9, date: 'Jan 6', t: 'The first stars light up', sub: '≈ 200 million years in', strip: 0, lvl: 'dn' },
+  { ago: 4.57e9, date: 'Sep 2', t: 'The Sun and Earth form', sub: '4.6 billion years ago', strip: 0, lvl: 'up' },
+  { ago: 3.8e9, date: 'Sep 22', t: 'First life on Earth', sub: '≈ 3.8 billion years ago', strip: 0, lvl: 'dn' },
+  { ago: 5.38e8, date: 'Dec 17', t: 'The Cambrian explosion: complex animals appear', sub: '538 million years ago', strip: 0, lvl: 'up' },
+  { ago: 2.3e8, date: 'Dec 25', t: 'Dinosaurs appear', sub: '230 million years ago', strip: 0, lvl: 'dn' },
+  { ago: 6.6e7, date: 'Dec 30, 06:00', t: 'An asteroid wipes out the dinosaurs', sub: '66 million years ago', strip: 0, lvl: 'up' },
+  { ago: 4e6, date: 'Dec 31, 21:28', t: 'Human ancestors start walking on two legs', sub: '≈ 4 million years ago', strip: 1, lvl: 'up' },
+  { ago: 3e5, date: 'Dec 31, 23:48', t: 'Homo sapiens appears', sub: '≈ 300,000 years ago', strip: 1, lvl: 'dn' },
+  { ago: 1.2e4, date: '23:59:33', t: 'People start farming', sub: '≈ 12,000 years ago', strip: 2, lvl: 'up' },
+  { ago: 4.5e3, date: '23:59:50', t: 'The Egyptian pyramids are built', sub: '≈ 4,500 years ago', strip: 2, lvl: 'dn' },
+  { ago: 534, date: '23:59:58.8', t: 'Columbus reaches the Americas', sub: '1492', strip: 2, lvl: 'up' },
+  { ago: 65, date: '23:59:59.85', t: 'Yuri Gagarin flies to space', sub: '1961', strip: 2, lvl: 'dn' }
+];
+const SPAN = [AGE, YDAY, YMIN];
+const strips = [0, 1, 2].map(i => document.getElementById('strip-' + i));
+(function buildCal() {
+  const md = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], mn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const tk = [
+    md.map((d, i) => `<span style="--d:${d}">${mn[i]}</span>`).join(''),
+    [0, 3, 6, 9, 12, 15, 18, 21].map(hh => `<span>${String(hh).padStart(2, '0')}:00</span>`).join(''),
+    [0, 10, 20, 30, 40, 50].map(ss => `<span>:${String(ss).padStart(2, '0')}</span>`).join('')
+  ];
+  strips.forEach((el, i) => { el.innerHTML = `<div class="ticks">${tk[i]}</div><div class="playhead"></div>`; });
+  const z1 = document.createElement('div'); z1.className = 'zoomband'; z1.style.left = (100 * (1 - 1 / 365.25)) + '%'; z1.style.right = '0'; strips[0].appendChild(z1);
+  const z2 = document.createElement('div'); z2.className = 'zoomband'; z2.style.left = (100 * (1 - 1 / 1440)) + '%'; z2.style.right = '0'; strips[1].appendChild(z2);
+  const list = document.getElementById('events');
+  EV.forEach((e, i) => {
+    e.pos = 1 - e.ago / SPAN[e.strip];
+    if (!e.hide) {
+      const m = document.createElement('div');
+      m.className = 'mark ' + e.lvl; m.style.left = (e.pos * 100) + '%';
+      m.innerHTML = `<i>${e.lab || i + 1}</i>`;
+      strips[e.strip].appendChild(m); e.mark = m;
+    }
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="no">${i + 1}</span><span class="d">${e.date}</span><p>${e.t}<small>${e.sub}</small></p>`;
+    list.appendChild(li); e.li = li;
+  });
+})();
+const cal = { p: 0, play: !reduced, visible: false, last: 0, txt: '' };
+const calBtn = document.getElementById('cal-play'), calNow = document.getElementById('cal-now');
+const heads = strips.map(s => s.querySelector('.playhead'));
+function calLabel(si, f) {
+  if (si === 0) {
+    const day = Math.min(Math.floor(f * 365), 364), md = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const mg = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    let d = day, m = 0; while (d >= md[m]) { d -= md[m]; m++; }
+    return mg[m] + ' ' + (d + 1);
+  }
+  if (si === 1) { const mins = Math.floor(f * 1440); return 'December 31, ' + String(Math.floor(mins / 60)).padStart(2, '0') + ':' + String(mins % 60).padStart(2, '0'); }
+  return 'December 31, 23:59:' + String(Math.min(Math.floor(f * 60), 59)).padStart(2, '0');
+}
+function calRender() {
+  const si = Math.min(Math.floor(cal.p), 2), f = Math.min(cal.p - si, 1);
+  heads.forEach((hd, i) => { hd.classList.toggle('on', i === si); if (i === si) hd.style.left = (f * 100) + '%'; });
+  for (const e of EV) {
+    const lit = e.strip < si || (e.strip === si && e.pos <= f + 1e-9) || cal.p >= 3;
+    e.li.classList.toggle('lit', lit);
+    if (e.mark) e.mark.classList.toggle('lit', lit);
+  }
+  const t = cal.p >= 3 ? 'December 31, 24:00, now' : calLabel(si, f);
+  if (t !== cal.txt) { cal.txt = t; calNow.textContent = t; }
+}
+function setCalPlay(on) { cal.play = on; calBtn.setAttribute('aria-pressed', on); calBtn.textContent = on ? '❚❚ Pause' : '▶ Play'; }
+calBtn.addEventListener('click', () => { if (!cal.play && cal.p >= 3) cal.p = 0; setCalPlay(!cal.play); });
+setCalPlay(cal.play);
+if (reduced) cal.p = 3;
+calRender();
+new IntersectionObserver(es => { cal.visible = es[0].isIntersecting; }, { rootMargin: '100px' }).observe(document.getElementById('cal'));
+(function calLoop(now) {
+  const dt = Math.min(0.05, (now - cal.last) / 1000 || 0); cal.last = now;
+  if (cal.play && cal.visible) {
+    const seg = Math.min(Math.floor(cal.p), 3);
+    cal.p += dt / (seg === 0 ? 12 : 7);
+    if (cal.p >= 3.6) cal.p = 0;
+    calRender();
+  }
+  requestAnimationFrame(calLoop);
+})(performance.now());
+
+/* — */
+const GV_TXT = {
+  free: 'Drifting freely', feel: 'You can feel the pull', strong: 'Pulling hard!', caught: 'Captured!', escaped: 'Broke free!',
+  inside: 'past the horizon', stopped: 'nearly stopped', slower: v => 'running ' + v + '× slower', normal: 'running as on Earth',
+  escapes: n => 'Escapes: ' + n,
+  hintMouse: 'Move the cursor over the field', hintTouch: 'Drag your finger over the field',
+  pullHint: 'Move the cursor far from the hole and hold it there',
+  boom: 'Broke free!', boomSub: 'A real black hole would never let you go'
+};
+const gv = { w: 0, h: 0, p: null, v: { x: 0, y: 0 }, a: null, captured: false, prog: 0, escapes: 0, grace: 0, boom: 0, mass: 1, trail: [], burst: [], txt: 0, touched: false, touch: false, inside: false };
+const GV_K = 140, GV_C = 2 * Math.sqrt(GV_K);
+const gvDisk = [], gvStars = [];
+for (let i = 0; i < 460; i++) gvDisk.push({ r: 1.5 + Math.pow(Math.random(), 1.4) * 2.8, a: Math.random() * TAU, s: 0.8 + Math.random() * 1.4 });
+for (let i = 0; i < 260; i++) gvStars.push({ x: Math.random(), y: Math.random(), m: Math.pow(Math.random(), 3), tw: Math.random() * TAU });
+const gvCv = document.getElementById('grav-cv');
+const gvEl = { r: document.getElementById('gv-r'), pull: document.getElementById('gv-pull'), time: document.getElementById('gv-time'), state: document.getElementById('gv-state'), meter: document.getElementById('gv-meter'), meterBox: document.getElementById('gv-meter-box'), esc: document.getElementById('gv-esc') };
+function gvGeom() {
+  const R = Math.min(gv.w, gv.h) * 0.075 * Math.pow(gv.mass, 0.6);
+  return { cx: gv.w / 2, cy: gv.h / 2, R, GM: 9.9 * GV_K * Math.pow(Math.min(gv.w, gv.h) * 0.075, 3) * gv.mass };
+}
+function gvReset() {
+  const x = gv.w * 0.16, y = gv.h * 0.2;
+  gv.p = { x, y }; gv.a = { x, y }; gv.v = { x: 0, y: 0 };
+  gv.captured = false; gv.prog = 0; gv.grace = 0; gv.trail = []; gv.burst = [];
+}
+function gvPoint(e) {
+  const r = gvCv.getBoundingClientRect();
+  gv.a = { x: clamp(e.clientX - r.left, 0, r.width), y: clamp(e.clientY - r.top, 0, r.height) };
+  gv.touched = true; gv.inside = true; gv.touch = e.pointerType === 'touch';
+}
+gvCv.addEventListener('pointermove', gvPoint);
+gvCv.addEventListener('pointerdown', e => { gvPoint(e); try { gvCv.setPointerCapture(e.pointerId); } catch (err) { /* — */ } });
+gvCv.addEventListener('pointerleave', () => { gv.inside = false; });
+gvCv.addEventListener('keydown', e => {
+  const step = 24, d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
+  if (!d || !gv.a) return;
+  e.preventDefault();
+  gv.a = { x: clamp(gv.a.x + d[0], 0, gv.w), y: clamp(gv.a.y + d[1], 0, gv.h) }; gv.touched = true;
+});
+document.getElementById('gv-mass').addEventListener('input', e => { gv.mass = +e.target.value; });
+document.getElementById('gv-reset').addEventListener('click', gvReset);
+function gvEscape(g) {
+  let dx = gv.a.x - g.cx, dy = gv.a.y - g.cy; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
+  gv.p = { x: g.cx + dx * g.R * 1.3, y: g.cy + dy * g.R * 1.3 };
+  const sp = 700 + g.R * 6; gv.v = { x: dx * sp, y: dy * sp };
+  gv.captured = false; gv.prog = 0; gv.grace = 1.0; gv.boom = 2.6; gv.escapes++;
+  for (let i = 0; i < 70; i++) { const a = Math.random() * TAU, v = 80 + Math.random() * 320; gv.burst.push({ x: gv.p.x, y: gv.p.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, life: 0.6 + Math.random() * 0.7 }); }
+}
+function gvStep(g, h) {
+  const k = gv.captured ? GV_K * 0.05 : GV_K, c = gv.captured ? GV_C * 0.5 : GV_C;
+  let ax = k * (gv.a.x - gv.p.x) - c * gv.v.x, ay = k * (gv.a.y - gv.p.y) - c * gv.v.y;
+  const rx = g.cx - gv.p.x, ry = g.cy - gv.p.y, r = Math.hypot(rx, ry) || 1e-3, re = Math.max(r, g.R * 0.3);
+  const gr = g.GM / (re * re) * (gv.grace > 0 ? 0.12 : 1);
+  ax += gr * rx / r; ay += gr * ry / r;
+  if (r < g.R * 6) { const sw = gr * (gv.captured ? 0.6 : 0.3); ax += -sw * ry / r; ay += sw * rx / r; }
+  gv.v.x += ax * h; gv.v.y += ay * h;
+  gv.p.x += gv.v.x * h; gv.p.y += gv.v.y * h;
+  const nr = Math.hypot(gv.p.x - g.cx, gv.p.y - g.cy);
+  if (!gv.captured && gv.grace <= 0 && nr < g.R) { gv.captured = true; gv.prog = 0; }
+  if (gv.captured && nr > g.R * 0.92) {
+    const ux = (gv.p.x - g.cx) / nr, uy = (gv.p.y - g.cy) / nr;
+    gv.p.x = g.cx + ux * g.R * 0.92; gv.p.y = g.cy + uy * g.R * 0.92;
+    const out = gv.v.x * ux + gv.v.y * uy; if (out > 0) { gv.v.x -= out * ux; gv.v.y -= out * uy; }
+  }
+}
+makeScene('grav-cv', (s, dt) => {
+  const { ctx, w, h } = s;
+  gv.w = w; gv.h = h;
+  if (!gv.p) gvReset();
+  const g = gvGeom(), { cx, cy, R } = g;
+  if (dt > 0) {
+    const n = 5; for (let i = 0; i < n; i++) gvStep(g, dt / n);
+    gv.grace = Math.max(0, gv.grace - dt); gv.boom = Math.max(0, gv.boom - dt);
+    if (gv.captured) {
+      const pull = clamp((Math.hypot(gv.a.x - cx, gv.a.y - cy) - R * 1.6) / (Math.min(w, h) * 0.36), 0, 1);
+      gv.prog = clamp(gv.prog + dt * (pull > 0.15 ? pull * pull * 0.24 : -0.3), 0, 1);
+      if (gv.prog >= 1) gvEscape(g);
+    }
+    gv.trail.push({ x: gv.p.x, y: gv.p.y }); if (gv.trail.length > 46) gv.trail.shift();
+    for (const b of gv.burst) { b.t += dt; b.x += b.vx * dt; b.y += b.vy * dt; b.vx *= 0.97; b.vy *= 0.97; }
+    gv.burst = gv.burst.filter(b => b.t < b.life);
+    for (const d of gvDisk) d.a += dt * 2.2 / Math.pow(d.r, 1.5);
+  }
+  const r = Math.hypot(gv.p.x - cx, gv.p.y - cy);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.fillStyle = C.void; ctx.fillRect(0, 0, w, h);
+  /* — */
+  const rE = R * 1.8, k4 = 4 * rE * rE;
+  ctx.fillStyle = C.star;
+  for (const st of gvStars) {
+    const x = st.x * w - cx, y = st.y * h - cy, b = Math.hypot(x, y) || 1, q = Math.sqrt(b * b + k4), th = (b + q) / 2;
+    const uu = b / rE, mu = Math.min(6, (uu * uu + 2) / (uu * Math.sqrt(uu * uu + 4)));
+    if (th < R) continue;
+    ctx.globalAlpha = Math.min(1, (0.15 + 0.6 * st.m) * (0.7 + 0.3 * Math.sin(s.t * 1.5 + st.tw)) * Math.min(mu, 3) * 0.6);
+    const z = 1 + st.m * 2;
+    ctx.fillRect(cx + x / b * th - z / 2, cy + y / b * th - z / 2, z, z);
+  }
+  /* — */
+  ctx.strokeStyle = C.disk; ctx.lineWidth = 1;
+  for (let i = 0; i < 6; i++) {
+    const f = ((i + s.t * 0.35) % 6) / 6, rr = R * (1.25 + (1 - f) * 7);
+    ctx.globalAlpha = 0.09 * Math.sin(f * Math.PI); circle(ctx, cx, cy, rr); ctx.stroke();
+  }
+  /* — */
+  const sq = 0.32;
+  const disk = back => {
+    for (const d of gvDisk) {
+      const sa = Math.sin(d.a); if ((sa < 0) !== back) continue;
+      ctx.globalAlpha = clamp(1.6 / d.r, 0.2, 1) * 0.85;
+      ctx.fillStyle = PAL[clamp(Math.round(Math.pow(1.5 / d.r, 0.8) * 60), 10, 63)];
+      ctx.fillRect(cx + d.r * R * Math.cos(d.a) - d.s / 2, cy + d.r * R * sa * sq - d.s / 2, d.s, d.s);
+    }
+  };
+  ctx.globalCompositeOperation = 'lighter'; disk(true); ctx.globalCompositeOperation = 'source-over';
+  const gl = ctx.createRadialGradient(cx, cy, R * 0.95, cx, cy, R * 1.6);
+  gl.addColorStop(0, 'rgba(255,160,74,0.35)'); gl.addColorStop(1, 'rgba(255,160,74,0)');
+  ctx.globalAlpha = 1; ctx.fillStyle = gl; circle(ctx, cx, cy, R * 1.6); ctx.fill();
+  ctx.fillStyle = '#000'; circle(ctx, cx, cy, R); ctx.fill();
+  ctx.strokeStyle = gv.captured ? '#ff7a4a' : C.hot; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.8; circle(ctx, cx, cy, R); ctx.stroke();
+  ctx.globalCompositeOperation = 'lighter'; disk(false); ctx.globalCompositeOperation = 'source-over';
+  /* — */
+  if (gv.captured) {
+    ctx.globalAlpha = 1; ctx.strokeStyle = C.line; ctx.lineWidth = 5; circle(ctx, cx, cy, R * 1.18); ctx.stroke();
+    ctx.strokeStyle = C.hot; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(cx, cy, R * 1.18, -Math.PI / 2, -Math.PI / 2 + gv.prog * TAU); ctx.stroke(); ctx.lineCap = 'butt';
+  }
+  /* — */
+  ctx.lineWidth = 2;
+  for (let i = 1; i < gv.trail.length; i++) {
+    ctx.globalAlpha = (i / gv.trail.length) * 0.5; ctx.strokeStyle = gv.captured ? '#ff7a4a' : C.quant;
+    ctx.beginPath(); ctx.moveTo(gv.trail[i - 1].x, gv.trail[i - 1].y); ctx.lineTo(gv.trail[i].x, gv.trail[i].y); ctx.stroke();
+  }
+  /* — */
+  const ten = clamp(Math.hypot(gv.a.x - gv.p.x, gv.a.y - gv.p.y) / (Math.min(w, h) * 0.45), 0, 1);
+  ctx.globalAlpha = 0.35 + ten * 0.6; ctx.lineWidth = 1 + ten * 2.5;
+  ctx.strokeStyle = `rgb(255,${Math.round(lerp(240, 90, ten))},${Math.round(lerp(220, 60, ten))})`;
+  ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(gv.a.x, gv.a.y); ctx.lineTo(gv.p.x, gv.p.y); ctx.stroke(); ctx.setLineDash([]);
+  /* — */
+  const ang = Math.atan2(cy - gv.p.y, cx - gv.p.x);
+  const st = 1 + clamp(Math.pow(2.2 * R / Math.max(r, R * 0.3), 3) - 1, 0, gv.captured ? 2 : 2.6);
+  const size = Math.max(R * (gv.captured ? 0.022 : 0.03), 1.1);
+  ctx.save();
+  if (gv.captured) { circle(ctx, cx, cy, R * 0.98); ctx.clip(); }
+  ctx.translate(gv.p.x, gv.p.y); ctx.scale(size, size);
+  drawAstronaut(ctx, 0, 0, ang, st, gv.captured ? 0.75 : 1, gv.captured ? 0.9 : clamp(1 - (r / R - 1) / 1.5, 0, 0.6));
+  ctx.restore();
+  /* — */
+  ctx.globalCompositeOperation = 'lighter';
+  for (const b of gv.burst) { ctx.globalAlpha = 1 - b.t / b.life; ctx.fillStyle = C.hot; ctx.fillRect(b.x - 1.5, b.y - 1.5, 3, 3); }
+  ctx.globalCompositeOperation = 'source-over';
+  /* — */
+  ctx.globalAlpha = gv.inside || !gv.touched ? 1 : 0.45; ctx.strokeStyle = C.star; ctx.lineWidth = 1.5;
+  circle(ctx, gv.a.x, gv.a.y, 9); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(gv.a.x - 14, gv.a.y); ctx.lineTo(gv.a.x - 5, gv.a.y); ctx.moveTo(gv.a.x + 5, gv.a.y); ctx.lineTo(gv.a.x + 14, gv.a.y);
+  ctx.moveTo(gv.a.x, gv.a.y - 14); ctx.lineTo(gv.a.x, gv.a.y - 5); ctx.moveTo(gv.a.x, gv.a.y + 5); ctx.lineTo(gv.a.x, gv.a.y + 14); ctx.stroke();
+  /* — */
+  ctx.globalAlpha = 1; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  if (gv.boom > 0) {
+    const k = Math.min(1, gv.boom / 0.5);
+    ctx.globalAlpha = k; ctx.font = '700 ' + Math.round(Math.min(w, h) * 0.07) + 'px "Unbounded", system-ui, sans-serif'; ctx.fillStyle = C.hot;
+    ctx.fillText(GV_TXT.boom, w / 2, h * 0.14);
+    ctx.font = '500 12px ' + MONO; ctx.fillStyle = C.star; ctx.fillText(GV_TXT.boomSub, w / 2, h * 0.14 + Math.min(w, h) * 0.06);
+  } else if (gv.captured) {
+    ctx.font = '500 12px ' + MONO; ctx.fillStyle = C.hot; ctx.fillText(GV_TXT.pullHint, w / 2, h - 22);
+  } else if (!gv.touched) {
+    ctx.font = '500 12px ' + MONO; ctx.fillStyle = C.dust; ctx.fillText(matchMedia('(pointer: coarse)').matches ? GV_TXT.hintTouch : GV_TXT.hintMouse, w / 2, h - 22);
+  }
+  ctx.globalAlpha = 1;
+  /* — */
+  if ((gv.txt += dt) > 0.1 || dt === 0) {
+    gv.txt = 0;
+    const rr = r / R;
+    gvEl.r.textContent = gv.captured ? GV_TXT.inside : NF1.format(rr) + ' rₛ';
+    gvEl.pull.textContent = '×' + fmt(Math.max(1, Math.pow(10 / Math.max(rr, 0.3), 2)) * gv.mass);
+    const f = gv.captured ? 0 : Math.sqrt(Math.max(0, 1 - 1 / rr));
+    gvEl.time.textContent = gv.captured ? GV_TXT.stopped : f > 0.97 ? GV_TXT.normal : GV_TXT.slower(NF1.format(1 / f));
+    gvEl.state.textContent = gv.boom > 0 ? GV_TXT.escaped : gv.captured ? GV_TXT.caught : rr < 2.5 ? GV_TXT.strong : rr < 6 ? GV_TXT.feel : GV_TXT.free;
+    gvEl.meterBox.hidden = !gv.captured;
+    gvEl.meter.style.width = Math.round(gv.prog * 100) + '%';
+    gvEl.esc.textContent = GV_TXT.escapes(gv.escapes);
+  }
+}, {
+  onResize(s) {
+    if (gv.p && gv.w && gv.h) {
+      const fx = s.w / gv.w, fy = s.h / gv.h;
+      gv.p.x *= fx; gv.p.y *= fy; gv.a.x *= fx; gv.a.y *= fy; gv.trail = [];
+    }
+    gv.w = s.w; gv.h = s.h;
+  }
+});
+
+/* — */
+const ASK_RULES = 'You are the guide on Event Horizon, a small website about black holes, quantum physics and the history of the Universe. '
+  + 'Answer the visitor\'s question about space, astronomy or physics accurately and vividly for a curious non-expert. '
+  + 'Reply in the same language the visitor writes in. Keep it short: two to four short paragraphs of plain text, no Markdown, no headings, no bullet lists. '
+  + 'Use real numbers where they help. If the question is not about science or space, say in one sentence that you only answer questions about space and physics.';
+const ASK_ENDPOINT = ((document.querySelector('meta[name="ask-endpoint"]') || {}).content || '').trim();
+const ask = { mode: null, sample: null, turns: [], busy: false, ctl: null, off: false };
+const askLog = document.getElementById('ask-log'), askForm = document.getElementById('ask-form');
+const askInput = document.getElementById('ask-input'), askSend = document.getElementById('ask-send'), askNote = document.getElementById('ask-note');
+const ASK_TXT = {
+  send: 'Ask', stop: 'Stop', thinking: 'Thinking…',
+  noteSample: 'Answers use your own Claude account: claude.ai asks for permission on your first question.',
+  stopped: 'Stopped.',
+  off: 'Answers are unavailable: this page is not allowed to use Claude.',
+  rate: 'Too many questions in a row. Try again a little later.',
+  refused: 'This question will not get an answer. Try asking it differently.',
+  cut: 'The answer was cut short: try a shorter question.',
+  fail: 'Could not get an answer. Please try again.'
+};
+function askBusy(on) {
+  ask.busy = on;
+  askSend.textContent = on ? ASK_TXT.stop : ASK_TXT.send;
+  askSend.classList.toggle('primary', !on);
+}
+function addExchange(q) {
+  const box = document.createElement('div'); box.className = 'qa';
+  const qb = document.createElement('div'); qb.className = 'q-bubble'; qb.textContent = q;
+  const ab = document.createElement('div'); ab.className = 'a-bubble thinking'; ab.textContent = ASK_TXT.thinking;
+  box.append(qb, ab); askLog.append(box);
+  ab.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
+  return ab;
+}
+function askFail(ab, text, msg) {
+  ab.classList.remove('thinking');
+  if (text) { ab.textContent = text + '\n\n' + msg; } else { ab.textContent = msg; ab.classList.add('err'); }
+}
+async function askQuestion(raw) {
+  const q = String(raw || '').trim().slice(0, 500);
+  if (!q || ask.busy || !ask.mode || ask.off) return;
+  askInput.value = '';
+  askBusy(true);
+  const ab = addExchange(q);
+  ask.turns.push({ role: 'user', content: q });
+  const history = ask.turns.slice(-7);
+  const ctl = ask.ctl = new AbortController();
+  try {
+    let text = '', cut = false;
+    if (ask.mode === 'sample') {
+      const r = await ask.sample([{ role: 'user', content: ASK_RULES }, ...history], {
+        cache: false, signal: ctl.signal,
+        onText: u => { ab.classList.remove('thinking'); ab.textContent = u.text; }
+      });
+      text = r.text; cut = r.truncated;
+    } else {
+      const res = await fetch(ASK_ENDPOINT, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ messages: history }), signal: ctl.signal });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.text) throw { code: data.error === 'rate_limited' ? 'rate_limited' : data.error === 'refused' ? 'refused' : 'upstream_error' };
+      text = data.text; cut = !!data.truncated;
+      ab.classList.remove('thinking'); ab.textContent = text;
+    }
+    if (cut) ab.textContent = text + '\n\n' + ASK_TXT.cut;
+    ask.turns.push({ role: 'assistant', content: text });
+  } catch (e) {
+    ask.turns.pop();
+    const code = (e && e.code) || (e && e.name === 'AbortError' ? 'cancelled' : 'upstream_error');
+    const partial = e && typeof e.text === 'string' ? e.text : '';
+    if (code === 'cancelled') askFail(ab, partial, ASK_TXT.stopped);
+    else if (['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(code)) {
+      ask.off = true; askFail(ab, '', ASK_TXT.off); askInput.disabled = true; askSend.disabled = true;
+    } else if (code === 'rate_limited' || code === 'session_expired') askFail(ab, partial, ASK_TXT.rate);
+    else if (code === 'refused') askFail(ab, '', ASK_TXT.refused);
+    else askFail(ab, partial, ASK_TXT.fail);
+  } finally {
+    if (ask.ctl === ctl) ask.ctl = null;
+    askBusy(false);
+  }
+}
+askForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if (ask.busy) { if (ask.ctl) ask.ctl.abort(); return; }
+  askQuestion(askInput.value);
+});
+askInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); askForm.requestSubmit(); }
+});
+document.querySelectorAll('#ask-suggest .btn').forEach(b => b.addEventListener('click', () => askQuestion(b.textContent)));
+function enableAsk(mode, sample) {
+  if (ask.mode) return;
+  ask.mode = mode; ask.sample = sample || null;
+  askNote.textContent = mode === 'sample' ? ASK_TXT.noteSample : '';
+  document.getElementById('t-ask').hidden = false;
+  if (location.hash.slice(1) === 'ask') showTab('ask', true, false);
+}
+
+/* — */
+const TABS = ['video', 'play', 'black-holes', 'quantum', 'universe', 'ask'];
+const tabBtns = [...document.querySelectorAll('[role="tab"]')];
+const videos = [...document.querySelectorAll('video')];
+const content = document.getElementById('content');
+function showTab(id, scroll, setHash) {
+  if (!TABS.includes(id) || (id === 'ask' && !ask.mode)) id = 'video';
+  tabBtns.forEach(b => { const on = b.dataset.tab === id; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+  TABS.forEach(k => { document.getElementById('p-' + k).hidden = k !== id; });
+  if (id !== 'video') videos.forEach(v => v.pause());
+  try { localStorage.setItem('eh-tab', id); } catch (e) { /* storage unavailable */ }
+  if (setHash) { try { history.replaceState(null, '', '#' + id); } catch (e) { /* sandboxed */ } }
+  if (scroll) content.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+}
+tabBtns.forEach(b => {
+  b.addEventListener('click', () => showTab(b.dataset.tab, true, true));
+  b.addEventListener('keydown', e => {
+    const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    const vis = tabBtns.filter(x => !x.hidden), j = vis.indexOf(b);
+    const nb = vis[(j + d + vis.length) % vis.length];
+    nb.focus(); showTab(nb.dataset.tab, false, true);
+  });
+});
+document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.go, true, true)));
+videos.forEach(v => v.addEventListener('play', () => videos.forEach(o => { if (o !== v) o.pause(); })));
+
+const VL_TXT = {
+  load: p => 'Loading video' + (p == null ? '…' : ' · ' + p + '%'),
+  fail: 'The video did not load. Tap to try again'
+};
+const lazyVideos = videos.filter(v => v.dataset.src && !v.getAttribute('src'));
+const vQueue = [];
+let vBusy = false;
+function vNote(v, text, retry) {
+  const n = v.parentNode.querySelector('.vnote');
+  n.hidden = text == null;
+  if (text != null) { n.textContent = text; n.disabled = !retry; }
+}
+async function vFetch(v) {
+  vNote(v, VL_TXT.load(null));
+  try {
+    const r = await fetch(v.dataset.src);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const total = +r.headers.get('content-length') || 0;
+    let parts;
+    if (total && r.body && r.body.getReader) {
+      const rd = r.body.getReader();
+      let got = 0; parts = [];
+      for (;;) {
+        const { done, value } = await rd.read();
+        if (done) break;
+        parts.push(value); got += value.length;
+        vNote(v, VL_TXT.load(Math.min(99, Math.round(got / total * 100))));
+      }
+    } else parts = [await r.arrayBuffer()];
+    v.dataset.state = 'blob';
+    v.src = URL.createObjectURL(new Blob(parts, { type: 'video/mp4' }));
+  } catch (e) {
+    v.dataset.state = 'direct';
+    v.src = v.dataset.src;
+  }
+  vNote(v, null);
+}
+async function vPump() {
+  if (vBusy) return;
+  vBusy = true;
+  while (vQueue.length) await vFetch(vQueue.shift());
+  vBusy = false;
+}
+function vWant(v, first) {
+  const i = vQueue.indexOf(v);
+  if (i > 0 && first) { vQueue.splice(i, 1); vQueue.unshift(v); }
+  if (v.dataset.state) return;
+  v.dataset.state = 'queued';
+  if (first) vQueue.unshift(v); else vQueue.push(v);
+  vPump();
+}
+lazyVideos.forEach(v => {
+  const box = document.createElement('div');
+  box.className = 'vbox';
+  v.before(box); box.append(v);
+  const n = document.createElement('button');
+  n.type = 'button'; n.className = 'vnote'; n.hidden = true;
+  box.append(n);
+  n.addEventListener('click', () => { delete v.dataset.state; vWant(v, true); });
+  box.addEventListener('pointerdown', () => vWant(v, true));
+  v.addEventListener('error', () => {
+    if (v.dataset.state === 'blob') { v.dataset.state = 'direct'; v.src = v.dataset.src; }
+    else if (v.dataset.state === 'direct') { v.dataset.state = 'failed'; vNote(v, VL_TXT.fail, true); }
+  });
+});
+if (lazyVideos.length) {
+  if ('IntersectionObserver' in window) {
+    const vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { vio.unobserve(e.target); vWant(e.target); } }), { rootMargin: '300px' });
+    lazyVideos.forEach(v => vio.observe(v));
+  } else lazyVideos.forEach(v => vWant(v));
+}
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.includes(h)) showTab(h, true, false); });
+let initial = location.hash.slice(1);
+const fromHash = TABS.includes(initial);
+if (!fromHash) { try { initial = localStorage.getItem('eh-tab') || 'video'; } catch (e) { initial = 'video'; } }
+showTab(initial, fromHash, false);
+
+if (ASK_ENDPOINT) enableAsk('endpoint');
+else if (window.claude && typeof window.claude.use === 'function') {
+  window.claude.use('sample').then(s => { if (s) enableAsk('sample', s); }).catch(() => {});
+}
+
+startScenes();
+})();
+</script>
+</body>
+</html>
