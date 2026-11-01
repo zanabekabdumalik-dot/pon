@@ -283,6 +283,13 @@ details.howto li::marker{color:var(--gold)}
 .primary.gem{background:linear-gradient(180deg,#c9a8ff 0%,#8a5ae0 55%,#5a2ab0 100%);border-color:#e2ccff;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.5)}
 .primary.harvest{margin-top:8px;font-size:17px}
 .bs-note{margin:6px 0 0;min-height:1.2em;font-size:13px;font-weight:700;color:#ffb3a3}
+.raid-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;width:min(340px,calc(100% - 32px));padding:16px;border-radius:20px;
+  background:linear-gradient(180deg,rgba(84,16,22,.97),rgba(32,6,10,.97));border:1.5px solid #ff8a66;box-shadow:0 0 30px rgba(255,80,40,.45),0 10px 30px rgba(0,0,0,.6)}
+.raid-card.won{background:linear-gradient(180deg,rgba(30,82,58,.97),rgba(10,32,22,.97));border-color:#8fe0a8;box-shadow:0 0 30px rgba(120,255,170,.35),0 10px 30px rgba(0,0,0,.6)}
+.rc-head{display:flex;align-items:center;gap:10px}
+.rc-head svg{flex:none;width:42px;height:42px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.rc-head b{font-family:var(--font-display);font-size:28px;line-height:1;color:#ffe1a8;text-shadow:0 2px 0 rgba(0,0,0,.5)}
+.raid-card p{margin:10px 0 14px;font-size:15px;line-height:1.4;color:#f6e9e2}
 .end-reward{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:16px;font-weight:800;color:#ffe9b0}
 .end-reward span{display:flex;align-items:center;gap:4px}
 .end-reward .coin{width:1.3em;height:1.3em}
@@ -423,6 +430,11 @@ details.howto li::marker{color:var(--gold)}
         <span class="mode-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.6 8.2c-2.1 0-3.8 1.7-3.8 3.8s1.7 3.8 3.8 3.8c3 0 4.8-3.8 5.4-3.8s2.4 3.8 5.4 3.8c2.1 0 3.8-1.7 3.8-3.8s-1.7-3.8-3.8-3.8c-3 0-4.8 3.8-5.4 3.8S9.6 8.2 6.6 8.2zm0 2.2c1.5 0 2.8 1.6 3.7 1.6-.9 0-2.2 1.6-3.7 1.6a1.6 1.6 0 0 1 0-3.2zm10.8 0a1.6 1.6 0 0 1 0 3.2c-1.5 0-2.8-1.6-3.7-1.6.9 0 2.2-1.6 3.7-1.6z"/></svg></span>
         <span class="mode-txt"><b>Бесконечный</b><span id="endlessSub">Волны без конца</span></span>
       </button>
+    </div>
+    <div class="raid-card" id="raidCard" hidden role="alertdialog" aria-labelledby="rcTitle">
+      <div class="rc-head"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3c1 3 2 5 4.5 6.2C9.6 8.5 10.8 8 12 8s2.4.5 3.5 1.2C18 8 19 6 20 3c.6 3.4-.2 6.6-2.6 8.6.4.8.6 1.6.6 2.4 0 3.9-2.7 7-6 7s-6-3.1-6-7c0-.8.2-1.6.6-2.4C4.2 9.6 3.4 6.4 4 3z" fill="#c8402c"/><path d="M8.5 13.5l2.3 1-2.3.8zm7 0l-2.3 1 2.3.8z" fill="#ffd84a"/><path d="M10 18h4l-2 1.6z" fill="#2a0204"/></svg><b id="rcTitle"></b></div>
+      <p id="rcText"></p>
+      <button class="primary wide" id="rcOk">Отстроим!</button>
     </div>
     <div class="bsheet" id="bldSheet" hidden>
       <div class="bs-head"><canvas id="bsIcon"></canvas><div class="bs-t"><b id="bsName"></b><span id="bsLvl"></span></div><button class="x" id="bsClose" aria-label="Закрыть">✕</button></div>
@@ -5278,6 +5290,7 @@ function renderHome() {
   const best = Math.max(0, ...LEVELS.map((_, i) => endlessBest(i)));
   $('endlessSub').textContent = best ? `Рекорд: ${best} ${plural(best, 'волна', 'волны', 'волн')}` : 'Волны без конца';
   closeBuilding(); tickTown(); updateTownHud();
+  if (town.raid && !town.raid.seen) showRaid();
 }
 function renderEndless() {
   const box = $('endlessMaps');
@@ -5308,11 +5321,16 @@ const TOWN_MAX = 5, MINE_RATE = [0, 60, 110, 170, 240, 320], MINE_HOURS = 4;
 // battle bonuses per building level (halved in 2.0.1 so a grown town helps without making the cities trivial)
 const TB = { wall: 0.04, treasury: 12.5, market: 0.03, dmg: 0.03, unitHp: 0.05, unitDmg: 0.025, goldTree: 0.05 };
 const pctN = (k, n) => fmt(Math.round(k * n * 1000) / 10);
+// Demon raids: rarely (every 8–16 hours of real time, the first one no sooner than 12 hours after the town is founded)
+// a raiding party reaches the town and knocks one building (not the Tree of Life, never below level 1) down a level.
+// The town wall turns back part of the raids.
+const RAID_GAP = 8 * 3600e3, RAID_SPREAD = 8 * 3600e3, RAID_FIRST = 12 * 3600e3;
+const wallGuard = n => Math.min(0.6, 0.12 * n);
 const TOWN_B = {
   hall: { name: 'Древо Жизни', c0: 0, info: 'Сердце города. Чем выше Древо, тем выше можно поднять остальные постройки. С 3 уровня в городе работают два строителя.',
     bonus: n => `постройки до ${n} уровня${n >= 3 ? ', два строителя' : ', один строитель'}` },
   wall: { name: 'Городская стена', c0: 120, info: 'Чем крепче стены, тем больше ударов выдержит город, пока демоны прорываются к воротам.',
-    bonus: n => `+${pctN(TB.wall, n)}% к прочности стен в бою` },
+    bonus: n => `+${pctN(TB.wall, n)}% к прочности стен в бою, отбивает ${Math.round(wallGuard(n) * 100)}% набегов на город` },
   treasury: { name: 'Казна', c0: 100, info: 'Из казны в каждый бой уходит запас монет на первых защитников.',
     bonus: n => { const v = Math.round(TB.treasury * n); return `+${v} ${plural(v, 'монета', 'монеты', 'монет')} в начале боя`; } },
   market: { name: 'Рынок', c0: 140, info: 'Торговцы скупают трофеи: за каждого побеждённого демона платят больше.',
@@ -5337,11 +5355,12 @@ function loadTown() {
   if (t && t.lv && typeof t.lv === 'object') {
     t.gold = Math.max(0, +t.gold || 0); t.gems = Math.max(0, +t.gems || 0); t.up = Array.isArray(t.up) ? t.up.filter(u => TOWN_B[u.k]) : [];
     t.lv.hall = Math.max(1, t.lv.hall | 0); t.mineT = +t.mineT || Date.now();
+    t.nextRaid = +t.nextRaid || Date.now() + RAID_FIRST + Math.random() * RAID_SPREAD;
     return t;
   }
   // a new town; players who already won cities start with gold and crystals for their stars
   const stars = progress.stars.reduce((a, b) => a + (b || 0), 0);
-  return { gold: 300 + 150 * stars, gems: 20 + 3 * stars, lv: { hall: 1 }, up: [], mineT: Date.now() };
+  return { gold: 300 + 150 * stars, gems: 20 + 3 * stars, lv: { hall: 1 }, up: [], mineT: Date.now(), nextRaid: Date.now() + RAID_FIRST + Math.random() * RAID_SPREAD };
 }
 let town = loadTown();
 const saveTown = () => store.set('silvenor.town', town);
@@ -5390,6 +5409,19 @@ function collectMine() {
   const v = Math.floor(mineStored()); if (v < 1) return 0;
   town.gold += v; town.mineT = Date.now(); saveTown();
   return v;
+}
+// one raid at most, however long the player was away; buildings being upgraded are behind scaffolding and safe
+function checkRaid() {
+  const now = Date.now();
+  if (now < town.nextRaid) return null;
+  town.nextRaid = now + RAID_GAP + Math.random() * RAID_SPREAD;
+  const targets = TOWN_KEYS.filter(k => k !== 'hall' && lvOf(k) >= 2 && !upOf(k));
+  if (!targets.length) { saveTown(); return null; }
+  const k = targets[Math.floor(Math.random() * targets.length)], from = lvOf(k), repelled = Math.random() < wallGuard(lvOf('wall'));
+  if (!repelled) town.lv[k] = from - 1;
+  town.raid = { k, from, to: repelled ? from : from - 1, at: now, repelled, seen: false };
+  saveTown();
+  return town.raid;
 }
 // what the town gives the defenders in battle
 function townBonus() {
@@ -5730,6 +5762,7 @@ const harvestReady = () => lvOf('mine') > 0 && mineStored() >= Math.max(5, MINE_
 function townFrame(now) {
   layoutTown();
   for (const u of tickTown()) celebrate(u);
+  if (checkRaid()) { TSPR.clear(); showRaid(); }
   const g = tctx, k = TV.k, t = now / 1000;
   if (townBgKey !== TV.w + 'x' + TV.h + '@' + TV.d) renderTownBg();
   g.setTransform(1, 0, 0, 1, 0, 0);
@@ -5757,6 +5790,8 @@ function townFrame(now) {
       g.setTransform(k * s, 0, 0, k * s, sx, sy); TP = 2; A.draw(g, n, t + x); TP = 0;
     } else { g.setTransform(k, 0, 0, k, TV.ox, TV.oy); drawPlot(g, x, y, t, TUI.sel === key); }
     if (u) { g.setTransform(k, 0, 0, k, TV.ox, TV.oy); drawScaffold(g, x, y, key === 'wall' ? 1.6 : s, key === 'hall' ? 1.5 : key === 'wall' ? 0.6 : 0.85, t); }
+    const rd = town.raid;
+    if (rd && !rd.repelled && rd.k === key && Date.now() - rd.at < RAID_SMOKE) { g.setTransform(k, 0, 0, k, TV.ox, TV.oy); drawRaidDamage(g, key === 'wall' ? x - 1.6 : x, y, key === 'wall' ? 1 : s, t, 1 - (Date.now() - rd.at) / RAID_SMOKE); }
   }
   drawWalkers(lastY, 1e9);
   // sparkles of finished buildings
@@ -5802,6 +5837,36 @@ function townFrame(now) {
   updateTownHud();
   if (TUI.sel && now - TUI.sheetT > 250) { TUI.sheetT = now; renderBuilding(); }
 }
+// a raided building smoulders for a while: scorch marks, small fires and smoke
+const RAID_SMOKE = 30 * 60e3;
+function drawRaidDamage(g, x, y, s, t, fade) {
+  const a = 0.35 + 0.65 * fade;
+  ell(g, x, y + 0.12, 0.5 * s, 0.16 * s, `rgba(20,12,8,${0.45 * a})`);
+  for (const [dx, dy] of [[-0.22, 0.08], [0.25, 0.1], [0.05, 0.16]]) { ell(g, x + dx * s, y + dy, 0.07 * s, 0.03 * s, '#5a5048'); ell(g, x + dx * s + 0.03, y + dy - 0.01, 0.04 * s, 0.02 * s, '#7a6e64'); }
+  if (fade > 0.3) for (const [dx, dy, k2] of [[-0.18, -0.25, 0], [0.2, -0.45, 1]]) flame(g, x + dx * s, y + dy * s, 0.05 * s, t + k2 * 2);
+  for (let i = 0; i < 5; i++) {
+    const ph = (t * 0.25 + i / 5) % 1, sx = x + (i - 2) * 0.12 * s + Math.sin(ph * 5 + i) * 0.1, sy = y - 0.5 * s - ph * 1.3 * s;
+    g.globalAlpha = a * 0.75 * (1 - ph); circ(g, sx, sy, (0.1 + ph * 0.2) * s, i % 2 ? '#2e2a28' : '#4a4440'); g.globalAlpha = 1;
+  }
+}
+function showRaid() {
+  const rd = town.raid; if (!rd || rd.seen) return;
+  const B = TOWN_B[rd.k], w = lvOf('wall'), guard = Math.round(wallGuard(w) * 100);
+  $('rcTitle').textContent = rd.repelled ? 'Набег отбит!' : 'Набег демонов!';
+  $('raidCard').classList.toggle('won', rd.repelled);
+  $('rcText').textContent = rd.repelled
+    ? `Отряд демонов пытался прорваться к постройке «${B.name}», но городская стена выстояла. Стена ${w} уровня отбивает ${guard}% набегов.`
+    : `Пока вас не было, отряд демонов прорвался в город и разрушил часть постройки «${B.name}»: уровень ${rd.from} → ${rd.to}. ` + (w ? `Стена ${w} уровня отбивает ${guard}% набегов — чем она выше, тем реже демоны доходят до построек.` : 'Постройте городскую стену — она отбивает часть набегов.');
+  $('rcOk').textContent = rd.repelled ? 'Отлично' : 'Отстроим!';
+  $('raidCard').hidden = false; closeBuilding();
+  Snd.play(rd.repelled ? 'win' : 'roar');
+}
+$('rcOk').addEventListener('click', () => {
+  const rd = town.raid; $('raidCard').hidden = true;
+  if (!rd) return;
+  rd.seen = true; saveTown(); Snd.play('tap');
+  if (!rd.repelled) openBuilding(rd.k);
+});
 function townText(x, y, text, color) { (TUI.texts || (TUI.texts = [])).push({ x, y, text, color, t: 0 }); }
 function celebrate(u) {
   const [x, y, s] = TOWN_POS[u.k], h = u.k === 'hall' ? 2.2 : 0.9 * s;
@@ -6147,7 +6212,7 @@ function start(data) {
   requestAnimationFrame(t => { lastT = t; frame(t); });
 }
 window.__silvenor = {
-  get S() { return S; }, get lo() { return UI.lo; }, get town() { return town; }, set town(t) { town = t; saveTown(); }, townBonus, townFrame, startTownUp, speedTownUp, tickTown, collectMine, mineStored, openBuilding, closeBuilding, townPick, TOWERS, openLoadout, loToggle, startLevel, startWave, update, drawTower, drawDemon, drawVersus, render, DEMONS, showScreen,
+  get S() { return S; }, get lo() { return UI.lo; }, get town() { return town; }, set town(t) { town = t; saveTown(); }, townBonus, townFrame, checkRaid, raidNow() { town.nextRaid = 0; }, startTownUp, speedTownUp, tickTown, collectMine, mineStored, openBuilding, closeBuilding, townPick, TOWERS, openLoadout, loToggle, startLevel, startWave, update, drawTower, drawDemon, drawVersus, render, DEMONS, showScreen,
   build(si, type) { UI.sel = { si }; UI.buildType = type; doBuild(); return !!S.towers[si]; },
   upgrade(si) { UI.sel = { si }; upgrade(); closeSheets(); },
   upCost(t) { const nx = TOWERS[t.type].levels[t.lvl + 1]; return nx ? nx.up : 0; },
@@ -6160,6 +6225,7 @@ window.__silvenor = {
     if (S && UI.paused) { setPaused(false); return true; }
     if (S) { setPaused(true); return true; }
     if (UI.screen === 'loadout') { closeLoadout(); return true; }
+    if (!S && !$('raidCard').hidden) { $('rcOk').click(); return true; }
     if (!S && TUI.sel) { closeBuilding(); return true; }
     if (UI.screen && UI.screen !== 'menu') { showScreen('menu'); return true; }
     return false;
