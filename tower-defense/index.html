@@ -5305,25 +5305,28 @@ function cycleGfx() {
 // and upgrades the buildings, each upgrade takes real time and a free builder, crystals finish it at once. Every
 // building makes the defenders stronger in battle. The Tree of Life caps the level of all the others.
 const TOWN_MAX = 5, MINE_RATE = [0, 60, 110, 170, 240, 320], MINE_HOURS = 4;
+// battle bonuses per building level (halved in 2.0.1 so a grown town helps without making the cities trivial)
+const TB = { wall: 0.04, treasury: 12.5, market: 0.03, dmg: 0.03, unitHp: 0.05, unitDmg: 0.025, goldTree: 0.05 };
+const pctN = (k, n) => fmt(Math.round(k * n * 1000) / 10);
 const TOWN_B = {
   hall: { name: 'Древо Жизни', c0: 0, info: 'Сердце города. Чем выше Древо, тем выше можно поднять остальные постройки. С 3 уровня в городе работают два строителя.',
     bonus: n => `постройки до ${n} уровня${n >= 3 ? ', два строителя' : ', один строитель'}` },
   wall: { name: 'Городская стена', c0: 120, info: 'Чем крепче стены, тем больше ударов выдержит город, пока демоны прорываются к воротам.',
-    bonus: n => `+${8 * n}% к прочности стен в бою` },
+    bonus: n => `+${pctN(TB.wall, n)}% к прочности стен в бою` },
   treasury: { name: 'Казна', c0: 100, info: 'Из казны в каждый бой уходит запас монет на первых защитников.',
-    bonus: n => `+${25 * n} монет в начале боя` },
+    bonus: n => { const v = Math.round(TB.treasury * n); return `+${v} ${plural(v, 'монета', 'монеты', 'монет')} в начале боя`; } },
   market: { name: 'Рынок', c0: 140, info: 'Торговцы скупают трофеи: за каждого побеждённого демона платят больше.',
-    bonus: n => `+${6 * n}% монет за демонов` },
+    bonus: n => `+${pctN(TB.market, n)}% монет за демонов` },
   mine: { name: 'Золотая яблоня', c0: 80, info: 'С золотых ветвей падает золото даже тогда, когда вы не играете. Заходите в город и собирайте урожай.',
     bonus: n => `${MINE_RATE[n]} золота в час, копит до ${MINE_RATE[n] * MINE_HOURS}` },
   archery: { name: 'Стрельбище', c0: 150, info: 'Здесь тренируются стрелки Сильвенора.',
-    bonus: n => `+${6 * n}% урона у лучников, следопыта, баллисты и грифонов` },
+    bonus: n => `+${pctN(TB.dmg, n)}% урона у лучников, следопыта, баллисты и грифонов` },
   academy: { name: 'Лунная академия', c0: 180, info: 'Школа чародеев: лунная магия, лёд, гроза и звёзды.',
-    bonus: n => `+${6 * n}% урона у лунного мага, морозного шпиля, грозового менгира и звездочёта` },
+    bonus: n => `+${pctN(TB.dmg, n)}% урона у лунного мага, морозного шпиля, грозового менгира и звездочёта` },
   barracks: { name: 'Казармы', c0: 130, info: 'Охотники и древни набираются сил перед походом.',
-    bonus: n => `+${10 * n}% здоровья и +${5 * n}% урона у охотников и древня` },
+    bonus: n => `+${pctN(TB.unitHp, n)}% здоровья и +${pctN(TB.unitDmg, n)}% урона у охотников и древня` },
   grove: { name: 'Священная роща', c0: 160, info: 'Друиды хранят силу леса и делятся ею с теми, кто его защищает.',
-    bonus: n => `+${6 * n}% силы у друида, грибной поляны и лунной арфистки, +${10 * n}% монет у золотого древа в бою` },
+    bonus: n => `+${pctN(TB.dmg, n)}% силы у друида, грибной поляны и лунной арфистки, +${pctN(TB.goldTree, n)}% монет у золотого древа в бою` },
 };
 const TOWN_KEYS = Object.keys(TOWN_B);
 const HALL_COST = [0, 0, 400, 1000, 2200, 4500], HALL_TIME = [0, 0, 60, 300, 900, 1800], B_TIME = [0, 10, 60, 180, 600, 1800];
@@ -5391,11 +5394,11 @@ function collectMine() {
 // what the town gives the defenders in battle
 function townBonus() {
   const L = lvOf, dmg = {};
-  for (const t of ['archer', 'ranger', 'ballista', 'griffin']) dmg[t] = 1 + 0.06 * L('archery');
-  for (const t of ['mage', 'frost', 'storm', 'star']) dmg[t] = 1 + 0.06 * L('academy');
-  for (const t of ['hunters', 'ent']) dmg[t] = 1 + 0.05 * L('barracks');
-  for (const t of ['druid', 'spores']) dmg[t] = 1 + 0.06 * L('grove');
-  return { lives: 1 + 0.08 * L('wall'), startGold: 25 * L('treasury'), bounty: 1 + 0.06 * L('market'), dmg, unitHp: 1 + 0.1 * L('barracks'), bard: 1 + 0.06 * L('grove'), goldTree: 1 + 0.1 * L('grove') };
+  for (const t of ['archer', 'ranger', 'ballista', 'griffin']) dmg[t] = 1 + TB.dmg * L('archery');
+  for (const t of ['mage', 'frost', 'storm', 'star']) dmg[t] = 1 + TB.dmg * L('academy');
+  for (const t of ['hunters', 'ent']) dmg[t] = 1 + TB.unitDmg * L('barracks');
+  for (const t of ['druid', 'spores']) dmg[t] = 1 + TB.dmg * L('grove');
+  return { lives: 1 + TB.wall * L('wall'), startGold: Math.round(TB.treasury * L('treasury')), bounty: 1 + TB.market * L('market'), dmg, unitHp: 1 + TB.unitHp * L('barracks'), bard: 1 + TB.dmg * L('grove'), goldTree: 1 + TB.goldTree * L('grove') };
 }
 // gold and crystals a battle pays into the town
 function battleReward(r, prevStars) {
