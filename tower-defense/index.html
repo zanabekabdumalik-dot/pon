@@ -245,7 +245,48 @@ details.howto li::marker{color:var(--gold)}
 .loadout #loGo{position:sticky;bottom:8px;z-index:2;filter:drop-shadow(0 -4px 14px rgba(0,0,0,.6))}
 .loadout #loGo:disabled{filter:grayscale(.6) drop-shadow(0 -4px 14px rgba(0,0,0,.6))}
 
-/* Main menu: two game modes, settings in the top corner */
+/* Town: the home screen, a living elven town with buildings to raise */
+.screen.town{padding:0;overflow:hidden;background:#13281c}
+#townCv{position:absolute;top:0;left:0;width:100%;height:100%;touch-action:manipulation}
+.town-top{position:absolute;top:0;left:0;right:64px;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:12px 10px}
+.res{display:flex;align-items:center;gap:5px;padding:4px 11px 4px 6px;border-radius:999px;font-weight:800;font-size:16px;font-variant-numeric:tabular-nums;color:#fff;
+  background:linear-gradient(180deg,rgba(20,14,6,.82),rgba(10,8,4,.82));border:1px solid rgba(255,209,102,.55);box-shadow:0 2px 6px rgba(0,0,0,.45);text-shadow:0 1px 0 rgba(0,0,0,.6)}
+.res svg{width:22px;height:22px;flex:none}
+.res.gem{border-color:rgba(190,150,255,.6)}
+.res.bld{border-color:rgba(200,210,220,.5)}
+.town .gear{top:12px}
+.town-toast{position:absolute;left:50%;top:60px;transform:translateX(-50%);z-index:3;max-width:90%;padding:8px 16px;border-radius:999px;font-weight:800;font-size:15px;color:#2a1500;
+  background:linear-gradient(180deg,#ffe68f,#f2a83c);box-shadow:0 4px 14px rgba(0,0,0,.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.town-bottom{position:absolute;left:0;right:0;bottom:0;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.town-bottom .mode{padding:10px 10px;gap:8px;border-radius:16px;min-width:0}
+.town-bottom .mode-ic{width:36px;height:36px;border-radius:11px}
+.town-bottom .mode-ic svg{width:26px;height:26px}
+.town-bottom .mode-txt b{font-size:19px;white-space:nowrap}
+.town-bottom .mode-txt span{font-size:12.5px}
+@media (max-width:360px){ .town-bottom .mode-ic{display:none} .town-bottom .mode-txt b{font-size:17px} .res{font-size:14.5px;padding:3px 9px 3px 5px} .res svg{width:19px;height:19px} }
+.bsheet{position:absolute;left:8px;right:8px;bottom:8px;z-index:4;max-height:72%;overflow-y:auto;padding:12px 14px 12px;border-radius:18px;
+  background:linear-gradient(180deg,rgba(36,92,70,.97),rgba(14,40,30,.97));border:1.5px solid var(--line-gold);box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.bs-head{display:flex;align-items:center;gap:10px}
+#bsIcon{flex:none;width:60px;height:60px;border-radius:14px;background:rgba(0,0,0,.25)}
+.bs-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.bs-t b{font-family:var(--font-display);font-size:24px;line-height:1.05;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.45)}
+.bs-t span{font-size:13px;font-weight:800;letter-spacing:.04em;color:#ffe3a6}
+.bs-info{margin:8px 0 8px;font-size:14px;line-height:1.35;color:#eef7f1}
+.bs-bonus{font-size:13.5px;line-height:1.4;padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.25);color:#d4ecdf}
+.bs-bonus b{color:#a6ffc6}
+.bs-prog{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13.5px;font-weight:800;color:#fff}
+.bs-prog .bar{flex:1;height:12px;border-radius:999px;background:rgba(0,0,0,.45);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+.bs-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7fd48f,#c8f0a0)}
+.bs-prog #bsLeft{flex:none}
+.bs-btns{display:flex;gap:8px;margin-top:10px}
+.bs-btns .primary{flex:1;font-size:17px}
+.primary.gem{background:linear-gradient(180deg,#c9a8ff 0%,#8a5ae0 55%,#5a2ab0 100%);border-color:#e2ccff;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.5)}
+.primary.harvest{margin-top:8px;font-size:17px}
+.bs-note{margin:6px 0 0;min-height:1.2em;font-size:13px;font-weight:700;color:#ffb3a3}
+.end-reward{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:16px;font-weight:800;color:#ffe9b0}
+.end-reward span{display:flex;align-items:center;gap:4px}
+.end-reward .coin{width:1.3em;height:1.3em}
+/* Main menu buttons and settings */
 .gear{position:absolute;top:14px;right:14px;z-index:1;width:46px;height:46px;border-radius:14px;padding:0;display:grid;place-items:center;
   border:1px solid #5fb38c;background:linear-gradient(180deg,#36906a,#1c5640);box-shadow:0 3px 0 #0a2a1e,inset 0 1px 0 rgba(255,255,255,.3)}
 .gear svg{width:24px;height:24px;fill:#eaf7ef}
@@ -272,10 +313,7 @@ details.howto li::marker{color:var(--gold)}
 .lvl .best{position:relative;z-index:1;grid-row:1/4;grid-column:2;text-align:center;font-weight:800;font-size:12px;color:#e2ccff;line-height:1.1}
 .lvl .best b{display:block;font-family:var(--font-display);font-size:30px;color:#fff;text-shadow:0 0 12px rgba(200,150,255,.8)}
 
-.home .eyebrow{padding-right:58px}
 @media (max-height:640px){
-  .screen.home .screen-inner{gap:11px}
-  .home .lead{font-size:14.5px}
   .mode{padding:12px 14px}
   .mode-txt b{font-size:24px}
 }
@@ -367,24 +405,33 @@ details.howto li::marker{color:var(--gold)}
     <button id="waveBtn" class="primary">В бой!</button>
   </footer>
 
-  <section id="menu" class="screen home">
+  <section id="menu" class="screen town" aria-label="Город Сильвенор">
+    <canvas id="townCv"></canvas>
+    <div class="town-top">
+      <span class="res gold" title="Золото — на постройки и улучшения"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18l3.2-7h11.6L21 18z" fill="#e8a820"/><path d="M6.2 11l2-4.5h7.6l2 4.5z" fill="#ffd34a"/><path d="M8.2 6.5h7.6l.6 1.3H7.6z" fill="#fff2b0"/><path d="M3 18h18v1.6H3z" fill="#9a6a10"/></svg><b id="tGold">0</b></span>
+      <span class="res gem" title="Кристаллы — ускоряют стройку"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h11l4 5.5L12 21 2.5 9z" fill="#a77cff"/><path d="M2.5 9h19L12 21z" fill="#7a4ae0"/><path d="M6.5 3.5L9 9l3-5.5L15 9l2.5-5.5" fill="none" stroke="#e8d8ff" stroke-width="1.1"/></svg><b id="tGems">0</b></span>
+      <span class="res bld" title="Свободные строители"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 19.5l8.2-8.2 2 2-8.2 8.2z" fill="#c9a06a"/><path d="M10.5 4.5h6l4 4-3 3-7-7z" fill="#cfd6dc"/><path d="M10.5 4.5l7 7-1 1-7-7z" fill="#8a9098"/></svg><b id="tBld">1/1</b></span>
+    </div>
     <button class="gear" id="settingsBtn" aria-label="Настройки"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3.5h-4l-.4 2.5a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7.4 7.4 0 0 0 1.7-1l2.4 1 2-3.4zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button>
-    <div class="screen-inner">
-      <p class="eyebrow">Пепельный разлом открылся</p>
-      <h1>Оборона Сильвенора</h1>
-      <p class="lead">Демоны идут захватывать города эльфов. Выберите шестерых защитников, ставьте их у дороги и отбивайте волну за волной.</p>
-      <div class="modes">
-        <button class="mode story" id="storyBtn">
-          <span class="mode-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21V9l2-1V5h2v2l2-1V4h2v2h2V4h2v2l2 1V5h2v3l2 1v12h-7v-5a2 2 0 0 0-4 0v5z"/></svg></span>
-          <span class="mode-txt"><b>Сюжет</b><span id="storySub">Десять городов эльфов</span></span>
-          <span class="chev" aria-hidden="true">›</span>
-        </button>
-        <button class="mode endless" id="endlessBtn">
-          <span class="mode-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.6 8.2c-2.1 0-3.8 1.7-3.8 3.8s1.7 3.8 3.8 3.8c3 0 4.8-3.8 5.4-3.8s2.4 3.8 5.4 3.8c2.1 0 3.8-1.7 3.8-3.8s-1.7-3.8-3.8-3.8c-3 0-4.8 3.8-5.4 3.8S9.6 8.2 6.6 8.2zm0 2.2c1.5 0 2.8 1.6 3.7 1.6-.9 0-2.2 1.6-3.7 1.6a1.6 1.6 0 0 1 0-3.2zm10.8 0a1.6 1.6 0 0 1 0 3.2c-1.5 0-2.8-1.6-3.7-1.6.9 0 2.2-1.6 3.7-1.6z"/></svg></span>
-          <span class="mode-txt"><b>Бесконечный режим</b><span id="endlessSub">Волны без конца</span></span>
-          <span class="chev" aria-hidden="true">›</span>
-        </button>
-      </div>
+    <div class="town-toast" id="townToast" hidden></div>
+    <div class="town-bottom" id="townBottom">
+      <button class="mode story" id="storyBtn">
+        <span class="mode-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21V9l2-1V5h2v2l2-1V4h2v2h2V4h2v2l2 1V5h2v3l2 1v12h-7v-5a2 2 0 0 0-4 0v5z"/></svg></span>
+        <span class="mode-txt"><b>Сюжет</b><span id="storySub">Десять городов</span></span>
+      </button>
+      <button class="mode endless" id="endlessBtn">
+        <span class="mode-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.6 8.2c-2.1 0-3.8 1.7-3.8 3.8s1.7 3.8 3.8 3.8c3 0 4.8-3.8 5.4-3.8s2.4 3.8 5.4 3.8c2.1 0 3.8-1.7 3.8-3.8s-1.7-3.8-3.8-3.8c-3 0-4.8 3.8-5.4 3.8S9.6 8.2 6.6 8.2zm0 2.2c1.5 0 2.8 1.6 3.7 1.6-.9 0-2.2 1.6-3.7 1.6a1.6 1.6 0 0 1 0-3.2zm10.8 0a1.6 1.6 0 0 1 0 3.2c-1.5 0-2.8-1.6-3.7-1.6.9 0 2.2-1.6 3.7-1.6z"/></svg></span>
+        <span class="mode-txt"><b>Бесконечный</b><span id="endlessSub">Волны без конца</span></span>
+      </button>
+    </div>
+    <div class="bsheet" id="bldSheet" hidden>
+      <div class="bs-head"><canvas id="bsIcon"></canvas><div class="bs-t"><b id="bsName"></b><span id="bsLvl"></span></div><button class="x" id="bsClose" aria-label="Закрыть">✕</button></div>
+      <p class="bs-info" id="bsInfo"></p>
+      <div class="bs-bonus" id="bsBonus"></div>
+      <div class="bs-prog" id="bsProg" hidden><span class="bar"><i id="bsBar"></i></span><span id="bsLeft"></span></div>
+      <div class="bs-btns"><button class="primary" id="bsUp"></button><button class="primary gem" id="bsFast" hidden></button></div>
+      <button class="primary wide harvest" id="bsCollect" hidden></button>
+      <p class="bs-note" id="bsNote"></p>
     </div>
   </section>
 
@@ -460,6 +507,7 @@ details.howto li::marker{color:var(--gold)}
       <h2 id="endTitle"></h2>
       <div class="big-stars" id="endStars"></div>
       <p class="end-text" id="endText"></p>
+      <p class="end-reward" id="endReward" hidden></p>
       <div class="col">
         <button class="primary wide" id="nextBtn">Следующий город</button>
         <button class="ghost" id="retryBtn">Ещё раз</button>
@@ -3968,9 +4016,9 @@ function defaultRally(t) {
 const FORM = [[-0.24, -0.1], [0.24, -0.1], [0, 0.2]];
 // Squad units: hunters hold one demon each (target); the treant holds several (held list) and has a longer reach.
 function syncUnits(t) {
-  const st = stats(t), big = t.type === 'ent';
-  while (t.units.length < st.count) t.units.push({ k: t.units.length, t, x: t.x, y: t.y + 0.25, hp: st.hp, maxHp: st.hp, alive: true, target: null, held: big ? [] : null, reach: big ? 0.62 : 0.45, cd: 0, respawn: 0, face: 1, flash: 0, swing: 0, moving: false });
-  for (const u of t.units) { u.maxHp = st.hp; if (u.alive) u.hp = st.hp; }
+  const st = stats(t), big = t.type === 'ent', hp = Math.round(st.hp * S.town.unitHp);
+  while (t.units.length < st.count) t.units.push({ k: t.units.length, t, x: t.x, y: t.y + 0.25, hp, maxHp: hp, alive: true, target: null, held: big ? [] : null, reach: big ? 0.62 : 0.45, cd: 0, respawn: 0, face: 1, flash: 0, swing: 0, moving: false });
+  for (const u of t.units) { u.maxHp = hp; if (u.alive) u.hp = hp; }
 }
 function syncGriffins(t) {
   const st = stats(t);
@@ -4073,8 +4121,9 @@ function updateGoldTree(t, st, dt) {
   if (!S.waveActive) return;
   if ((t.cd -= dt) > 0) return;
   t.cd = st.every; t.fire = 0.45;
-  S.gold += st.gold;
-  addText('+' + st.gold, t.x, t.y - 0.9, '#ffe08a', 15);
+  const n = Math.round(st.gold * S.town.goldTree);
+  S.gold += n;
+  addText('+' + n, t.x, t.y - 0.9, '#ffe08a', 15);
   burst(t.x, t.y - 0.45, 8, '#ffd34a', 1.0, 0.6, 0.04, 0.5);
   Snd.play('coin');
 }
@@ -4119,12 +4168,14 @@ function healAura(b, st, dt) {
 }
 // Harpist songs and shield-bearer cover, recomputed every step.
 function computeAuras() {
-  for (const t of S.towers) if (t) { t.buff = 1; t.haste = 1; }
+  for (const t of S.towers) if (t) { t.song = 1; t.haste = 1; }
   for (const b of S.towers) {
     if (!b || b.type !== 'bard' || b.curse > 0) continue;
     const st = stats(b);
-    for (const t of S.towers) if (t && t.type !== 'bard' && dist(t.x, t.y, b.x, b.y) <= st.range + 0.01) { t.buff = Math.max(t.buff, 1 + st.boost); t.haste = Math.max(t.haste, 1 + (st.haste || 0)); }
+    for (const t of S.towers) if (t && t.type !== 'bard' && dist(t.x, t.y, b.x, b.y) <= st.range + 0.01) { t.song = Math.max(t.song, 1 + st.boost * S.town.bard); t.haste = Math.max(t.haste, 1 + (st.haste || 0)); }
   }
+  // the town's buildings make each kind of defender stronger; the harpist's song comes on top
+  for (const t of S.towers) if (t) t.buff = (S.town.dmg[t.type] || 1) * t.song;
   let shields = null, drums = null;
   for (const e of S.enemies) {
     e.shielded = false; e.drummed = false;
@@ -4276,7 +4327,7 @@ function spawnEnemy(type, pi, d, v) {
     type, D, pi, d: d || 0, hp, maxHp: hp, alive: true, x: 0, y: 0, ox: 0, oy: 0, dirx: 0, diry: 1, face: 1,
     off: D.boss ? 0 : rand(-0.18, 0.18), speed: D.speed * rand(0.94, 1.06) * (V.speed || 1), slowF: 1, slowT: 0, stunT: 0,
     v: v || null, tint: v || D.tint || null, armor: Math.min(0.8, (D.armor || 0) + (V.armor || 0)), mres: D.mres || 0,
-    magicMul: V.magicMul || 1, dmgMul: V.dmgMul || 1, regen: V.regen || 0, bounty: v ? Math.ceil(D.bounty * 1.3) : D.bounty,
+    magicMul: V.magicMul || 1, dmgMul: V.dmgMul || 1, regen: V.regen || 0, bounty: Math.round((v ? Math.ceil(D.bounty * 1.3) : D.bounty) * S.town.bounty),
     phaseCd: V.phase ? rand(1.5, 3.5) : 0, phased: 0, hasteT: 0, roarT: 4, mendT: 4,
     drummed: false, drumT: Math.random(), raiseCd: 0, fuse: 0, skin: 0, skinCd: 5,
     blocker: null, engaged: false, cdT: (D.cd || 1) * 0.5, atk: 0, flash: 0, phase: Math.random() * TAU,
@@ -4645,7 +4696,7 @@ function drawWorld(g, time) {
     drawFlag(g, t.rally.x + 0.32, t.rally.y + 0.22, on ? 1 : 0.55);
   }
   // songs under buffed towers, shield cover under demons
-  for (const t of S.towers) if (t && t.buff > 1) { g.beginPath(); g.ellipse(t.x, t.y + 0.18, 0.44, 0.2, 0, 0, TAU); g.lineWidth = 0.03; g.strokeStyle = `rgba(200,170,255,${0.45 + 0.2 * Math.sin(time * 3 + t.si)})`; g.stroke(); }
+  for (const t of S.towers) if (t && t.song > 1) { g.beginPath(); g.ellipse(t.x, t.y + 0.18, 0.44, 0.2, 0, 0, TAU); g.lineWidth = 0.03; g.strokeStyle = `rgba(200,170,255,${0.45 + 0.2 * Math.sin(time * 3 + t.si)})`; g.stroke(); }
   for (const e of S.enemies) if (e.D.aura) { g.beginPath(); g.ellipse(e.x, e.y, 1.3, 0.72, 0, 0, TAU); g.lineWidth = 0.025; g.setLineDash([0.1, 0.08]); g.strokeStyle = 'rgba(255,120,80,.4)'; g.stroke(); g.setLineDash([]); }
   for (const f of S.fx) if (f.ground) drawFx(g, f);
   // depth-sorted ground objects
@@ -4997,7 +5048,7 @@ function refreshTower() {
   const T = TOWERS[t.type], st = T.levels[t.lvl], nx = T.levels[t.lvl + 1];
   towerIcon(el.tIcon, t.type, t.lvl);
   el.tName.textContent = T.name;
-  el.tLvl.textContent = `Уровень ${t.lvl + 1} из 3` + (t.buff > 1 ? ` · песня +${Math.round((t.buff - 1) * 100)}%` : '') + (t.curse > 0 ? ' · проклят' : '');
+  el.tLvl.textContent = `Уровень ${t.lvl + 1} из 3` + (t.song > 1 ? ` · песня +${Math.round((t.song - 1) * 100)}%` : '') + (t.curse > 0 ? ' · проклят' : '');
   const rows = statRows(t.type, st), nrows = nx ? statRows(t.type, nx) : null;
   el.tStats.innerHTML = rows.map(([k, v], j) => `<span class="k">${k}</span><b>${v}</b><span class="nx">${nrows && nrows[j][1] !== v ? '→ ' + nrows[j][1] : ''}</span>`).join('');
   if (nx) { el.upBtn.disabled = S.gold < nx.up; el.upBtn.innerHTML = S.gold < nx.up ? `Улучшить · ${COIN}${nx.up} — мало монет` : `Улучшить · ${COIN}${nx.up}`; }
@@ -5136,6 +5187,9 @@ function showMenu(screen = 'menu') {
 }
 function startLevel(li, mode = 'story', loadout = null) {
   S = newState(li, mode); amb.length = 0; UI.lo = null;
+  S.town = townBonus();
+  S.maxLives = S.lives = Math.round(S.maxLives * S.town.lives);
+  S.gold += S.town.startGold;
   S.loadout = (loadout && loadout.length ? loadout : ORDER).filter((k, i, a) => TOWERS[k] && available(k, li) && a.indexOf(k) === i);
   S.cheap = Math.min(...S.loadout.map(k => TOWERS[k].cost));
   layoutCards();
@@ -5162,19 +5216,27 @@ function finish(win) {
     progress.endless = progress.endless || {};
     best = progress.endless[li] || 0;
     if (S.wave > best) { record = true; best = progress.endless[li] = S.wave; store.set('silvenor.progress', progress); }
-  } else if (win) {
+  }
+  const prevStars = progress.stars[li] || 0;
+  if (!S.L.endless && win) {
     stars = S.lives >= S.maxLives * 0.9 ? 3 : S.lives >= S.maxLives * 0.5 ? 2 : 1;
     progress.stars[li] = Math.max(progress.stars[li] || 0, stars);
     progress.unlocked = Math.max(progress.unlocked, Math.min(LEVELS.length, li + 2));
     store.set('silvenor.progress', progress);
   }
   const snap = { win, li, stars, kills: S.kills, lives: S.lives, max: S.maxLives, wave: S.wave, total: S.L.waves.length, name: S.L.name, bossIn: S.bossIn, endless: !!S.L.endless, best, record };
+  // the battle pays into the town
+  snap.reward = battleReward(snap, prevStars);
+  town.gold += snap.reward.gold; town.gems += snap.reward.gems; saveTown();
   setTimeout(() => showEnd(snap), 1100);
 }
 function showEnd(r) {
   if (!S || S.li !== r.li) return;
   $('endStars').hidden = r.endless;
   $('endMenuBtn').textContent = r.endless ? 'К выбору карты' : 'К выбору города';
+  const rw = $('endReward');
+  rw.hidden = !r.reward || !(r.reward.gold || r.reward.gems);
+  if (!rw.hidden) rw.innerHTML = `В казну города:<span>${GOLD}+${r.reward.gold}</span>${r.reward.gems ? `<span>${GEM}+${r.reward.gems}</span>` : ''}`;
   if (r.endless) {
     $('endEyebrow').textContent = 'Бесконечный режим';
     $('endTitle').textContent = r.record ? 'Новый рекорд!' : `${r.name}: город пал`;
@@ -5212,9 +5274,10 @@ function showScreen(id) {
 function hideScreens() { for (const s of MENU_SCREENS) $(s).hidden = true; UI.screen = null; }
 function renderHome() {
   const stars = progress.stars.reduce((a, b) => a + (b || 0), 0);
-  $('storySub').textContent = `Десять городов · ★ ${stars} из ${LEVELS.length * 3}`;
+  $('storySub').textContent = `★ ${stars} из ${LEVELS.length * 3}`;
   const best = Math.max(0, ...LEVELS.map((_, i) => endlessBest(i)));
   $('endlessSub').textContent = best ? `Рекорд: ${best} ${plural(best, 'волна', 'волны', 'волн')}` : 'Волны без конца';
+  closeBuilding(); tickTown(); updateTownHud();
 }
 function renderEndless() {
   const box = $('endlessMaps');
@@ -5236,6 +5299,597 @@ function cycleGfx() {
   if (GFX.mode === 'auto') GFX.auto = 2;
   applyGfx(); refreshSettings(); Snd.play('tap');
 }
+
+/* ================= the town: buildings, gold, crystals, builders ================= */
+// The home screen is the elven town, as in Clash of Clans. Battles pay gold (and crystals for new stars); gold builds
+// and upgrades the buildings, each upgrade takes real time and a free builder, crystals finish it at once. Every
+// building makes the defenders stronger in battle. The Tree of Life caps the level of all the others.
+const TOWN_MAX = 5, MINE_RATE = [0, 60, 110, 170, 240, 320], MINE_HOURS = 4;
+const TOWN_B = {
+  hall: { name: 'Древо Жизни', c0: 0, info: 'Сердце города. Чем выше Древо, тем выше можно поднять остальные постройки. С 3 уровня в городе работают два строителя.',
+    bonus: n => `постройки до ${n} уровня${n >= 3 ? ', два строителя' : ', один строитель'}` },
+  wall: { name: 'Городская стена', c0: 120, info: 'Чем крепче стены, тем больше ударов выдержит город, пока демоны прорываются к воротам.',
+    bonus: n => `+${8 * n}% к прочности стен в бою` },
+  treasury: { name: 'Казна', c0: 100, info: 'Из казны в каждый бой уходит запас монет на первых защитников.',
+    bonus: n => `+${25 * n} монет в начале боя` },
+  market: { name: 'Рынок', c0: 140, info: 'Торговцы скупают трофеи: за каждого побеждённого демона платят больше.',
+    bonus: n => `+${6 * n}% монет за демонов` },
+  mine: { name: 'Золотая яблоня', c0: 80, info: 'С золотых ветвей падает золото даже тогда, когда вы не играете. Заходите в город и собирайте урожай.',
+    bonus: n => `${MINE_RATE[n]} золота в час, копит до ${MINE_RATE[n] * MINE_HOURS}` },
+  archery: { name: 'Стрельбище', c0: 150, info: 'Здесь тренируются стрелки Сильвенора.',
+    bonus: n => `+${6 * n}% урона у лучников, следопыта, баллисты и грифонов` },
+  academy: { name: 'Лунная академия', c0: 180, info: 'Школа чародеев: лунная магия, лёд, гроза и звёзды.',
+    bonus: n => `+${6 * n}% урона у лунного мага, морозного шпиля, грозового менгира и звездочёта` },
+  barracks: { name: 'Казармы', c0: 130, info: 'Охотники и древни набираются сил перед походом.',
+    bonus: n => `+${10 * n}% здоровья и +${5 * n}% урона у охотников и древня` },
+  grove: { name: 'Священная роща', c0: 160, info: 'Друиды хранят силу леса и делятся ею с теми, кто его защищает.',
+    bonus: n => `+${6 * n}% силы у друида, грибной поляны и лунной арфистки, +${10 * n}% монет у золотого древа в бою` },
+};
+const TOWN_KEYS = Object.keys(TOWN_B);
+const HALL_COST = [0, 0, 400, 1000, 2200, 4500], HALL_TIME = [0, 0, 60, 300, 900, 1800], B_TIME = [0, 10, 60, 180, 600, 1800];
+const townCost = (k, n) => k === 'hall' ? HALL_COST[n] : Math.round(TOWN_B[k].c0 * 1.75 ** (n - 1) / 10) * 10;
+const townTime = (k, n) => (k === 'hall' ? HALL_TIME : B_TIME)[n];
+function loadTown() {
+  const t = store.get('silvenor.town', null);
+  if (t && t.lv && typeof t.lv === 'object') {
+    t.gold = Math.max(0, +t.gold || 0); t.gems = Math.max(0, +t.gems || 0); t.up = Array.isArray(t.up) ? t.up.filter(u => TOWN_B[u.k]) : [];
+    t.lv.hall = Math.max(1, t.lv.hall | 0); t.mineT = +t.mineT || Date.now();
+    return t;
+  }
+  // a new town; players who already won cities start with gold and crystals for their stars
+  const stars = progress.stars.reduce((a, b) => a + (b || 0), 0);
+  return { gold: 300 + 150 * stars, gems: 20 + 3 * stars, lv: { hall: 1 }, up: [], mineT: Date.now() };
+}
+let town = loadTown();
+const saveTown = () => store.set('silvenor.town', town);
+const lvOf = k => town.lv[k] || 0;
+const upOf = k => town.up.find(u => u.k === k);
+const builders = () => lvOf('hall') >= 3 ? 2 : 1;
+// why an upgrade cannot start right now ('' when it can)
+function townBlock(k) {
+  const n = lvOf(k) + 1;
+  if (upOf(k)) return 'Уже строится';
+  if (n > TOWN_MAX) return 'Максимальный уровень';
+  if (k !== 'hall' && n > lvOf('hall')) return `Сначала поднимите Древо Жизни до ${n} уровня`;
+  if (town.up.length >= builders()) return builders() > 1 ? 'Все строители заняты' : 'Строитель занят';
+  if (town.gold < townCost(k, n)) return `Не хватает ${townCost(k, n) - town.gold} золота`;
+  return '';
+}
+function startTownUp(k) {
+  if (townBlock(k)) return false;
+  const n = lvOf(k) + 1;
+  town.gold -= townCost(k, n);
+  town.up.push({ k, to: n, start: Date.now(), end: Date.now() + townTime(k, n) * 1000 });
+  saveTown();
+  return true;
+}
+const speedCost = u => Math.max(1, Math.ceil((u.end - Date.now()) / 120000));
+function speedTownUp(k) {
+  const u = upOf(k); if (!u) return [];
+  const c = speedCost(u); if (town.gems < c) return [];
+  town.gems -= c; u.end = Date.now();
+  return tickTown();
+}
+// finished upgrades become levels; returns the buildings that just grew
+function tickTown() {
+  const now = Date.now(), done = town.up.filter(u => u.end <= now);
+  if (!done.length) return done;
+  for (const u of done) { town.lv[u.k] = Math.max(lvOf(u.k), u.to); if (u.k === 'mine' && u.to === 1) town.mineT = now; }
+  town.up = town.up.filter(u => u.end > now);
+  saveTown();
+  return done;
+}
+function mineStored() {
+  const n = lvOf('mine'); if (!n) return 0;
+  return Math.min(MINE_RATE[n] * MINE_HOURS, MINE_RATE[n] * Math.max(0, Date.now() - town.mineT) / 3.6e6);
+}
+function collectMine() {
+  const v = Math.floor(mineStored()); if (v < 1) return 0;
+  town.gold += v; town.mineT = Date.now(); saveTown();
+  return v;
+}
+// what the town gives the defenders in battle
+function townBonus() {
+  const L = lvOf, dmg = {};
+  for (const t of ['archer', 'ranger', 'ballista', 'griffin']) dmg[t] = 1 + 0.06 * L('archery');
+  for (const t of ['mage', 'frost', 'storm', 'star']) dmg[t] = 1 + 0.06 * L('academy');
+  for (const t of ['hunters', 'ent']) dmg[t] = 1 + 0.05 * L('barracks');
+  for (const t of ['druid', 'spores']) dmg[t] = 1 + 0.06 * L('grove');
+  return { lives: 1 + 0.08 * L('wall'), startGold: 25 * L('treasury'), bounty: 1 + 0.06 * L('market'), dmg, unitHp: 1 + 0.1 * L('barracks'), bard: 1 + 0.06 * L('grove'), goldTree: 1 + 0.1 * L('grove') };
+}
+// gold and crystals a battle pays into the town
+function battleReward(r, prevStars) {
+  if (r.endless) return { gold: 12 * r.wave, gems: r.record ? 3 + 2 * Math.floor(r.wave / 10) : 0 };
+  const base = 120 + 60 * r.li;
+  if (!r.win) return { gold: Math.round(base * 0.35 * r.wave / r.total), gems: 0 };
+  return { gold: Math.round(base * (0.5 + 0.25 * r.stars)) + (prevStars ? 0 : base), gems: 4 * Math.max(0, r.stars - prevStars) + (prevStars ? 0 : 5) };
+}
+function fmtLeft(sec) {
+  sec = Math.max(0, Math.ceil(sec));
+  if (sec >= 3600) return `${Math.floor(sec / 3600)} ч ${String(Math.floor(sec % 3600 / 60)).padStart(2, '0')} мин`;
+  if (sec >= 60) return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+  return `${sec} с`;
+}
+function fmtDur(sec) {
+  if (sec >= 3600) return `${sec / 3600} ч`;
+  if (sec >= 60) return `${sec / 60} мин`;
+  return `${sec} с`;
+}
+
+/* ---------- town buildings: drawing ---------- */
+// Feet at (x, y). Like the towers they have a still pass (TP = 1, cached) and a moving pass (TP = 2).
+const DET_TOWN = {
+  hallTrunk(b, lvl) {
+    const top = -1.05 - lvl * 0.06;
+    for (let k = 0; k < 7; k++) {
+      let px = -0.26 + k * 0.085, py = 0.0;
+      while (py > top + 0.1) { const ny = py - b.rr(0.06, 0.12), nx = px + b.rr(-0.02, 0.02) - px * 0.06; b.s(0.012, 'rgba(36,22,12,.5)', px, py, nx, ny); px = nx; py = ny; }
+    }
+    b.s(0.02, 'rgba(255,220,170,.18)', -0.28, -0.02, -0.18, top + 0.12);
+    for (let i = 0; i < 18; i++) b.d(b.rr(0.012, 0.024), i % 3 ? '#4f8a4a' : '#86c06a', b.rr(-0.4, 0.4), b.rr(-0.02, 0.06));
+  },
+  hallCrown(b, lvl) {
+    const cr = 0.62 + lvl * 0.07, cy = -1.25 - lvl * 0.06, gold = lvl >= 3;
+    leafCluster(b, 60 + lvl * 8, 0, cy - cr * 0.1, cr * 1.2, cr * 0.8, gold ? ['#1d4a30', '#3b8456', '#2a6440', '#e8b030'] : ['#1d4a30', '#3b8456', '#2a6440'], 0.05);
+    leafCluster(b, 26, -cr * 0.25, cy - cr * 0.5, cr * 0.5, cr * 0.32, gold ? ['#5aa86c', '#ffd34a'] : ['#5aa86c', '#74bf7c'], 0.045);
+    for (let i = 0; i < 14; i++) { const a = b.rr(0, TAU); b.d(0.012, 'rgba(220,255,200,.5)', Math.cos(a) * cr * 0.7, cy - cr * 0.3 + Math.sin(a) * cr * 0.4); }
+  },
+};
+function drawHall(g, lvl, x, y, time) {
+  const cr = 0.62 + lvl * 0.07, cy = y - 1.25 - lvl * 0.06, top = y - 1.05 - lvl * 0.06;
+  if (TP !== 2) {
+  shadow(g, x, y + 0.1, 1.0, 0.26);
+  // roots spreading over the ground
+  g.strokeStyle = '#5a3d25'; g.lineCap = 'round';
+  for (const s of [-1, 1]) for (let k = 0; k < 2; k++) { g.beginPath(); g.moveTo(x + s * 0.2, y - 0.12); g.quadraticCurveTo(x + s * (0.5 + k * 0.2), y - 0.04, x + s * (0.68 + k * 0.26), y + 0.08 + k * 0.05); g.lineWidth = 0.1 - k * 0.03; g.stroke(); }
+  g.lineCap = 'butt';
+  // trunk with a door, windows and a balcony
+  poly(g, [x - 0.36, y + 0.04, x + 0.36, y + 0.04, x + 0.24, top, x - 0.24, top], '#6b4a2e');
+  poly(g, [x - 0.36, y + 0.04, x - 0.1, y + 0.04, x - 0.11, top, x - 0.24, top], '#7d5836');
+  drawDetail(g, 'hallTrunk', lvl, x, y, DET_TOWN.hallTrunk);
+  poly(g, [x - 0.2, y + 0.1, x + 0.24, y + 0.1, x + 0.2, y + 0.03, x - 0.16, y + 0.03], '#9a9384');
+  plankDoor(g, x + 0.02, y + 0.03, y - 0.34, 0.11, '#4a2f1a', '#c9a070');
+  for (const [wx, wy, r] of [[-0.14, -0.6, 0.06], [0.15, -0.75, 0.055], [-0.05, -0.95, 0.045]]) {
+    if (y + wy < top + 0.05) continue;
+    circ(g, x + wx, y + wy, r + 0.018, '#4a2f1a'); circ(g, x + wx, y + wy, r, '#ffd27a');
+    line(g, x + wx - r, y + wy, x + wx + r, y + wy, 0.01, '#4a2f1a'); line(g, x + wx, y + wy - r, x + wx, y + wy + r, 0.01, '#4a2f1a');
+  }
+  if (lvl >= 2) {
+    ell(g, x, y - 0.48, 0.34, 0.06, '#5a3d25');
+    for (let i = 0; i <= 6; i++) { const a = Math.PI * i / 6; line(g, x + Math.cos(a) * 0.32, y - 0.48 + Math.sin(a) * 0.05, x + Math.cos(a) * 0.32, y - 0.56 + Math.sin(a) * 0.05, 0.012, '#8a6a44'); }
+    g.beginPath(); g.ellipse(x, y - 0.56, 0.32, 0.05, 0, 0, Math.PI); g.lineWidth = 0.016; g.strokeStyle = lvl >= 4 ? '#ffd34a' : '#8a6a44'; g.stroke();
+  }
+  // the crown
+  circ(g, x - cr * 0.65, cy + 0.12, cr * 0.7, '#24553a');
+  circ(g, x + cr * 0.65, cy + 0.1, cr * 0.7, '#24553a');
+  circ(g, x, cy - cr * 0.25, cr * 0.88, '#2e6c45');
+  circ(g, x - cr * 0.28, cy - cr * 0.48, cr * 0.46, '#3f8a58');
+  drawDetail(g, 'hallCrown', lvl, x, y, DET_TOWN.hallCrown);
+  if (lvl >= 2) for (const k of lvl >= 4 ? [-0.75, -0.25, 0.3, 0.8] : [-0.55, 0.6]) hangLantern(g, x + k * cr, cy + 0.12 + cr * 0.55, 0.1, 'rgba(255,220,140,.6)');
+  if (lvl >= 4) for (const s of [-1, 1]) { line(g, x + s * cr * 1.05, cy + 0.1, x + s * cr * 1.05, cy - 0.45, 0.02, '#d8c49a'); }
+  if (lvl >= 5) glow(g, x, cy - cr * 0.3, cr * 1.4, 'rgba(255,230,140,.22)');
+  }
+  if (TP === 1) return;
+  if (lvl >= 4) for (const s of [-1, 1]) { const wv = Math.sin(time * 3 + s) * 0.03, fx = x + s * cr * 1.05; poly(g, [fx, cy - 0.45, fx + s * 0.24, cy - 0.4 + wv, fx, cy - 0.31], '#3f9a63'); circ(g, fx + s * 0.08, cy - 0.39 + wv / 2, 0.025, '#e9c46a'); }
+  // fireflies around the crown, a living glow in the windows
+  for (let i = 0; i < 3 + lvl; i++) { const a = time * (0.5 + i * 0.07) + i * 1.7; glow(g, x + Math.cos(a) * cr * 1.1, cy - cr * 0.2 + Math.sin(a * 1.3) * cr * 0.6, 0.07, 'rgba(220,255,140,.75)'); }
+  const fl = 0.75 + Math.sin(time * 5) * 0.1;
+  glow(g, x - 0.14, y - 0.6, 0.18, `rgba(255,200,110,${0.35 * fl})`);
+}
+function drawTreasury(g, lvl, x, y, time) {
+  if (TP !== 2) {
+  shadow(g, x, y + 0.27, 0.44, 0.12);
+  poly(g, [x - 0.4, y + 0.27, x + 0.4, y + 0.27, x + 0.36, y + 0.16, x - 0.36, y + 0.16], '#9a9384');
+  line(g, x - 0.36, y + 0.21, x + 0.36, y + 0.21, 0.008, 'rgba(255,255,255,.3)');
+  poly(g, [x - 0.31, y + 0.17, x + 0.31, y + 0.17, x + 0.29, y - 0.34, x - 0.29, y - 0.34], '#ddd3bb');
+  poly(g, [x - 0.31, y + 0.17, x - 0.12, y + 0.17, x - 0.12, y - 0.34, x - 0.29, y - 0.34], '#e8e0ca');
+  drawDetail(g, 'treasuryWall', 0, x, y, b => masonry(b, 0.17, 0.31, -0.34, 0.29, 0.085, 0.1, 'rgba(110,96,70,.35)', 'rgba(255,255,255,.4)'));
+  for (const cx of [-0.22, 0.22]) { g.fillStyle = '#f2ecdc'; g.fillRect(x + cx - 0.035, y - 0.32, 0.07, 0.48); line(g, x + cx - 0.012, y - 0.32, x + cx - 0.012, y + 0.16, 0.006, 'rgba(120,110,90,.45)'); }
+  plankDoor(g, x, y + 0.17, y - 0.14, 0.08, '#5a3a1e', '#b8a57a');
+  circ(g, x, y + 0.0, 0.025, '#ffd34a');
+  // cornice and the golden dome
+  poly(g, [x - 0.36, y - 0.32, x + 0.36, y - 0.32, x + 0.3, y - 0.4, x - 0.3, y - 0.4], '#c9bfa4');
+  line(g, x - 0.36, y - 0.32, x + 0.36, y - 0.32, 0.014, '#d8b45a');
+  const dg = g.createLinearGradient(x - 0.25, 0, x + 0.25, 0); dg.addColorStop(0, '#fff0a0'); dg.addColorStop(0.5, '#e8b030'); dg.addColorStop(1, '#a8701c');
+  g.fillStyle = dg; g.beginPath(); g.ellipse(x, y - 0.4, 0.26, 0.24 + lvl * 0.015, 0, Math.PI, TAU); g.closePath(); g.fill();
+  for (const k of [-0.13, 0, 0.13]) { g.beginPath(); g.moveTo(x + k * 1.7, y - 0.4); g.quadraticCurveTo(x + k, y - 0.6, x, y - 0.64 - lvl * 0.015); g.lineWidth = 0.008; g.strokeStyle = 'rgba(140,90,20,.6)'; g.stroke(); }
+  line(g, x, y - 0.64 - lvl * 0.015, x, y - 0.76 - lvl * 0.015, 0.016, '#d8b45a');
+  circ(g, x, y - 0.79 - lvl * 0.015, 0.035, '#ffd34a'); circ(g, x - 0.01, y - 0.8 - lvl * 0.015, 0.012, '#fff8d8');
+  // chests and coin piles by the door
+  if (lvl >= 2) for (const s of [-1, 1]) {
+    const bx = x + s * 0.36, by = y + 0.27;
+    for (let i = 0; i < 3 + lvl; i++) circ(g, bx + (i % 3 - 1) * 0.03 - s * 0.02, by - 0.02 - Math.floor(i / 3) * 0.025, 0.02, '#ffd34a');
+  }
+  if (lvl >= 3) {
+    const bx = x - 0.4, by = y + 0.2;
+    poly(g, [bx - 0.07, by, bx + 0.07, by, bx + 0.07, by - 0.07, bx - 0.07, by - 0.07], '#7a4a22');
+    line(g, bx - 0.07, by - 0.04, bx + 0.07, by - 0.04, 0.01, '#d8b45a');
+  }
+  if (lvl >= 4) for (const s of [-1, 1]) poly(g, [x + s * 0.2, y - 0.3, x + s * 0.12, y - 0.3, x + s * 0.12, y - 0.06, x + s * 0.16, y - 0.1, x + s * 0.2, y - 0.06], '#2f7d52');
+  if (lvl >= 5) for (const [gx, gy] of [[-0.1, -0.5], [0.1, -0.5], [0, -0.58]]) { glow(g, x + gx, y + gy, 0.05, 'rgba(120,255,170,.7)'); circ(g, x + gx, y + gy, 0.016, '#7dffb0'); }
+  }
+  if (TP === 1) return;
+  const tw = Math.max(0, Math.sin(time * 1.7)) ** 8;
+  if (tw > 0.05) { const sx = x + 0.1, sy = y - 0.55; g.globalAlpha = tw; line(g, sx - 0.06, sy, sx + 0.06, sy, 0.012, '#fffbe0'); line(g, sx, sy - 0.06, sx, sy + 0.06, 0.012, '#fffbe0'); g.globalAlpha = 1; }
+}
+function marketStall(g, x, y, w, c1, c2, goods) {
+  // posts, counter, a striped awning and goods on the counter
+  for (const s of [-1, 1]) line(g, x + s * w, y, x + s * w, y - 0.36, 0.02, '#6e5038');
+  poly(g, [x - w - 0.02, y, x + w + 0.02, y, x + w + 0.02, y - 0.14, x - w - 0.02, y - 0.14], '#8a6236');
+  line(g, x - w - 0.02, y - 0.14, x + w + 0.02, y - 0.14, 0.012, '#a87a46');
+  const n = 5;
+  for (let i = 0; i < n; i++) { const x0 = x - w - 0.05 + i * (2 * w + 0.1) / n, x1 = x0 + (2 * w + 0.1) / n; poly(g, [x0, y - 0.32, x1, y - 0.32, x1 - 0.01, y - 0.46, x0 + 0.01, y - 0.46], i % 2 ? c2 : c1); }
+  for (let i = 0; i < n; i++) { const cx = x - w - 0.05 + (i + 0.5) * (2 * w + 0.1) / n; g.fillStyle = i % 2 ? c2 : c1; g.beginPath(); g.arc(cx, y - 0.32, (2 * w + 0.1) / n / 2, 0, Math.PI); g.fill(); }
+  goods.forEach(([dx, r, col], i) => circ(g, x + dx * w, y - 0.16 - r * 0.6, r, col));
+}
+function drawMarket(g, lvl, x, y, time) {
+  if (TP !== 2) {
+  shadow(g, x, y + 0.24, 0.5, 0.12);
+  ell(g, x, y + 0.14, 0.5, 0.15, '#8f8574');
+  drawDetail(g, 'marketCobbles', 0, x, y, b => { for (let i = 0; i < 30; i++) { const a = b.rr(0, TAU), d = Math.sqrt(b.r()); b.e(i % 2 ? '#a89e8c' : '#7d7464', Math.cos(a) * 0.45 * d, 0.14 + Math.sin(a) * 0.13 * d, 0.03, 0.016, b.rr(-0.4, 0.4)); } });
+  const stalls = [[0, 0.02, '#c0392b', '#f4ead2', [[-0.6, 0.03, '#d8344a'], [-0.2, 0.03, '#e8b030'], [0.3, 0.035, '#8fc85a'], [0.7, 0.03, '#d8344a']]]];
+  if (lvl >= 2) stalls.push([-0.32, 0.16, '#2f7d52', '#f4ead2', [[-0.5, 0.03, '#a7b6b8'], [0.1, 0.035, '#c9a06a'], [0.6, 0.03, '#a7b6b8']]]);
+  if (lvl >= 4) stalls.push([0.32, 0.17, '#3a5aa8', '#ffe08a', [[-0.5, 0.03, '#b98cff'], [0.0, 0.03, '#7dd8ff'], [0.5, 0.03, '#ffd34a']]]);
+  for (const [dx, dy, c1, c2, goods] of stalls.sort((a, b) => a[1] - b[1])) marketStall(g, x + dx, y + dy, dy > 0.1 ? 0.13 : 0.17, c1, c2, goods);
+  // barrels, crates and sacks
+  for (const [bx, by] of [[-0.42, 0.22], [0.44, 0.2]]) { ell(g, x + bx, y + by, 0.05, 0.02, '#4a3020'); g.fillStyle = '#8a5a2c'; g.fillRect(x + bx - 0.05, y + by - 0.12, 0.1, 0.12); ell(g, x + bx, y + by - 0.12, 0.05, 0.02, '#a87a46'); for (const yy of [-0.03, -0.09]) line(g, x + bx - 0.05, y + by + yy, x + bx + 0.05, y + by + yy, 0.01, '#3a3a40'); }
+  if (lvl >= 3) { poly(g, [x + 0.12, y + 0.26, x + 0.24, y + 0.26, x + 0.24, y + 0.15, x + 0.12, y + 0.15], '#a87a46'); line(g, x + 0.12, y + 0.26, x + 0.24, y + 0.15, 0.008, 'rgba(60,36,16,.6)'); ell(g, x - 0.2, y + 0.25, 0.06, 0.04, '#d8c49a'); }
+  if (lvl >= 5) line(g, x, y + 0.02, x, y - 0.75, 0.02, '#d8c49a');
+  }
+  if (TP === 1) return;
+  if (lvl >= 5) { const wv = Math.sin(time * 3) * 0.03; poly(g, [x, y - 0.75, x + 0.22, y - 0.7 + wv, x, y - 0.62], '#e8b030'); circ(g, x + 0.07, y - 0.69 + wv / 2, 0.02, '#fff4c4'); }
+}
+// the town wall runs across the whole bottom of the town; (x, y) is the foot of the gate
+function drawTownWall(g, lvl, x, y, time) {
+  const stone = lvl >= 3, h = 0.28 + lvl * 0.03, xs = [[-4.35, -0.55], [0.55, 4.35]];
+  if (TP !== 2) {
+  for (const [a, b] of xs) {
+    g.fillStyle = 'rgba(0,0,0,.3)'; g.fillRect(x + a, y + 0.02, b - a, 0.08);
+    if (!stone) {
+      for (let px = a; px < b; px += 0.11) { poly(g, [x + px, y + 0.04, x + px + 0.09, y + 0.04, x + px + 0.09, y - h, x + px + 0.045, y - h - 0.07, x + px, y - h], (Math.round(px * 9) % 2) ? '#8a6236' : '#7a5430'); }
+      for (const yy of [-h * 0.3, -h * 0.75]) line(g, x + a, y + yy, x + b, y + yy, 0.022, '#5a3d25');
+    } else {
+      g.fillStyle = '#8f988f'; g.fillRect(x + a, y - h, b - a, h + 0.05);
+      g.fillStyle = '#a6aea4'; g.fillRect(x + a, y - h, b - a, 0.05);
+      for (let px = a; px < b - 0.05; px += 0.18) { g.fillStyle = '#8f988f'; g.fillRect(x + px, y - h - 0.09, 0.1, 0.09); g.fillStyle = '#a6aea4'; g.fillRect(x + px, y - h - 0.09, 0.1, 0.025); }
+      for (let row = 0; row < 3; row++) { const yy = y - h + 0.06 + row * (h / 3); line(g, x + a, yy, x + b, yy, 0.007, 'rgba(50,56,50,.45)'); for (let px = a + (row % 2) * 0.1; px < b; px += 0.2) line(g, x + px, yy, x + px, yy + h / 3, 0.006, 'rgba(50,56,50,.4)'); }
+      if (lvl >= 5) line(g, x + a, y - h + 0.03, x + b, y - h + 0.03, 0.014, '#d8b45a');
+    }
+  }
+  // corner towers and the gatehouse
+  const tower = (tx, th, w) => {
+    if (stone) {
+      g.fillStyle = '#868f86'; g.fillRect(tx - w, y - th, 2 * w, th + 0.05);
+      g.fillStyle = '#9aa298'; g.fillRect(tx - w, y - th, w * 0.7, th + 0.05);
+      for (let i = -1; i <= 1; i++) { g.fillStyle = '#868f86'; g.fillRect(tx + i * w * 0.66 - 0.04, y - th - 0.08, 0.08, 0.08); }
+      poly(g, [tx - w - 0.03, y - th - 0.08, tx, y - th - 0.42, tx + w + 0.03, y - th - 0.08], lvl >= 4 ? '#2f8a62' : '#3a6a5a');
+    } else {
+      for (const s of [-1, 1]) line(g, tx + s * w * 0.8, y + 0.03, tx + s * w * 0.7, y - th, 0.03, '#6e5038');
+      poly(g, [tx - w, y - th, tx + w, y - th, tx + w * 0.9, y - th + 0.1, tx - w * 0.9, y - th + 0.1], '#7a5430');
+      poly(g, [tx - w - 0.04, y - th, tx, y - th - 0.28, tx + w + 0.04, y - th], '#2a573a');
+    }
+  };
+  for (const tx of [-4.35, 4.35]) tower(x + tx, h + 0.35, 0.16);
+  tower(x - 0.48, h + 0.5, 0.17); tower(x + 0.48, h + 0.5, 0.17);
+  g.fillStyle = stone ? '#8f988f' : '#7a5430'; g.fillRect(x - 0.33, y - h - 0.2, 0.66, h + 0.25);
+  plankDoor(g, x, y + 0.05, y - h - 0.05, 0.22, '#5a3a1e', stone ? '#c9c2ae' : '#8a6a44');
+  if (lvl >= 2) for (const s of [-1, 1]) { line(g, x + s * 0.48, y - h - 0.92, x + s * 0.48, y - h - 1.2, 0.018, '#d8c49a'); }
+  }
+  if (TP === 1) return;
+  if (lvl >= 2) for (const s of [-1, 1]) { const wv = Math.sin(time * 3 + s) * 0.03, fx = x + s * 0.48; poly(g, [fx, y - h - 1.2, fx + 0.22, y - h - 1.15 + wv, fx, y - h - 1.07], '#3f9a63'); circ(g, fx + 0.07, y - h - 1.14 + wv / 2, 0.02, '#e9c46a'); }
+  if (lvl >= 3) for (const s of [-1, 1]) flame(g, x + s * 0.3, y - h + 0.02, 0.03, time + s);
+}
+// an empty plot waiting for its first building
+function drawPlot(g, x, y, time, sel) {
+  g.beginPath(); g.ellipse(x, y + 0.08, 0.5, 0.2, 0, 0, TAU); g.fillStyle = 'rgba(40,30,18,.28)'; g.fill();
+  g.setLineDash([0.1, 0.07]); g.lineWidth = 0.03; g.strokeStyle = `rgba(255,214,120,${sel ? 0.95 : 0.55 + 0.2 * Math.sin(time * 3 + x)})`; g.stroke(); g.setLineDash([]);
+  line(g, x, y + 0.08, x, y - 0.32, 0.03, '#7a5430');
+  poly(g, [x - 0.2, y - 0.46, x + 0.2, y - 0.46, x + 0.2, y - 0.26, x - 0.2, y - 0.26], '#a87a46');
+  line(g, x - 0.2, y - 0.46, x + 0.2, y - 0.46, 0.012, '#c9a070');
+  line(g, x - 0.06, y - 0.42, x + 0.07, y - 0.3, 0.025, '#5a3d25');
+  poly(g, [x - 0.1, y - 0.44, x - 0.02, y - 0.44, x - 0.03, y - 0.38, x - 0.1, y - 0.38], '#9aa0a8');
+}
+// scaffolding in front of a building that is being built or upgraded
+function drawScaffold(g, x, y, s, h, time) {
+  const w = 0.42 * s;
+  g.lineCap = 'round';
+  for (const px of [-w, 0, w]) line(g, x + px, y + 0.12, x + px, y - h, 0.03, '#a87a46');
+  for (let k = 0; k < 3; k++) { const py = y + 0.05 - k * (h / 3); line(g, x - w - 0.04, py, x + w + 0.04, py, 0.04, '#c9a070'); }
+  line(g, x - w, y + 0.05, x + w, y - h * 0.66, 0.018, '#8a6236');
+  g.lineCap = 'butt';
+  // a hammer that keeps knocking
+  const a = Math.sin(time * 10) * 0.5 - 0.3, hx = x + w * 0.5, hy = y - h * 0.66 - 0.05;
+  g.save(); g.translate(hx, hy); g.rotate(a);
+  line(g, 0, 0, 0.16, 0, 0.022, '#8a6a44'); poly(g, [0.14, -0.05, 0.2, -0.05, 0.2, 0.05, 0.14, 0.05], '#9aa0a8');
+  g.restore();
+}
+
+/* ---------- town screen ---------- */
+const GOLD = '<svg class="coin" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18l3.2-7h11.6L21 18z" fill="#e8a820"/><path d="M6.2 11l2-4.5h7.6l2 4.5z" fill="#ffd34a"/><path d="M8.2 6.5h7.6l.6 1.3H7.6z" fill="#fff2b0"/><path d="M3 18h18v1.6H3z" fill="#9a6a10"/></svg>';
+const GEM = '<svg class="coin" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h11l4 5.5L12 21 2.5 9z" fill="#a77cff"/><path d="M2.5 9h19L12 21z" fill="#7a4ae0"/><path d="M6.5 3.5L9 9l3-5.5L15 9l2.5-5.5" fill="none" stroke="#e8d8ff" stroke-width="1.1"/></svg>';
+const townEl = $('menu'), townCv = $('townCv'), tctx = townCv.getContext('2d');
+// [x, y of the feet, scale] on a 9-wide town; the wall runs along the bottom
+const TOWN_POS = {
+  archery: [1.5, 3.95, 1.7], treasury: [4.5, 3.75, 1.7], academy: [7.5, 3.95, 1.7], barracks: [1.45, 6.75, 1.7], grove: [7.55, 6.75, 1.7],
+  hall: [4.5, 8.45, 1.25], market: [2.25, 10.75, 1.6], mine: [6.75, 10.75, 1.7], wall: [4.5, 12.65, 1.0],
+};
+const PLAZA = [4.5, 8.6];
+const townTower = type => ({ box: [-0.68, -1.5, 0.68, 0.48], top: 1.15, draw: (g, n, t) => drawTower(g, type, n >= 5 ? 2 : n >= 3 ? 1 : 0, 0, 0, t, -Math.PI / 4, 0) });
+// still-part boxes in building units, and how high the building stands (for labels and taps)
+const TOWN_ART = {
+  hall: { box: [-1.45, -3.25, 1.45, 0.45], top: 2.6, draw: (g, n, t) => drawHall(g, n, 0, 0, t) },
+  treasury: { box: [-0.62, -1.05, 0.62, 0.45], top: 0.9, draw: (g, n, t) => drawTreasury(g, n, 0, 0, t) },
+  market: { box: [-0.72, -1.0, 0.72, 0.45], top: 0.75, draw: (g, n, t) => drawMarket(g, n, 0, 0, t) },
+  wall: { box: [-4.6, -1.8, 4.6, 0.25], top: 1.3, draw: (g, n, t) => drawTownWall(g, n, 0, 0, t) },
+  archery: townTower('archer'), academy: townTower('mage'), barracks: townTower('hunters'), grove: townTower('ent'), mine: townTower('gold'),
+};
+const TV = { w: 0, h: 0, d: 1, k: 1, kc: 1, ox: 0, oy: 0 }, TUI = { sel: null, down: null, fx: [], sheetT: 0 };
+const TSPR = new Map(), townBg = document.createElement('canvas');
+let townBgKey = '';
+function layoutTown() {
+  const w = townEl.clientWidth, h = townEl.clientHeight, d = Math.min(window.devicePixelRatio || 1, DPR_CAP[QL]);
+  if (!w || !h || (w === TV.w && h === TV.h && d === TV.d)) return;
+  Object.assign(TV, { w, h, d });
+  townCv.width = Math.round(w * d); townCv.height = Math.round(h * d);
+  // leave room for the resources on top and the two battle buttons below; the town spans y 1.6 … 13
+  const tb = $('townBottom').offsetHeight || 84, top = 58, bot = tb + 30, avail = Math.max(120, h - top - bot);
+  TV.kc = Math.min(w / 9.3, avail / 11.4);
+  TV.k = TV.kc * d;
+  TV.ox = (w - 9 * TV.kc) / 2 * d;
+  TV.oy = (top + (avail - 11.4 * TV.kc) / 2 - 1.6 * TV.kc) * d;
+  TSPR.clear(); townBgKey = '';
+}
+function townSprite(key, n, s) {
+  const A = TOWN_ART[key], k = TV.k * s, id = key + n + '@' + k.toFixed(2);
+  let c = TSPR.get(id);
+  if (!c) {
+    const [x0, y0, x1, y1] = A.box;
+    c = document.createElement('canvas'); c.width = Math.ceil((x1 - x0) * k); c.height = Math.ceil((y1 - y0) * k);
+    const g = c.getContext('2d'); g.setTransform(k, 0, 0, k, -x0 * k, -y0 * k);
+    TP = 1; A.draw(g, n, 0); TP = 0;
+    TSPR.set(id, c);
+  }
+  return c;
+}
+// meadow, paved roads from the gate and the tree to every building, a pond, the forest all around
+function renderTownBg() {
+  townBg.width = townCv.width; townBg.height = townCv.height; townBgKey = TV.w + 'x' + TV.h + '@' + TV.d;
+  const g = townBg.getContext('2d'), TH = THEMES.forest, rng = mulberry32(4242), k = TV.k;
+  TREE_HUE = TH.treeHue || [122, 30, 46, 0];
+  g.setTransform(k, 0, 0, k, TV.ox, TV.oy);
+  const ex0 = -TV.ox / k - 0.5, ey0 = -TV.oy / k - 0.5, ex1 = (townBg.width - TV.ox) / k + 0.5, ey1 = (townBg.height - TV.oy) / k + 0.5, area = (ex1 - ex0) * (ey1 - ey0);
+  const base = g.createLinearGradient(0, ey0, 0, ey1);
+  base.addColorStop(0, '#1d3a2a'); base.addColorStop(0.5, TH.base[1]); base.addColorStop(1, TH.base[2]);
+  g.fillStyle = base; g.fillRect(ex0, ey0, ex1 - ex0, ey1 - ey0);
+  for (let i = 0; i < area * 1.1; i++) glow(g, ex0 + rng() * (ex1 - ex0), ey0 + rng() * (ey1 - ey0), 0.4 + rng() * 1.3, TH.patches[Math.floor(rng() * TH.patches.length)]);
+  glow(g, 4.5, 6.6, 4.2, 'rgba(255,230,150,.08)');
+  for (let i = 0; i < area * 20; i++) circ(g, ex0 + rng() * (ex1 - ex0), ey0 + rng() * (ey1 - ey0), 0.008 + rng() * 0.014, rng() < 0.5 ? 'rgba(0,0,0,.16)' : 'rgba(255,255,255,.07)');
+  const [h0, hr, s0, sr, l0, lr, ba] = TH.blade;
+  for (let i = 0; i < area * 6; i++) {
+    const x = ex0 + rng() * (ex1 - ex0), y = ey0 + rng() * (ey1 - ey0), hgt = 0.07 + rng() * 0.08, hue = h0 + rng() * hr, sat = s0 + rng() * sr, lit = l0 + rng() * lr;
+    tuft(g, x, y, hgt, `hsla(${hue},${sat}%,${lit}%,${ba})`, `hsla(${hue - 6},${sat + 8}%,${Math.min(96, lit + 12)}%,${ba})`);
+  }
+  // roads
+  const roads = TOWN_ROADS;
+  g.lineJoin = 'round'; g.lineCap = 'round';
+  const stroke = (w, col) => { for (const r of roads) { g.beginPath(); g.moveTo(r[0][0], r[0][1]); if (r.length === 3) g.quadraticCurveTo(r[1][0], r[1][1], r[2][0], r[2][1]); else for (const q of r) g.lineTo(q[0], q[1]); g.lineWidth = w; g.strokeStyle = col; g.stroke(); } };
+  stroke(0.56, 'rgba(0,0,0,.2)'); stroke(0.47, TH.road[1]); stroke(0.38, TH.road[2]); stroke(0.16, TH.road[3]);
+  for (const r of roads) for (let i = 0; i < 40; i++) {
+    const t = rng(), a = r[0], b = r[r.length - 1], c = r.length === 3 ? r[1] : [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], u = 1 - t;
+    const x = u * u * a[0] + 2 * u * t * c[0] + t * t * b[0] + (rng() - 0.5) * 0.3, y = u * u * a[1] + 2 * u * t * c[1] + t * t * b[1] + (rng() - 0.5) * 0.22;
+    stone(g, x, y, 0.035 + rng() * 0.04, TH.stone[Math.floor(rng() * TH.stone.length)], rng() * 6);
+  }
+  g.lineCap = 'butt';
+  // a plaza around the Tree of Life
+  const [qx, qy] = PLAZA;
+  ell(g, qx, qy + 0.05, 1.75, 0.62, 'rgba(0,0,0,.18)'); ell(g, qx, qy, 1.66, 0.56, '#8d7d63'); ell(g, qx, qy - 0.02, 1.42, 0.46, '#9c8c72');
+  for (let i = 0; i < 30; i++) { const a = i / 30 * TAU; stone(g, qx + Math.cos(a) * 1.55, qy + Math.sin(a) * 0.51, 0.065, TH.stone[i % TH.stone.length], i); }
+  // pond with lily pads
+  const [px, py] = POND;
+  ell(g, px, py + 0.02, 0.62, 0.3, '#3a5a46'); ell(g, px, py, 0.56, 0.26, '#2f6a86'); ell(g, px - 0.1, py - 0.06, 0.32, 0.1, 'rgba(180,230,255,.25)');
+  for (const [lx, ly] of [[-0.25, 0.07], [0.2, -0.03], [0.05, 0.12]]) { ell(g, px + lx, py + ly, 0.08, 0.035, '#4f9a62'); circ(g, px + lx + 0.02, py + ly - 0.01, 0.015, '#f2a7c7'); }
+  // lamp posts along the main street
+  for (const ly of [9.8, 11.0]) for (const sd of [-1, 1]) { line(g, 4.5 + sd * 0.48, ly, 4.5 + sd * 0.48, ly - 0.42, 0.03, '#3a3530'); glow(g, 4.5 + sd * 0.48, ly - 0.46, 0.22, 'rgba(255,214,120,.35)'); circ(g, 4.5 + sd * 0.48, ly - 0.46, 0.045, '#ffe2a0'); }
+  // the forest around the town, flowers and bushes in the clearings
+  const busy = (x, y) => TOWN_KEYS.some(key => { const [bx, by, s] = TOWN_POS[key]; if (key === 'wall') return y > by - 0.7 && y < by + 0.3; const r = key === 'hall' ? 1.6 : 0.85 * s; return Math.abs(x - bx) < r && y > by - (key === 'hall' ? 2.4 : 1.3) && y < by + 0.5; }) || (Math.abs(x - 4.5) < 0.6 && y > PLAZA[1]) || dist(x, y, POND[0], POND[1]) < 0.75 || (Math.abs(x - PLAZA[0]) < 1.9 && Math.abs(y - PLAZA[1]) < 0.8);
+  const items = [];
+  for (let i = 0; i < area * 1.6; i++) {
+    const x = ex0 + rng() * (ex1 - ex0), y = ey0 + rng() * (ey1 - ey0), edge = x < 0.35 || x > 8.65 || y < 2.0 || y > 13.0;
+    if (busy(x, y)) continue;
+    if (edge) items.push({ k: 'tree', x, y, s: 0.36 + rng() * 0.16, hue: rng() });
+    else if (rng() < 0.45) items.push({ k: ['bush', 'flowers', 'rocks', 'fern', 'flowers'][Math.floor(rng() * 5)], x, y, theme: 'forest' });
+  }
+  items.sort((a, b) => a.y - b.y);
+  for (const it of items) { if (it.k === 'tree') drawTree(g, it.x, it.y, it.s, TH.tree, it.hue); else drawDeco(g, it); }
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  const vg = g.createRadialGradient(townBg.width / 2, townBg.height / 2, Math.min(townBg.width, townBg.height) * 0.4, townBg.width / 2, townBg.height / 2, Math.max(townBg.width, townBg.height) * 0.75);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.42)');
+  g.fillStyle = vg; g.fillRect(0, 0, townBg.width, townBg.height);
+}
+const POND = [8.1, 9.15];
+// a main street from the gate to the plaza and short lanes from the plaza to each building
+const TOWN_ROADS = (() => {
+  const r = [[[4.5, 13.5], [4.5, 11.0], [PLAZA[0], PLAZA[1] + 0.4]]];
+  for (const key of TOWN_KEYS) {
+    if (key === 'hall' || key === 'wall') continue;
+    const [x, y] = TOWN_POS[key], a = Math.atan2(y - PLAZA[1], x - PLAZA[0]), sx = PLAZA[0] + Math.cos(a) * 1.5, sy = PLAZA[1] + Math.sin(a) * 0.5;
+    r.push([[sx, sy], [(sx + x) / 2 + (x < 4.5 ? 0.25 : -0.25), (sy + y) / 2 + 0.25], [x, y + 0.3]]);
+  }
+  return r;
+})();
+// elves strolling the lanes
+const WALKERS = Array.from({ length: 5 }, (_, i) => ({ r: [0, 1, 3, 5, 7][i], t: i * 0.23, v: 0.05 + i * 0.012, dir: i % 2 ? -1 : 1, k: i }));
+function roadAt(r, t) {
+  const [a, c, b] = r, u = 1 - t;
+  return [u * u * a[0] + 2 * u * t * c[0] + t * t * b[0], u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]];
+}
+const harvestReady = () => lvOf('mine') > 0 && mineStored() >= Math.max(5, MINE_RATE[lvOf('mine')] * MINE_HOURS * 0.04);
+function townFrame(now) {
+  layoutTown();
+  for (const u of tickTown()) celebrate(u);
+  const g = tctx, k = TV.k, t = now / 1000;
+  if (townBgKey !== TV.w + 'x' + TV.h + '@' + TV.d) renderTownBg();
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.drawImage(townBg, 0, 0);
+  const order = TOWN_KEYS.slice().sort((a, b) => TOWN_POS[a][1] - TOWN_POS[b][1]);
+  const walkers = WALKERS.map(w => {
+    w.t += w.v / 30 * w.dir; if (w.t > 1 || w.t < 0) { w.dir = -w.dir; w.t = clamp(w.t, 0, 1); }
+    const r = TOWN_ROADS[w.r], [x, y] = roadAt(r, w.t), [x2] = roadAt(r, clamp(w.t + 0.01 * w.dir, 0, 1));
+    return { x, y, face: x2 >= x ? 1 : -1, flash: 0, moving: true, k: w.k, swing: 0 };
+  });
+  const drawWalkers = (y0, y1) => { g.setTransform(k, 0, 0, k, TV.ox, TV.oy); for (const h of walkers) if (h.y >= y0 && h.y < y1) scaled(g, h, 1.35, () => drawHunter(g, h, t)); };
+  let lastY = -1e9;
+  for (const key of order) {
+    const [x, y, s] = TOWN_POS[key], n = lvOf(key), u = upOf(key), A = TOWN_ART[key], sx = TV.ox + x * k, sy = TV.oy + y * k;
+    drawWalkers(lastY, y); lastY = y;
+    if (TUI.sel === key) {
+      g.setTransform(k, 0, 0, k, TV.ox, TV.oy);
+      const rx = key === 'wall' ? 0.7 : key === 'hall' ? 1.2 : 0.55 * s;
+      g.beginPath(); g.ellipse(x, y + 0.12, rx, rx * 0.4, 0, 0, TAU); g.lineWidth = 0.05; g.strokeStyle = `rgba(255,214,120,${0.7 + 0.25 * Math.sin(t * 5)})`; g.stroke();
+    }
+    if (n > 0) {
+      const spr = townSprite(key, n, s);
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.drawImage(spr, Math.round(sx + A.box[0] * k * s), Math.round(sy + A.box[1] * k * s));
+      g.setTransform(k * s, 0, 0, k * s, sx, sy); TP = 2; A.draw(g, n, t + x); TP = 0;
+    } else { g.setTransform(k, 0, 0, k, TV.ox, TV.oy); drawPlot(g, x, y, t, TUI.sel === key); }
+    if (u) { g.setTransform(k, 0, 0, k, TV.ox, TV.oy); drawScaffold(g, x, y, key === 'wall' ? 1.6 : s, key === 'hall' ? 1.5 : key === 'wall' ? 0.6 : 0.85, t); }
+  }
+  drawWalkers(lastY, 1e9);
+  // sparkles of finished buildings
+  g.setTransform(k, 0, 0, k, TV.ox, TV.oy);
+  for (const f of TUI.fx) { f.t += 1 / 30; f.x += f.vx / 30; f.y += f.vy / 30; f.vy += 0.6 / 30; g.globalAlpha = Math.max(0, 1 - f.t / f.life); circ(g, f.x, f.y, f.r, f.c); }
+  g.globalAlpha = 1;
+  TUI.fx = TUI.fx.filter(f => f.t < f.life);
+  // labels in screen pixels: level badges, names of empty plots, timers, the apple harvest
+  g.setTransform(TV.d, 0, 0, TV.d, 0, 0);
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  const kc = TV.kc, ox = TV.ox / TV.d, oy = TV.oy / TV.d;
+  for (const key of order) {
+    const [x, y, s] = TOWN_POS[key], n = lvOf(key), u = upOf(key), px = ox + x * kc, py = oy + y * kc, topY = py - Math.min(1.3, n ? TOWN_ART[key].top * s : 0.55) * kc;
+    if (n) {
+      const bx = key === 'wall' ? px + 0.36 * kc : px + (key === 'hall' ? 0.55 : 0.38 * s) * kc, by = py + 0.12 * kc;
+      circ(g, bx, by, 10, 'rgba(20,12,4,.85)'); circ(g, bx, by, 8.5, '#ffd166');
+      g.font = `800 12px ${UIFONT}`; g.fillStyle = '#2a1500'; g.fillText(String(n), bx, by + 0.5);
+    } else {
+      g.font = `800 11.5px ${UIFONT}`; g.lineWidth = 3; g.strokeStyle = 'rgba(0,0,0,.8)'; g.strokeText(TOWN_B[key].name, px, py + 0.42 * kc); g.fillStyle = '#ffe9b0'; g.fillText(TOWN_B[key].name, px, py + 0.42 * kc);
+    }
+    if (u) {
+      const total = Math.max(1, u.end - (u.start || u.end - townTime(key, u.to) * 1000)), f = clamp(1 - (u.end - Date.now()) / total, 0, 1), bw = 62, by = topY - 8;
+      g.fillStyle = 'rgba(10,8,4,.8)'; g.fillRect(px - bw / 2 - 2, by - 5, bw + 4, 10);
+      g.fillStyle = '#7fd48f'; g.fillRect(px - bw / 2, by - 3, bw * f, 6);
+      g.font = `800 12px ${UIFONT}`; g.lineWidth = 3; g.strokeStyle = 'rgba(0,0,0,.85)';
+      const lbl = fmtLeft((u.end - Date.now()) / 1000);
+      g.strokeText(lbl, px, by - 13); g.fillStyle = '#fff'; g.fillText(lbl, px, by - 13);
+    }
+    if (key === 'mine' && harvestReady() && !u) {
+      const bob = Math.sin(t * 3) * 3, by = topY - 14 + bob;
+      circ(g, px, by, 15, 'rgba(0,0,0,.35)'); circ(g, px, by - 1, 14, '#fffaf0');
+      poly(g, [px - 4, by + 13, px + 4, by + 13, px, by + 19], '#fffaf0');
+      circ(g, px, by - 1, 9, '#e8b030'); circ(g, px, by - 1, 6.5, '#ffd34a'); circ(g, px - 2, by - 3.5, 2, '#fff6c8');
+    }
+  }
+  // floating texts
+  for (const f of TUI.texts || []) {
+    f.t += 1 / 30;
+    const a = Math.max(0, 1 - f.t / 1.4), px = ox + f.x * kc, py = oy + (f.y - f.t * 0.6) * kc;
+    g.globalAlpha = a; g.font = `800 17px ${UIFONT}`; g.lineWidth = 3.5; g.strokeStyle = 'rgba(0,0,0,.8)'; g.strokeText(f.text, px, py); g.fillStyle = f.color; g.fillText(f.text, px, py); g.globalAlpha = 1;
+  }
+  if (TUI.texts) TUI.texts = TUI.texts.filter(f => f.t < 1.4);
+  updateTownHud();
+  if (TUI.sel && now - TUI.sheetT > 250) { TUI.sheetT = now; renderBuilding(); }
+}
+function townText(x, y, text, color) { (TUI.texts || (TUI.texts = [])).push({ x, y, text, color, t: 0 }); }
+function celebrate(u) {
+  const [x, y, s] = TOWN_POS[u.k], h = u.k === 'hall' ? 2.2 : 0.9 * s;
+  for (let i = 0; i < 26; i++) { const a = rand(0, TAU), v = rand(0.4, 1.6); TUI.fx.push({ x: x + rand(-0.4, 0.4) * s, y: y - h * rand(0.2, 0.9), vx: Math.cos(a) * v, vy: Math.sin(a) * v - 1.2, t: 0, life: rand(0.6, 1.2), r: rand(0.02, 0.05), c: i % 3 ? '#ffd166' : '#fff6c8' }); }
+  townText(x, y - h, u.to === 1 ? 'Построено!' : `Уровень ${u.to}!`, '#ffe08a');
+  townToast(u.to === 1 ? `${TOWN_B[u.k].name} ${BUILT[u.k] || 'построено'}` : `${TOWN_B[u.k].name}: уровень ${u.to}`);
+  if (!S) Snd.play('upgrade');
+  TSPR.clear();
+}
+const BUILT = { wall: 'построена', treasury: 'построена', market: 'построен', mine: 'построена', academy: 'построена', barracks: 'построены', grove: 'построена' };
+let townToastT = 0;
+function townToast(msg) {
+  const el2 = $('townToast'); el2.textContent = msg; el2.hidden = false;
+  clearTimeout(townToastT); townToastT = setTimeout(() => { el2.hidden = true; }, 2600);
+}
+function updateTownHud() {
+  setText($('tGold'), 'tg', String(town.gold));
+  setText($('tGems'), 'tc', String(town.gems));
+  setText($('tBld'), 'tb', `${builders() - town.up.length}/${builders()}`);
+}
+// taps on the town
+function townPick(cx, cy) {
+  const wx = (cx * TV.d - TV.ox) / TV.k, wy = (cy * TV.d - TV.oy) / TV.k;
+  let best = null, bd = Infinity;
+  for (const key of TOWN_KEYS) {
+    const [x, y, s] = TOWN_POS[key], n = lvOf(key);
+    const hw = key === 'wall' ? 4.4 : key === 'hall' ? 1.15 : 0.5 * s, ht = n ? TOWN_ART[key].top * s : 0.6;
+    if (Math.abs(wx - x) > hw || wy < y - ht || wy > y + 0.35) continue;
+    const d = Math.abs(wy - (y - ht / 2)) + Math.abs(wx - x) * 0.4 + (key === 'wall' ? 3 : 0);
+    if (d < bd) { bd = d; best = key; }
+  }
+  return best;
+}
+townCv.addEventListener('pointerdown', e => { TUI.down = { x: e.clientX, y: e.clientY }; });
+townCv.addEventListener('pointerup', e => {
+  const d = TUI.down; TUI.down = null;
+  if (!d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 16) return;
+  const r = townCv.getBoundingClientRect(), key = townPick(e.clientX - r.left, e.clientY - r.top);
+  if (!key) { closeBuilding(); return; }
+  if (key === 'mine' && !upOf('mine')) { const v = collectMine(); if (v) { const [x, y] = TOWN_POS.mine; townText(x, y - 1.3, `+${v} золота`, '#ffe08a'); Snd.play('coin'); } }
+  openBuilding(key);
+});
+townCv.addEventListener('pointercancel', () => { TUI.down = null; });
+// the building panel
+function openBuilding(key) {
+  TUI.sel = key; $('bldSheet').hidden = false; $('townBottom').hidden = true;
+  const c = $('bsIcon'), A = TOWN_ART[key], n = Math.max(1, lvOf(key)), px = Math.round(60 * Math.min(window.devicePixelRatio || 1, 3));
+  c.width = c.height = px;
+  const [x0, y0, x1, y1] = key === 'wall' ? [-1.0, -1.8, 1.0, 0.3] : A.box, sc = Math.min(px / (x1 - x0), px / (y1 - y0));
+  const g = c.getContext('2d'); g.setTransform(sc, 0, 0, sc, px / 2 - (x0 + x1) / 2 * sc, px / 2 - (y0 + y1) / 2 * sc);
+  TP = 0; A.draw(g, n, 0.6);
+  renderBuilding(); Snd.play('tap');
+}
+function closeBuilding() { if (!TUI.sel) return; TUI.sel = null; $('bldSheet').hidden = true; $('townBottom').hidden = false; }
+function renderBuilding() {
+  const key = TUI.sel; if (!key) return;
+  const B = TOWN_B[key], n = lvOf(key), u = upOf(key), nx = n + 1;
+  $('bsName').textContent = B.name;
+  $('bsLvl').textContent = n ? `Уровень ${n} из ${TOWN_MAX}` : 'Ещё не построено';
+  $('bsInfo').textContent = B.info;
+  $('bsBonus').innerHTML = n ? `Сейчас: <b>${B.bonus(n)}</b>${n < TOWN_MAX ? `<br>На ${nx} уровне: <b>${B.bonus(nx)}</b>` : ''}` : `После постройки: <b>${B.bonus(1)}</b>`;
+  const prog = $('bsProg'), up = $('bsUp'), fast = $('bsFast'), col = $('bsCollect'), note = $('bsNote');
+  prog.hidden = !u; fast.hidden = !u; up.hidden = !!u;
+  if (u) {
+    const total = Math.max(1, u.end - (u.start || u.end - townTime(key, u.to) * 1000)), left = (u.end - Date.now()) / 1000, c = speedCost(u);
+    $('bsBar').style.width = (clamp(1 - left * 1000 / total, 0, 1) * 100).toFixed(1) + '%';
+    $('bsLeft').textContent = `${u.to === 1 ? 'Строится' : `Улучшается до ${u.to}`}: ещё ${fmtLeft(left)}`;
+    fast.innerHTML = `Ускорить · ${GEM}${c}`; fast.disabled = town.gems < c;
+    note.textContent = town.gems < c ? `Не хватает ${c - town.gems} ${plural(c - town.gems, 'кристалла', 'кристаллов', 'кристаллов')}` : '';
+  } else if (n >= TOWN_MAX) {
+    up.disabled = true; up.textContent = 'Максимальный уровень'; note.textContent = '';
+  } else {
+    const why = townBlock(key);
+    up.disabled = !!why;
+    up.innerHTML = `${n ? `Улучшить до ${nx}` : 'Построить'} · ${GOLD}${townCost(key, nx)} · ${fmtDur(townTime(key, nx))}`;
+    note.textContent = why;
+  }
+  col.hidden = key !== 'mine' || !n;
+  if (!col.hidden) { const v = Math.floor(mineStored()); col.disabled = v < 1; col.innerHTML = `Собрать урожай · ${GOLD}${v}`; }
+}
+$('bsClose').addEventListener('click', () => { closeBuilding(); Snd.play('tap'); });
+$('bsUp').addEventListener('click', () => {
+  const key = TUI.sel; if (!key) return;
+  const c = townCost(key, lvOf(key) + 1);
+  if (!startTownUp(key)) return;
+  Snd.play('build'); renderBuilding();
+  if (c) { const [x, y] = TOWN_POS[key]; townText(x, y + 0.2, `−${c} золота`, '#ffb38a'); }
+});
+$('bsFast').addEventListener('click', () => { const key = TUI.sel; if (!key) return; for (const u of speedTownUp(key)) celebrate(u); renderBuilding(); });
+$('bsCollect').addEventListener('click', () => { const v = collectMine(); if (v) { const [x, y] = TOWN_POS.mine; townText(x, y - 1.3, `+${v} золота`, '#ffe08a'); Snd.play('coin'); } renderBuilding(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) tickTown(); });
 
 /* ---------- loadout: the six defenders taken into battle ---------- */
 // Before a city the player picks which six defenders to bring, as in Plants vs. Zombies. While six or fewer
@@ -5401,7 +6055,7 @@ function syncAwake() {
 }
 document.addEventListener('keydown', e => {
   if (UI.intro) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeIntro(); } return; }
-  if (e.key === 'Escape') { if (UI.rally != null) cancelRally(); else if (UI.sel) closeSheets(); else if (S && !S.over) setPaused(!UI.paused); else if (!S && UI.screen === 'loadout') closeLoadout(); else if (!S && UI.screen && UI.screen !== 'menu') showScreen('menu'); }
+  if (e.key === 'Escape') { if (UI.rally != null) cancelRally(); else if (UI.sel) closeSheets(); else if (S && !S.over) setPaused(!UI.paused); else if (!S && UI.screen === 'loadout') closeLoadout(); else if (!S && TUI.sel) closeBuilding(); else if (!S && UI.screen && UI.screen !== 'menu') showScreen('menu'); }
   if ((e.key === ' ' || e.key === 'Enter') && e.target === document.body && S && !S.waveActive && !UI.paused) { e.preventDefault(); startWave(); }
 });
 
@@ -5450,6 +6104,7 @@ function frame(now) {
   lastDraw = now;
   const dt = Math.min(0.1, Math.max(0, (now - lastT) / 1000)); lastT = now;
   const time = now / 1000;
+  if (!S && UI.screen === 'menu') { townFrame(now); syncAwake(); return; }
   if (S && !S.over && !UI.paused) {
     let rem = dt * UI.speed;
     while (rem > 1e-6 && !S.over) { const st = Math.min(rem, 1 / 60); update(st); rem -= st; }
@@ -5489,7 +6144,7 @@ function start(data) {
   requestAnimationFrame(t => { lastT = t; frame(t); });
 }
 window.__silvenor = {
-  get S() { return S; }, get lo() { return UI.lo; }, TOWERS, openLoadout, loToggle, startLevel, startWave, update, drawTower, drawDemon, drawVersus, render, DEMONS, showScreen,
+  get S() { return S; }, get lo() { return UI.lo; }, get town() { return town; }, set town(t) { town = t; saveTown(); }, townBonus, townFrame, startTownUp, speedTownUp, tickTown, collectMine, mineStored, openBuilding, closeBuilding, townPick, TOWERS, openLoadout, loToggle, startLevel, startWave, update, drawTower, drawDemon, drawVersus, render, DEMONS, showScreen,
   build(si, type) { UI.sel = { si }; UI.buildType = type; doBuild(); return !!S.towers[si]; },
   upgrade(si) { UI.sel = { si }; upgrade(); closeSheets(); },
   upCost(t) { const nx = TOWERS[t.type].levels[t.lvl + 1]; return nx ? nx.up : 0; },
@@ -5502,6 +6157,7 @@ window.__silvenor = {
     if (S && UI.paused) { setPaused(false); return true; }
     if (S) { setPaused(true); return true; }
     if (UI.screen === 'loadout') { closeLoadout(); return true; }
+    if (!S && TUI.sel) { closeBuilding(); return true; }
     if (UI.screen && UI.screen !== 'menu') { showScreen('menu'); return true; }
     return false;
   },

@@ -100,7 +100,7 @@ PY
 javac -nowarn -cp "$TOOLS/apksig.jar" -d "$BUILD/signer" "$HERE/tools/SignApk.java"
 java --add-exports java.base/sun.security.x509=ALL-UNNAMED --add-exports java.base/sun.security.pkcs=ALL-UNNAMED --add-exports java.base/sun.security.util=ALL-UNNAMED \
   -cp "$TOOLS/apksig.jar:$BUILD/signer" SignApk "$KEYSTORE" "$STOREPASS" "$ALIAS" "$BUILD/unsigned.apk" "$OUT"
-"$TOOLS/aapt2" dump badging "$OUT" | head -3
+"$TOOLS/aapt2" dump badging "$OUT" | sed -n 1,3p
 ls -la "$OUT"
 
 # 6. Android App Bundle for Google Play: the same resources linked in protobuf form, laid out as a "base" module
