@@ -1113,7 +1113,80 @@ function glow(g, x, y, r, col) {
   g.drawImage(spr, x - r, y - r, r * 2, r * 2);
   g.globalAlpha = ga;
 }
-function shadow(g, x, y, rx, ry, a = 0.35) { ell(g, x, y, rx, ry, `rgba(0,0,0,${a})`); }
+/* ---------- soft look: shaded orbs, soft shadows, painterly passes over cached layers ---------- */
+// Canvas blur filters (Chrome / Android WebView); without them the soft-focus passes are simply skipped.
+const SOFT_FILTER = (() => { try { const c = document.createElement('canvas').getContext('2d'); c.filter = 'blur(1px)'; return c.filter === 'blur(1px)'; } catch (e) { return false; } })();
+let COL_CTX = null;
+function parseCol(c) {
+  // hsl() and named colours: let the canvas normalise them to #rrggbb or rgba()
+  if (c[0] !== '#' && c[0] !== 'r') { if (!COL_CTX) COL_CTX = document.createElement('canvas').getContext('2d'); COL_CTX.fillStyle = '#000'; COL_CTX.fillStyle = c; c = String(COL_CTX.fillStyle); }
+  if (c[0] === '#') { const n = parseInt(c.length === 4 ? c[1] + c[1] + c[2] + c[2] + c[3] + c[3] : c.slice(1, 7), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255, 1]; }
+  const m = c.match(/[\d.]+/g) || [0, 0, 0];
+  return [+m[0], +m[1], +m[2], m[3] != null ? +m[3] : 1];
+}
+const mixCol = (r, g, b, t, k) => `rgb(${Math.round(r + (t - r) * k)},${Math.round(g + (t - g) * k)},${Math.round(b + (t - b) * k)})`;
+// A round body part lit from the upper left: a soft highlight, the colour itself, a darker rim. Cached per colour.
+const ORBS = new Map();
+function orb(g, x, y, rx, ry, col) {
+  let o = ORBS.get(col);
+  if (!o) {
+    if (ORBS.size > 420) ORBS.clear();
+    const [r, gg, b, a] = parseCol(col), spr = document.createElement('canvas');
+    spr.width = spr.height = 64;
+    const s = spr.getContext('2d'), gr = s.createRadialGradient(23, 19, 1, 30, 29, 33);
+    gr.addColorStop(0, mixCol(r, gg, b, 255, 0.4)); gr.addColorStop(0.25, mixCol(r, gg, b, 255, 0.16)); gr.addColorStop(0.6, `rgb(${r},${gg},${b})`); gr.addColorStop(1, mixCol(r, gg, b, 0, 0.36));
+    s.fillStyle = gr; s.beginPath(); s.arc(32, 32, 31.5, 0, TAU); s.fill();
+    o = { spr, a };
+    ORBS.set(col, o);
+  }
+  if (o.a < 1) { const ga = g.globalAlpha; g.globalAlpha = ga * o.a; g.drawImage(o.spr, x - rx, y - ry, rx * 2, ry * 2); g.globalAlpha = ga; }
+  else g.drawImage(o.spr, x - rx, y - ry, rx * 2, ry * 2);
+}
+// soft contact shadow: dark in the middle, fading out at the edge
+let SHADOW_SPR = null;
+function shadow(g, x, y, rx, ry, a = 0.35) {
+  if (!SHADOW_SPR) {
+    SHADOW_SPR = document.createElement('canvas'); SHADOW_SPR.width = 96; SHADOW_SPR.height = 48;
+    const s = SHADOW_SPR.getContext('2d'); s.setTransform(1, 0, 0, 0.5, 0, 0);
+    const gr = s.createRadialGradient(48, 48, 0, 48, 48, 48);
+    gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(0.55, 'rgba(0,0,0,.75)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    s.fillStyle = gr; s.fillRect(0, 0, 96, 96);
+  }
+  const ga = g.globalAlpha; g.globalAlpha = ga * Math.min(1, a * 1.25);
+  g.drawImage(SHADOW_SPR, x - rx * 1.25, y - ry * 1.25, rx * 2.5, ry * 2.5);
+  g.globalAlpha = ga;
+}
+// light from the upper left and a darker foot, applied once to a cached sprite (towers, town buildings)
+function shadeSprite(c) {
+  const g = c.getContext('2d'), w = c.width, h = c.height;
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0);
+  g.globalCompositeOperation = 'source-atop';
+  const gr = g.createLinearGradient(w * 0.1, 0, w * 0.9, h);
+  gr.addColorStop(0, 'rgba(255,240,205,.2)'); gr.addColorStop(0.45, 'rgba(255,250,240,0)'); gr.addColorStop(1, 'rgba(24,14,40,.3)');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  const ao = g.createLinearGradient(0, h * 0.68, 0, h);
+  ao.addColorStop(0, 'rgba(10,6,4,0)'); ao.addColorStop(1, 'rgba(10,6,4,.3)');
+  g.fillStyle = ao; g.fillRect(0, h * 0.68, w, h * 0.32);
+  g.restore();
+}
+// painterly soft focus over a finished background: a blurred copy laid over it, then warm light and cool shade
+function softenLayer(c, blurPx, alpha) {
+  const g = c.getContext('2d'), w = c.width, h = c.height;
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0);
+  if (SOFT_FILTER) { g.globalAlpha = alpha; g.filter = `blur(${blurPx.toFixed(1)}px)`; g.drawImage(c, 0, 0); g.filter = 'none'; g.globalAlpha = 1; }
+  g.globalCompositeOperation = 'soft-light';
+  const lg = g.createRadialGradient(w * 0.28, h * 0.12, 0, w * 0.28, h * 0.12, Math.hypot(w, h) * 0.95);
+  lg.addColorStop(0, 'rgba(255,236,190,.46)'); lg.addColorStop(0.5, 'rgba(128,128,128,0)'); lg.addColorStop(1, 'rgba(20,30,60,.22)');
+  g.fillStyle = lg; g.fillRect(0, 0, w, h);
+  g.restore();
+}
+// drifting patches of sunlight over the battlefield (moving pass, cheap glows)
+function sunDapples(g, time, x0, y0, x1, y1) {
+  for (let i = 0; i < 4; i++) {
+    const a = time * (0.05 + i * 0.013) + i * 1.9, x = x0 + (x1 - x0) * (0.5 + 0.42 * Math.sin(a)), y = y0 + (y1 - y0) * (0.5 + 0.4 * Math.cos(a * 0.8 + i));
+    glow(g, x, y, 2.2 + (i % 2) * 0.8, 'rgba(255,240,200,.09)');
+  }
+}
 
 /* ---------- towers ---------- */
 // Towers are drawn in two passes: TP = 1 draws only the still parts (cached as a sprite per type and level),
@@ -2665,8 +2738,8 @@ function drawDemon(g, e, time) {
       line(g, ax - 0.06, cy + 0.1, ax - 0.07 + l, y + 0.08, 0.045, c('#5c1410'));
       line(g, ax + 0.06, cy + 0.1, ax + 0.07 - l, y + 0.08, 0.045, c('#5c1410'));
       for (const s of [-1, 1]) poly(g, [ax + s * 0.08, cy - 0.02, ax + s * 0.26, cy - 0.16 - Math.abs(Math.sin(ph * 2)) * 0.05, ax + s * 0.2, cy + 0.04], c('#8e2a1c'));
-      circ(g, ax, cy, 0.16, c('#c8402c'));
-      circ(g, ax + f * 0.03, cy - 0.03, 0.1, c('#de5638'));
+      orb(g, ax, cy, 0.16, 0.16, c('#c8402c'));
+      orb(g, ax + f * 0.03, cy - 0.03, 0.1, 0.1, c('#de5638'));
       poly(g, [ax - 0.1, cy - 0.1, ax - 0.04, cy - 0.13, ax - 0.14, cy - 0.27], '#f1dcb4');
       poly(g, [ax + 0.1, cy - 0.1, ax + 0.04, cy - 0.13, ax + 0.14, cy - 0.27], '#f1dcb4');
       if (det) demonDetail(g, 'imp', ax, cy, f, DD.imp);
@@ -2681,13 +2754,13 @@ function drawDemon(g, e, time) {
         line(g, ax + f * (lx - 0.05), cy + 0.05, ax + f * (lx - 0.05) - ga * 0.07 * s, y + 0.07, 0.04, c('#3a0f0f'));
       }
       poly(g, [ax - f * 0.22, cy - 0.02, ax - f * 0.42, cy - 0.12 + Math.sin(time * 18) * 0.03, ax - f * 0.24, cy + 0.04], '#ff8a2f');
-      ell(g, ax, cy, 0.24, 0.105, c('#4a1414'));
+      orb(g, ax, cy, 0.24, 0.105, c('#4a1414'));
       if (det) demonDetail(g, 'houndBody', ax, cy, f, DD.houndBody);
       for (let i = 0; i < 5; i++) {
         const mx = ax + f * (-0.15 + i * 0.07), h = 0.1 + Math.abs(Math.sin(time * 16 + i * 1.7)) * 0.07;
         poly(g, [mx - 0.04, cy - 0.06, mx + f * 0.01, cy - 0.06 - h, mx + 0.04, cy - 0.06], i % 2 ? '#ffb347' : '#ff6a2a');
       }
-      circ(g, ax + f * 0.22, cy - 0.04, 0.085, c('#5a1818'));
+      orb(g, ax + f * 0.22, cy - 0.04, 0.085, 0.085, c('#5a1818'));
       poly(g, [ax + f * 0.26, cy - 0.06, ax + f * 0.38, cy - 0.01, ax + f * 0.26, cy + 0.03], c('#5a1818'));
       poly(g, [ax + f * 0.18, cy - 0.1, ax + f * 0.2, cy - 0.2, ax + f * 0.25, cy - 0.1], '#2a0a0a');
       if (det) demonDetail(g, 'houndHead', ax, cy, f, DD.houndHead);
@@ -2700,23 +2773,23 @@ function drawDemon(g, e, time) {
       const l = Math.sin(ph * 0.8) * 0.05;
       line(g, ax - 0.12, cy + 0.2, ax - 0.13 + l, y + 0.07, 0.11, c('#4a121b'));
       line(g, ax + 0.12, cy + 0.2, ax + 0.13 - l, y + 0.07, 0.11, c('#4a121b'));
-      ell(g, ax, cy, 0.3, 0.27, c('#7d2232'));
-      ell(g, ax + f * 0.04, cy + 0.07, 0.17, 0.14, c('#9b3141'));
+      orb(g, ax, cy, 0.3, 0.27, c('#7d2232'));
+      orb(g, ax + f * 0.04, cy + 0.07, 0.17, 0.14, c('#9b3141'));
       if (det) demonDetail(g, 'bruteBody', ax, cy, f, DD.bruteBody);
       const raise = e.atk > 0 ? -0.18 * Math.sin((e.atk / 0.22) * Math.PI) : 0;
-      circ(g, ax - f * 0.3, cy + 0.1, 0.095, c('#651a27'));
+      orb(g, ax - f * 0.3, cy + 0.1, 0.095, 0.095, c('#651a27'));
       if (det) {
         const hx = ax + f * 0.32, hy = cy + 0.1 + raise;
         line(g, hx, hy + 0.05, hx + f * 0.12, hy - 0.34, 0.045, '#5a3a22');
         ell(g, hx + f * 0.135, hy - 0.4, 0.065, 0.1, '#6a4428');
         for (const [dx, dy] of [[-0.06, -0.42], [0.07, -0.38], [0.0, -0.5], [0.04, -0.3]]) poly(g, [hx + f * (0.135 + dx) - 0.018, hy + dy, hx + f * (0.135 + dx * 1.6), hy + dy - 0.03, hx + f * (0.135 + dx) + 0.018, hy + dy], '#c8ccd2');
       }
-      circ(g, ax + f * 0.32, cy + 0.1 + raise, 0.1, c('#651a27'));
+      orb(g, ax + f * 0.32, cy + 0.1 + raise, 0.1, 0.1, c('#651a27'));
       ell(g, ax - 0.21, cy - 0.15, 0.13, 0.08, '#5b6069'); ell(g, ax + 0.21, cy - 0.15, 0.13, 0.08, '#5b6069');
       poly(g, [ax - 0.27, cy - 0.2, ax - 0.24, cy - 0.33, ax - 0.19, cy - 0.21], '#9aa0a8');
       poly(g, [ax + 0.27, cy - 0.2, ax + 0.24, cy - 0.33, ax + 0.19, cy - 0.21], '#9aa0a8');
       if (det) demonDetail(g, 'brutePads', ax, cy, f, DD.brutePads);
-      circ(g, ax + f * 0.05, cy - 0.2, 0.12, c('#6a1c29'));
+      orb(g, ax + f * 0.05, cy - 0.2, 0.12, 0.12, c('#6a1c29'));
       g.lineCap = 'round'; g.lineWidth = 0.06; g.strokeStyle = '#e8d7b0';
       for (const s of [-1, 1]) { g.beginPath(); g.moveTo(ax + f * 0.05 + s * 0.08, cy - 0.27); g.quadraticCurveTo(ax + s * 0.34, cy - 0.3, ax + s * 0.28, cy - 0.54); g.stroke(); }
       g.lineCap = 'butt';
@@ -2728,8 +2801,8 @@ function drawDemon(g, e, time) {
       const hgt = 0.42 + Math.sin(ph * 0.7) * 0.05, cy = y - hgt, flap = Math.sin(ph * 2.2);
       shadow(g, x, y + 0.08, 0.19, 0.055, 0.22);
       for (const s of [-1, 1]) poly(g, [x + s * 0.07, cy - 0.03, x + s * 0.43, cy - 0.17 - flap * 0.16, x + s * 0.37, cy + 0.02 - flap * 0.06, x + s * 0.27, cy - 0.01, x + s * 0.18, cy + 0.08], c('#4a4460'));
-      ell(g, x, cy, 0.12, 0.15, c('#7a7290'));
-      circ(g, x, cy - 0.15, 0.085, c('#857d9b'));
+      orb(g, x, cy, 0.12, 0.15, c('#7a7290'));
+      orb(g, x, cy - 0.15, 0.085, 0.085, c('#857d9b'));
       if (det) demonDetail(g, 'gargoyle', x, cy, f, DD.gargoyle);
       poly(g, [x - 0.06, cy - 0.2, x - 0.02, cy - 0.21, x - 0.09, cy - 0.31], '#d8d0e6');
       poly(g, [x + 0.06, cy - 0.2, x + 0.02, cy - 0.21, x + 0.09, cy - 0.31], '#d8d0e6');
@@ -2742,7 +2815,7 @@ function drawDemon(g, e, time) {
       poly(g, [ax - 0.17, y + 0.08, ax + 0.17, y + 0.08, ax + 0.07, y - 0.33, ax - 0.07, y - 0.33], c('#3d2257'));
       line(g, ax - 0.16, y + 0.06, ax + 0.16, y + 0.06, 0.03, '#8a49b8');
       if (det) demonDetail(g, 'warlock', ax, y, f, DD.warlock);
-      circ(g, ax, y - 0.37 + b, 0.1, c('#2a173d'));
+      orb(g, ax, y - 0.37 + b, 0.1, 0.1, c('#2a173d'));
       ell(g, ax + f * 0.02, y - 0.35 + b, 0.06, 0.05, '#120a1c');
       circ(g, ax + f * 0.0, y - 0.36 + b, 0.016, '#e3a6ff'); circ(g, ax + f * 0.045, y - 0.36 + b, 0.016, '#e3a6ff');
       g.lineWidth = 0.03; g.strokeStyle = '#c8b8a0';
@@ -2758,9 +2831,9 @@ function drawDemon(g, e, time) {
       shadow(g, x, y + 0.1, 0.3, 0.09);
       line(g, ax - 0.09, cy + 0.16, ax - 0.1 + l, y + 0.07, 0.08, c('#2a2730'));
       line(g, ax + 0.09, cy + 0.16, ax + 0.1 - l, y + 0.07, 0.08, c('#2a2730'));
-      ell(g, ax, cy, 0.2, 0.21, c('#5a1f2a'));
+      orb(g, ax, cy, 0.2, 0.21, c('#5a1f2a'));
       poly(g, [ax - 0.19, cy - 0.12, ax + 0.19, cy - 0.12, ax + 0.15, cy + 0.08, ax - 0.15, cy + 0.08], c('#3d3a44'));
-      circ(g, ax - f * 0.02, cy - 0.24, 0.1, c('#3d3a44'));
+      orb(g, ax - f * 0.02, cy - 0.24, 0.1, 0.1, c('#3d3a44'));
       for (const s of [-1, 1]) poly(g, [ax + s * 0.07, cy - 0.3, ax + s * 0.12, cy - 0.27, ax + s * 0.2, cy - 0.42], '#d9c7a4');
       line(g, ax - f * 0.02 - 0.05, cy - 0.24, ax - f * 0.02 + 0.05, cy - 0.24, 0.02, '#ff9a3a');
       if (det) demonDetail(g, 'shieldBody', ax, cy, f, DD.shieldBody);
@@ -2775,8 +2848,8 @@ function drawDemon(g, e, time) {
     case 'golem': {
       const b = Math.abs(Math.sin(ph * 0.7)) * 0.03, cy = y - 0.3 - b, ax = x + f * atk * 0.5, l = Math.sin(ph * 0.7) * 0.05;
       shadow(g, x, y + 0.1, 0.38, 0.11);
-      ell(g, ax - 0.13 + l, y + 0.0, 0.09, 0.1, c('#2b2523'));
-      ell(g, ax + 0.13 - l, y + 0.0, 0.09, 0.1, c('#2b2523'));
+      orb(g, ax - 0.13 + l, y + 0.0, 0.09, 0.1, c('#2b2523'));
+      orb(g, ax + 0.13 - l, y + 0.0, 0.09, 0.1, c('#2b2523'));
       poly(g, [ax - 0.3, cy + 0.14, ax - 0.27, cy - 0.18, ax - 0.08, cy - 0.32, ax + 0.18, cy - 0.28, ax + 0.31, cy - 0.06, ax + 0.27, cy + 0.2, ax - 0.1, cy + 0.27], c('#3a302c'));
       if (det) demonDetail(g, 'golemBody', ax, cy, 1, DD.golemBody);
       const lava = 0.6 + Math.sin(time * 4 + ph) * 0.25;
@@ -2785,9 +2858,9 @@ function drawDemon(g, e, time) {
       g.moveTo(ax - 0.2, cy - 0.12); g.lineTo(ax - 0.05, cy); g.lineTo(ax - 0.12, cy + 0.16);
       g.moveTo(ax + 0.1, cy - 0.22); g.lineTo(ax + 0.04, cy - 0.04); g.lineTo(ax + 0.2, cy + 0.08); g.stroke();
       const raise = e.atk > 0 ? -0.15 * Math.sin((e.atk / 0.22) * Math.PI) : 0;
-      circ(g, ax - f * 0.32, cy + 0.1, 0.1, c('#332a27'));
-      circ(g, ax + f * 0.34, cy + 0.08 + raise, 0.11, c('#332a27'));
-      circ(g, ax + f * 0.04, cy - 0.3, 0.09, c('#2e2624'));
+      orb(g, ax - f * 0.32, cy + 0.1, 0.1, 0.1, c('#332a27'));
+      orb(g, ax + f * 0.34, cy + 0.08 + raise, 0.11, 0.11, c('#332a27'));
+      orb(g, ax + f * 0.04, cy - 0.3, 0.09, 0.09, c('#2e2624'));
       if (det) demonDetail(g, 'golemHead', ax, cy, f, DD.golemHead);
       circ(g, ax + f * 0.0, cy - 0.31, 0.022, '#ffcf5a'); circ(g, ax + f * 0.08, cy - 0.31, 0.022, '#ffcf5a');
       break;
@@ -2812,11 +2885,11 @@ function drawDemon(g, e, time) {
         line(g, x + s * 0.1, cy - 0.05, x + s * 0.55, cy - 0.06 - flap * 0.08, 0.012, 'rgba(15,25,18,.6)');
         if (det) line(g, x + s * 0.3, cy - 0.03, x + s * 0.61, cy - 0.29 - flap * 0.22, 0.01, 'rgba(15,25,18,.5)');
       }
-      ell(g, x, cy, 0.2, 0.12, c('#4a6250'));
+      orb(g, x, cy, 0.2, 0.12, c('#4a6250'));
       ell(g, x + f * 0.03, cy + 0.04, 0.12, 0.055, '#8f7d58');
       if (det) demonDetail(g, 'wyvBody', x, cy, f, DD.wyvBody);
       line(g, x + f * 0.12, cy - 0.03, x + f * 0.22, cy - 0.1, 0.07, c('#4a6250'));
-      circ(g, x + f * 0.24, cy - 0.12, 0.075, c('#4a6250'));
+      orb(g, x + f * 0.24, cy - 0.12, 0.075, 0.075, c('#4a6250'));
       poly(g, [x + f * 0.28, cy - 0.15, x + f * 0.4, cy - 0.1, x + f * 0.28, cy - 0.07], c('#4a6250'));
       poly(g, [x + f * 0.2, cy - 0.17, x + f * 0.12, cy - 0.3, x + f * 0.24, cy - 0.19], '#d8c7a0');
       if (det) demonDetail(g, 'wyvHead', x, cy, f, DD.wyvHead);
@@ -2830,13 +2903,13 @@ function drawDemon(g, e, time) {
       poly(g, [ax - 0.26, y + 0.1, ax + 0.26, y + 0.1, ax + 0.14, cy - 0.1, ax - 0.14, cy - 0.1], c('#3a1d55'));
       line(g, ax - 0.5, y + 0.09, ax + 0.5, y + 0.09, 0.03, '#8a3fd0');
       if (det) demonDetail(g, 'lordRobe', ax, y, f, DD.lordRobe);
-      ell(g, ax, cy - 0.14, 0.27, 0.29, c('#2a1638'));
+      orb(g, ax, cy - 0.14, 0.27, 0.29, c('#2a1638'));
       ell(g, ax - 0.22, cy - 0.3, 0.13, 0.08, '#3c2a4a'); ell(g, ax + 0.22, cy - 0.3, 0.13, 0.08, '#3c2a4a');
       if (det) demonDetail(g, 'lordTop', ax, cy, f, DD.lordTop);
       const pulse = 0.55 + Math.sin(time * 3) * 0.25;
       glow(g, ax, cy - 0.12, 0.2, `rgba(200,110,255,${pulse})`);
       poly(g, [ax, cy - 0.22, ax + 0.06, cy - 0.12, ax, cy - 0.02, ax - 0.06, cy - 0.12], '#e2b5ff');
-      circ(g, ax, cy - 0.52, 0.15, c('#1a0c24'));
+      orb(g, ax, cy - 0.52, 0.15, 0.15, c('#1a0c24'));
       for (let i = 0; i < 5; i++) { const sx = ax - 0.14 + i * 0.07, h = i === 2 ? 0.26 : i % 2 ? 0.17 : 0.13; poly(g, [sx - 0.03, cy - 0.6, sx, cy - 0.6 - h, sx + 0.03, cy - 0.6], '#2d1b3d'); circ(g, sx, cy - 0.6 - h, 0.016, '#c46bff'); }
       g.lineWidth = 0.05; g.strokeStyle = '#bba98a';
       for (const s of [-1, 1]) { g.beginPath(); g.moveTo(ax + s * 0.1, cy - 0.58); g.quadraticCurveTo(ax + s * 0.32, cy - 0.6, ax + s * 0.26, cy - 0.38); g.stroke(); }
@@ -2857,7 +2930,7 @@ function drawDemon(g, e, time) {
         poly(g, [x + s * 0.05, cy - 0.02, x + s * 0.2, cy - 0.12 - flap * 0.12, x + s * 0.3, cy - 0.02 - flap * 0.1, x + s * 0.24, cy + 0.02, x + s * 0.19, cy - 0.01, x + s * 0.14, cy + 0.04, x + s * 0.07, cy + 0.03], c('#4a1f2a'));
         line(g, x + s * 0.06, cy - 0.01, x + s * 0.2, cy - 0.11 - flap * 0.12, 0.01, 'rgba(255,150,150,.35)');
       }
-      ell(g, x, cy, 0.07, 0.08, c('#5a2632'));
+      orb(g, x, cy, 0.07, 0.08, c('#5a2632'));
       poly(g, [x - 0.05, cy - 0.05, x - 0.035, cy - 0.13, x - 0.015, cy - 0.06], c('#5a2632'));
       poly(g, [x + 0.05, cy - 0.05, x + 0.035, cy - 0.13, x + 0.015, cy - 0.06], c('#5a2632'));
       if (det) demonDetail(g, 'bat', x, cy, f, DD.bat);
@@ -2870,13 +2943,13 @@ function drawDemon(g, e, time) {
       line(g, ax - 0.05, cy + 0.09, ax - 0.06 + l, y + 0.08, 0.04, c('#5c2a10'));
       line(g, ax + 0.05, cy + 0.09, ax + 0.06 - l, y + 0.08, 0.04, c('#5c2a10'));
       g.save(); g.translate(ax - f * 0.13, cy - 0.04); g.rotate(-f * 0.25);
-      ell(g, 0, 0, 0.1, 0.13, c('#7a4a22'));
+      orb(g, 0, 0, 0.1, 0.13, c('#7a4a22'));
       line(g, -0.098, -0.05, 0.098, -0.05, 0.016, '#3a3a40'); line(g, -0.098, 0.05, 0.098, 0.05, 0.016, '#3a3a40');
       line(g, 0, -0.12, 0.02, -0.18, 0.012, '#3a2a1a');
       glow(g, 0.02, -0.19, 0.06 + Math.abs(Math.sin(time * 20)) * 0.04, 'rgba(255,200,80,.85)'); circ(g, 0.02, -0.19, 0.018, '#fff2a0');
       g.restore();
-      circ(g, ax, cy, 0.13, c('#d8642c'));
-      circ(g, ax + f * 0.03, cy - 0.02, 0.08, c('#ef7a3a'));
+      orb(g, ax, cy, 0.13, 0.13, c('#d8642c'));
+      orb(g, ax + f * 0.03, cy - 0.02, 0.08, 0.08, c('#ef7a3a'));
       if (det) demonDetail(g, 'bomberBody', ax, cy, f, DD.bomberBody);
       poly(g, [ax - 0.08, cy - 0.08, ax - 0.03, cy - 0.11, ax - 0.1, cy - 0.21], '#f1dcb4');
       poly(g, [ax + 0.08, cy - 0.08, ax + 0.03, cy - 0.11, ax + 0.1, cy - 0.21], '#f1dcb4');
@@ -2895,7 +2968,7 @@ function drawDemon(g, e, time) {
       g.fillStyle = c('#b8d8ee'); g.fill();
       if (det) demonDetail(g, 'wraithBody', x, cy, f, DD.wraithBody);
       line(g, x + f * 0.12, cy, x + f * 0.24, cy + 0.05 + fl, 0.03, c('#c8e2f2'));
-      circ(g, x, cy - 0.12, 0.12, c('#d8ecf8'));
+      orb(g, x, cy - 0.12, 0.12, 0.12, c('#d8ecf8'));
       ell(g, x + f * 0.02, cy - 0.1, 0.075, 0.07, '#10202e');
       if (det) demonDetail(g, 'wraithFace', x, cy, f, DD.wraithFace);
       circ(g, x + f * 0.02 - 0.025, cy - 0.11, 0.018, '#7af0ff'); circ(g, x + f * 0.02 + 0.025, cy - 0.11, 0.018, '#7af0ff');
@@ -2909,7 +2982,7 @@ function drawDemon(g, e, time) {
       line(g, ax - 0.16, y + 0.06, ax + 0.16, y + 0.06, 0.03, '#d8d2b8');
       circ(g, ax, y - 0.12, 0.035, '#e8e2c8');
       if (det) demonDetail(g, 'necro', ax, y, f, DD.necro);
-      circ(g, ax, y - 0.37 + b, 0.1, c('#16201a'));
+      orb(g, ax, y - 0.37 + b, 0.1, 0.1, c('#16201a'));
       ell(g, ax + f * 0.02, y - 0.35 + b, 0.06, 0.05, '#050805');
       circ(g, ax, y - 0.36 + b, 0.016, '#7aff7a'); circ(g, ax + f * 0.045, y - 0.36 + b, 0.016, '#7aff7a');
       line(g, sx, y + 0.08, sx, y - 0.44, 0.026, '#4a3a2a');
@@ -2927,7 +3000,7 @@ function drawDemon(g, e, time) {
       for (let i = 0; i < 3; i++) line(g, ax - 0.06 + i * 0.01, cy - 0.04 + i * 0.035, ax + 0.06 - i * 0.01, cy - 0.04 + i * 0.035, 0.016, c('#d8d2bc'));
       line(g, ax + f * 0.02, cy - 0.04, ax + f * 0.12, cy + 0.03, 0.018, bone);
       line(g, ax + f * 0.12, cy + 0.03, ax + f * 0.24, cy - 0.08, 0.026, '#8a5a3a');
-      circ(g, ax + f * 0.01, cy - 0.13, 0.075, c('#f0ead6'));
+      orb(g, ax + f * 0.01, cy - 0.13, 0.075, 0.075, c('#f0ead6'));
       if (det) demonDetail(g, 'skeleton', ax, cy, f, DD.skeleton);
       circ(g, ax + f * 0.03 - 0.03, cy - 0.13, 0.02, '#1a0808'); circ(g, ax + f * 0.03 + 0.025, cy - 0.13, 0.02, '#1a0808');
       circ(g, ax + f * 0.03 - 0.03, cy - 0.13, 0.009, '#ff4a3a'); circ(g, ax + f * 0.03 + 0.025, cy - 0.13, 0.009, '#ff4a3a');
@@ -2937,12 +3010,12 @@ function drawDemon(g, e, time) {
       const b = Math.abs(Math.sin(ph * 0.7)) * 0.025, cy = y - 0.22 - b, ax = x + f * atk * 0.6, l = Math.sin(ph * 0.7) * 0.05;
       shadow(g, x, y + 0.1, 0.42, 0.1);
       for (const [dx, sg] of [[-0.2, 1], [-0.08, -1], [0.08, 1], [0.2, -1]]) line(g, ax + f * dx, cy + 0.08, ax + f * dx + sg * l, y + 0.07, 0.07, c('#3a2420'));
-      ell(g, ax, cy, 0.32, 0.16, c('#5a2e26'));
-      ell(g, ax - f * 0.04, cy + 0.06, 0.22, 0.07, c('#6e3a30'));
+      orb(g, ax, cy, 0.32, 0.16, c('#5a2e26'));
+      orb(g, ax - f * 0.04, cy + 0.06, 0.22, 0.07, c('#6e3a30'));
       if (det) demonDetail(g, 'ramBody', ax, cy, f, DD.ramBody);
       for (let i = 0; i < 4; i++) { const px = ax - f * 0.2 + f * i * 0.12; poly(g, [px - 0.07, cy - 0.08, px, cy - 0.2, px + 0.07, cy - 0.08], c('#5b6069')); circ(g, px, cy - 0.12, 0.015, '#a8aeb6'); }
       const hx = ax + f * 0.3, hy = cy + 0.02;
-      ell(g, hx, hy, 0.13, 0.11, c('#6a7078'));
+      orb(g, hx, hy, 0.13, 0.11, c('#6a7078'));
       poly(g, [hx + f * 0.1, hy - 0.05, hx + f * 0.27, hy, hx + f * 0.1, hy + 0.05], '#c8ced4');
       poly(g, [hx - f * 0.02, hy - 0.08, hx - f * 0.1, hy - 0.22, hx + f * 0.04, hy - 0.1], '#e8d7b0');
       if (det) demonDetail(g, 'ramHead', ax, cy, f, DD.ramHead);
@@ -2954,9 +3027,9 @@ function drawDemon(g, e, time) {
       shadow(g, x, y + 0.1, 0.26, 0.08);
       line(g, ax - 0.08, cy + 0.16, ax - 0.09 + l, y + 0.07, 0.07, c('#4a1a14'));
       line(g, ax + 0.08, cy + 0.16, ax + 0.09 - l, y + 0.07, 0.07, c('#4a1a14'));
-      ell(g, ax, cy - 0.04, 0.2, 0.2, c('#8a2a22'));
+      orb(g, ax, cy - 0.04, 0.2, 0.2, c('#8a2a22'));
       if (det) demonDetail(g, 'drumBody', ax, cy, f, DD.drumBody);
-      circ(g, ax + f * 0.02, cy - 0.26, 0.1, c('#7a221c'));
+      orb(g, ax + f * 0.02, cy - 0.26, 0.1, 0.1, c('#7a221c'));
       poly(g, [ax - 0.06, cy - 0.33, ax - 0.02, cy - 0.35, ax - 0.12, cy - 0.46], '#e8d7b0');
       poly(g, [ax + 0.08, cy - 0.33, ax + 0.04, cy - 0.35, ax + 0.14, cy - 0.46], '#e8d7b0');
       circ(g, ax + f * 0.0, cy - 0.27, 0.02, '#ffd04a'); circ(g, ax + f * 0.06, cy - 0.27, 0.02, '#ffd04a');
@@ -2975,7 +3048,7 @@ function drawDemon(g, e, time) {
       const l = Math.sin(ph * 0.6) * 0.06;
       line(g, ax - 0.2, cy + 0.3, ax - 0.22 + l, y + 0.08, 0.16, c('#2a0a0e'));
       line(g, ax + 0.2, cy + 0.3, ax + 0.22 - l, y + 0.08, 0.16, c('#2a0a0e'));
-      ell(g, ax, cy, 0.42, 0.42, c('#3b0f15'));
+      orb(g, ax, cy, 0.42, 0.42, c('#3b0f15'));
       const lava = 0.55 + Math.sin(time * 3) * 0.25;
       g.strokeStyle = `rgba(255,110,30,${lava})`; g.lineWidth = 0.025; g.beginPath();
       g.moveTo(ax - 0.25, cy - 0.1); g.lineTo(ax - 0.12, cy + 0.05); g.lineTo(ax - 0.18, cy + 0.22);
@@ -2983,9 +3056,9 @@ function drawDemon(g, e, time) {
       glow(g, ax, cy - 0.02, 0.2, `rgba(255,150,60,${lava})`);
       circ(g, ax, cy - 0.02, 0.06, '#ffb35c');
       if (det) demonDetail(g, 'bossBody', ax, cy, f, DD.bossBody);
-      circ(g, ax - 0.4, cy + 0.08, 0.13, c('#2a0a0e')); circ(g, ax + 0.4, cy + 0.08, 0.13, c('#2a0a0e'));
+      orb(g, ax - 0.4, cy + 0.08, 0.13, 0.13, c('#2a0a0e')); orb(g, ax + 0.4, cy + 0.08, 0.13, 0.13, c('#2a0a0e'));
       if (det) demonDetail(g, 'bossArms', ax, cy, f, DD.bossArms);
-      circ(g, ax, cy - 0.42, 0.17, c('#2a0a0e'));
+      orb(g, ax, cy - 0.42, 0.17, 0.17, c('#2a0a0e'));
       g.lineCap = 'round'; g.lineWidth = 0.09; g.strokeStyle = '#d9c39a';
       for (const s of [-1, 1]) { g.beginPath(); g.moveTo(ax + s * 0.12, cy - 0.5); g.quadraticCurveTo(ax + s * 0.5, cy - 0.5, ax + s * 0.42, cy - 0.92); g.stroke(); }
       g.lineCap = 'butt';
@@ -3521,9 +3594,9 @@ function drawTree(g, x, y, s, kind, hue) {
     g.lineCap = 'round';
     line(g, x, y + 0.02, x - s * 0.06, y - s * 0.8, s * 0.2, '#3f3324');
     line(g, x - s * 0.04, y - s * 0.55, x + s * 0.25, y - s * 0.85, s * 0.08, '#3f3324');
-    const h0 = 95 + hue * 25;
+    const h0 = Math.round(95 + hue * 25);
     circ(g, x + s * 0.05, y - s * 1.0, s * 0.62, `hsl(${h0},28%,14%)`);
-    circ(g, x - s * 0.08, y - s * 1.08, s * 0.55, `hsl(${h0},30%,21%)`);
+    orb(g, x - s * 0.08, y - s * 1.08, s * 0.55, s * 0.55, `hsl(${h0},30%,21%)`);
     circ(g, x - s * 0.22, y - s * 1.22, s * 0.28, `hsla(${h0 - 5},36%,32%,.85)`);
     for (let i = 0; i < 9; i++) {
       const dx = (i / 8 - 0.5) * s * 1.3, len = s * (0.55 + hash(seed + i) * 0.35);
@@ -3541,10 +3614,11 @@ function drawTree(g, x, y, s, kind, hue) {
   g.lineCap = 'round';
   for (const k of [-1, 1]) line(g, x + k * s * 0.12, y + 0.01, x + k * s * 0.3, y + 0.05, s * 0.07, birch ? '#a8a494' : '#4a3222');
   g.lineCap = 'butt';
-  const [hb, hr, sat, lit] = TREE_HUE, h0 = hb + hue * hr, B = [[-0.4, -0.82, 0.48], [0.42, -0.86, 0.48], [0, -0.78, 0.46], [-0.22, -1.12, 0.5], [0.24, -1.16, 0.46], [0, -1.36, 0.42]];
+  const [hb, hr, sat, lit] = TREE_HUE, h0 = Math.round(hb + hue * hr), B = [[-0.4, -0.82, 0.48], [0.42, -0.86, 0.48], [0, -0.78, 0.46], [-0.22, -1.12, 0.5], [0.24, -1.16, 0.46], [0, -1.36, 0.42]];
   for (const [bx, by, br] of B) circ(g, x + bx * s + s * 0.05, y + by * s + s * 0.07, br * s, `hsl(${h0},${sat - 4}%,${11 + lit}%)`);
-  for (const [bx, by, br] of B) circ(g, x + bx * s, y + by * s, br * s * 0.9, `hsl(${h0},${sat}%,${(by < -1 ? 23 : 19) + lit}%)`);
-  for (const [bx, by, br] of B) circ(g, x + bx * s - br * s * 0.28, y + by * s - br * s * 0.3, br * s * 0.42, `hsla(${h0 - 6},${sat + 8}%,${32 + lit}%,.9)`);
+  // each clump of leaves is a lit ball with a soft sunny patch on top
+  for (const [bx, by, br] of B) orb(g, x + bx * s, y + by * s, br * s * 0.9, br * s * 0.9, `hsl(${h0},${sat}%,${(by < -1 ? 23 : 19) + lit}%)`);
+  for (const [bx, by, br] of B) glow(g, x + bx * s - br * s * 0.26, y + by * s - br * s * 0.3, br * s * 0.6, `hsla(${h0 - 6},${sat + 10}%,${42 + lit}%,.62)`);
   for (let i = 0; i < 12; i++) circ(g, x + (hash(seed + i) - 0.5) * s * 1.1, y - s * (0.75 + hash(seed + i * 7) * 0.7), s * 0.045, `hsla(${h0 - 12},${sat + 16}%,${40 + lit + hash(seed + i * 3) * 12}%,.75)`);
   const kindRoll = hash(seed * 3.1);
   if (kindRoll > 0.62) {
@@ -3557,7 +3631,7 @@ function drawDeco(g, it) {
   if (it.k === 'bush') {
     const h = it.dead ? 15 : 140;
     circ(g, x - 0.08, y + 0.01, 0.12, `hsl(${h},34%,15%)`); circ(g, x + 0.09, y + 0.02, 0.11, `hsl(${h},34%,15%)`);
-    circ(g, x, y - 0.05, 0.13, `hsl(${h},40%,24%)`); circ(g, x - 0.04, y - 0.09, 0.06, `hsla(${h - 6},48%,34%,.9)`);
+    orb(g, x, y - 0.05, 0.13, 0.13, `hsl(${h},40%,24%)`); glow(g, x - 0.04, y - 0.09, 0.08, `hsla(${h - 6},48%,40%,.5)`);
     if (!it.dead) for (let i = 0; i < 3; i++) circ(g, x + (i - 1) * 0.07, y - 0.04 + (i % 2) * 0.05, 0.02, '#ff7a9a');
   } else if (it.k === 'rocks') {
     const sn = it.theme === 'snow';
@@ -3748,9 +3822,10 @@ function renderBg(li) {
   // soft patches of moss, soil and snow
   for (let i = 0; i < area * 1.1; i++) glow(g, ex0 + rng() * (ex1 - ex0), ey0 + rng() * (ey1 - ey0), 0.4 + rng() * 1.3, TH.patches[Math.floor(rng() * TH.patches.length)]);
   if (TH.light) glow(g, -1, -2, 12, TH.light);
-  for (let i = 0; i < area * 22; i++) circ(g, ex0 + rng() * (ex1 - ex0), ey0 + rng() * (ey1 - ey0), 0.008 + rng() * 0.014, rng() < 0.5 ? 'rgba(0,0,0,.16)' : 'rgba(255,255,255,.07)');
+  for (let i = 0; i < area * 1.2; i++) glow(g, ex0 + rng() * (ex1 - ex0), ey0 + rng() * (ey1 - ey0), 0.25 + rng() * 0.5, TH.patches[Math.floor(rng() * TH.patches.length)]);
+  for (let i = 0; i < area * 8; i++) circ(g, ex0 + rng() * (ex1 - ex0), ey0 + rng() * (ey1 - ey0), 0.008 + rng() * 0.012, rng() < 0.5 ? 'rgba(0,0,0,.09)' : 'rgba(255,255,255,.05)');
   const [h0, hr, s0, sr, l0, lr, ba] = TH.blade;
-  for (let i = 0; i < area * 7; i++) {
+  for (let i = 0; i < area * 4; i++) {
     const x = ex0 + rng() * (ex1 - ex0), y = ey0 + rng() * (ey1 - ey0), h = 0.07 + rng() * 0.08, hue = h0 + rng() * hr, sat = s0 + rng() * sr, lit = l0 + rng() * lr;
     tuft(g, x, y, h, `hsla(${hue},${sat}%,${lit}%,${ba})`, `hsla(${hue - 6},${sat + 8}%,${Math.min(96, lit + 12)}%,${ba})`);
   }
@@ -3767,7 +3842,10 @@ function renderBg(li) {
   // road: soft shoulder, packed earth, worn middle, then fitted stones and ruts
   g.lineJoin = 'round'; g.lineCap = 'round';
   const stroke = (w, col) => { for (const p of P.paths) { g.beginPath(); g.moveTo(p.pts[0].x, p.pts[0].y); for (const q of p.pts) g.lineTo(q.x, q.y); g.lineWidth = w; g.strokeStyle = col; g.stroke(); } };
-  stroke(1.22, 'rgba(0,0,0,.22)'); stroke(1.04, TH.road[0]); stroke(0.93, TH.road[1]); stroke(0.72, TH.road[2]); stroke(0.32, TH.road[3]);
+  if (SOFT_FILTER) g.filter = `blur(${(dpr * ts * 0.05).toFixed(1)}px)`;
+  stroke(1.34, 'rgba(0,0,0,.28)');
+  if (SOFT_FILTER) g.filter = 'none';
+  stroke(1.04, TH.road[0]); stroke(0.93, TH.road[1]); stroke(0.72, TH.road[2]); stroke(0.32, TH.road[3]);
   for (const p of P.paths) {
     for (let d = 0.2; d < p.len; d += 0.32) for (const side of [-1, 1]) {
       const q = posAt(p, d + rng() * 0.1), o = side * (0.2 + rng() * 0.03);
@@ -3829,6 +3907,7 @@ function renderBg(li) {
   const vg = g.createRadialGradient(bg.width / 2, bg.height / 2, Math.min(bg.width, bg.height) * 0.38, bg.width / 2, bg.height / 2, Math.max(bg.width, bg.height) * 0.75);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, L.theme === 'snow' ? 'rgba(20,30,45,.3)' : 'rgba(0,0,0,.38)');
   g.fillStyle = vg; g.fillRect(0, 0, bg.width, bg.height);
+  softenLayer(bg, Math.max(0.8, dpr * ts * 0.012), 0.16);
 }
 // living parts of the city: waving banners, torches, glowing windows, guards on the wall
 function drawKingdomLive(g, time) {
@@ -4722,7 +4801,7 @@ function drawWorld(g, time) {
   for (const [, k, o] of list) {
     if (k === 0) drawTowerObj(g, o, time);
     else if (k === 1) scaled(g, o, HUNTER_SC, () => drawSquadUnit(g, o, time));
-    else scaled(g, o, DEMON_SC * (o.D.scale || 1), () => drawDemon(g, o, time));
+    else breathe(g, o, DEMON_SC * (o.D.scale || 1), time, () => drawDemon(g, o, time));
   }
   for (const p of S.projectiles) {
     if (p.kind === 'arrow') {
@@ -4753,7 +4832,7 @@ function drawWorld(g, time) {
   }
   for (const e of S.enemies) { if (e.poisonT > 0) poisonBubbles(g, e, time); if (e.frozen > 0) frostCover(g, e); }
   const fl = S.enemies.filter(e => e.flying).sort((a, b) => a.y - b.y);
-  for (const e of fl) scaled(g, e, DEMON_SC * (e.D.scale || 1), () => drawDemon(g, e, time));
+  for (const e of fl) breathe(g, e, DEMON_SC * (e.D.scale || 1), time, () => drawDemon(g, e, time));
   for (const t of S.towers) if (t && t.griffins) for (const b of t.griffins) scaled(g, b, 1.1, () => drawGriffinBird(g, b.x, b.y, b.face, time + t.si, b.state === 'dive'));
   for (const f of S.fx) if (!f.ground) drawFx(g, f);
   // health bars
@@ -4773,6 +4852,11 @@ function drawWorld(g, time) {
 }
 const DEMON_SC = 1.22, HUNTER_SC = 1.18;
 function scaled(g, o, k, fn) { g.save(); g.translate(o.x, o.y); g.scale(k, k); g.translate(-o.x, -o.y); fn(); g.restore(); }
+// a living idle: bodies breathe a little, squashing and stretching from the feet (bosses slower and deeper)
+function breathe(g, o, k, time, fn) {
+  const b = QL ? Math.sin(time * (o.D.boss ? 2.2 : 3.4) + (o.phase || 0)) * (o.D.boss ? 0.03 : 0.022) : 0;
+  g.save(); g.translate(o.x, o.y); g.scale(k * (1 - b * 0.6), k * (1 + b)); g.translate(-o.x, -o.y); fn(); g.restore();
+}
 // The still part of each tower type and level is rendered once at the current scale and reused every frame.
 const SPR = new Map(), SPR_X = 0.66, SPR_TOP = 1.46, SPR_W = 1.32, SPR_H = 1.92;
 function towerSprite(type, lvl) {
@@ -4785,6 +4869,7 @@ function towerSprite(type, lvl) {
     const g = c.getContext('2d');
     g.setTransform(k, 0, 0, k, SPR_X * k, SPR_TOP * k);
     TP = 1; drawTower(g, type, lvl, 0, 0, 0, 0, 0); TP = 0;
+    shadeSprite(c);
     SPR.set(key, c);
   }
   return c;
@@ -4898,6 +4983,7 @@ function render(time) {
   if (S && S.hurt > 0) for (const gx of CITY.gates) glow(ctx, gx, 14.5, 1.3, `rgba(255,40,40,${S.hurt * 0.6})`);
   PREP[li].paths.forEach((p, i) => drawPortal(ctx, p, time, S && S.portalPulse ? S.portalPulse[i] : 0));
   if (S) drawWorld(ctx, time);
+  if (QL && theme !== 'void' && theme !== 'rift') sunDapples(ctx, time, 0, 0, COLS, ROWS);
   drawAir(ctx, THEMES[theme].air, time);
   for (const a of amb) { const k = a.t / a.life; circ(ctx, a.x, a.y, 0.03, `rgba(255,${140 + (1 - k) * 80 | 0},60,${(1 - k) * 0.9})`); }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -5682,6 +5768,7 @@ function townSprite(key, n, s) {
     c = document.createElement('canvas'); c.width = Math.ceil((x1 - x0) * k); c.height = Math.ceil((y1 - y0) * k);
     const g = c.getContext('2d'); g.setTransform(k, 0, 0, k, -x0 * k, -y0 * k);
     TP = 1; A.draw(g, n, 0); TP = 0;
+    shadeSprite(c);
     TSPR.set(id, c);
   }
   return c;
@@ -5698,9 +5785,10 @@ function renderTownBg() {
   g.fillStyle = base; g.fillRect(ex0, ey0, ex1 - ex0, ey1 - ey0);
   for (let i = 0; i < area * 1.1; i++) glow(g, ex0 + rng() * (ex1 - ex0), ey0 + rng() * (ey1 - ey0), 0.4 + rng() * 1.3, TH.patches[Math.floor(rng() * TH.patches.length)]);
   glow(g, 4.5, 6.6, 4.2, 'rgba(255,230,150,.08)');
-  for (let i = 0; i < area * 20; i++) circ(g, ex0 + rng() * (ex1 - ex0), ey0 + rng() * (ey1 - ey0), 0.008 + rng() * 0.014, rng() < 0.5 ? 'rgba(0,0,0,.16)' : 'rgba(255,255,255,.07)');
+  for (let i = 0; i < area * 1.2; i++) glow(g, ex0 + rng() * (ex1 - ex0), ey0 + rng() * (ey1 - ey0), 0.25 + rng() * 0.5, TH.patches[Math.floor(rng() * TH.patches.length)]);
+  for (let i = 0; i < area * 8; i++) circ(g, ex0 + rng() * (ex1 - ex0), ey0 + rng() * (ey1 - ey0), 0.008 + rng() * 0.012, rng() < 0.5 ? 'rgba(0,0,0,.09)' : 'rgba(255,255,255,.05)');
   const [h0, hr, s0, sr, l0, lr, ba] = TH.blade;
-  for (let i = 0; i < area * 6; i++) {
+  for (let i = 0; i < area * 3.5; i++) {
     const x = ex0 + rng() * (ex1 - ex0), y = ey0 + rng() * (ey1 - ey0), hgt = 0.07 + rng() * 0.08, hue = h0 + rng() * hr, sat = s0 + rng() * sr, lit = l0 + rng() * lr;
     tuft(g, x, y, hgt, `hsla(${hue},${sat}%,${lit}%,${ba})`, `hsla(${hue - 6},${sat + 8}%,${Math.min(96, lit + 12)}%,${ba})`);
   }
@@ -5708,7 +5796,10 @@ function renderTownBg() {
   const roads = TOWN_ROADS;
   g.lineJoin = 'round'; g.lineCap = 'round';
   const stroke = (w, col) => { for (const r of roads) { g.beginPath(); g.moveTo(r[0][0], r[0][1]); if (r.length === 3) g.quadraticCurveTo(r[1][0], r[1][1], r[2][0], r[2][1]); else for (const q of r) g.lineTo(q[0], q[1]); g.lineWidth = w; g.strokeStyle = col; g.stroke(); } };
-  stroke(0.56, 'rgba(0,0,0,.2)'); stroke(0.47, TH.road[1]); stroke(0.38, TH.road[2]); stroke(0.16, TH.road[3]);
+  if (SOFT_FILTER) g.filter = `blur(${(k * 0.05).toFixed(1)}px)`;
+  stroke(0.66, 'rgba(0,0,0,.26)');
+  if (SOFT_FILTER) g.filter = 'none';
+  stroke(0.47, TH.road[1]); stroke(0.38, TH.road[2]); stroke(0.16, TH.road[3]);
   for (const r of roads) for (let i = 0; i < 40; i++) {
     const t = rng(), a = r[0], b = r[r.length - 1], c = r.length === 3 ? r[1] : [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], u = 1 - t;
     const x = u * u * a[0] + 2 * u * t * c[0] + t * t * b[0] + (rng() - 0.5) * 0.3, y = u * u * a[1] + 2 * u * t * c[1] + t * t * b[1] + (rng() - 0.5) * 0.22;
@@ -5740,6 +5831,7 @@ function renderTownBg() {
   const vg = g.createRadialGradient(townBg.width / 2, townBg.height / 2, Math.min(townBg.width, townBg.height) * 0.4, townBg.width / 2, townBg.height / 2, Math.max(townBg.width, townBg.height) * 0.75);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.42)');
   g.fillStyle = vg; g.fillRect(0, 0, townBg.width, townBg.height);
+  softenLayer(townBg, Math.max(0.8, k * 0.01), 0.12);
 }
 const POND = [8.1, 9.15];
 // a main street from the gate to the plaza and short lanes from the plaza to each building
@@ -5794,6 +5886,7 @@ function townFrame(now) {
     if (rd && !rd.repelled && rd.k === key && Date.now() - rd.at < RAID_SMOKE) { g.setTransform(k, 0, 0, k, TV.ox, TV.oy); drawRaidDamage(g, key === 'wall' ? x - 1.6 : x, y, key === 'wall' ? 1 : s, t, 1 - (Date.now() - rd.at) / RAID_SMOKE); }
   }
   drawWalkers(lastY, 1e9);
+  if (QL) { g.setTransform(k, 0, 0, k, TV.ox, TV.oy); sunDapples(g, t, 0, 1.5, 9, 13); }
   // sparkles of finished buildings
   g.setTransform(k, 0, 0, k, TV.ox, TV.oy);
   for (const f of TUI.fx) { f.t += 1 / 30; f.x += f.vx / 30; f.y += f.vy / 30; f.vy += 0.6 / 30; g.globalAlpha = Math.max(0, 1 - f.t / f.life); circ(g, f.x, f.y, f.r, f.c); }
